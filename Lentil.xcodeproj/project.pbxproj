@@ -1,0 +1,640 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
+		3777830828CCA05D00E7E32A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830728CCA05D00E7E32A /* ContentView.swift */; };
+		3777830A28CCA05E00E7E32A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3777830928CCA05E00E7E32A /* Assets.xcassets */; };
+		3777830D28CCA05E00E7E32A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3777830C28CCA05E00E7E32A /* Preview Assets.xcassets */; };
+		3777831728CCA05E00E7E32A /* LentilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777831628CCA05E00E7E32A /* LentilTests.swift */; };
+		3777832128CCA05F00E7E32A /* LentilUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777832028CCA05F00E7E32A /* LentilUITests.swift */; };
+		3777832328CCA05F00E7E32A /* LentilUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777832228CCA05F00E7E32A /* LentilUITestsLaunchTests.swift */; };
+		3777833828CCBAF800E7E32A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 3777833728CCBAF800E7E32A /* ComposableArchitecture */; };
+		3777833B28CCBDEF00E7E32A /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 3777833A28CCBDEF00E7E32A /* Apollo */; };
+		3777833D28CCBDEF00E7E32A /* ApolloWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 3777833C28CCBDEF00E7E32A /* ApolloWebSocket */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3777831328CCA05E00E7E32A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 377782FA28CCA05D00E7E32A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3777830128CCA05D00E7E32A;
+			remoteInfo = Lentil;
+		};
+		3777831D28CCA05F00E7E32A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 377782FA28CCA05D00E7E32A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3777830128CCA05D00E7E32A;
+			remoteInfo = Lentil;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3777830228CCA05D00E7E32A /* Lentil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lentil.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3777830528CCA05D00E7E32A /* LentilApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilApp.swift; sourceTree = "<group>"; };
+		3777830728CCA05D00E7E32A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3777830928CCA05E00E7E32A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3777830C28CCA05E00E7E32A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		3777831228CCA05E00E7E32A /* LentilTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LentilTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3777831628CCA05E00E7E32A /* LentilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilTests.swift; sourceTree = "<group>"; };
+		3777831C28CCA05F00E7E32A /* LentilUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LentilUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3777832028CCA05F00E7E32A /* LentilUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilUITests.swift; sourceTree = "<group>"; };
+		3777832228CCA05F00E7E32A /* LentilUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		377782FF28CCA05D00E7E32A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3777833828CCBAF800E7E32A /* ComposableArchitecture in Frameworks */,
+				3777833D28CCBDEF00E7E32A /* ApolloWebSocket in Frameworks */,
+				3777833B28CCBDEF00E7E32A /* Apollo in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3777830F28CCA05E00E7E32A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3777831928CCA05F00E7E32A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		377782F928CCA05D00E7E32A = {
+			isa = PBXGroup;
+			children = (
+				3777830428CCA05D00E7E32A /* Lentil */,
+				3777831528CCA05E00E7E32A /* LentilTests */,
+				3777831F28CCA05F00E7E32A /* LentilUITests */,
+				3777830328CCA05D00E7E32A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3777830328CCA05D00E7E32A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3777830228CCA05D00E7E32A /* Lentil.app */,
+				3777831228CCA05E00E7E32A /* LentilTests.xctest */,
+				3777831C28CCA05F00E7E32A /* LentilUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3777830428CCA05D00E7E32A /* Lentil */ = {
+			isa = PBXGroup;
+			children = (
+				3777830528CCA05D00E7E32A /* LentilApp.swift */,
+				3777830728CCA05D00E7E32A /* ContentView.swift */,
+				3777830928CCA05E00E7E32A /* Assets.xcassets */,
+				3777830B28CCA05E00E7E32A /* Preview Content */,
+			);
+			path = Lentil;
+			sourceTree = "<group>";
+		};
+		3777830B28CCA05E00E7E32A /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				3777830C28CCA05E00E7E32A /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		3777831528CCA05E00E7E32A /* LentilTests */ = {
+			isa = PBXGroup;
+			children = (
+				3777831628CCA05E00E7E32A /* LentilTests.swift */,
+			);
+			path = LentilTests;
+			sourceTree = "<group>";
+		};
+		3777831F28CCA05F00E7E32A /* LentilUITests */ = {
+			isa = PBXGroup;
+			children = (
+				3777832028CCA05F00E7E32A /* LentilUITests.swift */,
+				3777832228CCA05F00E7E32A /* LentilUITestsLaunchTests.swift */,
+			);
+			path = LentilUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3777830128CCA05D00E7E32A /* Lentil */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3777832628CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "Lentil" */;
+			buildPhases = (
+				377782FE28CCA05D00E7E32A /* Sources */,
+				377782FF28CCA05D00E7E32A /* Frameworks */,
+				3777830028CCA05D00E7E32A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Lentil;
+			packageProductDependencies = (
+				3777833728CCBAF800E7E32A /* ComposableArchitecture */,
+				3777833A28CCBDEF00E7E32A /* Apollo */,
+				3777833C28CCBDEF00E7E32A /* ApolloWebSocket */,
+			);
+			productName = Lentil;
+			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3777831128CCA05E00E7E32A /* LentilTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3777832928CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "LentilTests" */;
+			buildPhases = (
+				3777830E28CCA05E00E7E32A /* Sources */,
+				3777830F28CCA05E00E7E32A /* Frameworks */,
+				3777831028CCA05E00E7E32A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3777831428CCA05E00E7E32A /* PBXTargetDependency */,
+			);
+			name = LentilTests;
+			productName = LentilTests;
+			productReference = 3777831228CCA05E00E7E32A /* LentilTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3777831B28CCA05F00E7E32A /* LentilUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3777832C28CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "LentilUITests" */;
+			buildPhases = (
+				3777831828CCA05F00E7E32A /* Sources */,
+				3777831928CCA05F00E7E32A /* Frameworks */,
+				3777831A28CCA05F00E7E32A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3777831E28CCA05F00E7E32A /* PBXTargetDependency */,
+			);
+			name = LentilUITests;
+			productName = LentilUITests;
+			productReference = 3777831C28CCA05F00E7E32A /* LentilUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		377782FA28CCA05D00E7E32A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1400;
+				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					3777830128CCA05D00E7E32A = {
+						CreatedOnToolsVersion = 14.0;
+					};
+					3777831128CCA05E00E7E32A = {
+						CreatedOnToolsVersion = 14.0;
+						TestTargetID = 3777830128CCA05D00E7E32A;
+					};
+					3777831B28CCA05F00E7E32A = {
+						CreatedOnToolsVersion = 14.0;
+						TestTargetID = 3777830128CCA05D00E7E32A;
+					};
+				};
+			};
+			buildConfigurationList = 377782FD28CCA05D00E7E32A /* Build configuration list for PBXProject "Lentil" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 377782F928CCA05D00E7E32A;
+			packageReferences = (
+				3777833628CCBAF800E7E32A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				3777833928CCBDEF00E7E32A /* XCRemoteSwiftPackageReference "apollo-ios" */,
+			);
+			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3777830128CCA05D00E7E32A /* Lentil */,
+				3777831128CCA05E00E7E32A /* LentilTests */,
+				3777831B28CCA05F00E7E32A /* LentilUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3777830028CCA05D00E7E32A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3777830D28CCA05E00E7E32A /* Preview Assets.xcassets in Resources */,
+				3777830A28CCA05E00E7E32A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3777831028CCA05E00E7E32A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3777831A28CCA05F00E7E32A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		377782FE28CCA05D00E7E32A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3777830828CCA05D00E7E32A /* ContentView.swift in Sources */,
+				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3777830E28CCA05E00E7E32A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3777831728CCA05E00E7E32A /* LentilTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3777831828CCA05F00E7E32A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3777832328CCA05F00E7E32A /* LentilUITestsLaunchTests.swift in Sources */,
+				3777832128CCA05F00E7E32A /* LentilUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3777831428CCA05E00E7E32A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3777830128CCA05D00E7E32A /* Lentil */;
+			targetProxy = 3777831328CCA05E00E7E32A /* PBXContainerItemProxy */;
+		};
+		3777831E28CCA05F00E7E32A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3777830128CCA05D00E7E32A /* Lentil */;
+			targetProxy = 3777831D28CCA05F00E7E32A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3777832428CCA05F00E7E32A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3777832528CCA05F00E7E32A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3777832728CCA05F00E7E32A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
+				DEVELOPMENT_TEAM = G9B9Z38Z32;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cordt.Lentil;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3777832828CCA05F00E7E32A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
+				DEVELOPMENT_TEAM = G9B9Z38Z32;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cordt.Lentil;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		3777832A28CCA05F00E7E32A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G9B9Z38Z32;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cordt.LentilTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lentil.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Lentil";
+			};
+			name = Debug;
+		};
+		3777832B28CCA05F00E7E32A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G9B9Z38Z32;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cordt.LentilTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lentil.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Lentil";
+			};
+			name = Release;
+		};
+		3777832D28CCA05F00E7E32A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G9B9Z38Z32;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cordt.LentilUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Lentil;
+			};
+			name = Debug;
+		};
+		3777832E28CCA05F00E7E32A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G9B9Z38Z32;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cordt.LentilUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Lentil;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		377782FD28CCA05D00E7E32A /* Build configuration list for PBXProject "Lentil" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3777832428CCA05F00E7E32A /* Debug */,
+				3777832528CCA05F00E7E32A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3777832628CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "Lentil" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3777832728CCA05F00E7E32A /* Debug */,
+				3777832828CCA05F00E7E32A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3777832928CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "LentilTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3777832A28CCA05F00E7E32A /* Debug */,
+				3777832B28CCA05F00E7E32A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3777832C28CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "LentilUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3777832D28CCA05F00E7E32A /* Debug */,
+				3777832E28CCA05F00E7E32A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3777833628CCBAF800E7E32A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.40.1;
+			};
+		};
+		3777833928CCBDEF00E7E32A /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3777833728CCBAF800E7E32A /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3777833628CCBAF800E7E32A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		3777833A28CCBDEF00E7E32A /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3777833928CCBDEF00E7E32A /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
+		3777833C28CCBDEF00E7E32A /* ApolloWebSocket */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3777833928CCBDEF00E7E32A /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = ApolloWebSocket;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 377782FA28CCA05D00E7E32A /* Project object */;
+}
