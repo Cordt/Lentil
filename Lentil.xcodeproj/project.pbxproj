@@ -17,6 +17,7 @@
 		3777833828CCBAF800E7E32A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 3777833728CCBAF800E7E32A /* ComposableArchitecture */; };
 		3777833B28CCBDEF00E7E32A /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 3777833A28CCBDEF00E7E32A /* Apollo */; };
 		3777833D28CCBDEF00E7E32A /* ApolloWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 3777833C28CCBDEF00E7E32A /* ApolloWebSocket */; };
+		3777834328CCD39500E7E32A /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834228CCD39500E7E32A /* API.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,9 @@
 		3777831C28CCA05F00E7E32A /* LentilUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LentilUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3777832028CCA05F00E7E32A /* LentilUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilUITests.swift; sourceTree = "<group>"; };
 		3777832228CCA05F00E7E32A /* LentilUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		3777833F28CCD21400E7E32A /* operations.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = operations.graphql; sourceTree = "<group>"; };
+		3777834128CCD35300E7E32A /* schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
+		3777834228CCD39500E7E32A /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +107,9 @@
 				3777830528CCA05D00E7E32A /* LentilApp.swift */,
 				3777830728CCA05D00E7E32A /* ContentView.swift */,
 				3777830928CCA05E00E7E32A /* Assets.xcassets */,
+				3777834228CCD39500E7E32A /* API.swift */,
+				3777833F28CCD21400E7E32A /* operations.graphql */,
+				3777834128CCD35300E7E32A /* schema.json */,
 				3777830B28CCA05E00E7E32A /* Preview Content */,
 			);
 			path = Lentil;
@@ -140,6 +147,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3777832628CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "Lentil" */;
 			buildPhases = (
+				3777834028CCD2B100E7E32A /* Apollo */,
 				377782FE28CCA05D00E7E32A /* Sources */,
 				377782FF28CCA05D00E7E32A /* Frameworks */,
 				3777830028CCA05D00E7E32A /* Resources */,
@@ -267,12 +275,34 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		3777834028CCD2B100E7E32A /* Apollo */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Apollo;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Don't run this during index builds\nif [ $ACTION = \"indexbuild\" ]; then exit 0; fi\n\n# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/*.graphql --localSchemaFile=\"schema.json\" API.swift\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		377782FE28CCA05D00E7E32A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				3777830828CCA05D00E7E32A /* ContentView.swift in Sources */,
+				3777834328CCD39500E7E32A /* API.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
