@@ -9,19 +9,36 @@ import ComposableArchitecture
 import SwiftUI
 
 struct AppState: Equatable {
-  var color: Color = .red
-}
-enum AppAction: Equatable {
-  case colorButtonTapped
+  var pingResponse: String = ""
 }
 
-let reducer = Reducer<AppState, AppAction, Void> { state, action, _ in
+enum AppAction: Equatable {
+  case pingButtonTapped
+  case pingResponse(String)
+}
+
+struct AppEnvironment {
+  let lensApi: LensApi
+}
+
+extension AppEnvironment {
+  static var live: Self = .init(
+    lensApi: .live
+  )
+}
+
+let reducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, env in
   switch action {
-    case .colorButtonTapped:
-      let randomColor: Color = [.red, .green, .blue, .yellow, .purple, .gray]
-        .randomElement()!
-      state.color = randomColor
+    case .pingButtonTapped:
+      return .task {
+        let ping = try await env.lensApi.ping()
+        return .pingResponse(ping)
+      }
+      
+    case let .pingResponse(response):
+      state.pingResponse = response
       return .none
+      
   }
 }
 
@@ -29,17 +46,20 @@ struct ContentView: View {
   let store = Store(
     initialState: AppState(),
     reducer: reducer,
-    environment: ()
+    environment: .live
   )
   
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack {
-        Button("Change color") {
-          viewStore.send(.colorButtonTapped)
+        Button("Ping API") {
+          viewStore.send(.pingButtonTapped)
         }
-        .tint(viewStore.color)
+        .tint(.red)
         .buttonStyle(.borderedProminent)
+        
+        Text(viewStore.pingResponse)
+          .font(.subheadline)
       }
       .padding()
     }
