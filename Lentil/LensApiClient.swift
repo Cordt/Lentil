@@ -11,7 +11,11 @@ class Network {
 }
 
 struct LensApi {
-  var ping: @Sendable () async throws -> String
+  var getPublications: @Sendable (
+    _ limit: Int,
+    _ sortCriteria: PublicationSortCriteria,
+    _ publicationTypes: [PublicationTypes]
+  ) async throws -> [Post]
 }
 
 enum ApiError: Error, Equatable {
@@ -21,9 +25,17 @@ enum ApiError: Error, Equatable {
 
 extension LensApi {
   static let live = LensApi(
-    ping: {
+    getPublications: { limit, sortCriteria, publicationTypes in
       try await withCheckedThrowingContinuation { continuation in
-        let _ = Network.shared.apollo.fetch(query: PingQuery()) { result in
+        let _ = Network.shared.apollo.fetch(
+          query: ExplorePublicationsQuery(
+            request: ExplorePublicationRequest(
+              limit: "\(limit)",
+              sortCriteria: sortCriteria,
+              publicationTypes: publicationTypes
+            )
+          )
+        ) { result in
           switch result {
             case let .success(apiData):
               guard apiData.errors == nil,
@@ -33,7 +45,21 @@ extension LensApi {
                 return
               }
               
-              continuation.resume(returning: data.ping)
+              let posts = data.explorePublications.items.compactMap { item -> Post? in
+                guard
+                  let postFields = item.asPost?.fragments.postFields,
+                  let name = postFields.metadata.fragments.metadataOutputFields.name,
+                  let content = postFields.metadata.fragments.metadataOutputFields.content,
+                  let createdDate = date(from: postFields.createdAt)
+                else { return nil }
+                return Post(
+                  id: postFields.id,
+                  createdAt: createdDate,
+                  name: name,
+                  content: content
+                )
+              }
+              continuation.resume(returning: posts)
               return
               
             case let .failure(error):

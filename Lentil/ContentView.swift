@@ -31,7 +31,16 @@ let reducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, env 
   switch action {
     case .pingButtonTapped:
       return .task {
-        let ping = try await env.lensApi.ping()
+        let ping = try await env.lensApi.getPublications(10, .latest, [.post])
+          .reduce("") { text, next in
+            var updatedText = ""
+            updatedText.append("\n")
+            updatedText.append("\(next.name)")
+            updatedText.append("\n")
+            updatedText.append("\(next.content)")
+            updatedText.append("\n")
+            return text + updatedText
+          }
         return .pingResponse(ping)
       }
       
