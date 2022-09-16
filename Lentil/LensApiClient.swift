@@ -11,12 +11,18 @@ class Network {
   private(set) lazy var apollo = ApolloClient(url: URL(string: "https://api-mumbai.lens.dev/")!)
 }
 
+struct QueryResult<Result: Equatable>: Equatable {
+  var data: Result
+  var cursorToNext: String?
+}
+
 struct LensApi {
   var getPublications: @Sendable (
     _ limit: Int,
+    _ cursor: String?,
     _ sortCriteria: PublicationSortCriteria,
     _ publicationTypes: [PublicationTypes]
-  ) async throws -> [Post]
+  ) async throws -> QueryResult<[Post]>
   
   var getProfilePicture: @Sendable (
     _ from: URL
@@ -30,12 +36,13 @@ enum ApiError: Error, Equatable {
 
 extension LensApi {
   static let live = LensApi(
-    getPublications: { limit, sortCriteria, publicationTypes in
+    getPublications: { limit, cursor, sortCriteria, publicationTypes in
       try await withCheckedThrowingContinuation { continuation in
         let _ = Network.shared.apollo.fetch(
           query: ExplorePublicationsQuery(
             request: ExplorePublicationRequest(
               limit: "\(limit)",
+              cursor: cursor,
               sortCriteria: sortCriteria,
               publicationTypes: publicationTypes
             )
@@ -74,7 +81,12 @@ extension LensApi {
                   )
                 )
               }
-              continuation.resume(returning: posts)
+              continuation.resume(
+                returning: QueryResult(
+                  data: posts,
+                  cursorToNext: data.explorePublications.pageInfo.next
+                )
+              )
               return
               
             case let .failure(error):
@@ -94,8 +106,8 @@ extension LensApi {
   
   #if DEBUG
   static let mock = LensApi(
-    getPublications: { _, _, _ in
-      return mockPosts
+    getPublications: { _, _, _, _ in
+      return QueryResult(data: mockPosts, cursorToNext: "")
     },
     getProfilePicture: { _ in Image(systemName: "person.crop.circle.fill")}
   )
