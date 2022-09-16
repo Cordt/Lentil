@@ -98,8 +98,13 @@ struct ContentView: View {
           ) {
             PostView(store: $0)
           }
+          .listRowBackground(Color.clear)
+          .listRowSeparator(.hidden)
+          .listRowInsets(EdgeInsets())
         }
       }
+      .listStyle(.plain)
+      .scrollIndicators(.hidden)
       .task {
         viewStore.send(.refreshFeed)
       }
