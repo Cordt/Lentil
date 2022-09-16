@@ -2,6 +2,7 @@
 
 import Apollo
 import Foundation
+import SwiftUI
 
 
 class Network {
@@ -16,6 +17,10 @@ struct LensApi {
     _ sortCriteria: PublicationSortCriteria,
     _ publicationTypes: [PublicationTypes]
   ) async throws -> [Post]
+  
+  var getProfilePicture: @Sendable (
+    _ from: URL
+  ) async throws -> Image
 }
 
 enum ApiError: Error, Equatable {
@@ -78,6 +83,12 @@ extension LensApi {
           }
         }
       }
+    },
+    getProfilePicture: { url in
+      let (data, _) = try await URLSession.shared.data(from: url)
+      guard let uiImage = UIImage(data: data)
+      else { throw ApiError.requestFailed }
+      return Image(uiImage: uiImage)
     }
   )
   
@@ -85,7 +96,8 @@ extension LensApi {
   static let mock = LensApi(
     getPublications: { _, _, _ in
       return mockPosts
-    }
+    },
+    getProfilePicture: { _ in Image(systemName: "person.crop.circle.fill")}
   )
   #endif
 }

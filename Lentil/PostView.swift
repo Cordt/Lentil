@@ -5,14 +5,33 @@ import SwiftUI
 
 struct PostState: Equatable, Identifiable {
   var post: Post
+  var profilePicture: Image?
   
   var id: String { self.post.id }
 }
 
-enum PostAction: Equatable {}
+enum PostAction: Equatable {
+  case fetchProfilePicture
+  case updateProfilePicture(TaskResult<Image>)
+}
 
-let postReducer = Reducer<PostState, PostAction, Void> { state, action, _ in
-  switch action {}
+let postReducer = Reducer<PostState, PostAction, AppEnvironment> { state, action, env in
+  switch action {
+    case .fetchProfilePicture:
+      return .task { [url = state.post.creatorProfile.profilePictureUrl] in
+        await .updateProfilePicture(
+          TaskResult { try await env.lensApi.getProfilePicture(url) }
+        )
+      }
+      
+    case .updateProfilePicture(let .success(profilePicture)):
+      state.profilePicture = profilePicture
+      return .none
+      
+    case .updateProfilePicture(.failure):
+      // Handle error
+      return .none
+  }
 }
 
 struct PostView: View {
@@ -22,9 +41,16 @@ struct PostView: View {
     WithViewStore(self.store) { viewStore in
       VStack(alignment: .leading) {
         HStack(alignment: .top) {
-          Circle()
-            .fill(viewStore.post.creatorProfile.profilePictureColor)
-            .frame(width: 32)
+          if let image = viewStore.profilePicture {
+            image
+              .resizable()
+              .frame(width: 32, height: 32)
+              .clipShape(Circle())
+          } else {
+            Circle()
+              .fill(viewStore.post.creatorProfile.profilePictureColor)
+              .frame(width: 32)
+          }
           
           if let creatorName = viewStore.post.creatorProfile.name {
             VStack(alignment: .leading) {
@@ -58,6 +84,9 @@ struct PostView: View {
           .fill(Color(red:0.95, green:0.95, blue: 0.95))
       }
       .padding([.leading, .trailing, .bottom])
+      .task {
+        viewStore.send(.fetchProfilePicture)
+      }
     }
   }
 }
@@ -69,7 +98,9 @@ struct PostView_Previews: PreviewProvider {
       store: .init(
         initialState: .init(post: mockPosts[0]),
         reducer: postReducer,
-        environment: ()
+        environment: .init(
+          lensApi: .mock
+        )
       )
     )
   }

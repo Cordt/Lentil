@@ -40,7 +40,7 @@ let reducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
   postReducer.forEach(
     state: \.posts,
     action: /AppAction.post,
-    environment: { _ in }
+    environment: { $0 }
   ),
   
   Reducer { state, action, env in
@@ -77,6 +77,9 @@ let reducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             // Handle later...
             return .none
         }
+        
+      case .post:
+        return .none
     }
   }
 )
