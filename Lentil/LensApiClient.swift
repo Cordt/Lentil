@@ -80,4 +80,12 @@ extension LensApi {
       }
     }
   )
+  
+  #if DEBUG
+  static let mock = LensApi(
+    getPublications: { _, _, _ in
+      return mockPosts
+    }
+  )
+  #endif
 }

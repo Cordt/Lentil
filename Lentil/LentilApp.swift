@@ -6,12 +6,19 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct LentilApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(
+              store: Store(
+                initialState: AppState(),
+                reducer: reducer,
+                environment: .live
+              )
+            )
         }
     }
 }

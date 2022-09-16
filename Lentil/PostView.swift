@@ -3,8 +3,10 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct PostState: Equatable {
+struct PostState: Equatable, Identifiable {
   var post: Post
+  
+  var id: String { self.post.id }
 }
 
 enum PostAction: Equatable {}

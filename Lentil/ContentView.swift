@@ -9,12 +9,15 @@ import ComposableArchitecture
 import SwiftUI
 
 struct AppState: Equatable {
-  var publicationsResponse: String = ""
+  var posts: IdentifiedArrayOf<PostState> = []
 }
 
 enum AppAction: Equatable {
-  case publicationsButtonTapped
-  case publicationsResponse(String)
+  case refreshFeed
+  case fetchPublications
+  case publicationsResponse(TaskResult<[Post]>)
+  
+  case post(id: PostState.ID, action: PostAction)
 }
 
 struct AppEnvironment {
@@ -25,58 +28,90 @@ extension AppEnvironment {
   static var live: Self = .init(
     lensApi: .live
   )
+  
+  #if DEBUG
+  static var mock: Self = .init(
+    lensApi: .mock
+  )
+  #endif
 }
 
-let reducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, env in
-  switch action {
-    case .publicationsButtonTapped:
-      return .task {
-        let publications = try await env.lensApi.getPublications(10, .latest, [.post])
-          .reduce("") { text, next in
-            var updatedText = ""
-            updatedText.append("\n")
-            updatedText.append("\(next.name)")
-            updatedText.append("\n")
-            updatedText.append("\(next.content)")
-            updatedText.append("\n")
-            return text + updatedText
-          }
-        return .publicationsResponse(publications)
-      }
-      
-    case let .publicationsResponse(response):
-      state.publicationsResponse = response
-      return .none
-      
+let reducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
+  postReducer.forEach(
+    state: \.posts,
+    action: /AppAction.post,
+    environment: { _ in }
+  ),
+  
+  Reducer { state, action, env in
+    enum CancelFetchPublicationsID {}
+    
+    switch action {
+      case .refreshFeed:
+        return .concatenate(
+          .cancel(id: CancelFetchPublicationsID.self),
+          .init(value: .fetchPublications)
+        )
+        
+      case .fetchPublications:
+        return .task {
+          await .publicationsResponse(
+            TaskResult {
+              return try await env.lensApi.getPublications(10, .latest, [.post])
+            }
+          )
+        }
+        .cancellable(id: CancelFetchPublicationsID.self)
+        
+      case .publicationsResponse(let response):
+        switch response {
+          case .success(let result):
+            state.posts.append(
+              contentsOf: result
+                .sorted { $0.createdAt < $1.createdAt }
+                .map { PostState(post: $0) }
+            )
+            return .none
+            
+          case .failure(let error):
+            // Handle later...
+            return .none
+        }
+    }
   }
-}
+)
 
 struct ContentView: View {
-  let store = Store(
-    initialState: AppState(),
-    reducer: reducer,
-    environment: .live
-  )
+  let store: Store<AppState, AppAction>
   
   var body: some View {
     WithViewStore(store) { viewStore in
-      VStack {
-        Button("Ping API") {
-          viewStore.send(.publicationsButtonTapped)
+      NavigationView {
+        List {
+          ForEachStore(
+            self.store.scope(
+              state: \.posts,
+              action: AppAction.post)
+          ) {
+            PostView(store: $0)
+          }
         }
-        .tint(.red)
-        .buttonStyle(.borderedProminent)
-        
-        Text(viewStore.publicationsResponse)
-          .font(.subheadline)
       }
-      .padding()
+      .task {
+        viewStore.send(.refreshFeed)
+      }
     }
   }
 }
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView()
+    ContentView(
+      store: Store(
+        initialState: AppState(),
+        reducer: reducer,
+        environment: .mock
+      )
+    )
   }
 }
