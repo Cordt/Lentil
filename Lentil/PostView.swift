@@ -7,6 +7,17 @@ struct PostState: Equatable, Identifiable {
   var post: Post
   var profilePicture: Image?
   
+  private let maxLength: Int = 256
+  
+  var postContent: String {
+    if self.post.content.count > self.maxLength {
+      return String(self.post.content.prefix(self.maxLength)) + "..."
+    }
+    else {
+      return self.post.content
+    }
+  }
+  
   var id: String { self.post.id }
 }
 
@@ -75,7 +86,7 @@ struct PostView: View {
           .font(.headline)
           .padding([.top, .bottom], 5)
         
-        Text(viewStore.post.content)
+        Text(viewStore.postContent)
           .font(.body)
       }
       .padding(.all)
@@ -84,9 +95,37 @@ struct PostView: View {
           .fill(Color(red:0.95, green:0.95, blue: 0.95))
       }
       .padding([.leading, .trailing, .bottom])
+      .background(
+        NavigationLink("") {
+          PostDetailView(store: self.store)
+        }
+          .opacity(0)
+      )
+      .buttonStyle(.plain)
       .task {
         viewStore.send(.fetchProfilePicture)
       }
+    }
+  }
+}
+
+struct PostDetailView: View {
+  let store: Store<PostState, PostAction>
+  
+  var body: some View {
+    WithViewStore(self.store) { viewStore in
+      VStack(alignment: .leading) {
+        Text(age(viewStore.post.createdAt))
+          .font(.footnote)
+          .padding([.bottom], 5)
+        
+        Text(viewStore.post.content)
+          .font(.body)
+        
+        Spacer()
+      }
+      .padding()
+      .navigationTitle(viewStore.post.name)
     }
   }
 }
