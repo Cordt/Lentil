@@ -9,12 +9,12 @@ import ComposableArchitecture
 import SwiftUI
 
 struct AppState: Equatable {
-  var pingResponse: String = ""
+  var publicationsResponse: String = ""
 }
 
 enum AppAction: Equatable {
-  case pingButtonTapped
-  case pingResponse(String)
+  case publicationsButtonTapped
+  case publicationsResponse(String)
 }
 
 struct AppEnvironment {
@@ -29,9 +29,9 @@ extension AppEnvironment {
 
 let reducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, env in
   switch action {
-    case .pingButtonTapped:
+    case .publicationsButtonTapped:
       return .task {
-        let ping = try await env.lensApi.getPublications(10, .latest, [.post])
+        let publications = try await env.lensApi.getPublications(10, .latest, [.post])
           .reduce("") { text, next in
             var updatedText = ""
             updatedText.append("\n")
@@ -41,11 +41,11 @@ let reducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, env 
             updatedText.append("\n")
             return text + updatedText
           }
-        return .pingResponse(ping)
+        return .publicationsResponse(publications)
       }
       
-    case let .pingResponse(response):
-      state.pingResponse = response
+    case let .publicationsResponse(response):
+      state.publicationsResponse = response
       return .none
       
   }
@@ -62,12 +62,12 @@ struct ContentView: View {
     WithViewStore(store) { viewStore in
       VStack {
         Button("Ping API") {
-          viewStore.send(.pingButtonTapped)
+          viewStore.send(.publicationsButtonTapped)
         }
         .tint(.red)
         .buttonStyle(.borderedProminent)
         
-        Text(viewStore.pingResponse)
+        Text(viewStore.publicationsResponse)
           .font(.subheadline)
       }
       .padding()

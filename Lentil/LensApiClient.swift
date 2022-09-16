@@ -50,13 +50,23 @@ extension LensApi {
                   let postFields = item.asPost?.fragments.postFields,
                   let name = postFields.metadata.fragments.metadataOutputFields.name,
                   let content = postFields.metadata.fragments.metadataOutputFields.content,
-                  let createdDate = date(from: postFields.createdAt)
+                  let createdDate = date(from: postFields.createdAt),
+                  let profileFields = item.asPost?.fragments.postFields.profile.fragments.profileFields,
+                  let profilePictureUrlString = profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
+                  let profilePictureUrl = URL(string: profilePictureUrlString)
                 else { return nil }
                 return Post(
                   id: postFields.id,
                   createdAt: createdDate,
                   name: name,
-                  content: content
+                  content: content,
+                  creatorProfile: .init(
+                    id: profileFields.id,
+                    name: profileFields.name,
+                    handle: profileFields.handle,
+                    isFollowedByMe: profileFields.isFollowedByMe,
+                    profilePictureUrl: profilePictureUrl
+                  )
                 )
               }
               continuation.resume(returning: posts)
