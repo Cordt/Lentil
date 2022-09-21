@@ -16,7 +16,7 @@ struct AppState: Equatable {
 enum AppAction: Equatable {
   case refreshFeed
   case fetchPublications
-  case publicationsResponse(TaskResult<QueryResult<[Post]>>)
+  case publicationsResponse(TaskResult<QueryResult<[Publication]>>)
   case loadMore
   
   case post(id: PostState.ID, action: PostAction)

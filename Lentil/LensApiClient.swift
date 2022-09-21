@@ -22,7 +22,7 @@ struct LensApi {
     _ cursor: String?,
     _ sortCriteria: PublicationSortCriteria,
     _ publicationTypes: [PublicationTypes]
-  ) async throws -> QueryResult<[Post]>
+  ) async throws -> QueryResult<[Publication]>
   
   var getProfilePicture: @Sendable (
     _ from: URL
@@ -57,33 +57,36 @@ extension LensApi {
                 return
               }
               
-              let posts = data.explorePublications.items.compactMap { item -> Post? in
+              let publications = data.explorePublications.items.compactMap { item -> Publication? in
                 guard
                   let postFields = item.asPost?.fragments.postFields,
-                  let name = postFields.metadata.fragments.metadataOutputFields.name,
                   let content = postFields.metadata.fragments.metadataOutputFields.content,
                   let createdDate = date(from: postFields.createdAt),
                   let profileFields = item.asPost?.fragments.postFields.profile.fragments.profileFields,
                   let profilePictureUrlString = profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-                  let profilePictureUrl = URL(string: profilePictureUrlString)
+                  let profilePictureUrl = URL(string: profilePictureUrlString),
+                  let collects = item.asPost?.fragments.postFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
+                  let comments = item.asPost?.fragments.postFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
+                  let mirrors = item.asPost?.fragments.postFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors
                 else { return nil }
-                return Post(
+                return Publication(
                   id: postFields.id,
+                  typename: .post,
                   createdAt: createdDate,
-                  name: name,
                   content: content,
-                  creatorProfile: .init(
-                    id: profileFields.id,
-                    name: profileFields.name,
-                    handle: profileFields.handle,
-                    isFollowedByMe: profileFields.isFollowedByMe,
-                    profilePictureUrl: profilePictureUrl
-                  )
+                  profileName: profileFields.name,
+                  profileHandle: profileFields.handle,
+                  profilePictureUrl: profilePictureUrl,
+                  upvotes: 0,
+                  downvotes: 0,
+                  collects: collects,
+                  comments: comments,
+                  mirrors: mirrors
                 )
               }
               continuation.resume(
                 returning: QueryResult(
-                  data: posts,
+                  data: publications,
                   cursorToNext: data.explorePublications.pageInfo.next
                 )
               )
@@ -107,9 +110,9 @@ extension LensApi {
   #if DEBUG
   static let mock = LensApi(
     getPublications: { _, _, _, _ in
-      return QueryResult(data: mockPosts, cursorToNext: "")
+      return QueryResult(data: mockPublications, cursorToNext: "")
     },
-    getProfilePicture: { _ in Image(systemName: "person.crop.circle.fill")}
+    getProfilePicture: { _ in throw ApiError.requestFailed }
   )
   #endif
 }

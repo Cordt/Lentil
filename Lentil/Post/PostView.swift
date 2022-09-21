@@ -3,47 +3,6 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct PostState: Equatable, Identifiable {
-  var post: Post
-  var profilePicture: Image?
-  
-  private let maxLength: Int = 256
-  
-  var postContent: String {
-    if self.post.content.count > self.maxLength {
-      return String(self.post.content.prefix(self.maxLength)) + "..."
-    }
-    else {
-      return self.post.content
-    }
-  }
-  
-  var id: String { self.post.id }
-}
-
-enum PostAction: Equatable {
-  case fetchProfilePicture
-  case updateProfilePicture(TaskResult<Image>)
-}
-
-let postReducer = Reducer<PostState, PostAction, AppEnvironment> { state, action, env in
-  switch action {
-    case .fetchProfilePicture:
-      return .task { [url = state.post.creatorProfile.profilePictureUrl] in
-        await .updateProfilePicture(
-          TaskResult { try await env.lensApi.getProfilePicture(url) }
-        )
-      }
-      
-    case .updateProfilePicture(let .success(profilePicture)):
-      state.profilePicture = profilePicture
-      return .none
-      
-    case .updateProfilePicture(.failure):
-      // Handle error
-      return .none
-  }
-}
 
 struct PostView: View {
   let store: Store<PostState, PostAction>
@@ -58,20 +17,19 @@ struct PostView: View {
               .frame(width: 32, height: 32)
               .clipShape(Circle())
           } else {
-            Circle()
-              .fill(viewStore.post.creatorProfile.profilePictureColor)
+            viewStore.post.profilePictureGradient
               .frame(width: 32)
           }
           
-          if let creatorName = viewStore.post.creatorProfile.name {
+          if let creatorName = viewStore.post.profileName {
             VStack(alignment: .leading) {
               Text(creatorName)
                 .fontWeight(.bold)
-              Text(viewStore.post.creatorProfile.handle)
+              Text(viewStore.post.profileHandle)
             }
             .font(.footnote)
           } else {
-            Text(viewStore.post.creatorProfile.handle)
+            Text(viewStore.post.profileHandle)
               .font(.footnote)
               .fontWeight(.bold)
           }
@@ -81,10 +39,6 @@ struct PostView: View {
           Text(age(viewStore.post.createdAt))
             .font(.footnote)
         }
-        
-        Text(viewStore.post.name)
-          .font(.headline)
-          .padding([.top, .bottom], 5)
         
         Text(viewStore.postContent)
           .font(.body)
@@ -125,7 +79,6 @@ struct PostDetailView: View {
         Spacer()
       }
       .padding()
-      .navigationTitle(viewStore.post.name)
     }
   }
 }
@@ -135,7 +88,7 @@ struct PostView_Previews: PreviewProvider {
   static var previews: some View {
     PostView(
       store: .init(
-        initialState: .init(post: mockPosts[0]),
+        initialState: .init(post: mockPublications[0]),
         reducer: postReducer,
         environment: .init(
           lensApi: .mock

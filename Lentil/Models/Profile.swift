@@ -10,8 +10,8 @@ struct Profile: Equatable {
   var isFollowedByMe: Bool
   var profilePictureUrl: URL
   
-  var profilePictureColor: Color {
-    color(from: self.handle)
+  var profilePictureColor: some View {
+    profileGradient(from: self.handle)
   }
 }
 
