@@ -57,7 +57,8 @@ let trendingReducer = Reducer<TrendingState, TrendingAction, RootEnvironment>.co
             state.posts.append(
               contentsOf: result
                 .data
-                .sorted { $0.createdAt < $1.createdAt }
+                .filter { $0.typename == .post }
+                .sorted { $0.createdAt > $1.createdAt }
                 .map { PostState(post: $0) }
             )
             state.cursorToNext = result.cursorToNext

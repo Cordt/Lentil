@@ -53,7 +53,7 @@ struct PostView: View {
           .font(.body)
         
         PostStatsView(store: self.store)
-          .padding([.top], 16)
+          .padding([.top], 4)
       }
       .padding(.all)
       .background(
