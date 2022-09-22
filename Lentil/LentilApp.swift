@@ -12,11 +12,13 @@ import ComposableArchitecture
 struct LentilApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(
+            RootView(
               store: Store(
-                initialState: AppState(),
-                reducer: reducer,
-                environment: .live
+                initialState: RootState(
+                  trendingState: .init()
+                ),
+                reducer: rootReducer,
+                environment: RootEnvironment(lensApi: .live)
               )
             )
         }

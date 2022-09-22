@@ -27,7 +27,7 @@ enum PostAction: Equatable {
   case updateProfilePicture(TaskResult<Image>)
 }
 
-let postReducer = Reducer<PostState, PostAction, AppEnvironment> { state, action, env in
+let postReducer = Reducer<PostState, PostAction, RootEnvironment> { state, action, env in
   switch action {
     case .fetchProfilePicture:
       return .task { [url = state.post.profilePictureUrl] in

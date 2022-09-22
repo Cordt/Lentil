@@ -7,10 +7,33 @@ import SwiftUI
 // MARK: Date conversion
 
 func age(_ from: Date) -> String {
-  let formatter = DateFormatter()
-  formatter.dateStyle = .short
-  formatter.timeStyle = .short
-  return formatter.string(from: from)
+  switch from.timeIntervalSinceNow * -1 {
+    case let timePassed where timePassed < 60:
+      // Less than a minute
+      if timePassed < 2 { return "1 second" }
+      else { return "\(Int(timePassed)) seconds" }
+      
+    case let timePassed where timePassed < 60 * 60:
+      // Less than an hour
+      if timePassed < 60 * 2 { return "1 minute" }
+      else { return "\(Int(floor(timePassed / 60.0))) minutes" }
+      
+    case let timePassed where timePassed < 60 * 60 * 24:
+      // Less than a day
+      if timePassed < 60 * 60 * 2 { return "1 hour" }
+      else { return "\(Int(floor(timePassed / 60.0 / 60.0))) hours" }
+      
+      
+    case let timePassed where timePassed < 60 * 60 * 48:
+      // Less than 48 hours
+      return "1 day"
+      
+    default:
+      let formatter = DateFormatter()
+      formatter.dateStyle = .medium
+      formatter.timeStyle = .none
+      return formatter.string(from: from)
+  }
 }
 
 func date(from: String) -> Date? {

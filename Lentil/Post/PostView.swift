@@ -34,21 +34,28 @@ struct PostView: View {
               .fontWeight(.bold)
           }
           
-          Spacer()
-          
-          Text(age(viewStore.post.createdAt))
+          VStack {
+            Spacer()
+            
+            HStack(spacing: 8) {
+              EmptyView()
+              Text("·")
+              Text(age(viewStore.post.createdAt))
+            }
             .font(.footnote)
+            
+            Spacer()
+          }
+          .frame(height: 32)
         }
         
         Text(viewStore.postContent)
           .font(.body)
+        
+        PostStatsView(store: self.store)
+          .padding([.top], 16)
       }
       .padding(.all)
-      .background {
-        RoundedRectangle(cornerRadius: 15)
-          .fill(Color(red:0.95, green:0.95, blue: 0.95))
-      }
-      .padding([.leading, .trailing, .bottom])
       .background(
         NavigationLink("") {
           PostDetailView(store: self.store)
@@ -63,37 +70,64 @@ struct PostView: View {
   }
 }
 
-struct PostDetailView: View {
+struct PostStatsView: View {
   let store: Store<PostState, PostAction>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      VStack(alignment: .leading) {
-        Text(age(viewStore.post.createdAt))
-          .font(.footnote)
-          .padding([.bottom], 5)
+      HStack(spacing: 32) {
         
-        Text(viewStore.post.content)
-          .font(.body)
+        HStack(spacing: 4) {
+          HStack(spacing: 4) {
+            Icon.upvote.view()
+            Text("\(viewStore.post.upvotes)")
+              .font(.footnote)
+          }
+          HStack(spacing: 4) {
+            Icon.downvote.view()
+            Text("\(viewStore.post.downvotes)")
+              .font(.footnote)
+          }
+        }
+        
+        HStack(spacing: 4) {
+          Icon.comment.view()
+          Text("\(viewStore.post.comments)")
+            .font(.footnote)
+        }
+        HStack(spacing: 4) {
+          Icon.mirror.view()
+          Text("\(viewStore.post.mirrors)")
+            .font(.footnote)
+        }
+        HStack(spacing: 4) {
+          Icon.collect.view()
+          Text("\(viewStore.post.collects)")
+            .font(.footnote)
+        }
         
         Spacer()
+        
+        Icon.share.view()
       }
-      .padding()
     }
   }
 }
 
 
 struct PostView_Previews: PreviewProvider {
+  
   static var previews: some View {
-    PostView(
-      store: .init(
-        initialState: .init(post: mockPublications[0]),
-        reducer: postReducer,
-        environment: .init(
-          lensApi: .mock
+    VStack(spacing: 0) {
+      PostView(
+        store: .init(
+          initialState: .init(post: mockPublications[0]),
+          reducer: postReducer,
+          environment: .init(
+            lensApi: .mock
+          )
         )
       )
-    )
+    }
   }
 }

@@ -53,6 +53,10 @@ extension LensApi {
               guard apiData.errors == nil,
                     let data = apiData.data
               else {
+                let errorMessage = apiData.errors!
+                  .map { $0.localizedDescription }
+                  .joined(separator: "\n")
+                print("[WARN] GraphQL error: \(errorMessage)")
                 continuation.resume(throwing: ApiError.graphQLError)
                 return
               }

@@ -985,7 +985,7 @@
             "deprecationReason": null
           },
           {
-            "name": "timeline",
+            "name": "trending",
             "description": null,
             "args": [
               {
@@ -996,7 +996,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "TimelineRequest",
+                    "name": "TrendingRequest",
                     "ofType": null
                   }
                 },
@@ -1008,7 +1008,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "PaginatedTimelineResult",
+                "name": "PaginatedTrendingResult",
                 "ofType": null
               }
             },
@@ -1764,7 +1764,7 @@
           },
           {
             "name": "collectedBy",
-            "description": "Who collected it, this is used for timeline results and like this for better caching for the client",
+            "description": "Who collected it, this is used for trending results and like this for better caching for the client",
             "args": [],
             "type": {
               "kind": "OBJECT",
@@ -5244,7 +5244,7 @@
           },
           {
             "name": "collectedBy",
-            "description": "Who collected it, this is used for timeline results and like this for better caching for the client",
+            "description": "Who collected it, this is used for trending results and like this for better caching for the client",
             "args": [],
             "type": {
               "kind": "OBJECT",
@@ -10733,8 +10733,8 @@
       },
       {
         "kind": "OBJECT",
-        "name": "PaginatedTimelineResult",
-        "description": "The paginated timeline result",
+        "name": "PaginatedTrendingResult",
+        "description": "The paginated trending result",
         "fields": [
           {
             "name": "items",
@@ -10784,7 +10784,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "TimelineRequest",
+        "name": "TrendingRequest",
         "description": null,
         "fields": null,
         "inputFields": [
@@ -10841,8 +10841,8 @@
             "defaultValue": "[]"
           },
           {
-            "name": "timelineTypes",
-            "description": "The timeline types you wish to include, if nothing passed in will bring back all",
+            "name": "trendingTypes",
+            "description": "The trending types you wish to include, if nothing passed in will bring back all",
             "type": {
               "kind": "LIST",
               "name": null,
@@ -10851,7 +10851,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "TimelineType",
+                  "name": "TrendingType",
                   "ofType": null
                 }
               }
@@ -10875,8 +10875,8 @@
       },
       {
         "kind": "ENUM",
-        "name": "TimelineType",
-        "description": "Timeline types",
+        "name": "TrendingType",
+        "description": "Trending types",
         "fields": null,
         "inputFields": null,
         "interfaces": null,
