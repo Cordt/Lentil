@@ -6,10 +6,18 @@ import SwiftUI
 
 struct PostState: Equatable, Identifiable {
   var post: Publication
-  var profilePicture: Image?
+  
+  var profile: ProfileState {
+    get {
+      ProfileState(
+        handle: self.post.profileHandle,
+        pictureUrl: self.post.profilePictureUrl
+      )
+    }
+  }
   
   private let maxLength: Int = 256
-  
+  var id: String { self.post.id }
   var postContent: String {
     if self.post.content.count > self.maxLength {
       return String(self.post.content.prefix(self.maxLength)) + "..."
@@ -18,30 +26,15 @@ struct PostState: Equatable, Identifiable {
       return self.post.content
     }
   }
-  
-  var id: String { self.post.id }
 }
 
 enum PostAction: Equatable {
-  case fetchProfilePicture
-  case updateProfilePicture(TaskResult<Image>)
+  case profile(ProfileAction)
 }
 
 let postReducer = Reducer<PostState, PostAction, RootEnvironment> { state, action, env in
   switch action {
-    case .fetchProfilePicture:
-      return .task { [url = state.post.profilePictureUrl] in
-        await .updateProfilePicture(
-          TaskResult { try await env.lensApi.getProfilePicture(url) }
-        )
-      }
-      
-    case .updateProfilePicture(let .success(profilePicture)):
-      state.profilePicture = profilePicture
-      return .none
-      
-    case .updateProfilePicture(.failure):
-      // Handle error
+    case .profile(_):
       return .none
   }
 }

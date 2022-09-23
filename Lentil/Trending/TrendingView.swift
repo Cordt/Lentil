@@ -32,15 +32,33 @@ struct TrendingView: View {
           .listRowSeparator(.hidden)
           .listRowInsets(EdgeInsets())
         }
+        .navigationTitle("Trending")
+        .toolbar {
+          ToolbarItem(placement: .navigationBarLeading) {
+            HStack {
+              Button {
+//                viewStore.send()
+              } label: {
+                Icon.settings.view(.large)
+              }
+            }
+          }
+          ToolbarItem(placement: .navigationBarTrailing) {
+            HStack {
+              Button {
+//                viewStore.send()
+              } label: {
+                Icon.notification.view(.large)
+              }
+            }
+          }
+        }
+        .accentColor(ThemeColor.darkGrey.color)
       }
       .listStyle(.plain)
       .scrollIndicators(.hidden)
-      .refreshable {
-        viewStore.send(.refreshFeed)
-      }
-      .task {
-        viewStore.send(.refreshFeed)
-      }
+      .refreshable { viewStore.send(.refreshFeed) }
+      .task { viewStore.send(.refreshFeed) }
     }
   }
 }

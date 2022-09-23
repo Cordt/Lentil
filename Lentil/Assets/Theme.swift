@@ -33,6 +33,16 @@ enum Icon {
   case location, lens
   case follow, collection
   
+  enum FontSize {
+    case `default`, large
+    fileprivate var size: CGFloat {
+      switch self {
+        case .default: return 16
+        case .large: return 21
+      }
+    }
+  }
+  
   private func symbol() -> String {
     switch self {
       case .back:         return ""
@@ -54,13 +64,13 @@ enum Icon {
     }
   }
   
-  func view(_ fontSize: CGFloat? = nil) -> Text {
+  func view(_ fontSize: FontSize = .default) -> Text {
     switch self {
       case .twitter, .lens, .collection:
-        return Text(self.symbol()).font(.custom("la-brands-900", size: fontSize ?? 16, relativeTo: .callout))
+        return Text(self.symbol()).font(.custom("la-brands-900", size: fontSize.size, relativeTo: .callout))
         
       default:
-        return Text(self.symbol()).font(.custom("la-solid-900", size: fontSize ?? 16, relativeTo: .callout))
+        return Text(self.symbol()).font(.custom("la-solid-900", size: fontSize.size, relativeTo: .callout))
     }
   }
 }

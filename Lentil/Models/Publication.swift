@@ -25,10 +25,6 @@ struct Publication: Identifiable, Equatable {
   let collects: Int
   let comments: Int
   let mirrors: Int
-  
-  var profilePictureGradient: some View {
-    profileGradient(from: self.profileHandle)
-  }
 }
 
 

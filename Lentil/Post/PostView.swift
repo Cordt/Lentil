@@ -11,15 +11,12 @@ struct PostView: View {
     WithViewStore(self.store) { viewStore in
       VStack(alignment: .leading) {
         HStack(alignment: .top) {
-          if let image = viewStore.profilePicture {
-            image
-              .resizable()
-              .frame(width: 32, height: 32)
-              .clipShape(Circle())
-          } else {
-            viewStore.post.profilePictureGradient
-              .frame(width: 32)
-          }
+          ProfileView(
+            store: self.store.scope(
+              state: \.profile,
+              action: PostAction.profile
+            )
+          )
           
           if let creatorName = viewStore.post.profileName {
             VStack(alignment: .leading) {
@@ -63,9 +60,6 @@ struct PostView: View {
           .opacity(0)
       )
       .buttonStyle(.plain)
-      .task {
-        viewStore.send(.fetchProfilePicture)
-      }
     }
   }
 }
