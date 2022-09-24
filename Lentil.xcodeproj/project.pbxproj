@@ -35,6 +35,8 @@
 		37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0F28D0322F009B2B7E /* Helper.swift */; };
 		37F71B4828DDB40B00F6D9B1 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4728DDB40B00F6D9B1 /* ProfileView.swift */; };
 		37F71B4A28DDB41200F6D9B1 /* ProfileReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4928DDB41200F6D9B1 /* ProfileReducer.swift */; };
+		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
+		37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +88,8 @@
 		37CDEB0F28D0322F009B2B7E /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		37F71B4728DDB40B00F6D9B1 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		37F71B4928DDB41200F6D9B1 /* ProfileReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileReducer.swift; sourceTree = "<group>"; };
+		37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
+		37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostStatsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,8 +124,10 @@
 			isa = PBXGroup;
 			children = (
 				372248C528DABA5E0066BCE5 /* PostReducer.swift */,
-				376C5ED728D4266100BA908A /* PostView.swift */,
 				372248CD28DAF38D0066BCE5 /* PostDetailView.swift */,
+				37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */,
+				376C5ED728D4266100BA908A /* PostView.swift */,
+				37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */,
 			);
 			path = Post;
 			sourceTree = "<group>";
@@ -412,6 +418,8 @@
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
+				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
+				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

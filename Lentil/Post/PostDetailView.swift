@@ -10,9 +10,7 @@ struct PostDetailView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       VStack(alignment: .leading) {
-        Text(age(viewStore.post.createdAt))
-          .font(.footnote)
-          .padding([.bottom], 5)
+        PostHeaderView(store: self.store)
         
         Text(viewStore.post.content)
           .font(.body)
@@ -20,18 +18,27 @@ struct PostDetailView: View {
         Spacer()
       }
       .padding()
+      .navigationTitle("Thread")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .navigationBarTrailing) {
+          Icon.share.view(.large)
+        }
+      }
     }
   }
 }
 
 struct PostDetail_Previews: PreviewProvider {
   static var previews: some View {
-    PostDetailView(
-      store: .init(
-        initialState: .init(post: mockPublications[0]),
-        reducer: postReducer,
-        environment: .mock
+    NavigationStack {
+      PostDetailView(
+        store: .init(
+          initialState: .init(post: mockPublications[0]),
+          reducer: postReducer,
+          environment: .mock
+        )
       )
-    )
+    }
   }
 }
