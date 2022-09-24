@@ -9,7 +9,7 @@ struct PostHeaderView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      HStack(alignment: .top) {
+      HStack(spacing: 8) {
         ProfileView(
           store: self.store.scope(
             state: \.profile,
@@ -30,19 +30,15 @@ struct PostHeaderView: View {
             .fontWeight(.bold)
         }
         
-        VStack {
-          Spacer()
-          
-          HStack(spacing: 8) {
-            EmptyView()
-            Text("·")
-            Text(age(viewStore.post.createdAt))
-          }
-          .font(.footnote)
-          
-          Spacer()
+        HStack(spacing: 8) {
+          EmptyView()
+          Text("·")
+          Text(age(viewStore.post.createdAt))
         }
+        .font(.footnote)
         .frame(height: 32)
+        
+        Spacer()
       }
     }
   }
@@ -52,6 +48,7 @@ struct PostHeaderView: View {
 struct PostHeaderView_Previews: PreviewProvider {
   
   static var previews: some View {
+    VStack {
       PostHeaderView(
         store: .init(
           initialState: .init(post: mockPublications[0]),
@@ -59,5 +56,15 @@ struct PostHeaderView_Previews: PreviewProvider {
           environment: .mock
         )
       )
+      
+      PostHeaderView(
+        store: .init(
+          initialState: .init(post: mockPublications[2]),
+          reducer: postReducer,
+          environment: .mock
+        )
+      )
+    }
+    .padding()
   }
 }

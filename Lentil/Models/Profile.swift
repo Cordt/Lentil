@@ -38,6 +38,13 @@ let mockProfiles: [Profile] = [
     handle: "@cordtminzer.lens",
     isFollowedByMe: false,
     profilePictureUrl: URL(string: "https://cloudflare-ipfs.com/ipfs/QmaZdyGNxdM2AB37PXp4bUjF3Mc5VR33r8pwMqmJF3P6be/dev_6163.png")!
+  ),
+  .init(
+    id: "4",
+    name: nil,
+    handle: "@naval.lens",
+    isFollowedByMe: false,
+    profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmVBfhfgfhGsRVxTNURVUgceqyzjdVe11ic5rCghmePuKX")!
   )
 ]
 #endif

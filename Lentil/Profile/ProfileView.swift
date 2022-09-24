@@ -17,7 +17,7 @@ struct ProfileView: View {
             .clipShape(Circle())
         } else {
           profileGradient(from: viewStore.handle)
-            .frame(width: 32)
+            .frame(width: 32, height: 32)
         }
       }
       .task {

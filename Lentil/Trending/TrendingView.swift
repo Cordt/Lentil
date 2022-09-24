@@ -53,7 +53,6 @@ struct TrendingView: View {
             }
           }
         }
-        .accentColor(ThemeColor.darkGrey.color)
       }
       .listStyle(.plain)
       .scrollIndicators(.hidden)

@@ -67,6 +67,7 @@ struct PostVotingView: View {
         
         Spacer()
       }
+      .padding(.top, 2)
     }
   }
 }
@@ -123,7 +124,7 @@ struct PostStats_Previews: PreviewProvider {
           .fill(.gray)
           .frame(height: 32)
         
-        HStack {
+        HStack(alignment: .top) {
           PostVotingView(
             store: .init(
               initialState: .init(post: mockPublications[0]),
@@ -135,6 +136,7 @@ struct PostStats_Previews: PreviewProvider {
           VStack {
             Rectangle()
               .fill(.gray)
+              .frame(height: 150)
             
             PostStatsDetailView(
               store: .init(
@@ -144,9 +146,7 @@ struct PostStats_Previews: PreviewProvider {
               )
             )
           }
-          
         }
-        .frame(height: 190)
       }
       .padding(.bottom, 32)
     }

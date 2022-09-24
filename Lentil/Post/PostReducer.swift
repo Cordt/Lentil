@@ -19,11 +19,14 @@ struct PostState: Equatable, Identifiable {
   private let maxLength: Int = 256
   var id: String { self.post.id }
   var postContent: String {
-    if self.post.content.count > self.maxLength {
-      return String(self.post.content.prefix(self.maxLength)) + "..."
+    return self.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+  var shortenedContent: String {
+    if self.postContent.count > self.maxLength {
+      return String(self.postContent.prefix(self.maxLength)) + "..."
     }
     else {
-      return self.post.content
+      return self.postContent
     }
   }
 }

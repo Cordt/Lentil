@@ -9,11 +9,20 @@ struct PostDetailView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      VStack(alignment: .leading) {
+      VStack(alignment: .leading, spacing: 16) {
         PostHeaderView(store: self.store)
         
-        Text(viewStore.post.content)
-          .font(.body)
+        HStack(alignment: .top, spacing: 16) {
+          PostVotingView(store: self.store)
+            .padding(.leading, 8)
+          
+          VStack(spacing: 16) {
+            Text(viewStore.postContent)
+              .font(.subheadline)
+            
+            PostStatsDetailView(store: self.store)
+          }
+        }
         
         Spacer()
       }

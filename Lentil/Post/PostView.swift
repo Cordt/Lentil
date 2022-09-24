@@ -13,7 +13,7 @@ struct PostView: View {
         PostHeaderView(store: self.store)
         
         Text(viewStore.postContent)
-          .font(.body)
+          .font(.subheadline)
         
         PostStatsView(store: self.store)
           .padding([.top], 4)

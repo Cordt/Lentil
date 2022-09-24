@@ -36,6 +36,7 @@ struct RootView: View {
         )
         .tabItem { Label("Trending", systemImage: "lightbulb") }
         .tag(Tabs.trending)
+        .accentColor(ThemeColor.darkGrey.color)
         
         Text("Soon™")
           .tabItem { Label("Townhall", systemImage: "building.columns") }
