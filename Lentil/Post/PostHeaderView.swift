@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct PostHeaderView: View {
-  let store: Store<PostState, PostAction>
+  let store: Store<PublicationState, PublicationAction>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -13,19 +13,19 @@ struct PostHeaderView: View {
         ProfileView(
           store: self.store.scope(
             state: \.profile,
-            action: PostAction.profile
+            action: PublicationAction.profile
           )
         )
         
-        if let creatorName = viewStore.post.profileName {
+        if let creatorName = viewStore.publication.profileName {
           VStack(alignment: .leading) {
             Text(creatorName)
               .fontWeight(.bold)
-            Text(viewStore.post.profileHandle)
+            Text(viewStore.publication.profileHandle)
           }
           .font(.footnote)
         } else {
-          Text(viewStore.post.profileHandle)
+          Text(viewStore.publication.profileHandle)
             .font(.footnote)
             .fontWeight(.bold)
         }
@@ -33,7 +33,7 @@ struct PostHeaderView: View {
         HStack(spacing: 8) {
           EmptyView()
           Text("·")
-          Text(age(viewStore.post.createdAt))
+          Text(age(viewStore.publication.createdAt))
         }
         .font(.footnote)
         .frame(height: 32)
@@ -51,16 +51,16 @@ struct PostHeaderView_Previews: PreviewProvider {
     VStack {
       PostHeaderView(
         store: .init(
-          initialState: .init(post: mockPublications[0]),
-          reducer: postReducer,
+          initialState: .init(publication: mockPublications[0]),
+          reducer: publicationReducer,
           environment: .mock
         )
       )
       
       PostHeaderView(
         store: .init(
-          initialState: .init(post: mockPublications[2]),
-          reducer: postReducer,
+          initialState: .init(publication: mockPublications[2]),
+          reducer: publicationReducer,
           environment: .mock
         )
       )

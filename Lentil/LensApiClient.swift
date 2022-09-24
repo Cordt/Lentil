@@ -17,11 +17,15 @@ struct QueryResult<Result: Equatable>: Equatable {
 }
 
 struct LensApi {
-  var getPublications: @Sendable (
+  var trendingPublications: @Sendable (
     _ limit: Int,
     _ cursor: String?,
     _ sortCriteria: PublicationSortCriteria,
     _ publicationTypes: [PublicationTypes]
+  ) async throws -> QueryResult<[Publication]>
+  
+  var commentsOfPublication: @Sendable (
+    _ publication: Publication
   ) async throws -> QueryResult<[Publication]>
   
   var getProfilePicture: @Sendable (
@@ -36,7 +40,7 @@ enum ApiError: Error, Equatable {
 
 extension LensApi {
   static let live = LensApi(
-    getPublications: { limit, cursor, sortCriteria, publicationTypes in
+    trendingPublications: { limit, cursor, sortCriteria, publicationTypes in
       try await withCheckedThrowingContinuation { continuation in
         let _ = Network.shared.apollo.fetch(
           query: ExplorePublicationsQuery(
@@ -61,38 +65,50 @@ extension LensApi {
                 return
               }
               
-              let publications = data.explorePublications.items.compactMap { item -> Publication? in
-                guard
-                  let postFields = item.asPost?.fragments.postFields,
-                  let content = postFields.metadata.fragments.metadataOutputFields.content,
-                  let createdDate = date(from: postFields.createdAt),
-                  let profileFields = item.asPost?.fragments.postFields.profile.fragments.profileFields,
-                  let profilePictureUrlString = profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-                  let profilePictureUrl = URL(string: profilePictureUrlString),
-                  let collects = item.asPost?.fragments.postFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
-                  let comments = item.asPost?.fragments.postFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
-                  let mirrors = item.asPost?.fragments.postFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors
-                else { return nil }
-                return Publication(
-                  id: postFields.id,
-                  typename: .post,
-                  createdAt: createdDate,
-                  content: content,
-                  profileName: profileFields.name,
-                  profileHandle: profileFields.handle,
-                  profilePictureUrl: profilePictureUrl,
-                  upvotes: 0,
-                  downvotes: 0,
-                  collects: collects,
-                  comments: comments,
-                  mirrors: mirrors
-                )
-              }
+              let publications = data.explorePublications.items.compactMap(Publication.from)
               continuation.resume(
                 returning: QueryResult(
                   data: publications,
                   cursorToNext: data.explorePublications.pageInfo.next
                 )
+              )
+              return
+              
+            case let .failure(error):
+              print("[WARN] GraphQL error: \(error)")
+              continuation.resume(throwing: ApiError.requestFailed)
+              return
+          }
+        }
+      }
+    },
+    commentsOfPublication: { publication in
+      try await withCheckedThrowingContinuation { continuation in
+        let _ = Network.shared.apollo.fetch(
+          query: PublicationsQuery(
+            request: PublicationsQueryRequest(
+              commentsOf: publication.id
+            )
+          )
+        ) { result in
+          switch result {
+            case let .success(apiData):
+              guard apiData.errors == nil,
+                    let data = apiData.data
+              else {
+                let errorMessage = apiData.errors!
+                  .map { $0.localizedDescription }
+                  .joined(separator: "\n")
+                print("[WARN] GraphQL error: \(errorMessage)")
+                continuation.resume(throwing: ApiError.graphQLError)
+                return
+              }
+              
+              let publications = data.publications.items.compactMap {
+                Publication.from($0, child: publication)
+              }
+              continuation.resume(
+                returning: QueryResult(data: publications)
               )
               return
               
@@ -113,9 +129,10 @@ extension LensApi {
   
   #if DEBUG
   static let mock = LensApi(
-    getPublications: { _, _, _, _ in
-      return QueryResult(data: mockPublications, cursorToNext: "")
+    trendingPublications: { _, _, _, _ in
+      return QueryResult(data: mockPublications)
     },
+    commentsOfPublication: { _ in QueryResult(data: mockComments) },
     getProfilePicture: { _ in throw ApiError.requestFailed }
   )
   #endif

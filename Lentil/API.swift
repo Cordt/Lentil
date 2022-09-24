@@ -425,6 +425,111 @@ public struct PublicationMetadataTagsFilter: GraphQLMapConvertible {
   }
 }
 
+public struct PublicationsQueryRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - limit
+  ///   - cursor
+  ///   - profileId: Profile id
+  ///   - publicationTypes: The publication types you want to query
+  ///   - commentsOf: The publication id you wish to get comments for
+  ///   - sources: The App Id
+  ///   - collectedBy: The ethereum address
+  ///   - publicationIds: The publication id
+  ///   - metadata
+  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, profileId: Swift.Optional<String?> = nil, publicationTypes: Swift.Optional<[PublicationTypes]?> = nil, commentsOf: Swift.Optional<String?> = nil, sources: Swift.Optional<[String]?> = nil, collectedBy: Swift.Optional<String?> = nil, publicationIds: Swift.Optional<[String]?> = nil, metadata: Swift.Optional<PublicationMetadataFilters?> = nil) {
+    graphQLMap = ["limit": limit, "cursor": cursor, "profileId": profileId, "publicationTypes": publicationTypes, "commentsOf": commentsOf, "sources": sources, "collectedBy": collectedBy, "publicationIds": publicationIds, "metadata": metadata]
+  }
+
+  public var limit: Swift.Optional<String?> {
+    get {
+      return graphQLMap["limit"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "limit")
+    }
+  }
+
+  public var cursor: Swift.Optional<String?> {
+    get {
+      return graphQLMap["cursor"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "cursor")
+    }
+  }
+
+  /// Profile id
+  public var profileId: Swift.Optional<String?> {
+    get {
+      return graphQLMap["profileId"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// The publication types you want to query
+  public var publicationTypes: Swift.Optional<[PublicationTypes]?> {
+    get {
+      return graphQLMap["publicationTypes"] as? Swift.Optional<[PublicationTypes]?> ?? Swift.Optional<[PublicationTypes]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "publicationTypes")
+    }
+  }
+
+  /// The publication id you wish to get comments for
+  public var commentsOf: Swift.Optional<String?> {
+    get {
+      return graphQLMap["commentsOf"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "commentsOf")
+    }
+  }
+
+  /// The App Id
+  public var sources: Swift.Optional<[String]?> {
+    get {
+      return graphQLMap["sources"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "sources")
+    }
+  }
+
+  /// The ethereum address
+  public var collectedBy: Swift.Optional<String?> {
+    get {
+      return graphQLMap["collectedBy"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "collectedBy")
+    }
+  }
+
+  /// The publication id
+  public var publicationIds: Swift.Optional<[String]?> {
+    get {
+      return graphQLMap["publicationIds"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "publicationIds")
+    }
+  }
+
+  public var metadata: Swift.Optional<PublicationMetadataFilters?> {
+    get {
+      return graphQLMap["metadata"] as? Swift.Optional<PublicationMetadataFilters?> ?? Swift.Optional<PublicationMetadataFilters?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "metadata")
+    }
+  }
+}
+
 /// The follow module types
 public enum FollowModules: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
   public typealias RawValue = String
@@ -778,6 +883,430 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
 
       public init(items: [Item], pageInfo: PageInfo) {
         self.init(unsafeResultMap: ["__typename": "ExplorePublicationResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var items: [Item] {
+        get {
+          return (resultMap["items"] as! [ResultMap]).map { (value: ResultMap) -> Item in Item(unsafeResultMap: value) }
+        }
+        set {
+          resultMap.updateValue(newValue.map { (value: Item) -> ResultMap in value.resultMap }, forKey: "items")
+        }
+      }
+
+      public var pageInfo: PageInfo {
+        get {
+          return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+        }
+      }
+
+      public struct Item: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["Post", "Comment", "Mirror"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLTypeCase(
+              variants: ["Post": AsPost.selections, "Comment": AsComment.selections, "Mirror": AsMirror.selections],
+              default: [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              ]
+            )
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var asPost: AsPost? {
+          get {
+            if !AsPost.possibleTypes.contains(__typename) { return nil }
+            return AsPost(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsPost: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Post"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(PostFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var postFields: PostFields {
+              get {
+                return PostFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+
+        public var asComment: AsComment? {
+          get {
+            if !AsComment.possibleTypes.contains(__typename) { return nil }
+            return AsComment(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsComment: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Comment"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(CommentFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var commentFields: CommentFields {
+              get {
+                return CommentFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+
+        public var asMirror: AsMirror? {
+          get {
+            if !AsMirror.possibleTypes.contains(__typename) { return nil }
+            return AsMirror(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsMirror: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Mirror"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(MirrorFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var mirrorFields: MirrorFields {
+              get {
+                return MirrorFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+      }
+
+      public struct PageInfo: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PaginatedResultInfo"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("prev", type: .scalar(String.self)),
+            GraphQLField("next", type: .scalar(String.self)),
+            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(prev: String? = nil, next: String? = nil, totalCount: Int) {
+          self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Cursor to query the actual results
+        public var prev: String? {
+          get {
+            return resultMap["prev"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "prev")
+          }
+        }
+
+        /// Cursor to query next results
+        public var next: String? {
+          get {
+            return resultMap["next"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "next")
+          }
+        }
+
+        /// The total number of entities the pagination iterates over. e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        public var totalCount: Int {
+          get {
+            return resultMap["totalCount"]! as! Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class PublicationsQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query Publications($request: PublicationsQueryRequest!) {
+      publications(request: $request) {
+        __typename
+        items {
+          __typename
+          ... on Post {
+            __typename
+            ...PostFields
+          }
+          ... on Comment {
+            __typename
+            ...CommentFields
+          }
+          ... on Mirror {
+            __typename
+            ...MirrorFields
+          }
+        }
+        pageInfo {
+          __typename
+          prev
+          next
+          totalCount
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "Publications"
+
+  public var queryDocument: String {
+    var document: String = operationDefinition
+    document.append("\n" + PostFields.fragmentDefinition)
+    document.append("\n" + ProfileFields.fragmentDefinition)
+    document.append("\n" + MediaFields.fragmentDefinition)
+    document.append("\n" + PublicationStatsFields.fragmentDefinition)
+    document.append("\n" + MetadataOutputFields.fragmentDefinition)
+    document.append("\n" + CollectModuleFields.fragmentDefinition)
+    document.append("\n" + Erc20Fields.fragmentDefinition)
+    document.append("\n" + CommentFields.fragmentDefinition)
+    document.append("\n" + CommentBaseFields.fragmentDefinition)
+    document.append("\n" + MirrorBaseFields.fragmentDefinition)
+    document.append("\n" + CommentMirrorOfFields.fragmentDefinition)
+    document.append("\n" + MirrorFields.fragmentDefinition)
+    return document
+  }
+
+  public var request: PublicationsQueryRequest
+
+  public init(request: PublicationsQueryRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("publications", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(Publication.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(publications: Publication) {
+      self.init(unsafeResultMap: ["__typename": "Query", "publications": publications.resultMap])
+    }
+
+    public var publications: Publication {
+      get {
+        return Publication(unsafeResultMap: resultMap["publications"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "publications")
+      }
+    }
+
+    public struct Publication: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["PaginatedPublicationResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("items", type: .nonNull(.list(.nonNull(.object(Item.selections))))),
+          GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(items: [Item], pageInfo: PageInfo) {
+        self.init(unsafeResultMap: ["__typename": "PaginatedPublicationResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
       }
 
       public var __typename: String {

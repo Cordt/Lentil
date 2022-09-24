@@ -37,6 +37,10 @@
 		37F71B4A28DDB41200F6D9B1 /* ProfileReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4928DDB41200F6D9B1 /* ProfileReducer.swift */; };
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
 		37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */; };
+		37F71B5028DF34E400F6D9B1 /* LensApiClient+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4F28DF34E400F6D9B1 /* LensApiClient+Model.swift */; };
+		37F71B5228DF487000F6D9B1 /* CommentReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5128DF487000F6D9B1 /* CommentReducer.swift */; };
+		37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5328DF488400F6D9B1 /* CommentView.swift */; };
+		37F71B5628DF4D6400F6D9B1 /* PublicationReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5528DF4D6400F6D9B1 /* PublicationReducer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +94,10 @@
 		37F71B4928DDB41200F6D9B1 /* ProfileReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileReducer.swift; sourceTree = "<group>"; };
 		37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
 		37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostStatsView.swift; sourceTree = "<group>"; };
+		37F71B4F28DF34E400F6D9B1 /* LensApiClient+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Model.swift"; sourceTree = "<group>"; };
+		37F71B5128DF487000F6D9B1 /* CommentReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentReducer.swift; sourceTree = "<group>"; };
+		37F71B5328DF488400F6D9B1 /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
+		37F71B5528DF4D6400F6D9B1 /* PublicationReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationReducer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,11 +131,14 @@
 		372248C428DABA3E0066BCE5 /* Post */ = {
 			isa = PBXGroup;
 			children = (
+				37F71B5528DF4D6400F6D9B1 /* PublicationReducer.swift */,
 				372248C528DABA5E0066BCE5 /* PostReducer.swift */,
 				372248CD28DAF38D0066BCE5 /* PostDetailView.swift */,
 				37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */,
 				376C5ED728D4266100BA908A /* PostView.swift */,
 				37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */,
+				37F71B5128DF487000F6D9B1 /* CommentReducer.swift */,
+				37F71B5328DF488400F6D9B1 /* CommentView.swift */,
 			);
 			path = Post;
 			sourceTree = "<group>";
@@ -195,6 +206,7 @@
 				3777830728CCA05D00E7E32A /* RootView.swift */,
 				372248D728DB46890066BCE5 /* RootReducer.swift */,
 				3777834628CDA27600E7E32A /* LensApiClient.swift */,
+				37F71B4F28DF34E400F6D9B1 /* LensApiClient+Model.swift */,
 				37CDEB0F28D0322F009B2B7E /* Helper.swift */,
 				3777834228CCD39500E7E32A /* API.swift */,
 				3777833F28CCD21400E7E32A /* operations.graphql */,
@@ -380,7 +392,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		3777834028CCD2B100E7E32A /* Apollo */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -392,7 +404,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "# Don't run this during index builds\nif [ $ACTION = \"indexbuild\" ]; then exit 0; fi\n\n# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/*.graphql --localSchemaFile=\"schema.json\" API.swift\n";
 		};
@@ -412,10 +424,14 @@
 				376C5ED828D4266100BA908A /* PostView.swift in Sources */,
 				37F71B4828DDB40B00F6D9B1 /* ProfileView.swift in Sources */,
 				3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */,
+				37F71B5028DF34E400F6D9B1 /* LensApiClient+Model.swift in Sources */,
 				372248DA28DB479D0066BCE5 /* TrendingView.swift in Sources */,
 				37F71B4A28DDB41200F6D9B1 /* ProfileReducer.swift in Sources */,
+				37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */,
+				37F71B5228DF487000F6D9B1 /* CommentReducer.swift in Sources */,
 				376C5ED628D4253F00BA908A /* Profile.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
+				37F71B5628DF4D6400F6D9B1 /* PublicationReducer.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,

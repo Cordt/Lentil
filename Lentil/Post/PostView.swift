@@ -10,13 +10,23 @@ struct PostView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       VStack(alignment: .leading) {
-        PostHeaderView(store: self.store)
+        PostHeaderView(
+          store: self.store.scope(
+            state: \.post,
+            action: PostAction.post
+          )
+        )
         
-        Text(viewStore.postContent)
+        Text(viewStore.post.publicationContent)
           .font(.subheadline)
         
-        PostStatsView(store: self.store)
-          .padding([.top], 4)
+        PostStatsView(
+          store: self.store.scope(
+            state: \.post,
+            action: PostAction.post
+          )
+        )
+        .padding([.top], 4)
       }
       .padding(.all)
       .background(
@@ -37,7 +47,7 @@ struct PostView_Previews: PreviewProvider {
     VStack(spacing: 0) {
       PostView(
         store: .init(
-          initialState: .init(post: mockPublications[0]),
+          initialState: .init(post: .init(publication: mockPublications[0])),
           reducer: postReducer,
           environment: .init(
             lensApi: .mock

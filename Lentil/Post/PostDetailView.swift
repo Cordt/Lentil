@@ -9,22 +9,49 @@ struct PostDetailView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      VStack(alignment: .leading, spacing: 16) {
-        PostHeaderView(store: self.store)
-        
-        HStack(alignment: .top, spacing: 16) {
-          PostVotingView(store: self.store)
-            .padding(.leading, 8)
+      ScrollView(showsIndicators: false) {
+        VStack(alignment: .leading, spacing: 16) {
+          PostHeaderView(
+            store: self.store.scope(
+              state: \.post,
+              action: PostAction.post
+            )
+          )
           
-          VStack(spacing: 16) {
-            Text(viewStore.postContent)
-              .font(.subheadline)
+          HStack(alignment: .top, spacing: 16) {
+            PostVotingView(
+              store: self.store.scope(
+                state: \.post,
+                action: PostAction.post
+              )
+            )
+            .padding(.leading, 8)
             
-            PostStatsDetailView(store: self.store)
+            VStack(alignment: .leading, spacing: 16) {
+              Text(viewStore.post.publicationContent)
+                .font(.subheadline)
+              
+              PostStatsDetailView(
+                store: self.store.scope(
+                  state: \.post,
+                  action: PostAction.post
+                )
+              )
+            }
           }
+          
+          ForEachStore(
+            self.store.scope(
+              state: \.comments,
+              action: PostAction.comment
+            )
+          ) {
+            CommentView(store: $0)
+          }
+          .padding(.leading, 24)
+          
+          Spacer()
         }
-        
-        Spacer()
       }
       .padding()
       .navigationTitle("Thread")
@@ -33,6 +60,9 @@ struct PostDetailView: View {
         ToolbarItem(placement: .navigationBarTrailing) {
           Icon.share.view(.large)
         }
+      }
+      .task {
+        viewStore.send(.fetchComments)
       }
     }
   }
@@ -43,7 +73,7 @@ struct PostDetail_Previews: PreviewProvider {
     NavigationStack {
       PostDetailView(
         store: .init(
-          initialState: .init(post: mockPublications[0]),
+          initialState: .init(post: .init(publication: mockPublications[0])),
           reducer: postReducer,
           environment: .mock
         )
