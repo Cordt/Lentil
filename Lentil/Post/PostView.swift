@@ -17,7 +17,7 @@ struct PostView: View {
           )
         )
         
-        Text(viewStore.post.publicationContent)
+        Text(viewStore.post.shortenedContent)
           .font(.subheadline)
         
         PostStatsView(

@@ -39,7 +39,7 @@ let trendingReducer = Reducer<TrendingState, TrendingAction, RootEnvironment>.co
         return .task { [cursor = state.cursorToNext] in
           await .publicationsResponse(
             TaskResult {
-              return try await env.lensApi.trendingPublications(5, cursor, .latest, [.post])
+              return try await env.lensApi.trendingPublications(5, cursor, .topCommented, [.post])
             }
           )
         }

@@ -64,8 +64,6 @@ struct PostVotingView: View {
             .font(.footnote)
           Icon.downvote.view()
         }
-        
-        Spacer()
       }
       .padding(.top, 2)
     }

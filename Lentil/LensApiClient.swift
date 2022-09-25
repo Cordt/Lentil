@@ -8,7 +8,7 @@ import SwiftUI
 class Network {
   static let shared = Network()
   
-  private(set) lazy var apollo = ApolloClient(url: URL(string: "https://api-mumbai.lens.dev/")!)
+  private(set) lazy var apollo = ApolloClient(url: URL(string: "https://api.lens.dev")!)
 }
 
 struct QueryResult<Result: Equatable>: Equatable {
@@ -39,85 +39,74 @@ enum ApiError: Error, Equatable {
 }
 
 extension LensApi {
+  fileprivate static func run<Query: GraphQLQuery, Result: Equatable>(
+    query: Query,
+    mapResult: @escaping (Query.Data) -> QueryResult<Result>
+  ) async throws -> QueryResult<Result> {
+    
+    try await withCheckedThrowingContinuation { continuation in
+      Network.shared.apollo.fetch(query: query) { result in
+        switch result {
+          case let .success(apiData):
+            guard apiData.errors == nil,
+                  let data = apiData.data
+            else {
+              let errorMessage = apiData.errors!
+                .map { $0.localizedDescription }
+                .joined(separator: "\n")
+              print("[WARN] GraphQL error: \(errorMessage)")
+              continuation.resume(throwing: ApiError.graphQLError)
+              return
+            }
+            
+            continuation.resume(returning: mapResult(data))
+            return
+            
+          case let .failure(error):
+            print("[WARN] GraphQL error: \(error)")
+            continuation.resume(throwing: ApiError.requestFailed)
+            return
+        }
+      }
+    }
+  }
+}
+
+extension LensApi {
   static let live = LensApi(
     trendingPublications: { limit, cursor, sortCriteria, publicationTypes in
-      try await withCheckedThrowingContinuation { continuation in
-        let _ = Network.shared.apollo.fetch(
-          query: ExplorePublicationsQuery(
-            request: ExplorePublicationRequest(
-              limit: "\(limit)",
-              cursor: cursor,
-              sortCriteria: sortCriteria,
-              publicationTypes: publicationTypes
-            )
+      try await run(
+        query: ExplorePublicationsQuery(
+          request: ExplorePublicationRequest(
+            limit: "\(limit)",
+            cursor: cursor,
+            sortCriteria: sortCriteria,
+            publicationTypes: publicationTypes
           )
-        ) { result in
-          switch result {
-            case let .success(apiData):
-              guard apiData.errors == nil,
-                    let data = apiData.data
-              else {
-                let errorMessage = apiData.errors!
-                  .map { $0.localizedDescription }
-                  .joined(separator: "\n")
-                print("[WARN] GraphQL error: \(errorMessage)")
-                continuation.resume(throwing: ApiError.graphQLError)
-                return
-              }
-              
-              let publications = data.explorePublications.items.compactMap(Publication.from)
-              continuation.resume(
-                returning: QueryResult(
-                  data: publications,
-                  cursorToNext: data.explorePublications.pageInfo.next
-                )
-              )
-              return
-              
-            case let .failure(error):
-              print("[WARN] GraphQL error: \(error)")
-              continuation.resume(throwing: ApiError.requestFailed)
-              return
-          }
+        ),
+        mapResult: { data in
+          QueryResult(
+            data: data.explorePublications.items.compactMap(Publication.from),
+            cursorToNext: data.explorePublications.pageInfo.next
+          )
         }
-      }
+      )
     },
     commentsOfPublication: { publication in
-      try await withCheckedThrowingContinuation { continuation in
-        let _ = Network.shared.apollo.fetch(
-          query: PublicationsQuery(
-            request: PublicationsQueryRequest(
-              commentsOf: publication.id
-            )
+      try await run(
+        query: PublicationsQuery(
+          request: PublicationsQueryRequest(
+            commentsOf: publication.id
           )
-        ) { result in
-          switch result {
-            case let .success(apiData):
-              guard apiData.errors == nil,
-                    let data = apiData.data
-              else {
-                let errorMessage = apiData.errors!
-                  .map { $0.localizedDescription }
-                  .joined(separator: "\n")
-                print("[WARN] GraphQL error: \(errorMessage)")
-                continuation.resume(throwing: ApiError.graphQLError)
-                return
-              }
-              
-              let publications = data.publications.items.compactMap {
-                Publication.from($0, child: publication)
-              }
-              continuation.resume(
-                returning: QueryResult(data: publications)
-              )
-              return
-              
-            case let .failure(error):
-              continuation.resume(throwing: ApiError.requestFailed)
-              return
-          }
+        ),
+        mapResult: { data in
+          QueryResult(
+            data: data.publications.items.compactMap {
+              Publication.from($0, child: publication)
+            }
+          )
         }
-      }
+      )
     },
     getProfilePicture: { url in
       let (data, _) = try await URLSession.shared.data(from: url)
