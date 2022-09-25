@@ -18,27 +18,30 @@ struct PostDetailView: View {
             )
           )
           
-          HStack(alignment: .top, spacing: 16) {
-            PostVotingView(
-              store: self.store.scope(
-                state: \.post,
-                action: PostAction.post
-              )
-            )
-            .padding(.leading, 8)
-            
-            VStack(alignment: .leading, spacing: 16) {
-              Text(viewStore.post.publicationContent)
-                .font(.subheadline)
-              
-              PostStatsDetailView(
+          VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top, spacing: 16) {
+              PostVotingView(
                 store: self.store.scope(
                   state: \.post,
                   action: PostAction.post
                 )
               )
+              .padding(.leading, 8)
+              
+              Text(viewStore.post.publicationContent)
+                .font(.subheadline)
+              
             }
+            
+            PostStatsDetailView(
+              store: self.store.scope(
+                state: \.post,
+                action: PostAction.post
+              )
+            )
+            .padding(.leading, 42)
           }
+          .padding(.bottom, 16)
           
           ForEachStore(
             self.store.scope(
@@ -48,7 +51,8 @@ struct PostDetailView: View {
           ) {
             CommentView(store: $0)
           }
-          .padding(.leading, 24)
+          .padding(.leading, 12)
+          .padding(.bottom, 16)
           
           Spacer()
         }

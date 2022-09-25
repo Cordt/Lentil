@@ -16,27 +16,28 @@ struct CommentView: View {
             action: CommentAction.comment
           )
         )
-
-        HStack(alignment: .top, spacing: 16) {
-          PostVotingView(
-            store: self.store.scope(
-              state: \.comment,
-              action: CommentAction.comment
-            )
-          )
-            .padding(.leading, 8)
-
-          VStack(alignment: .leading, spacing: 8) {
-            Text(viewStore.comment.shortenedContent)
-              .font(.subheadline)
-
-            PostStatsShortDetailView(
+        
+        VStack(alignment: .leading, spacing: 8) {
+          HStack(alignment: .top, spacing: 16) {
+            PostVotingView(
               store: self.store.scope(
                 state: \.comment,
                 action: CommentAction.comment
               )
             )
+            .padding(.leading, 8)
+              
+            Text(viewStore.comment.shortenedContent)
+              .font(.subheadline)
           }
+          
+          PostStatsShortDetailView(
+            store: self.store.scope(
+              state: \.comment,
+              action: CommentAction.comment
+            )
+          )
+          .padding(.leading, 42)
         }
       }
       .padding([.leading, .trailing])

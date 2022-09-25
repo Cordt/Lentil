@@ -53,19 +53,23 @@ struct PostVotingView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      VStack(spacing: 16) {
+      VStack(spacing: 8) {
         VStack(spacing: 4) {
           Icon.upvote.view()
           Text("\(viewStore.publication.upvotes)")
-            .font(.footnote)
+            .font(.caption2)
+            .fixedSize(horizontal: true, vertical: true)
         }
         VStack(spacing: 4) {
           Text("\(viewStore.publication.downvotes)")
-            .font(.footnote)
+            .font(.caption2)
+            .fixedSize(horizontal: true, vertical: true)
+          
           Icon.downvote.view()
         }
       }
       .padding(.top, 2)
+      .frame(maxWidth: 16)
     }
   }
 }
@@ -184,7 +188,7 @@ struct PostStats_Previews: PreviewProvider {
         HStack(alignment: .top) {
           PostVotingView(
             store: .init(
-              initialState: .init(publication: mockPublications[0]),
+              initialState: .init(publication: mockPublications[2]),
               reducer: publicationReducer,
               environment: .mock
             )
