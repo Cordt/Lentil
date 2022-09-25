@@ -20,8 +20,8 @@ extension Publication {
       profileName: postFields.profile.fragments.profileFields.name,
       profileHandle: postFields.profile.fragments.profileFields.handle,
       profilePictureUrl: profilePictureUrl,
-      upvotes: 0,
-      downvotes: 0,
+      upvotes: postFields.stats.fragments.publicationStatsFields.totalUpvotes,
+      downvotes: postFields.stats.fragments.publicationStatsFields.totalDownvotes,
       collects: postFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
       comments: postFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
       mirrors: postFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors
@@ -45,8 +45,8 @@ extension Publication {
       profileName: commentFields.profile.fragments.profileFields.name,
       profileHandle: commentFields.profile.fragments.profileFields.handle,
       profilePictureUrl: profilePictureUrl,
-      upvotes: 0,
-      downvotes: 0,
+      upvotes: commentFields.stats.fragments.publicationStatsFields.totalUpvotes,
+      downvotes: commentFields.stats.fragments.publicationStatsFields.totalDownvotes,
       collects: commentFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
       comments: commentFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
       mirrors: commentFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors

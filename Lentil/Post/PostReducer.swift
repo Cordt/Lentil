@@ -12,6 +12,8 @@ struct PostState: Equatable, Identifiable {
 }
 
 enum PostAction: Equatable {
+  case fetchReactions
+  case reactionsResponse(TaskResult<QueryResult<Publication>>)
   case fetchComments
   case commentsResponse(TaskResult<QueryResult<[Publication]>>)
   
@@ -21,6 +23,26 @@ enum PostAction: Equatable {
 
 let postReducer = Reducer<PostState, PostAction, RootEnvironment> { state, action, env in
   switch action {
+    case .fetchReactions:
+      return .task { [publication = state.post.publication] in
+        await .reactionsResponse(
+          TaskResult {
+            try await env.lensApi.reactionsOfPublication(publication)
+          }
+        )
+      }
+    
+    case .reactionsResponse(let response):
+      switch response {
+        case .success(let result):
+          state.post.publication = result.data
+          return .none
+          
+        case .failure(let error):
+          print("[WARN] Could not fetch publications from API: \(error)")
+          return .none
+      }
+      
     case .fetchComments:
       return .task { [publication = state.post.publication] in
         await .commentsResponse(

@@ -20,11 +20,11 @@ struct Publication: Identifiable, Equatable {
   let profileHandle: String
   let profilePictureUrl: URL
   
-  let upvotes: Int
-  let downvotes: Int
-  let collects: Int
-  let comments: Int
-  let mirrors: Int
+  var upvotes: Int
+  var downvotes: Int
+  var collects: Int
+  var comments: Int
+  var mirrors: Int
 }
 
 #if DEBUG

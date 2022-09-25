@@ -28,6 +28,10 @@ struct LensApi {
     _ publication: Publication
   ) async throws -> QueryResult<[Publication]>
   
+  var reactionsOfPublication: @Sendable (
+    _ publication: Publication
+  ) async throws -> QueryResult<Publication>
+  
   var getProfilePicture: @Sendable (
     _ from: URL
   ) async throws -> Image
@@ -108,6 +112,25 @@ extension LensApi {
         }
       )
     },
+    reactionsOfPublication: { publication in
+      
+      try await run(
+        query: WhoReactedPublicationQuery(
+          request: WhoReactedPublicationRequest(publicationId: publication.id)
+        ),
+        mapResult: { data in
+          var updatedPublication = publication
+          data.whoReactedPublication.items.forEach { item in
+            if item.reaction == .upvote { updatedPublication.upvotes += 1 }
+            if item.reaction == .downvote { updatedPublication.downvotes += 1 }
+            
+          }
+          return QueryResult(
+            data: updatedPublication
+          )
+        }
+      )
+    },
     getProfilePicture: { url in
       let (data, _) = try await URLSession.shared.data(from: url)
       guard let uiImage = UIImage(data: data)
@@ -118,10 +141,9 @@ extension LensApi {
   
   #if DEBUG
   static let mock = LensApi(
-    trendingPublications: { _, _, _, _ in
-      return QueryResult(data: mockPublications)
-    },
+    trendingPublications: { _, _, _, _ in return QueryResult(data: mockPublications) },
     commentsOfPublication: { _ in QueryResult(data: mockComments) },
+    reactionsOfPublication: { _ in QueryResult(data: mockPosts[0]) },
     getProfilePicture: { _ in throw ApiError.requestFailed }
   )
   #endif

@@ -36,6 +36,9 @@ struct PostView: View {
           .opacity(0)
       )
       .buttonStyle(.plain)
+      .task {
+        viewStore.send(.fetchReactions)
+      }
     }
   }
 }

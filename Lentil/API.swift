@@ -530,6 +530,87 @@ public struct PublicationsQueryRequest: GraphQLMapConvertible {
   }
 }
 
+public struct WhoReactedPublicationRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - limit
+  ///   - cursor
+  ///   - publicationId: Internal publication id
+  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, publicationId: String) {
+    graphQLMap = ["limit": limit, "cursor": cursor, "publicationId": publicationId]
+  }
+
+  public var limit: Swift.Optional<String?> {
+    get {
+      return graphQLMap["limit"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "limit")
+    }
+  }
+
+  public var cursor: Swift.Optional<String?> {
+    get {
+      return graphQLMap["cursor"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "cursor")
+    }
+  }
+
+  /// Internal publication id
+  public var publicationId: String {
+    get {
+      return graphQLMap["publicationId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "publicationId")
+    }
+  }
+}
+
+/// Reaction types
+public enum ReactionTypes: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case upvote
+  case downvote
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "UPVOTE": self = .upvote
+      case "DOWNVOTE": self = .downvote
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .upvote: return "UPVOTE"
+      case .downvote: return "DOWNVOTE"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: ReactionTypes, rhs: ReactionTypes) -> Bool {
+    switch (lhs, rhs) {
+      case (.upvote, .upvote): return true
+      case (.downvote, .downvote): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [ReactionTypes] {
+    return [
+      .upvote,
+      .downvote,
+    ]
+  }
+}
+
 /// The follow module types
 public enum FollowModules: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
   public typealias RawValue = String
@@ -730,47 +811,6 @@ public enum ReferenceModules: RawRepresentable, Equatable, Hashable, CaseIterabl
     return [
       .followerOnlyReferenceModule,
       .unknownReferenceModule,
-    ]
-  }
-}
-
-/// Reaction types
-public enum ReactionTypes: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
-  public typealias RawValue = String
-  case upvote
-  case downvote
-  /// Auto generated constant for unknown enum values
-  case __unknown(RawValue)
-
-  public init?(rawValue: RawValue) {
-    switch rawValue {
-      case "UPVOTE": self = .upvote
-      case "DOWNVOTE": self = .downvote
-      default: self = .__unknown(rawValue)
-    }
-  }
-
-  public var rawValue: RawValue {
-    switch self {
-      case .upvote: return "UPVOTE"
-      case .downvote: return "DOWNVOTE"
-      case .__unknown(let value): return value
-    }
-  }
-
-  public static func == (lhs: ReactionTypes, rhs: ReactionTypes) -> Bool {
-    switch (lhs, rhs) {
-      case (.upvote, .upvote): return true
-      case (.downvote, .downvote): return true
-      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
-      default: return false
-    }
-  }
-
-  public static var allCases: [ReactionTypes] {
-    return [
-      .upvote,
-      .downvote,
     ]
   }
 }
@@ -1549,6 +1589,317 @@ public final class PublicationsQuery: GraphQLQuery {
             public var mirrorFields: MirrorFields {
               get {
                 return MirrorFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+      }
+
+      public struct PageInfo: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PaginatedResultInfo"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("prev", type: .scalar(String.self)),
+            GraphQLField("next", type: .scalar(String.self)),
+            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(prev: String? = nil, next: String? = nil, totalCount: Int) {
+          self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Cursor to query the actual results
+        public var prev: String? {
+          get {
+            return resultMap["prev"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "prev")
+          }
+        }
+
+        /// Cursor to query next results
+        public var next: String? {
+          get {
+            return resultMap["next"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "next")
+          }
+        }
+
+        /// The total number of entities the pagination iterates over. e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        public var totalCount: Int {
+          get {
+            return resultMap["totalCount"]! as! Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class WhoReactedPublicationQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query WhoReactedPublication($request: WhoReactedPublicationRequest!) {
+      whoReactedPublication(request: $request) {
+        __typename
+        items {
+          __typename
+          reactionId
+          reaction
+          reactionAt
+          profile {
+            __typename
+            ...ProfileFields
+          }
+        }
+        pageInfo {
+          __typename
+          prev
+          next
+          totalCount
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "WhoReactedPublication"
+
+  public var queryDocument: String {
+    var document: String = operationDefinition
+    document.append("\n" + ProfileFields.fragmentDefinition)
+    document.append("\n" + MediaFields.fragmentDefinition)
+    return document
+  }
+
+  public var request: WhoReactedPublicationRequest
+
+  public init(request: WhoReactedPublicationRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("whoReactedPublication", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(WhoReactedPublication.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(whoReactedPublication: WhoReactedPublication) {
+      self.init(unsafeResultMap: ["__typename": "Query", "whoReactedPublication": whoReactedPublication.resultMap])
+    }
+
+    public var whoReactedPublication: WhoReactedPublication {
+      get {
+        return WhoReactedPublication(unsafeResultMap: resultMap["whoReactedPublication"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "whoReactedPublication")
+      }
+    }
+
+    public struct WhoReactedPublication: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["PaginatedWhoReactedResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("items", type: .nonNull(.list(.nonNull(.object(Item.selections))))),
+          GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(items: [Item], pageInfo: PageInfo) {
+        self.init(unsafeResultMap: ["__typename": "PaginatedWhoReactedResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var items: [Item] {
+        get {
+          return (resultMap["items"] as! [ResultMap]).map { (value: ResultMap) -> Item in Item(unsafeResultMap: value) }
+        }
+        set {
+          resultMap.updateValue(newValue.map { (value: Item) -> ResultMap in value.resultMap }, forKey: "items")
+        }
+      }
+
+      public var pageInfo: PageInfo {
+        get {
+          return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+        }
+      }
+
+      public struct Item: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["WhoReactedResult"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("reactionId", type: .nonNull(.scalar(String.self))),
+            GraphQLField("reaction", type: .nonNull(.scalar(ReactionTypes.self))),
+            GraphQLField("reactionAt", type: .nonNull(.scalar(String.self))),
+            GraphQLField("profile", type: .nonNull(.object(Profile.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(reactionId: String, reaction: ReactionTypes, reactionAt: String, profile: Profile) {
+          self.init(unsafeResultMap: ["__typename": "WhoReactedResult", "reactionId": reactionId, "reaction": reaction, "reactionAt": reactionAt, "profile": profile.resultMap])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The reaction id
+        public var reactionId: String {
+          get {
+            return resultMap["reactionId"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "reactionId")
+          }
+        }
+
+        /// The reaction
+        public var reaction: ReactionTypes {
+          get {
+            return resultMap["reaction"]! as! ReactionTypes
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "reaction")
+          }
+        }
+
+        /// The reaction
+        public var reactionAt: String {
+          get {
+            return resultMap["reactionAt"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "reactionAt")
+          }
+        }
+
+        public var profile: Profile {
+          get {
+            return Profile(unsafeResultMap: resultMap["profile"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "profile")
+          }
+        }
+
+        public struct Profile: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Profile"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(ProfileFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var profileFields: ProfileFields {
+              get {
+                return ProfileFields(unsafeResultMap: resultMap)
               }
               set {
                 resultMap += newValue.resultMap
@@ -3337,6 +3688,8 @@ public struct PublicationStatsFields: GraphQLFragment {
       totalAmountOfMirrors
       totalAmountOfCollects
       totalAmountOfComments
+      totalUpvotes
+      totalDownvotes
     }
     """
 
@@ -3348,6 +3701,8 @@ public struct PublicationStatsFields: GraphQLFragment {
       GraphQLField("totalAmountOfMirrors", type: .nonNull(.scalar(Int.self))),
       GraphQLField("totalAmountOfCollects", type: .nonNull(.scalar(Int.self))),
       GraphQLField("totalAmountOfComments", type: .nonNull(.scalar(Int.self))),
+      GraphQLField("totalUpvotes", type: .nonNull(.scalar(Int.self))),
+      GraphQLField("totalDownvotes", type: .nonNull(.scalar(Int.self))),
     ]
   }
 
@@ -3357,8 +3712,8 @@ public struct PublicationStatsFields: GraphQLFragment {
     self.resultMap = unsafeResultMap
   }
 
-  public init(totalAmountOfMirrors: Int, totalAmountOfCollects: Int, totalAmountOfComments: Int) {
-    self.init(unsafeResultMap: ["__typename": "PublicationStats", "totalAmountOfMirrors": totalAmountOfMirrors, "totalAmountOfCollects": totalAmountOfCollects, "totalAmountOfComments": totalAmountOfComments])
+  public init(totalAmountOfMirrors: Int, totalAmountOfCollects: Int, totalAmountOfComments: Int, totalUpvotes: Int, totalDownvotes: Int) {
+    self.init(unsafeResultMap: ["__typename": "PublicationStats", "totalAmountOfMirrors": totalAmountOfMirrors, "totalAmountOfCollects": totalAmountOfCollects, "totalAmountOfComments": totalAmountOfComments, "totalUpvotes": totalUpvotes, "totalDownvotes": totalDownvotes])
   }
 
   public var __typename: String {
@@ -3397,6 +3752,26 @@ public struct PublicationStatsFields: GraphQLFragment {
     }
     set {
       resultMap.updateValue(newValue, forKey: "totalAmountOfComments")
+    }
+  }
+
+  /// The total amount of downvotes
+  public var totalUpvotes: Int {
+    get {
+      return resultMap["totalUpvotes"]! as! Int
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "totalUpvotes")
+    }
+  }
+
+  /// The total amount of upvotes
+  public var totalDownvotes: Int {
+    get {
+      return resultMap["totalDownvotes"]! as! Int
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "totalDownvotes")
     }
   }
 }
@@ -5209,8 +5584,8 @@ public struct PostFields: GraphQLFragment {
       self.resultMap = unsafeResultMap
     }
 
-    public init(totalAmountOfMirrors: Int, totalAmountOfCollects: Int, totalAmountOfComments: Int) {
-      self.init(unsafeResultMap: ["__typename": "PublicationStats", "totalAmountOfMirrors": totalAmountOfMirrors, "totalAmountOfCollects": totalAmountOfCollects, "totalAmountOfComments": totalAmountOfComments])
+    public init(totalAmountOfMirrors: Int, totalAmountOfCollects: Int, totalAmountOfComments: Int, totalUpvotes: Int, totalDownvotes: Int) {
+      self.init(unsafeResultMap: ["__typename": "PublicationStats", "totalAmountOfMirrors": totalAmountOfMirrors, "totalAmountOfCollects": totalAmountOfCollects, "totalAmountOfComments": totalAmountOfComments, "totalUpvotes": totalUpvotes, "totalDownvotes": totalDownvotes])
     }
 
     public var __typename: String {
@@ -5708,8 +6083,8 @@ public struct MirrorBaseFields: GraphQLFragment {
       self.resultMap = unsafeResultMap
     }
 
-    public init(totalAmountOfMirrors: Int, totalAmountOfCollects: Int, totalAmountOfComments: Int) {
-      self.init(unsafeResultMap: ["__typename": "PublicationStats", "totalAmountOfMirrors": totalAmountOfMirrors, "totalAmountOfCollects": totalAmountOfCollects, "totalAmountOfComments": totalAmountOfComments])
+    public init(totalAmountOfMirrors: Int, totalAmountOfCollects: Int, totalAmountOfComments: Int, totalUpvotes: Int, totalDownvotes: Int) {
+      self.init(unsafeResultMap: ["__typename": "PublicationStats", "totalAmountOfMirrors": totalAmountOfMirrors, "totalAmountOfCollects": totalAmountOfCollects, "totalAmountOfComments": totalAmountOfComments, "totalUpvotes": totalUpvotes, "totalDownvotes": totalDownvotes])
     }
 
     public var __typename: String {
@@ -6459,8 +6834,8 @@ public struct CommentBaseFields: GraphQLFragment {
       self.resultMap = unsafeResultMap
     }
 
-    public init(totalAmountOfMirrors: Int, totalAmountOfCollects: Int, totalAmountOfComments: Int) {
-      self.init(unsafeResultMap: ["__typename": "PublicationStats", "totalAmountOfMirrors": totalAmountOfMirrors, "totalAmountOfCollects": totalAmountOfCollects, "totalAmountOfComments": totalAmountOfComments])
+    public init(totalAmountOfMirrors: Int, totalAmountOfCollects: Int, totalAmountOfComments: Int, totalUpvotes: Int, totalDownvotes: Int) {
+      self.init(unsafeResultMap: ["__typename": "PublicationStats", "totalAmountOfMirrors": totalAmountOfMirrors, "totalAmountOfCollects": totalAmountOfCollects, "totalAmountOfComments": totalAmountOfComments, "totalUpvotes": totalUpvotes, "totalDownvotes": totalDownvotes])
     }
 
     public var __typename: String {

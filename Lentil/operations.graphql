@@ -42,6 +42,24 @@ query Publications($request: PublicationsQueryRequest!) {
 	}
 }
 
+query WhoReactedPublication($request: WhoReactedPublicationRequest!) {
+	whoReactedPublication(request: $request) {
+		items {
+			reactionId
+			reaction
+			reactionAt
+			profile {
+				...ProfileFields
+			}
+		}
+		pageInfo {
+			prev
+			next
+			totalCount
+		}
+	}
+}
+
 fragment MediaFields on Media {
   url
   width
@@ -143,6 +161,8 @@ fragment PublicationStatsFields on PublicationStats {
   totalAmountOfMirrors
   totalAmountOfCollects
   totalAmountOfComments
+	totalUpvotes
+	totalDownvotes
 }
 
 fragment MetadataOutputFields on MetadataOutput {
