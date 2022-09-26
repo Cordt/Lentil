@@ -24,9 +24,14 @@ struct RootView: View {
           send: RootAction.setActiveTab
         )
       ) {
-        Text("Soon™")
-          .tabItem { Label("Timeline", systemImage: "timelapse") }
-          .tag(Tabs.timeline)
+        TimelineView(
+          store: self.store.scope(
+            state: \.timelineState,
+            action: RootAction.timelineAction
+          )
+        )
+        .tabItem { Label("Timeline", systemImage: "timelapse") }
+        .tag(Tabs.timeline)
         
         TrendingView(
           store: self.store.scope(
@@ -51,7 +56,11 @@ struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
     RootView(
       store: Store(
-        initialState: RootState(trendingState: .init()),
+        initialState: RootState(
+          punkImages: LentilApp.punkImages,
+          timelineState: .init(images: LentilApp.punkImages),
+          trendingState: .init()
+        ),
         reducer: rootReducer,
         environment: RootEnvironment(lensApi: .mock)
       )

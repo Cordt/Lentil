@@ -10,17 +10,21 @@ import ComposableArchitecture
 
 @main
 struct LentilApp: App {
-    var body: some Scene {
-        WindowGroup {
-            RootView(
-              store: Store(
-                initialState: RootState(
-                  trendingState: .init()
-                ),
-                reducer: rootReducer,
-                environment: RootEnvironment(lensApi: .live)
-              )
-            )
-        }
+  static let punkImages = slice(image: UIImage(named: "punks")!, into: 100)
+  
+  var body: some Scene {
+    WindowGroup {
+      RootView(
+        store: Store(
+          initialState: RootState(
+            punkImages: LentilApp.punkImages,
+            timelineState: .init(images: LentilApp.punkImages),
+            trendingState: .init()
+          ),
+          reducer: rootReducer,
+          environment: RootEnvironment(lensApi: .live)
+        )
+      )
     }
+  }
 }

@@ -4,14 +4,17 @@ import ComposableArchitecture
 import SwiftUI
 
 struct RootState: Equatable {
+  var punkImages: [UIImage]
   var activeTab: RootView.Tabs = .trending
   
+  var timelineState: TimelineState
   var trendingState: TrendingState
 }
 
 enum RootAction: Equatable {
   case setActiveTab(RootView.Tabs)
   
+  case timelineAction(TimelineAction)
   case trendingAction(TrendingAction)
 }
 
@@ -32,6 +35,12 @@ extension RootEnvironment {
 }
 
 let rootReducer: Reducer<RootState, RootAction, RootEnvironment> = .combine(
+  timelineReducer.pullback(
+    state: \RootState.timelineState,
+    action: /RootAction.timelineAction,
+    environment: { $0 }
+  ),
+  
   trendingReducer.pullback(
     state: \RootState.trendingState,
     action: /RootAction.trendingAction,
@@ -42,6 +51,10 @@ let rootReducer: Reducer<RootState, RootAction, RootEnvironment> = .combine(
     switch action {
       case .setActiveTab(let tab):
         state.activeTab = tab
+        return .none
+        
+        
+      case .timelineAction(_):
         return .none
         
       case .trendingAction(_):
