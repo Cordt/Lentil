@@ -4,7 +4,6 @@ import ComposableArchitecture
 import SwiftUI
 
 struct RootState: Equatable {
-  var punkImages: [UIImage]
   var activeTab: RootView.Tabs = .trending
   
   var timelineState: TimelineState

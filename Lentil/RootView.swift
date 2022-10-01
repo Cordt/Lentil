@@ -57,8 +57,7 @@ struct ContentView_Previews: PreviewProvider {
     RootView(
       store: Store(
         initialState: RootState(
-          punkImages: LentilApp.punkImages,
-          timelineState: .init(images: LentilApp.punkImages),
+          timelineState: .init(),
           trendingState: .init()
         ),
         reducer: rootReducer,

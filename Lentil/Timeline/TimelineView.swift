@@ -8,34 +8,16 @@ struct TimelineView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      VStack {
-        Spacer()
-        
-        VStack {
-          Text("We value your privacy, Anon.")
-            .font(.headline)
-          
-          Text("But you need to be logged in with your wallet to see this section")
-            .font(.body)
+      Text("Soon™")
+        .punkRaffle(
+          store: self.store.scope(
+            state: \.punkState,
+            action: TimelineAction.punkAction
+          )
+        )
+        .onAppear {
+          viewStore.send(.punkAction(.togglePopup(isPresented: true)))
         }
-        .multilineTextAlignment(.center)
-        .padding()
-        
-        Button("Setup Wallet") {
-          // TODO Send to settings
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(ThemeColor.primaryRed.color)
-        
-        Spacer()
-        
-        viewStore.image?
-          .resizable()
-          .frame(width: 150, height: 150)
-      }
-      .frame(width: 300)
-      .task { viewStore.send(.loadImage) }
-      .onDisappear { viewStore.send(.cancelImageShuffling) }
     }
   }
 }
@@ -45,7 +27,7 @@ struct TimelineView_Previews: PreviewProvider {
   static var previews: some View {
     TimelineView(
       store: .init(
-        initialState: .init(images: LentilApp.punkImages),
+        initialState: .init(),
         reducer: timelineReducer,
         environment: .mock
       )

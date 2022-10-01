@@ -143,7 +143,7 @@ extension LensApi {
   static let mock = LensApi(
     trendingPublications: { _, _, _, _ in return QueryResult(data: mockPublications) },
     commentsOfPublication: { _ in QueryResult(data: mockComments) },
-    reactionsOfPublication: { _ in QueryResult(data: mockPosts[0]) },
+    reactionsOfPublication: { publication in QueryResult(data: mockPosts.first(where: { $0.id == publication.id })!) },
     getProfilePicture: { _ in throw ApiError.requestFailed }
   )
   #endif
