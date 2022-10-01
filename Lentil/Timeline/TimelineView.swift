@@ -15,9 +15,8 @@ struct TimelineView: View {
             action: TimelineAction.punkAction
           )
         )
-        .onAppear {
-          viewStore.send(.punkAction(.togglePopup(isPresented: true)))
-        }
+        .onAppear { viewStore.send(.punkAction(.togglePopup(isPresented: true))) }
+        .onDisappear { viewStore.send(.punkAction(.dismiss)) }
     }
   }
 }

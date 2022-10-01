@@ -17,7 +17,7 @@ let timelineReducer: Reducer<TimelineState, TimelineAction, RootEnvironment> =
       state: \.punkState,
       action: /TimelineAction.punkAction,
       environment: { _ in () }
-    ),
+    ).debug(),
     
     Reducer { state, action, env in
       switch action {

@@ -61,9 +61,6 @@ struct PunkRaffle: ViewModifier {
             )
           }
         }
-        .onDisappear {
-          viewStore.send(.togglePopup(isPresented: false))
-        }
     }
   }
 }
@@ -101,6 +98,7 @@ enum PunkRaffleAction: Equatable {
   case setPresentation(isPresented: Bool)
   case setOpacity(isPresented: Bool)
   case setOffset(isPresented: Bool)
+  case dismiss
 }
 
 let punkRaffleReducer: Reducer<PunkRaffleState, PunkRaffleAction, Void> = Reducer { state, action, _ in
@@ -117,6 +115,7 @@ let punkRaffleReducer: Reducer<PunkRaffleState, PunkRaffleAction, Void> = Reduce
       
       return .run(priority: .userInitiated) { send in
         if isPresented {
+          try await Task.sleep(nanoseconds: NSEC_PER_SEC)
           await send(.setPresentation(isPresented: isPresented))
           await send(.setOpacity(isPresented: isPresented))
           try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
@@ -140,6 +139,12 @@ let punkRaffleReducer: Reducer<PunkRaffleState, PunkRaffleAction, Void> = Reduce
       
     case .setOffset(let isPresented):
       state.punkYOffset = isPresented ? -100 : 0
+      return .none
+      
+    case .dismiss:
+      state.popupIsPresented = false
+      state.punkOpacity = 0
+      state.punkYOffset = 0
       return .none
   }
 }
