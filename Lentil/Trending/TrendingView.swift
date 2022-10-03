@@ -43,7 +43,7 @@ struct TrendingView: View {
 
 struct TrendingView_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationStack {
+    NavigationView {
       TrendingView(
         store: .init(
           initialState: .init(),

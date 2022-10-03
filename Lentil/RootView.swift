@@ -24,7 +24,7 @@ struct RootView: View {
           send: RootAction.setActiveTab
         )
       ) {
-        NavigationStack {
+        NavigationView {
           TimelineView(
             store: self.store.scope(
               state: \.timelineState,
@@ -36,7 +36,7 @@ struct RootView: View {
         .tabItem { Label("Timeline", systemImage: "timelapse") }
         .tag(Tabs.timeline)
         
-        NavigationStack {
+        NavigationView {
           TrendingView(
             store: self.store.scope(
               state: \.trendingState,
@@ -49,7 +49,7 @@ struct RootView: View {
         .tag(Tabs.trending)
         .accentColor(ThemeColor.darkGrey.color)
         
-        NavigationStack {
+        NavigationView {
           Text("Soon™")
             .rootToolbar(store: self.store)
         }
@@ -108,7 +108,7 @@ struct RootToolbar: ViewModifier {
             }
           }
         }
-    }.debug()
+    }
   }
 }
 

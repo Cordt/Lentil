@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 @main
 struct LentilApp: App {
-  static let punkImages = slice(image: UIImage(named: "punks")!, into: 100)
+  @State var isPresented = false
   
   var body: some Scene {
     WindowGroup {
