@@ -34,8 +34,8 @@ let mockProfiles: [Profile] = [
   ),
   .init(
     id: "3",
-    name: "cordt.eth",
-    handle: "@cordtminzer.lens",
+    name: "Cordt",
+    handle: "@cordt.lens",
     isFollowedByMe: false,
     profilePictureUrl: URL(string: "https://cloudflare-ipfs.com/ipfs/QmaZdyGNxdM2AB37PXp4bUjF3Mc5VR33r8pwMqmJF3P6be/dev_6163.png")!
   ),

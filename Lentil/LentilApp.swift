@@ -18,7 +18,8 @@ struct LentilApp: App {
         store: Store(
           initialState: RootState(
             timelineState: .init(),
-            trendingState: .init()
+            trendingState: .init(),
+            settingsState: .init()
           ),
           reducer: rootReducer,
           environment: RootEnvironment(lensApi: .live)

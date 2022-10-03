@@ -8,7 +8,11 @@ import SwiftUI
 class Network {
   static let shared = Network()
   
-  private(set) lazy var apollo = ApolloClient(url: URL(string: "https://api.lens.dev")!)
+  private(set) lazy var apollo = ApolloClient(
+    url: URL(
+      string: ProcessInfo.processInfo.environment["BASE_URL"]!
+    )!
+  )
 }
 
 struct QueryResult<Result: Equatable>: Equatable {
