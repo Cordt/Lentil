@@ -36,6 +36,7 @@ enum SettingsAction: Equatable {
 }
 
 struct SettingsEnvironment {
+  let lensApi: LensApi
   let walletExists: () throws -> Bool
   let fetchWallet: (_ password: String) throws -> Wallet
   let createWallet: (_ privateKey: String, _ password: String) throws -> Wallet
@@ -44,6 +45,7 @@ struct SettingsEnvironment {
 extension SettingsEnvironment {
   static var live: SettingsEnvironment {
     SettingsEnvironment(
+      lensApi: .live,
       walletExists: Wallet.hasAccount,
       fetchWallet: Wallet.init,
       createWallet: Wallet.init
@@ -53,6 +55,7 @@ extension SettingsEnvironment {
 #if DEBUG
   static var mock: SettingsEnvironment {
     SettingsEnvironment(
+      lensApi: .mock,
       walletExists: { true },
       fetchWallet: { _ in testWallet },
       createWallet: { _, _ in testWallet }
@@ -67,21 +70,11 @@ walletReducer
   .pullback(
     state: \.walletState,
     action: /SettingsAction.wallet,
-    environment: { _ in }
+    environment: { $0 }
   )
   .combined(
     with: Reducer<SettingsState, SettingsAction, SettingsEnvironment> { state, action, env in
       switch action {
-          // Wallet action
-        case .wallet(let walletAction):
-          switch walletAction {
-            case .unlinkWalletTapped, .unlinkWalletCanceled:
-              return .none
-              
-            case .unlinkWalletConfirmed:
-              return Effect(value: .unlinkWallet)
-          }
-          
         case .didAppear:
           do {
             if try env.walletExists() {
@@ -127,22 +120,18 @@ walletReducer
           
         case .linkWallet:
           do {
-            
-            
-            
-            // TODO: Fetch user profile - 2times
-            
-            
-            
             state.walletState = WalletState(
               wallet: try env.createWallet(state.privateKeyTextField, state.passwordTextField),
-              settingsProfileState: SettingsProfileState(profile: mockProfiles[2])
+              settingsProfileState: nil
             )
+           
+            state.isLinkWalletPresented = false
+            return Effect(value: .wallet(.fetchDefaultProfile))
+            
           } catch let error {
             print("[ERROR] \(error.localizedDescription)")
             // TODO: User feedback
           }
-          state.isLinkWalletPresented = false
           return .none
           
         case .loadWallet:
@@ -151,11 +140,15 @@ walletReducer
               wallet: try env.fetchWallet(state.loadWalletPasswordTextField),
               settingsProfileState: SettingsProfileState(profile: mockProfiles[2])
             )
+            
+            state.isLoadWalletPresented = false
+            return Effect(value: .wallet(.fetchDefaultProfile))
+            
           } catch let error {
             print("[ERROR] \(error.localizedDescription)")
             // TODO: User feedback
           }
-          state.isLoadWalletPresented = false
+          
           return .none
           
         case .unlinkWallet:
@@ -170,6 +163,19 @@ walletReducer
             // TODO: User feedback
           }
           return .none
+          
+        case .wallet(let walletAction):
+          switch walletAction {
+            case .fetchDefaultProfile, .defaultProfileResponse:
+              return .none
+              
+            case .unlinkWalletTapped, .unlinkWalletCanceled:
+              return .none
+              
+            case .unlinkWalletConfirmed:
+              return Effect(value: .unlinkWallet)
+          }
+          
       }
     }
   )

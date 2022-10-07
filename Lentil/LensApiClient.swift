@@ -36,6 +36,10 @@ struct LensApi {
     _ publication: Publication
   ) async throws -> QueryResult<Publication>
   
+  var defaultProfile: @Sendable (
+    _ ethereumAddress: String
+  ) async throws -> QueryResult<Profile>
+  
   var getProfilePicture: @Sendable (
     _ from: URL
   ) async throws -> Image
@@ -49,7 +53,7 @@ enum ApiError: Error, Equatable {
 extension LensApi {
   fileprivate static func run<Query: GraphQLQuery, Result: Equatable>(
     query: Query,
-    mapResult: @escaping (Query.Data) -> QueryResult<Result>
+    mapResult: @escaping (Query.Data) throws -> QueryResult<Result>
   ) async throws -> QueryResult<Result> {
     
     try await withCheckedThrowingContinuation { continuation in
@@ -67,8 +71,13 @@ extension LensApi {
               return
             }
             
-            continuation.resume(returning: mapResult(data))
-            return
+            do {
+              continuation.resume(returning: try mapResult(data))
+              return
+            } catch let error {
+              continuation.resume(throwing: error)
+              return
+            }
             
           case let .failure(error):
             print("[WARN] GraphQL error: \(error)")
@@ -117,7 +126,6 @@ extension LensApi {
       )
     },
     reactionsOfPublication: { publication in
-      
       try await run(
         query: WhoReactedPublicationQuery(
           request: WhoReactedPublicationRequest(publicationId: publication.id)
@@ -135,6 +143,21 @@ extension LensApi {
         }
       )
     },
+    defaultProfile: { address in
+      try await run(
+        query: DefaultProfileQuery(
+          request: DefaultProfileRequest(
+            ethereumAddress: address
+          )
+        ),
+        mapResult: { data in
+          if let defaultProfile = Profile.from(data.defaultProfile) {
+            return QueryResult(data: defaultProfile)
+          }
+          else { throw ApiError.requestFailed }
+        }
+      )
+    },
     getProfilePicture: { url in
       let (data, _) = try await URLSession.shared.data(from: url)
       guard let uiImage = UIImage(data: data)
@@ -148,6 +171,7 @@ extension LensApi {
     trendingPublications: { _, _, _, _ in return QueryResult(data: mockPublications) },
     commentsOfPublication: { _ in QueryResult(data: mockComments) },
     reactionsOfPublication: { publication in QueryResult(data: mockPosts.first(where: { $0.id == publication.id })!) },
+    defaultProfile: { _ in QueryResult(data: mockProfiles[2]) },
     getProfilePicture: { _ in throw ApiError.requestFailed }
   )
   #endif

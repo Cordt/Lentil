@@ -12,10 +12,13 @@ struct WalletState: Equatable {
     self.wallet.address.suffix(4)
   }
   
-  var settingsProfileState: SettingsProfileState
+  var settingsProfileState: SettingsProfileState?
 }
 
 enum WalletAction: Equatable {
+  case fetchDefaultProfile
+  case defaultProfileResponse(TaskResult<Profile>)
+  
   case unlinkWalletTapped
   case unlinkWalletConfirmed
   case unlinkWalletCanceled
@@ -23,8 +26,25 @@ enum WalletAction: Equatable {
   case settingsProfileAction(SettingsProfileAction)
 }
 
-let walletReducer: Reducer<WalletState, WalletAction, Void> = Reducer { state, action, _ in
+let walletReducer: Reducer<WalletState, WalletAction, SettingsEnvironment> = Reducer { state, action, env in
   switch action {
+    case .fetchDefaultProfile:
+      return .task { [address = state.wallet.address] in
+        await .defaultProfileResponse(
+          TaskResult {
+            try await env.lensApi.defaultProfile(address).data
+          }
+        )
+      }
+      
+    case .defaultProfileResponse(.success(let profile)):
+      state.settingsProfileState = .init(profile: profile)
+      return .none
+      
+    case .defaultProfileResponse(.failure(let error)):
+      print("[WARN] Could not fetch default profile from API: \(error)")
+      return .none
+      
     case .unlinkWalletTapped:
       state.unlinkAlert = AlertState(
         title: TextState("Do you really want to unlink your wallet?"),

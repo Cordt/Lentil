@@ -53,3 +53,22 @@ extension Publication {
     )
   }
 }
+
+extension Profile {
+  static func from(_ profile: DefaultProfileQuery.Data.DefaultProfile?) -> Self? {
+    guard
+      let profile,
+      profile.isDefault,
+      let profilePictureURL = profile.picture?.asMediaSet?.original.url,
+      let url = URL(string: profilePictureURL)
+    else { return nil }
+    
+    return Profile(
+      id: profile.id,
+      name: profile.name,
+      handle: profile.handle,
+      isFollowedByMe: false,
+      profilePictureUrl: url
+    )
+  }
+}
