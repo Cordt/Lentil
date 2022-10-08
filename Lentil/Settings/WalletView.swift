@@ -30,16 +30,16 @@ struct WalletView: View {
         
         IfLetStore(
           self.store.scope(
-            state: \.settingsProfileState,
-            action: WalletAction.settingsProfileAction
+            state: \.walletProfilesState,
+            action: WalletAction.walletProfilesAction
           ),
-          then: SettingsProfileView.init,
+          then: WalletProfilesView.init,
           else: {
             Section(
               header: Text("Unable to load profile").foregroundColor(ThemeColor.systemRed.color),
               footer: Text("We could not fetch the default profile for this wallet. Make sure to claim a Lens handle first.")
             ) {
-              Button("Retry") { viewStore.send(.fetchDefaultProfile) }
+              Button("Retry") { viewStore.send(.fetchProfiles) }
               if let url = URL(string: "https://claim.lens.xyz/") {
                 Link("Claim handle", destination: url)
               }
@@ -60,7 +60,7 @@ struct WalletView_Previews: PreviewProvider {
       store: .init(
         initialState: .init(
           wallet: testWallet,
-          settingsProfileState: .init(profile: mockProfiles[2])
+          walletProfilesState: WalletProfilesState(profiles: [.init(profile: mockProfiles[2])])
         ),
         reducer: walletReducer,
         environment: .mock

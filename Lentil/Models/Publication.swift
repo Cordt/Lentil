@@ -18,7 +18,7 @@ struct Publication: Identifiable, Equatable {
   
   let profileName: String?
   let profileHandle: String
-  let profilePictureUrl: URL
+  let profilePictureUrl: URL?
   
   var upvotes: Int
   var downvotes: Int

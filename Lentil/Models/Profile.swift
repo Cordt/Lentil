@@ -3,12 +3,14 @@
 import Foundation
 import SwiftUI
 
-struct Profile: Equatable {
+struct Profile: Identifiable, Equatable {
   var id: String
   var name: String?
   var handle: String
+  var ownedBy: String
   var isFollowedByMe: Bool
-  var profilePictureUrl: URL
+  var profilePictureUrl: URL?
+  var isDefault: Bool = false
   
   var profilePictureColor: some View {
     profileGradient(from: self.handle)
@@ -22,6 +24,7 @@ let mockProfiles: [Profile] = [
     id: "1",
     name: "NIDAVELLiR",
     handle: "@nidavellir.lens",
+    ownedBy: "0x823A234Df5d302bA0371f2859554f727875B6EA0",
     isFollowedByMe: false,
     profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmUv8ABqYwfAXrxHVzxJwaWNjPxCzGtFKPNcXHmHqN8ArQ")!
   ),
@@ -29,6 +32,7 @@ let mockProfiles: [Profile] = [
     id: "2",
     name: "Nader Dabit",
     handle: "@nader.lens",
+    ownedBy: "0x2651Ef4b545831D4601A59cFfb18a86b337ea5F5",
     isFollowedByMe: true,
     profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmVBfhfgfhGsRVxTNURVUgceqyzjdVe11ic5rCghmePuKX")!
   ),
@@ -36,6 +40,7 @@ let mockProfiles: [Profile] = [
     id: "3",
     name: "Cordt",
     handle: "@cordt.lens",
+    ownedBy: testWallet.address,
     isFollowedByMe: false,
     profilePictureUrl: URL(string: "https://cloudflare-ipfs.com/ipfs/QmaZdyGNxdM2AB37PXp4bUjF3Mc5VR33r8pwMqmJF3P6be/dev_6163.png")!
   ),
@@ -43,6 +48,7 @@ let mockProfiles: [Profile] = [
     id: "4",
     name: nil,
     handle: "@naval.lens",
+    ownedBy: "0x9DD183EB4Cc8202239879e163e53578598030c7b",
     isFollowedByMe: false,
     profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmVBfhfgfhGsRVxTNURVUgceqyzjdVe11ic5rCghmePuKX")!
   )

@@ -4,8 +4,8 @@ import ComposableArchitecture
 import SwiftUI
 
 
-struct ProfileView: View {
-  let store: Store<ProfileState, ProfileAction>
+struct ProfilePictureView: View {
+  let store: Store<ProfilePictureState, ProfilePictureAction>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -28,9 +28,9 @@ struct ProfileView: View {
 }
 
 
-struct ProfileView_Previews: PreviewProvider {
+struct ProfilePictureView_Previews: PreviewProvider {
   static var previews: some View {
-    ProfileView(
+    ProfilePictureView(
       store: .init(
         initialState: .init(
           handle: mockProfiles[0].handle,

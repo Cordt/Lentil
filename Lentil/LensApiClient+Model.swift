@@ -57,9 +57,9 @@ extension Publication {
 extension Profile {
   static func from(_ profile: DefaultProfileQuery.Data.DefaultProfile?) -> Self? {
     guard
-      let profile,
+      let profile = profile?.fragments.profileFields,
       profile.isDefault,
-      let profilePictureURL = profile.picture?.asMediaSet?.original.url,
+      let profilePictureURL = profile.picture?.asMediaSet?.original.fragments.mediaFields.url,
       let url = URL(string: profilePictureURL)
     else { return nil }
     
@@ -67,8 +67,25 @@ extension Profile {
       id: profile.id,
       name: profile.name,
       handle: profile.handle,
+      ownedBy: profile.ownedBy,
       isFollowedByMe: false,
       profilePictureUrl: url
     )
+  }
+  
+  static func from(_ profiles: ProfilesQuery.Data.Profile) -> [Self] {
+    return profiles.items.map { profile in
+      let fields = profile.fragments.profileFields
+      var url: URL? = nil
+      if let urlString = fields.picture?.asMediaSet?.original.fragments.mediaFields.url { url = URL(string: urlString) }
+      return Profile(
+        id: fields.id,
+        name: fields.name,
+        handle: fields.handle,
+        ownedBy: fields.ownedBy,
+        isFollowedByMe: false,
+        profilePictureUrl: url
+      )
+    }
   }
 }

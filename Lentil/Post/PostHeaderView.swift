@@ -10,7 +10,7 @@ struct PostHeaderView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       HStack(spacing: 8) {
-        ProfileView(
+        ProfilePictureView(
           store: self.store.scope(
             state: \.profile,
             action: PublicationAction.profile

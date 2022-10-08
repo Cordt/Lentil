@@ -6,9 +6,9 @@ import ComposableArchitecture
 struct PublicationState: Equatable, Identifiable {
   var publication: Publication
   
-  var profile: ProfileState {
+  var profile: ProfilePictureState {
     get {
-      ProfileState(
+      ProfilePictureState(
         handle: self.publication.profileHandle,
         pictureUrl: self.publication.profilePictureUrl
       )
@@ -29,12 +29,11 @@ struct PublicationState: Equatable, Identifiable {
 }
 
 enum PublicationAction: Equatable {
-  case profile(ProfileAction)
+  case profile(ProfilePictureAction)
 }
 
 let publicationReducer: Reducer<PublicationState, PublicationAction, RootEnvironment> = Reducer { state, action, env in
   switch action {
-      
     case .profile(_):
       return .none
   }

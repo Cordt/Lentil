@@ -21,6 +21,9 @@ struct QueryResult<Result: Equatable>: Equatable {
 }
 
 struct LensApi {
+  
+  // MARK: API Queries
+  
   var trendingPublications: @Sendable (
     _ limit: Int,
     _ cursor: String?,
@@ -40,9 +43,19 @@ struct LensApi {
     _ ethereumAddress: String
   ) async throws -> QueryResult<Profile>
   
+  var profiles: @Sendable (
+    _ ownedBy: String
+  ) async throws -> QueryResult<[Profile]>
+  
   var getProfilePicture: @Sendable (
     _ from: URL
   ) async throws -> Image
+  
+  // MARK: API Mutations
+  
+  var setDefaultProfile: @Sendable (
+    _ profileId: String
+  ) async throws -> Void
 }
 
 enum ApiError: Error, Equatable {
@@ -158,11 +171,23 @@ extension LensApi {
         }
       )
     },
+    profiles: { ownedBy in
+      try await run(
+        query: ProfilesQuery(request: ProfileQueryRequest(ownedBy: [ownedBy])),
+        mapResult: { data in
+          return QueryResult(data: Profile.from(data.profiles))
+        }
+      )
+    },
     getProfilePicture: { url in
       let (data, _) = try await URLSession.shared.data(from: url)
       guard let uiImage = UIImage(data: data)
       else { throw ApiError.requestFailed }
       return Image(uiImage: uiImage)
+    },
+    
+    setDefaultProfile: { profileId in
+      fatalError("unimplemented")
     }
   )
   
@@ -172,7 +197,9 @@ extension LensApi {
     commentsOfPublication: { _ in QueryResult(data: mockComments) },
     reactionsOfPublication: { publication in QueryResult(data: mockPosts.first(where: { $0.id == publication.id })!) },
     defaultProfile: { _ in QueryResult(data: mockProfiles[2]) },
-    getProfilePicture: { _ in throw ApiError.requestFailed }
+    profiles: { _ in QueryResult(data: mockProfiles) },
+    getProfilePicture: { _ in throw ApiError.requestFailed },
+    setDefaultProfile: { _ in () }
   )
   #endif
 }

@@ -122,11 +122,11 @@ walletReducer
           do {
             state.walletState = WalletState(
               wallet: try env.createWallet(state.privateKeyTextField, state.passwordTextField),
-              settingsProfileState: nil
+              walletProfilesState: nil
             )
            
             state.isLinkWalletPresented = false
-            return Effect(value: .wallet(.fetchDefaultProfile))
+            return Effect(value: .wallet(.fetchProfiles))
             
           } catch let error {
             print("[ERROR] \(error.localizedDescription)")
@@ -138,11 +138,11 @@ walletReducer
           do {
             state.walletState = WalletState(
               wallet: try env.fetchWallet(state.loadWalletPasswordTextField),
-              settingsProfileState: SettingsProfileState(profile: mockProfiles[2])
+              walletProfilesState: nil
             )
             
             state.isLoadWalletPresented = false
-            return Effect(value: .wallet(.fetchDefaultProfile))
+            return Effect(value: .wallet(.fetchProfiles))
             
           } catch let error {
             print("[ERROR] \(error.localizedDescription)")
@@ -166,7 +166,7 @@ walletReducer
           
         case .wallet(let walletAction):
           switch walletAction {
-            case .fetchDefaultProfile, .defaultProfileResponse:
+            case .fetchProfiles, .profilesResponse:
               return .none
               
             case .unlinkWalletTapped, .unlinkWalletCanceled:
@@ -174,6 +174,10 @@ walletReducer
               
             case .unlinkWalletConfirmed:
               return Effect(value: .unlinkWallet)
+              
+              
+            case .walletProfilesAction(_):
+              return .none
           }
           
       }
