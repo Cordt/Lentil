@@ -69,7 +69,8 @@ extension Profile {
       handle: profile.handle,
       ownedBy: profile.ownedBy,
       isFollowedByMe: false,
-      profilePictureUrl: url
+      profilePictureUrl: url,
+      isDefault: profile.isDefault
     )
   }
   
@@ -84,7 +85,8 @@ extension Profile {
         handle: fields.handle,
         ownedBy: fields.ownedBy,
         isFollowedByMe: false,
-        profilePictureUrl: url
+        profilePictureUrl: url,
+        isDefault: fields.isDefault
       )
     }
   }

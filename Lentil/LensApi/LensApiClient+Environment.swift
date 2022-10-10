@@ -1,109 +1,21 @@
 // Lentil
 
 import Apollo
-import Foundation
 import SwiftUI
+import UIKit
+import web3
 
-
-class Network {
-  static let shared = Network()
-  
-  private(set) lazy var apollo = ApolloClient(
-    url: URL(
-      string: ProcessInfo.processInfo.environment["BASE_URL"]!
-    )!
-  )
-}
-
-struct QueryResult<Result: Equatable>: Equatable {
-  var data: Result
-  var cursorToNext: String?
-}
-
-struct LensApi {
-  
-  // MARK: API Queries
-  
-  var trendingPublications: @Sendable (
-    _ limit: Int,
-    _ cursor: String?,
-    _ sortCriteria: PublicationSortCriteria,
-    _ publicationTypes: [PublicationTypes]
-  ) async throws -> QueryResult<[Publication]>
-  
-  var commentsOfPublication: @Sendable (
-    _ publication: Publication
-  ) async throws -> QueryResult<[Publication]>
-  
-  var reactionsOfPublication: @Sendable (
-    _ publication: Publication
-  ) async throws -> QueryResult<Publication>
-  
-  var defaultProfile: @Sendable (
-    _ ethereumAddress: String
-  ) async throws -> QueryResult<Profile>
-  
-  var profiles: @Sendable (
-    _ ownedBy: String
-  ) async throws -> QueryResult<[Profile]>
-  
-  var getProfilePicture: @Sendable (
-    _ from: URL
-  ) async throws -> Image
-  
-  // MARK: API Mutations
-  
-  var setDefaultProfile: @Sendable (
-    _ profileId: String
-  ) async throws -> Void
-}
-
-enum ApiError: Error, Equatable {
-  case requestFailed
-  case graphQLError
-}
-
-extension LensApi {
-  fileprivate static func run<Query: GraphQLQuery, Result: Equatable>(
-    query: Query,
-    mapResult: @escaping (Query.Data) throws -> QueryResult<Result>
-  ) async throws -> QueryResult<Result> {
-    
-    try await withCheckedThrowingContinuation { continuation in
-      Network.shared.apollo.fetch(query: query) { result in
-        switch result {
-          case let .success(apiData):
-            guard apiData.errors == nil,
-                  let data = apiData.data
-            else {
-              let errorMessage = apiData.errors!
-                .map { $0.localizedDescription }
-                .joined(separator: "\n")
-              print("[WARN] GraphQL error: \(errorMessage)")
-              continuation.resume(throwing: ApiError.graphQLError)
-              return
-            }
-            
-            do {
-              continuation.resume(returning: try mapResult(data))
-              return
-            } catch let error {
-              continuation.resume(throwing: error)
-              return
-            }
-            
-          case let .failure(error):
-            print("[WARN] GraphQL error: \(error)")
-            continuation.resume(throwing: ApiError.requestFailed)
-            return
-        }
-      }
-    }
-  }
-}
 
 extension LensApi {
   static let live = LensApi(
+    authenticationChallenge: { address in
+      try await run(
+        query: ChallengeQuery(request: .init(address: address)),
+        mapResult: { data in
+          QueryResult(data: data.challenge.text)
+        }
+      )
+    },
     trendingPublications: { limit, cursor, sortCriteria, publicationTypes in
       try await run(
         query: ExplorePublicationsQuery(
@@ -175,7 +87,7 @@ extension LensApi {
       try await run(
         query: ProfilesQuery(request: ProfileQueryRequest(ownedBy: [ownedBy])),
         mapResult: { data in
-          return QueryResult(data: Profile.from(data.profiles))
+          QueryResult(data: Profile.from(data.profiles))
         }
       )
     },
@@ -186,20 +98,82 @@ extension LensApi {
       return Image(uiImage: uiImage)
     },
     
-    setDefaultProfile: { profileId in
-      fatalError("unimplemented")
+    broadcast: { id, signature in
+      try await run(
+        networkClient: .authenticated,
+        mutation: BroadcastMutation(
+          request: BroadcastRequest(
+            id: id,
+            signature: signature
+          )
+        ),
+        mapResult: { data in
+          if let result = data.broadcast.asRelayerResult {
+            return MutationResult(data: .success(Broadcast(txnHash: result.txHash, txnId: result.txId)))
+          }
+          else if let error = data.broadcast.asRelayError {
+            return MutationResult(data: .failure(error.reason))
+          }
+          else {
+            return MutationResult(data: .failure(.__unknown("[ERROR] Received unexpected failure from Broadcast")))
+          }
+        }
+      )
+    },
+    
+    authenticate: { address, signature in
+      try await run(
+        mutation: AuthenticateMutation(request: SignedAuthChallenge(address: address, signature: signature)),
+        mapResult: { data in
+          MutationResult(
+            data: AuthenticationTokens(
+              accessToken: data.authenticate.accessToken,
+              refreshToken: data.authenticate.refreshToken
+            )
+          )
+        }
+      )
+    },
+    
+    getDefaultProfileTypedData: { profileId in
+      try await run(
+        networkClient: .authenticated,
+        mutation: CreateSetDefaultProfileTypedDataMutation(
+          request: CreateSetDefaultProfileRequest(profileId: profileId)
+        ),
+        mapResult: { data in
+          guard let expiresAt = date(from: data.createSetDefaultProfileTypedData.expiresAt)
+          else { throw ApiError.cannotParseResponse }
+          
+          let typedDataId = data.createSetDefaultProfileTypedData.id
+          let typedData = try typedData(
+            from: data.createSetDefaultProfileTypedData.typedData.jsonObject,
+            for: .setDefaultProfile
+          )
+          return MutationResult(
+            data: TypedDataResult(
+              id: typedDataId,
+              expires: expiresAt,
+              typedData: typedData
+            )
+          )
+        }
+      )
     }
   )
   
-  #if DEBUG
+#if DEBUG
   static let mock = LensApi(
+    authenticationChallenge: { _ in QueryResult(data: "Sign this message!") },
     trendingPublications: { _, _, _, _ in return QueryResult(data: mockPublications) },
     commentsOfPublication: { _ in QueryResult(data: mockComments) },
     reactionsOfPublication: { publication in QueryResult(data: mockPosts.first(where: { $0.id == publication.id })!) },
     defaultProfile: { _ in QueryResult(data: mockProfiles[2]) },
     profiles: { _ in QueryResult(data: mockProfiles) },
     getProfilePicture: { _ in throw ApiError.requestFailed },
-    setDefaultProfile: { _ in () }
+    broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
+    authenticate: { _, _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
+    getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }
   )
-  #endif
+#endif
 }

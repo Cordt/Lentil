@@ -117,7 +117,7 @@ struct SettingsView_Previews: PreviewProvider {
           initialState: .init(
             walletState: WalletState(
               wallet: testWallet,
-              walletProfilesState: WalletProfilesState(profiles: [.init(profile: mockProfiles[2])])
+              walletProfilesState: WalletProfilesState(wallet: testWallet, profiles: [.init(wallet: testWallet, profile: mockProfiles[2])])
             )
           ),
           reducer: settingsReducer,

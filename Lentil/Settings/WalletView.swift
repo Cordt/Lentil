@@ -26,6 +26,17 @@ struct WalletView: View {
             Button("Copy") {  }
               .buttonStyle(.borderless)
           }
+          HStack {
+            if viewStore.authenticated {
+              Text("Authenticated")
+            }
+            else {
+              Text("Not authenticated")
+              Spacer()
+              Button("Sign in", action: { viewStore.send(.authenticateTapped) })
+                .buttonStyle(.borderless)
+            }
+          }
         }
         
         IfLetStore(
@@ -37,7 +48,7 @@ struct WalletView: View {
           else: {
             Section(
               header: Text("Unable to load profile").foregroundColor(ThemeColor.systemRed.color),
-              footer: Text("We could not fetch the default profile for this wallet. Make sure to claim a Lens handle first.")
+              footer: Text("We could not fetch the profiles for this wallet. Make sure to claim a Lens handle first.")
             ) {
               Button("Retry") { viewStore.send(.fetchProfiles) }
               if let url = URL(string: "https://claim.lens.xyz/") {
@@ -49,7 +60,7 @@ struct WalletView: View {
         
       }
       .alert(self.store.scope(state: \.unlinkAlert), dismiss: .unlinkWalletCanceled)
-      .tint(ThemeColor.primaryRed.color)      
+      .tint(ThemeColor.primaryRed.color)
     }
   }
 }
@@ -60,7 +71,15 @@ struct WalletView_Previews: PreviewProvider {
       store: .init(
         initialState: .init(
           wallet: testWallet,
-          walletProfilesState: WalletProfilesState(profiles: [.init(profile: mockProfiles[2])])
+          walletProfilesState: WalletProfilesState(
+            wallet: testWallet,
+            profiles: [
+              .init(
+                wallet: testWallet,
+                profile: mockProfiles[2]
+              )
+            ]
+          )
         ),
         reducer: walletReducer,
         environment: .mock

@@ -1,3 +1,11 @@
+# MARK: Queries
+
+query Challenge($request: ChallengeRequest!) {
+	challenge(request: $request) {
+		text
+	}
+}
+
 query ExplorePublications($request: ExplorePublicationRequest!) {
   explorePublications(request: $request) {
     items {
@@ -73,6 +81,58 @@ query Profiles($request: ProfileQueryRequest!) {
 		}
 	}
 }
+
+
+# MARK: Mutations
+
+mutation Broadcast($request: BroadcastRequest!) {
+	broadcast(request: $request) {
+		... on RelayerResult {
+			txHash
+			txId
+		}
+		... on RelayError {
+			reason
+		}
+	}
+}
+
+mutation Authenticate($request: SignedAuthChallenge!) {
+	authenticate(request: $request) {
+		accessToken
+		refreshToken
+	}
+}
+
+mutation CreateSetDefaultProfileTypedData($request: CreateSetDefaultProfileRequest!) {
+	createSetDefaultProfileTypedData(request: $request) {
+		id
+		expiresAt
+		typedData {
+			types {
+				SetDefaultProfileWithSig {
+					name
+					type
+				}
+			}
+			domain {
+				name
+				chainId
+				version
+				verifyingContract
+			}
+			value {
+				nonce
+				deadline
+				wallet
+				profileId
+			}
+		}
+	}
+}
+
+
+# MARK: Fragments
 
 fragment MediaFields on Media {
   url

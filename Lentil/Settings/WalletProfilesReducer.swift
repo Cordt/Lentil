@@ -1,16 +1,17 @@
 // Lentil
 
 import ComposableArchitecture
-
+import web3
 
 struct WalletProfilesState: Equatable {
+  var wallet: Wallet
   var setDefaultProfileConfirmationDialogue: ConfirmationDialogState<WalletProfilesAction>?
   
   var profiles: IdentifiedArrayOf<WalletProfileState>
 }
 
 enum WalletProfilesAction: Equatable {
-  case setDefaultProfile(_ id: TaskResult<String>)
+  case setDefaultProfile(_ id: String, _ typedData: TaskResult<TypedDataResult>)
   case confirmSetDefaultProfile(_ id: String)
   case cancelSetDefaultProfile
   
@@ -22,16 +23,16 @@ let walletProfilesReducer: Reducer<WalletProfilesState, WalletProfilesAction, Ro
     .forEach(
       state: \.profiles,
       action: /WalletProfilesAction.profileAction,
-      environment: { _ in () }
+      environment: { _ in .live }
     ),
   
   Reducer<WalletProfilesState, WalletProfilesAction, RootEnvironment> { state, action, env in
     switch action {
-      case .setDefaultProfile(.success(let id)):
-        state.profiles[id: id]?.profile.isDefault = true
-        return .none
+      case let .setDefaultProfile(id, .success(typedDataResult)):
+        state.profiles[id: id]?.signTransaction = .init(typedDataResult: typedDataResult)
+        return Effect(value: .profileAction(id, .requestSignature(.setSheetPresented(true))))
         
-      case .setDefaultProfile(.failure(let error)):
+      case let .setDefaultProfile(_, .failure(error)):
         print("[WARN] Could not set default profile: \(error.localizedDescription)")
         return .none
         
@@ -41,9 +42,9 @@ let walletProfilesReducer: Reducer<WalletProfilesState, WalletProfilesAction, Ro
         
         return .task {
           await .setDefaultProfile(
+            id,
             TaskResult {
-              try await env.lensApi.setDefaultProfile(selectedProfile.ownedBy)
-              return id
+              return try await env.lensApi.getDefaultProfileTypedData(selectedProfile.id).data
             }
           )
         }
@@ -79,9 +80,9 @@ let walletProfilesReducer: Reducer<WalletProfilesState, WalletProfilesAction, Ro
                 // User has no other default profile - try to set it
                 return .task {
                   await .setDefaultProfile(
+                    id,
                     TaskResult {
-                      try await env.lensApi.setDefaultProfile(selectedProfile.ownedBy)
-                      return id
+                      try await env.lensApi.getDefaultProfileTypedData(selectedProfile.id).data
                     }
                   )
                 }
@@ -91,6 +92,9 @@ let walletProfilesReducer: Reducer<WalletProfilesState, WalletProfilesAction, Ro
               // The API does not allow to have no default profile - show alert
               return .none
             }
+            
+          case .requestSignature, .defaultProfileTnxResult:
+            return .none
         }
     }
   }

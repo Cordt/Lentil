@@ -4,6 +4,27 @@
 import Apollo
 import Foundation
 
+/// The challenge request
+public struct ChallengeRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - address: The ethereum address you want to login with
+  public init(address: String) {
+    graphQLMap = ["address": address]
+  }
+
+  /// The ethereum address you want to login with
+  public var address: String {
+    get {
+      return graphQLMap["address"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "address")
+    }
+  }
+}
+
 public struct ExplorePublicationRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -703,6 +724,143 @@ public struct ProfileQueryRequest: GraphQLMapConvertible {
   }
 }
 
+public struct BroadcastRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - id
+  ///   - signature
+  public init(id: String, signature: String) {
+    graphQLMap = ["id": id, "signature": signature]
+  }
+
+  public var id: String {
+    get {
+      return graphQLMap["id"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "id")
+    }
+  }
+
+  public var signature: String {
+    get {
+      return graphQLMap["signature"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "signature")
+    }
+  }
+}
+
+/// Relay error reason
+public enum RelayErrorReasons: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case rejected
+  case handleTaken
+  case expired
+  case wrongWalletSigned
+  case notAllowed
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "REJECTED": self = .rejected
+      case "HANDLE_TAKEN": self = .handleTaken
+      case "EXPIRED": self = .expired
+      case "WRONG_WALLET_SIGNED": self = .wrongWalletSigned
+      case "NOT_ALLOWED": self = .notAllowed
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .rejected: return "REJECTED"
+      case .handleTaken: return "HANDLE_TAKEN"
+      case .expired: return "EXPIRED"
+      case .wrongWalletSigned: return "WRONG_WALLET_SIGNED"
+      case .notAllowed: return "NOT_ALLOWED"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: RelayErrorReasons, rhs: RelayErrorReasons) -> Bool {
+    switch (lhs, rhs) {
+      case (.rejected, .rejected): return true
+      case (.handleTaken, .handleTaken): return true
+      case (.expired, .expired): return true
+      case (.wrongWalletSigned, .wrongWalletSigned): return true
+      case (.notAllowed, .notAllowed): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [RelayErrorReasons] {
+    return [
+      .rejected,
+      .handleTaken,
+      .expired,
+      .wrongWalletSigned,
+      .notAllowed,
+    ]
+  }
+}
+
+/// The signed auth challenge
+public struct SignedAuthChallenge: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - address: The ethereum address you signed the signature with
+  ///   - signature: The signature
+  public init(address: String, signature: String) {
+    graphQLMap = ["address": address, "signature": signature]
+  }
+
+  /// The ethereum address you signed the signature with
+  public var address: String {
+    get {
+      return graphQLMap["address"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "address")
+    }
+  }
+
+  /// The signature
+  public var signature: String {
+    get {
+      return graphQLMap["signature"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "signature")
+    }
+  }
+}
+
+public struct CreateSetDefaultProfileRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: Profile id
+  public init(profileId: String) {
+    graphQLMap = ["profileId": profileId]
+  }
+
+  /// Profile id
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+}
+
 /// The follow module types
 public enum FollowModules: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
   public typealias RawValue = String
@@ -904,6 +1062,100 @@ public enum ReferenceModules: RawRepresentable, Equatable, Hashable, CaseIterabl
       .followerOnlyReferenceModule,
       .unknownReferenceModule,
     ]
+  }
+}
+
+public final class ChallengeQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query Challenge($request: ChallengeRequest!) {
+      challenge(request: $request) {
+        __typename
+        text
+      }
+    }
+    """
+
+  public let operationName: String = "Challenge"
+
+  public var request: ChallengeRequest
+
+  public init(request: ChallengeRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("challenge", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(Challenge.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(challenge: Challenge) {
+      self.init(unsafeResultMap: ["__typename": "Query", "challenge": challenge.resultMap])
+    }
+
+    public var challenge: Challenge {
+      get {
+        return Challenge(unsafeResultMap: resultMap["challenge"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "challenge")
+      }
+    }
+
+    public struct Challenge: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["AuthChallengeResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("text", type: .nonNull(.scalar(String.self))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(text: String) {
+        self.init(unsafeResultMap: ["__typename": "AuthChallengeResult", "text": text])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// The text to sign
+      public var text: String {
+        get {
+          return resultMap["text"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "text")
+        }
+      }
+    }
   }
 }
 
@@ -2326,6 +2578,762 @@ public final class ProfilesQuery: GraphQLQuery {
             }
             set {
               resultMap += newValue.resultMap
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class BroadcastMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation Broadcast($request: BroadcastRequest!) {
+      broadcast(request: $request) {
+        __typename
+        ... on RelayerResult {
+          __typename
+          txHash
+          txId
+        }
+        ... on RelayError {
+          __typename
+          reason
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "Broadcast"
+
+  public var request: BroadcastRequest
+
+  public init(request: BroadcastRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("broadcast", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(Broadcast.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(broadcast: Broadcast) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "broadcast": broadcast.resultMap])
+    }
+
+    public var broadcast: Broadcast {
+      get {
+        return Broadcast(unsafeResultMap: resultMap["broadcast"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "broadcast")
+      }
+    }
+
+    public struct Broadcast: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["RelayerResult", "RelayError"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLTypeCase(
+            variants: ["RelayerResult": AsRelayerResult.selections, "RelayError": AsRelayError.selections],
+            default: [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            ]
+          )
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public static func makeRelayerResult(txHash: String, txId: String) -> Broadcast {
+        return Broadcast(unsafeResultMap: ["__typename": "RelayerResult", "txHash": txHash, "txId": txId])
+      }
+
+      public static func makeRelayError(reason: RelayErrorReasons) -> Broadcast {
+        return Broadcast(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var asRelayerResult: AsRelayerResult? {
+        get {
+          if !AsRelayerResult.possibleTypes.contains(__typename) { return nil }
+          return AsRelayerResult(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsRelayerResult: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["RelayerResult"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("txHash", type: .nonNull(.scalar(String.self))),
+            GraphQLField("txId", type: .nonNull(.scalar(String.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(txHash: String, txId: String) {
+          self.init(unsafeResultMap: ["__typename": "RelayerResult", "txHash": txHash, "txId": txId])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The tx hash - you should use the `txId` as your identifier as gas prices can be upgraded meaning txHash will change
+        public var txHash: String {
+          get {
+            return resultMap["txHash"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "txHash")
+          }
+        }
+
+        /// The tx id
+        public var txId: String {
+          get {
+            return resultMap["txId"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "txId")
+          }
+        }
+      }
+
+      public var asRelayError: AsRelayError? {
+        get {
+          if !AsRelayError.possibleTypes.contains(__typename) { return nil }
+          return AsRelayError(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsRelayError: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["RelayError"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("reason", type: .nonNull(.scalar(RelayErrorReasons.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(reason: RelayErrorReasons) {
+          self.init(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var reason: RelayErrorReasons {
+          get {
+            return resultMap["reason"]! as! RelayErrorReasons
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "reason")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class AuthenticateMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation Authenticate($request: SignedAuthChallenge!) {
+      authenticate(request: $request) {
+        __typename
+        accessToken
+        refreshToken
+      }
+    }
+    """
+
+  public let operationName: String = "Authenticate"
+
+  public var request: SignedAuthChallenge
+
+  public init(request: SignedAuthChallenge) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("authenticate", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(Authenticate.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(authenticate: Authenticate) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "authenticate": authenticate.resultMap])
+    }
+
+    public var authenticate: Authenticate {
+      get {
+        return Authenticate(unsafeResultMap: resultMap["authenticate"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "authenticate")
+      }
+    }
+
+    public struct Authenticate: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["AuthenticationResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("accessToken", type: .nonNull(.scalar(String.self))),
+          GraphQLField("refreshToken", type: .nonNull(.scalar(String.self))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(accessToken: String, refreshToken: String) {
+        self.init(unsafeResultMap: ["__typename": "AuthenticationResult", "accessToken": accessToken, "refreshToken": refreshToken])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// The access token
+      public var accessToken: String {
+        get {
+          return resultMap["accessToken"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "accessToken")
+        }
+      }
+
+      /// The refresh token
+      public var refreshToken: String {
+        get {
+          return resultMap["refreshToken"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "refreshToken")
+        }
+      }
+    }
+  }
+}
+
+public final class CreateSetDefaultProfileTypedDataMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation CreateSetDefaultProfileTypedData($request: CreateSetDefaultProfileRequest!) {
+      createSetDefaultProfileTypedData(request: $request) {
+        __typename
+        id
+        expiresAt
+        typedData {
+          __typename
+          types {
+            __typename
+            SetDefaultProfileWithSig {
+              __typename
+              name
+              type
+            }
+          }
+          domain {
+            __typename
+            name
+            chainId
+            version
+            verifyingContract
+          }
+          value {
+            __typename
+            nonce
+            deadline
+            wallet
+            profileId
+          }
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "CreateSetDefaultProfileTypedData"
+
+  public var request: CreateSetDefaultProfileRequest
+
+  public init(request: CreateSetDefaultProfileRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("createSetDefaultProfileTypedData", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(CreateSetDefaultProfileTypedDatum.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(createSetDefaultProfileTypedData: CreateSetDefaultProfileTypedDatum) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "createSetDefaultProfileTypedData": createSetDefaultProfileTypedData.resultMap])
+    }
+
+    public var createSetDefaultProfileTypedData: CreateSetDefaultProfileTypedDatum {
+      get {
+        return CreateSetDefaultProfileTypedDatum(unsafeResultMap: resultMap["createSetDefaultProfileTypedData"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "createSetDefaultProfileTypedData")
+      }
+    }
+
+    public struct CreateSetDefaultProfileTypedDatum: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["SetDefaultProfileBroadcastItemResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("id", type: .nonNull(.scalar(String.self))),
+          GraphQLField("expiresAt", type: .nonNull(.scalar(String.self))),
+          GraphQLField("typedData", type: .nonNull(.object(TypedDatum.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(id: String, expiresAt: String, typedData: TypedDatum) {
+        self.init(unsafeResultMap: ["__typename": "SetDefaultProfileBroadcastItemResult", "id": id, "expiresAt": expiresAt, "typedData": typedData.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// This broadcast item ID
+      public var id: String {
+        get {
+          return resultMap["id"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "id")
+        }
+      }
+
+      /// The date the broadcast item expiries
+      public var expiresAt: String {
+        get {
+          return resultMap["expiresAt"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "expiresAt")
+        }
+      }
+
+      /// The typed data
+      public var typedData: TypedDatum {
+        get {
+          return TypedDatum(unsafeResultMap: resultMap["typedData"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "typedData")
+        }
+      }
+
+      public struct TypedDatum: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["SetDefaultProfileEIP712TypedData"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("types", type: .nonNull(.object(`Type`.selections))),
+            GraphQLField("domain", type: .nonNull(.object(Domain.selections))),
+            GraphQLField("value", type: .nonNull(.object(Value.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(types: `Type`, domain: Domain, value: Value) {
+          self.init(unsafeResultMap: ["__typename": "SetDefaultProfileEIP712TypedData", "types": types.resultMap, "domain": domain.resultMap, "value": value.resultMap])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The types
+        public var types: `Type` {
+          get {
+            return `Type`(unsafeResultMap: resultMap["types"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "types")
+          }
+        }
+
+        /// The typed data domain
+        public var domain: Domain {
+          get {
+            return Domain(unsafeResultMap: resultMap["domain"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "domain")
+          }
+        }
+
+        /// The values
+        public var value: Value {
+          get {
+            return Value(unsafeResultMap: resultMap["value"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "value")
+          }
+        }
+
+        public struct `Type`: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["SetDefaultProfileEIP712TypedDataTypes"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("SetDefaultProfileWithSig", type: .nonNull(.list(.nonNull(.object(SetDefaultProfileWithSig.selections))))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(setDefaultProfileWithSig: [SetDefaultProfileWithSig]) {
+            self.init(unsafeResultMap: ["__typename": "SetDefaultProfileEIP712TypedDataTypes", "SetDefaultProfileWithSig": setDefaultProfileWithSig.map { (value: SetDefaultProfileWithSig) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var setDefaultProfileWithSig: [SetDefaultProfileWithSig] {
+            get {
+              return (resultMap["SetDefaultProfileWithSig"] as! [ResultMap]).map { (value: ResultMap) -> SetDefaultProfileWithSig in SetDefaultProfileWithSig(unsafeResultMap: value) }
+            }
+            set {
+              resultMap.updateValue(newValue.map { (value: SetDefaultProfileWithSig) -> ResultMap in value.resultMap }, forKey: "SetDefaultProfileWithSig")
+            }
+          }
+
+          public struct SetDefaultProfileWithSig: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["EIP712TypedDataField"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                GraphQLField("type", type: .nonNull(.scalar(String.self))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(name: String, type: String) {
+              self.init(unsafeResultMap: ["__typename": "EIP712TypedDataField", "name": name, "type": type])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The name of the typed data field
+            public var name: String {
+              get {
+                return resultMap["name"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "name")
+              }
+            }
+
+            /// The type of the typed data field
+            public var type: String {
+              get {
+                return resultMap["type"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "type")
+              }
+            }
+          }
+        }
+
+        public struct Domain: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["EIP712TypedDataDomain"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("name", type: .nonNull(.scalar(String.self))),
+              GraphQLField("chainId", type: .nonNull(.scalar(String.self))),
+              GraphQLField("version", type: .nonNull(.scalar(String.self))),
+              GraphQLField("verifyingContract", type: .nonNull(.scalar(String.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(name: String, chainId: String, version: String, verifyingContract: String) {
+            self.init(unsafeResultMap: ["__typename": "EIP712TypedDataDomain", "name": name, "chainId": chainId, "version": version, "verifyingContract": verifyingContract])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// The name of the typed data domain
+          public var name: String {
+            get {
+              return resultMap["name"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "name")
+            }
+          }
+
+          /// The chainId
+          public var chainId: String {
+            get {
+              return resultMap["chainId"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "chainId")
+            }
+          }
+
+          /// The version
+          public var version: String {
+            get {
+              return resultMap["version"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "version")
+            }
+          }
+
+          /// The verifying contract
+          public var verifyingContract: String {
+            get {
+              return resultMap["verifyingContract"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "verifyingContract")
+            }
+          }
+        }
+
+        public struct Value: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["SetDefaultProfileEIP712TypedDataValue"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("nonce", type: .nonNull(.scalar(String.self))),
+              GraphQLField("deadline", type: .nonNull(.scalar(String.self))),
+              GraphQLField("wallet", type: .nonNull(.scalar(String.self))),
+              GraphQLField("profileId", type: .nonNull(.scalar(String.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(nonce: String, deadline: String, wallet: String, profileId: String) {
+            self.init(unsafeResultMap: ["__typename": "SetDefaultProfileEIP712TypedDataValue", "nonce": nonce, "deadline": deadline, "wallet": wallet, "profileId": profileId])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var nonce: String {
+            get {
+              return resultMap["nonce"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "nonce")
+            }
+          }
+
+          public var deadline: String {
+            get {
+              return resultMap["deadline"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "deadline")
+            }
+          }
+
+          public var wallet: String {
+            get {
+              return resultMap["wallet"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "wallet")
+            }
+          }
+
+          public var profileId: String {
+            get {
+              return resultMap["profileId"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "profileId")
             }
           }
         }

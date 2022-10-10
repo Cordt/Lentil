@@ -99,6 +99,10 @@ class Wallet: Equatable {
     return try self.ethAccount.signMessage(message: message)
   }
   
+  func sign(message: TypedData) throws -> String {
+    return try self.ethAccount.signMessage(message: message)
+  }
+  
   static func hasAccount() throws -> Bool {
     try KeyStorage.checkForPrivateKey()
   }

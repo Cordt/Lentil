@@ -64,122 +64,124 @@ extension SettingsEnvironment {
 #endif
 }
 
-let settingsReducer =
-walletReducer
-  .optional()
-  .pullback(
-    state: \.walletState,
-    action: /SettingsAction.wallet,
-    environment: { $0 }
-  )
-  .combined(
-    with: Reducer<SettingsState, SettingsAction, SettingsEnvironment> { state, action, env in
-      switch action {
-        case .didAppear:
-          do {
-            if try env.walletExists() {
-              return .task {
-                try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
-                return .requestLoadWallet
-              }
+let settingsReducer: Reducer<SettingsState, SettingsAction, SettingsEnvironment> = .combine(
+  walletReducer
+    .optional()
+    .pullback(
+      state: \.walletState,
+      action: /SettingsAction.wallet,
+      environment: { $0 }
+    ),
+  
+  Reducer { state, action, env in
+    switch action {
+      case .didAppear:
+        do {
+          if try env.walletExists() {
+            return .task {
+              try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
+              return .requestLoadWallet
             }
-          } catch let error {
-            print("[ERROR] \(error.localizedDescription)")
-            // TODO: User feedback
           }
-          return .none
+        } catch let error {
+          print("[ERROR] \(error.localizedDescription)")
+          // TODO: User feedback
+        }
+        return .none
+        
+      case .linkWalletTapped:
+        state.isLinkWalletPresented = true
+        return .none
+        
+      case .setLinkWallet(let isPresented):
+        state.isLinkWalletPresented = isPresented
+        return .none
+        
+      case .privateKeyTextChanged(let text):
+        state.privateKeyTextField = text
+        return .none
+        
+      case .passwordTextChanged(let text):
+        state.passwordTextField = text
+        return .none
+        
+      case .requestLoadWallet:
+        state.isLoadWalletPresented = true
+        return .none
+        
+      case .setLoadWallet(let isPresented):
+        state.isLoadWalletPresented = isPresented
+        return .none
+        
+      case .loadWalletPasswordTextChanged(let text):
+        state.loadWalletPasswordTextField = text
+        return .none
+        
+        
+      case .linkWallet:
+        do {
+          state.walletState = WalletState(
+            wallet: try env.createWallet(state.privateKeyTextField, state.passwordTextField),
+            walletProfilesState: nil
+          )
           
-        case .linkWalletTapped:
-          state.isLinkWalletPresented = true
-          return .none
+          state.isLinkWalletPresented = false
+          return Effect(value: .wallet(.fetchProfiles))
           
-        case .setLinkWallet(let isPresented):
-          state.isLinkWalletPresented = isPresented
-          return .none
+        } catch let error {
+          print("[ERROR] \(error.localizedDescription)")
+          // TODO: User feedback
+        }
+        return .none
+        
+      case .loadWallet:
+        do {
+          state.walletState = WalletState(
+            wallet: try env.fetchWallet(state.loadWalletPasswordTextField),
+            walletProfilesState: nil
+          )
           
-        case .privateKeyTextChanged(let text):
-          state.privateKeyTextField = text
-          return .none
+          state.isLoadWalletPresented = false
+          return Effect(value: .wallet(.fetchProfiles))
           
-        case .passwordTextChanged(let text):
-          state.passwordTextField = text
-          return .none
-          
-        case .requestLoadWallet:
-          state.isLoadWalletPresented = true
-          return .none
-          
-        case .setLoadWallet(let isPresented):
-          state.isLoadWalletPresented = isPresented
-          return .none
-          
-        case .loadWalletPasswordTextChanged(let text):
-          state.loadWalletPasswordTextField = text
-          return .none
-          
-          
-        case .linkWallet:
-          do {
-            state.walletState = WalletState(
-              wallet: try env.createWallet(state.privateKeyTextField, state.passwordTextField),
-              walletProfilesState: nil
-            )
-           
-            state.isLinkWalletPresented = false
-            return Effect(value: .wallet(.fetchProfiles))
+        } catch let error {
+          print("[ERROR] \(error.localizedDescription)")
+          // TODO: User feedback
+        }
+        
+        return .none
+        
+      case .unlinkWallet:
+        guard let walletState = state.walletState
+        else { return .none }
+        
+        state.walletState = nil
+        do {
+          try Wallet.removeAccount()
+        } catch let error {
+          print("[ERROR] \(error.localizedDescription)")
+          // TODO: User feedback
+        }
+        return .none
+        
+      case .wallet(let walletAction):
+        switch walletAction {
+          case .fetchProfiles, .profilesResponse:
+            return .none
             
-          } catch let error {
-            print("[ERROR] \(error.localizedDescription)")
-            // TODO: User feedback
-          }
-          return .none
-          
-        case .loadWallet:
-          do {
-            state.walletState = WalletState(
-              wallet: try env.fetchWallet(state.loadWalletPasswordTextField),
-              walletProfilesState: nil
-            )
+          case .unlinkWalletTapped, .unlinkWalletCanceled:
+            return .none
             
-            state.isLoadWalletPresented = false
-            return Effect(value: .wallet(.fetchProfiles))
+          case .unlinkWalletConfirmed:
+            return Effect(value: .unlinkWallet)
             
-          } catch let error {
-            print("[ERROR] \(error.localizedDescription)")
-            // TODO: User feedback
-          }
-          
-          return .none
-          
-        case .unlinkWallet:
-          guard let walletState = state.walletState
-          else { return .none }
-          
-          state.walletState = nil
-          do {
-            try Wallet.removeAccount()
-          } catch let error {
-            print("[ERROR] \(error.localizedDescription)")
-            // TODO: User feedback
-          }
-          return .none
-          
-        case .wallet(let walletAction):
-          switch walletAction {
-            case .fetchProfiles, .profilesResponse:
-              return .none
-              
-            case .unlinkWalletTapped, .unlinkWalletCanceled:
-              return .none
-              
-            case .unlinkWalletConfirmed:
-              return Effect(value: .unlinkWallet)
-              
-              
-            case .walletProfilesAction(_):
-              return .none
-          }
-          
-      }
+          case .authenticateTapped, .authenticationChallenge, .authenticationChallengeResponse:
+            return .none
+            
+          case .walletProfilesAction(_):
+            return .none
+        }
+        
     }
-  )
+  }
+)

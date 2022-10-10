@@ -24,7 +24,11 @@ struct WalletProfilesView_Previews: PreviewProvider {
       WalletProfilesView(
         store: .init(
           initialState: .init(
-            profiles: [.init(profile: mockProfiles[2]), .init(profile: mockProfiles[3])]
+            wallet: testWallet, 
+            profiles: [
+              .init(wallet: testWallet, profile: mockProfiles[2]),
+                .init(wallet: testWallet, profile: mockProfiles[3], isLast: true)
+            ]
           ),
           reducer: walletProfilesReducer,
           environment: .mock
