@@ -57,7 +57,7 @@ let walletReducer = Reducer.combine(
       case .profilesResponse(.success(let profiles)):
         let profilesState = profiles
           .enumerated()
-          .map { WalletProfileState(wallet: state.wallet, profile: $0.element, isLast: $0.offset == profiles.count - 1) }
+          .map { WalletProfile.State(wallet: state.wallet, profile: $0.element, isLast: $0.offset == profiles.count - 1) }
         state.walletProfilesState = .init(wallet: state.wallet, profiles: .init(uniqueElements: profilesState))
         return .none
         

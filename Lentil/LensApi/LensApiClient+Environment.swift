@@ -1,13 +1,14 @@
 // Lentil
 
 import Apollo
+import ComposableArchitecture
 import SwiftUI
 import UIKit
 import web3
 
 
-extension LensApi {
-  static let live = LensApi(
+extension LensApi: DependencyKey {
+  static let liveValue = LensApi(
     authenticationChallenge: { address in
       try await run(
         query: ChallengeQuery(request: .init(address: address)),
@@ -162,8 +163,11 @@ extension LensApi {
     }
   )
   
+  // TODO: Remove after fully changed to Reducer Protocol
+  static let live = liveValue
+  
 #if DEBUG
-  static let mock = LensApi(
+  static let previewValue = LensApi(
     authenticationChallenge: { _ in QueryResult(data: "Sign this message!") },
     trendingPublications: { _, _, _, _ in return QueryResult(data: mockPublications) },
     commentsOfPublication: { _ in QueryResult(data: mockComments) },
@@ -175,5 +179,18 @@ extension LensApi {
     authenticate: { _, _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }
   )
+  
+  // TODO: Remove after fully changed to Reducer Protocol
+  static let mock = previewValue
 #endif
+}
+
+
+// Reducer protocol dependencies
+
+extension DependencyValues {
+  var lensApi: LensApi {
+    get { self[LensApi.self] }
+    set { self[LensApi.self] = newValue }
+  }
 }

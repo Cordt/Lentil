@@ -5,30 +5,45 @@ import GenericJSON
 import SwiftUI
 import web3
 
-struct SignTransactionState: Equatable {
-  var sheetIsPresented: Bool = false
-  var typedDataResult: TypedDataResult
+struct SignTransaction: ReducerProtocol {
+  struct State: Equatable {
+    var sheetIsPresented: Bool = false
+    var typedDataResult: TypedDataResult
+  }
+  
+  enum Action: Equatable {
+    case setSheetPresented(Bool)
+    case rejectTransaction
+    case signTransaction
+  }
+  
+  func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
+    switch action {
+      case .setSheetPresented(let present):
+        state.sheetIsPresented = present
+        return .none
+        
+      case .rejectTransaction, .signTransaction:
+        // Handled by parent reducer
+        return .none
+    }
+  }
 }
 
-enum SignTransactionAction: Equatable {
-  case setSheetPresented(Bool)
-  case rejectTransaction
-  case signTransaction
-}
 
 
 extension View {
-  func signTransactionSheet(store: Store<SignTransactionState?, SignTransactionAction>) -> some View {
+  func signTransactionSheet(store: Store<SignTransaction.State?, SignTransaction.Action>) -> some View {
     IfLetStore(
       store,
-      then: { self.modifier(SignTransaction(store: $0)) },
+      then: { self.modifier(SignTransactionView(store: $0)) },
       else: { self }
     )
   }
 }
 
-struct SignTransaction: ViewModifier {
-  let store: Store<SignTransactionState, SignTransactionAction>
+struct SignTransactionView: ViewModifier {
+  let store: Store<SignTransaction.State, SignTransaction.Action>
   
   func body(content: Content) -> some View {
     WithViewStore(self.store) { viewStore in
@@ -36,7 +51,7 @@ struct SignTransaction: ViewModifier {
         .sheet(
           isPresented: viewStore.binding(
             get: { $0.sheetIsPresented },
-            send: SignTransactionAction.setSheetPresented
+            send: SignTransaction.Action.setSheetPresented
           ),
           content: {
             VStack {
@@ -78,40 +93,26 @@ struct TypedDataMessageView: View {
   }
 }
 
-let signTransactionReducer: Reducer<SignTransactionState, SignTransactionAction, Void> = Reducer { state, action, _ in
-  switch action {
-    case .setSheetPresented(let present):
-      state.sheetIsPresented = present
-      return .none
-      
-    case .rejectTransaction, .signTransaction:
-      // Handled by parent reducer
-      return .none
-  }
-}
-
-
-
-struct SignTransactionViewModifier_Previews: PreviewProvider {
-  static let store = Store<SignTransactionState?, SignTransactionAction>(
-    initialState: .init(
-      sheetIsPresented: true,
-      typedDataResult: .init(
-        id: "abc",
-        expires: Date().addingTimeInterval(60*60),
-        typedData: mockTypedData
-      )
-    ),
-    reducer: signTransactionReducer.optional(),
-    environment: ()
-  )
-  
-  static var previews: some View {
-    WithViewStore(Self.store) { viewStore in
-      Button("Show signing sheet") {
-        viewStore.send(.setSheetPresented(true))
-      }
-      .signTransactionSheet(store: Self.store)
-    }
-  }
-}
+// FIXME: Need to emulate a store with optional state
+//struct SignTransactionViewModifier_Previews: PreviewProvider {
+//  static let state: SignTransaction.State? = .init(
+//    typedDataResult: .init(
+//      id: "abc",
+//      expires: Date().addingTimeInterval(60*60),
+//      typedData: mockTypedData
+//    )
+//  )
+//  static let store = Store<SignTransaction.State?, SignTransaction.Action>(
+//    initialState: state,
+//    reducer: SignTransaction()
+//  )
+//
+//  static var previews: some View {
+//    WithViewStore(Self.store) { viewStore in
+//      Button("Show signing sheet") {
+//        viewStore.send(.setSheetPresented(true))
+//      }
+//      .signTransactionSheet(store: Self.store)
+//    }
+//  }
+//}

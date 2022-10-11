@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct WalletProfileView: View {
-  let store: Store<WalletProfileState, WalletProfileAction>
+  let store: Store<WalletProfile.State, WalletProfile.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -20,7 +20,7 @@ struct WalletProfileView: View {
         .signTransactionSheet(
           store: self.store.scope(
             state: \.signTransaction,
-            action: WalletProfileAction.requestSignature
+            action: WalletProfile.Action.requestSignature
           )
         )
       }
@@ -32,7 +32,7 @@ struct WalletProfileView: View {
         .signTransactionSheet(
           store: self.store.scope(
             state: \.signTransaction,
-            action: WalletProfileAction.requestSignature
+            action: WalletProfile.Action.requestSignature
           )
         )
       }
@@ -63,7 +63,7 @@ struct WalletProfileView: View {
         "Default Profile",
         isOn: viewStore.binding(
           get: \.profile.isDefault,
-          send: WalletProfileAction.defaultProfileToggled
+          send: WalletProfile.Action.defaultProfileToggled
         )
       )
     }
@@ -77,8 +77,7 @@ struct WalletProfileView_Previews: PreviewProvider {
       WalletProfileView(
         store: .init(
           initialState: .init(wallet: testWallet, profile: mockProfiles[2], isLast: true),
-          reducer: walletProfileReducer,
-          environment: .mock
+          reducer: WalletProfile()
         )
       )
     }

@@ -7,7 +7,7 @@ struct WalletProfilesState: Equatable {
   var wallet: Wallet
   var setDefaultProfileConfirmationDialogue: ConfirmationDialogState<WalletProfilesAction>?
   
-  var profiles: IdentifiedArrayOf<WalletProfileState>
+  var profiles: IdentifiedArrayOf<WalletProfile.State>
 }
 
 enum WalletProfilesAction: Equatable {
@@ -15,15 +15,15 @@ enum WalletProfilesAction: Equatable {
   case confirmSetDefaultProfile(_ id: String)
   case cancelSetDefaultProfile
   
-  case profileAction(_ id: WalletProfileState.ID, _ profile: WalletProfileAction)
+  case profileAction(_ id: WalletProfile.State.ID, _ profile: WalletProfile.Action)
 }
 
 let walletProfilesReducer: Reducer<WalletProfilesState, WalletProfilesAction, RootEnvironment> = Reducer.combine(
-  walletProfileReducer
+  AnyReducer(WalletProfile())
     .forEach(
       state: \.profiles,
       action: /WalletProfilesAction.profileAction,
-      environment: { _ in .live }
+      environment: { $0 }
     ),
   
   Reducer<WalletProfilesState, WalletProfilesAction, RootEnvironment> { state, action, env in

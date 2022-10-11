@@ -15,6 +15,11 @@ struct WalletProfilesView: View {
     ) { profileStore in
       WalletProfileView(store: profileStore)
     }
+    .confirmationDialog(
+      self.store.scope(
+        state: \.setDefaultProfileConfirmationDialogue),
+      dismiss: .cancelSetDefaultProfile
+    )
   }
 }
 
