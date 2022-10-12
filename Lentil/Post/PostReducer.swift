@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct PostState: Equatable, Identifiable {
-  var post: PublicationState
+  var post: Publication.State
   var comments: IdentifiedArrayOf<CommentState> = []
   
   var id: String { self.post.id }
@@ -13,11 +13,11 @@ struct PostState: Equatable, Identifiable {
 
 enum PostAction: Equatable {
   case fetchReactions
-  case reactionsResponse(TaskResult<QueryResult<Publication>>)
+  case reactionsResponse(TaskResult<QueryResult<Model.Publication>>)
   case fetchComments
-  case commentsResponse(TaskResult<QueryResult<[Publication]>>)
+  case commentsResponse(TaskResult<QueryResult<[Model.Publication]>>)
   
-  case post(action: PublicationAction)
+  case post(action: Publication.Action)
   case comment(id: CommentState.ID, action: CommentAction)
 }
 
@@ -55,7 +55,11 @@ let postReducer = Reducer<PostState, PostAction, RootEnvironment> { state, actio
     case .commentsResponse(let response):
       switch response {
         case .success(let result):
-          state.comments.append(contentsOf: result.data.map { CommentState(comment: .init(publication: $0)) })
+          state.comments.append(
+            contentsOf: result.data.map {
+              CommentState(comment: Publication.State(publication: $0))
+            }
+          )
           return .none
           
         case .failure(let error):

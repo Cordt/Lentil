@@ -7,7 +7,7 @@ struct WalletProfile: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var wallet: Wallet
     var id: String { self.profile.id }
-    var profile: Profile
+    var profile: Model.Profile
     var isLast: Bool = false
     
     var signTransaction: SignTransaction.State?

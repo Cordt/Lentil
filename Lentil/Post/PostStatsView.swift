@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct PostStatsView: View {
-  let store: Store<PublicationState, PublicationAction>
+  let store: Store<Publication.State, Publication.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -49,7 +49,7 @@ struct PostStatsView: View {
 }
 
 struct PostVotingView: View {
-  let store: Store<PublicationState, PublicationAction>
+  let store: Store<Publication.State, Publication.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -75,7 +75,7 @@ struct PostVotingView: View {
 }
 
 struct PostStatsDetailView: View {
-  let store: Store<PublicationState, PublicationAction>
+  let store: Store<Publication.State, Publication.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -103,7 +103,7 @@ struct PostStatsDetailView: View {
 }
 
 struct PostStatsShortDetailView: View {
-  let store: Store<PublicationState, PublicationAction>
+  let store: Store<Publication.State, Publication.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -142,8 +142,7 @@ struct PostStats_Previews: PreviewProvider {
         PostStatsView(
           store: .init(
             initialState: .init(publication: mockPublications[0]),
-            reducer: publicationReducer,
-            environment: .mock
+            reducer: Publication()
           )
         )
       }
@@ -158,8 +157,7 @@ struct PostStats_Previews: PreviewProvider {
           PostVotingView(
             store: .init(
               initialState: .init(publication: mockPublications[0]),
-              reducer: publicationReducer,
-              environment: .mock
+              reducer: Publication()
             )
           )
           
@@ -171,8 +169,7 @@ struct PostStats_Previews: PreviewProvider {
             PostStatsDetailView(
               store: .init(
                 initialState: .init(publication: mockPublications[0]),
-                reducer: publicationReducer,
-                environment: .mock
+                reducer: Publication()
               )
             )
           }
@@ -189,8 +186,7 @@ struct PostStats_Previews: PreviewProvider {
           PostVotingView(
             store: .init(
               initialState: .init(publication: mockPublications[2]),
-              reducer: publicationReducer,
-              environment: .mock
+              reducer: Publication()
             )
           )
           
@@ -202,8 +198,7 @@ struct PostStats_Previews: PreviewProvider {
             PostStatsShortDetailView(
               store: .init(
                 initialState: .init(publication: mockPublications[0]),
-                reducer: publicationReducer,
-                environment: .mock
+                reducer: Publication()
               )
             )
           }

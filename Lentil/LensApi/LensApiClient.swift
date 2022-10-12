@@ -81,23 +81,23 @@ struct LensApi {
     _ cursor: String?,
     _ sortCriteria: PublicationSortCriteria,
     _ publicationTypes: [PublicationTypes]
-  ) async throws -> QueryResult<[Publication]>
+  ) async throws -> QueryResult<[Model.Publication]>
   
   var commentsOfPublication: @Sendable (
-    _ publication: Publication
-  ) async throws -> QueryResult<[Publication]>
+    _ publication: Model.Publication
+  ) async throws -> QueryResult<[Model.Publication]>
   
   var reactionsOfPublication: @Sendable (
-    _ publication: Publication
-  ) async throws -> QueryResult<Publication>
+    _ publication: Model.Publication
+  ) async throws -> QueryResult<Model.Publication>
   
   var defaultProfile: @Sendable (
     _ ethereumAddress: String
-  ) async throws -> QueryResult<Profile>
+  ) async throws -> QueryResult<Model.Profile>
   
   var profiles: @Sendable (
     _ ownedBy: String
-  ) async throws -> QueryResult<[Profile]>
+  ) async throws -> QueryResult<[Model.Profile]>
   
   var getProfilePicture: @Sendable (
     _ from: URL

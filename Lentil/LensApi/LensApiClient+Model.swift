@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension Publication {
+extension Model.Publication {
   static func from(_ item: ExplorePublicationsQuery.Data.ExplorePublication.Item) -> Self? {
     guard
       let postFields = item.asPost?.fragments.postFields,
@@ -12,7 +12,7 @@ extension Publication {
       let profilePictureUrl = URL(string: profilePictureUrlString)
     else { return nil }
     
-    return Publication(
+    return Model.Publication(
       id: postFields.id,
       typename: .post,
       createdAt: createdDate,
@@ -28,7 +28,7 @@ extension Publication {
     )
   }
   
-  static func from(_ item: PublicationsQuery.Data.Publication.Item, child of: Publication) -> Self? {
+  static func from(_ item: PublicationsQuery.Data.Publication.Item, child of: Model.Publication) -> Self? {
     guard
       let commentFields = item.asComment?.fragments.commentFields.fragments.commentBaseFields,
       let content = commentFields.metadata.fragments.metadataOutputFields.content,
@@ -37,7 +37,7 @@ extension Publication {
       let profilePictureUrl = URL(string: profilePictureUrlString)
     else { return nil }
     
-    return Publication(
+    return Model.Publication(
       id: commentFields.id,
       typename: .comment(of: of),
       createdAt: createdDate,
@@ -54,7 +54,7 @@ extension Publication {
   }
 }
 
-extension Profile {
+extension Model.Profile {
   static func from(_ profile: DefaultProfileQuery.Data.DefaultProfile?) -> Self? {
     guard
       let profile = profile?.fragments.profileFields,
@@ -63,7 +63,7 @@ extension Profile {
       let url = URL(string: profilePictureURL)
     else { return nil }
     
-    return Profile(
+    return Model.Profile(
       id: profile.id,
       name: profile.name,
       handle: profile.handle,
@@ -79,7 +79,8 @@ extension Profile {
       let fields = profile.fragments.profileFields
       var url: URL? = nil
       if let urlString = fields.picture?.asMediaSet?.original.fragments.mediaFields.url { url = URL(string: urlString) }
-      return Profile(
+      
+      return Model.Profile(
         id: fields.id,
         name: fields.name,
         handle: fields.handle,

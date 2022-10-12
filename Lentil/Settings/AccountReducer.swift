@@ -20,7 +20,7 @@ struct Account: ReducerProtocol {
   
   enum Action: Equatable {
     case fetchProfiles
-    case profilesResponse(TaskResult<[Profile]>)
+    case profilesResponse(TaskResult<[Model.Profile]>)
     
     case unlinkWalletTapped
     case unlinkWalletConfirmed

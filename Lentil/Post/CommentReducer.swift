@@ -5,13 +5,13 @@ import SwiftUI
 
 
 struct CommentState: Equatable, Identifiable {
-  var comment: PublicationState
+  var comment: Publication.State
   
   var id: String { self.comment.id }
 }
 
 enum CommentAction: Equatable {
-  case comment(PublicationAction)
+  case comment(Publication.Action)
 }
 
 let commentReducer: Reducer<CommentState, CommentAction, RootEnvironment> = Reducer { state, action, env in

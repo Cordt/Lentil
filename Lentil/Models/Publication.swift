@@ -3,32 +3,34 @@
 import Foundation
 import SwiftUI
 
-struct Publication: Identifiable, Equatable {
-  indirect enum Typename: Equatable {
-    case post
-    case comment(of: Publication)
-    case mirror(of: Publication)
+struct Model {
+  struct Publication: Identifiable, Equatable {
+    indirect enum Typename: Equatable {
+      case post
+      case comment(of: Publication)
+      case mirror(of: Publication)
+    }
+    
+    let id: String
+    let typename: Typename
+    
+    let createdAt: Date
+    let content: String
+    
+    let profileName: String?
+    let profileHandle: String
+    let profilePictureUrl: URL?
+    
+    var upvotes: Int
+    var downvotes: Int
+    var collects: Int
+    var comments: Int
+    var mirrors: Int
   }
-  
-  let id: String
-  let typename: Typename
-  
-  let createdAt: Date
-  let content: String
-  
-  let profileName: String?
-  let profileHandle: String
-  let profilePictureUrl: URL?
-  
-  var upvotes: Int
-  var downvotes: Int
-  var collects: Int
-  var comments: Int
-  var mirrors: Int
 }
-
+  
 #if DEBUG
-let mockPosts: [Publication] = [
+let mockPosts: [Model.Publication] = [
   .init(
     id: "6797e4fd-0d8b-4ca0-b434-daf4acce2276",
     typename: .post,
@@ -72,7 +74,7 @@ let mockPosts: [Publication] = [
     mirrors: 0
   )
 ]
-let mockComments: [Publication] = [
+let mockComments: [Model.Publication] = [
   .init(
     id: "e59233e2-3a9c-4648-86bd-8b38548f6de8",
     typename: .comment(of: mockPosts[0]),
@@ -116,7 +118,7 @@ let mockComments: [Publication] = [
     mirrors: 0
   )
 ]
-let mockMirrors: [Publication] = [
+let mockMirrors: [Model.Publication] = [
   .init(
     id: "9bbb256e-8238-45c6-94cc-885666bbea86",
     typename: .mirror(of: mockPosts[0]),
@@ -161,5 +163,5 @@ let mockMirrors: [Publication] = [
   )
 ]
 
-let mockPublications: [Publication] = mockPosts + mockComments + mockMirrors
+let mockPublications: [Model.Publication] = mockPosts + mockComments + mockMirrors
 #endif

@@ -29,7 +29,7 @@ extension LensApi: DependencyKey {
         ),
         mapResult: { data in
           QueryResult(
-            data: data.explorePublications.items.compactMap(Publication.from),
+            data: data.explorePublications.items.compactMap(Model.Publication.from),
             cursorToNext: data.explorePublications.pageInfo.next
           )
         }
@@ -45,7 +45,7 @@ extension LensApi: DependencyKey {
         mapResult: { data in
           QueryResult(
             data: data.publications.items.compactMap {
-              Publication.from($0, child: publication)
+              Model.Publication.from($0, child: publication)
             }
           )
         }
@@ -77,7 +77,7 @@ extension LensApi: DependencyKey {
           )
         ),
         mapResult: { data in
-          if let defaultProfile = Profile.from(data.defaultProfile) {
+          if let defaultProfile = Model.Profile.from(data.defaultProfile) {
             return QueryResult(data: defaultProfile)
           }
           else { throw ApiError.requestFailed }
@@ -88,7 +88,7 @@ extension LensApi: DependencyKey {
       try await run(
         query: ProfilesQuery(request: ProfileQueryRequest(ownedBy: [ownedBy])),
         mapResult: { data in
-          QueryResult(data: Profile.from(data.profiles))
+          QueryResult(data: Model.Profile.from(data.profiles))
         }
       )
     },

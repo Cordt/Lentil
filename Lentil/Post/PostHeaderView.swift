@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct PostHeaderView: View {
-  let store: Store<PublicationState, PublicationAction>
+  let store: Store<Publication.State, Publication.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -13,7 +13,7 @@ struct PostHeaderView: View {
         ProfilePictureView(
           store: self.store.scope(
             state: \.profile,
-            action: PublicationAction.profile
+            action: Publication.Action.profile
           )
         )
         
@@ -52,16 +52,14 @@ struct PostHeaderView_Previews: PreviewProvider {
       PostHeaderView(
         store: .init(
           initialState: .init(publication: mockPublications[0]),
-          reducer: publicationReducer,
-          environment: .mock
+          reducer: Publication()
         )
       )
       
       PostHeaderView(
         store: .init(
           initialState: .init(publication: mockPublications[2]),
-          reducer: publicationReducer,
-          environment: .mock
+          reducer: Publication()
         )
       )
     }

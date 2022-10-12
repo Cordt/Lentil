@@ -3,23 +3,24 @@
 import Foundation
 import SwiftUI
 
-struct Profile: Identifiable, Equatable {
-  var id: String
-  var name: String?
-  var handle: String
-  var ownedBy: String
-  var isFollowedByMe: Bool
-  var profilePictureUrl: URL?
-  var isDefault: Bool
-  
-  var profilePictureColor: some View {
-    profileGradient(from: self.handle)
+extension Model {
+  struct Profile: Identifiable, Equatable {
+    var id: String
+    var name: String?
+    var handle: String
+    var ownedBy: String
+    var isFollowedByMe: Bool
+    var profilePictureUrl: URL?
+    var isDefault: Bool
+    
+    var profilePictureColor: some View {
+      profileGradient(from: self.handle)
+    }
   }
 }
 
-
 #if DEBUG
-let mockProfiles: [Profile] = [
+let mockProfiles: [Model.Profile] = [
   .init(
     id: "1",
     name: "NIDAVELLiR",
