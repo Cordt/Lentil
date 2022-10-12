@@ -163,9 +163,6 @@ extension LensApi: DependencyKey {
     }
   )
   
-  // TODO: Remove after fully changed to Reducer Protocol
-  static let live = liveValue
-  
 #if DEBUG
   static let previewValue = LensApi(
     authenticationChallenge: { _ in QueryResult(data: "Sign this message!") },
@@ -179,9 +176,6 @@ extension LensApi: DependencyKey {
     authenticate: { _, _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }
   )
-  
-  // TODO: Remove after fully changed to Reducer Protocol
-  static let mock = previewValue
 #endif
 }
 

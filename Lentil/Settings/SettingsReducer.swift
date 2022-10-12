@@ -52,7 +52,6 @@ struct Settings: ReducerProtocol {
             }
           } catch let error {
             print("[ERROR] \(error.localizedDescription)")
-            // TODO: User feedback
           }
           return .none
           
@@ -97,7 +96,6 @@ struct Settings: ReducerProtocol {
             
           } catch let error {
             print("[ERROR] \(error.localizedDescription)")
-            // TODO: User feedback
           }
           return .none
           
@@ -113,7 +111,6 @@ struct Settings: ReducerProtocol {
             
           } catch let error {
             print("[ERROR] \(error.localizedDescription)")
-            // TODO: User feedback
           }
           
           return .none
@@ -127,7 +124,6 @@ struct Settings: ReducerProtocol {
             try Wallet.removeAccount()
           } catch let error {
             print("[ERROR] \(error.localizedDescription)")
-            // TODO: User feedback
           }
           return .none
           
@@ -155,34 +151,4 @@ struct Settings: ReducerProtocol {
       Account()
     }
   }
-}
-
-
-struct SettingsEnvironment {
-  let lensApi: LensApi
-  let walletExists: () throws -> Bool
-  let fetchWallet: (_ password: String) throws -> Wallet
-  let createWallet: (_ privateKey: String, _ password: String) throws -> Wallet
-}
-
-extension SettingsEnvironment {
-  static var live: SettingsEnvironment {
-    SettingsEnvironment(
-      lensApi: .live,
-      walletExists: Wallet.hasAccount,
-      fetchWallet: Wallet.init,
-      createWallet: Wallet.init
-    )
-  }
-  
-#if DEBUG
-  static var mock: SettingsEnvironment {
-    SettingsEnvironment(
-      lensApi: .mock,
-      walletExists: { true },
-      fetchWallet: { _ in testWallet },
-      createWallet: { _, _ in testWallet }
-    )
-  }
-#endif
 }
