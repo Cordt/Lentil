@@ -14,7 +14,7 @@ struct RootState: Equatable {
   
   var timelineState: TimelineState
   var trendingState: TrendingState
-  var settingsState: SettingsState
+  var settingsState: Settings.State
 }
 
 enum RootAction: Equatable {
@@ -23,7 +23,7 @@ enum RootAction: Equatable {
   
   case timelineAction(TimelineAction)
   case trendingAction(TrendingAction)
-  case settingsAction(SettingsAction)
+  case settingsAction(Settings.Action)
 }
 
 struct RootEnvironment {
@@ -55,11 +55,14 @@ let rootReducer: Reducer<RootState, RootAction, RootEnvironment> = .combine(
     environment: { $0 }
   ),
   
-  settingsReducer.pullback(
-    state: \.settingsState,
-    action: /RootAction.settingsAction,
-    environment: { _ in .live }
-  ),
+  AnyReducer {
+    Settings()
+  }
+    .pullback(
+      state: \.settingsState,
+      action: /RootAction.settingsAction,
+      environment: { _ in ()}
+    ),
   
   Reducer { state, action, _ in
     switch action {

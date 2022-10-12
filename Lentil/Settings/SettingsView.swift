@@ -5,16 +5,16 @@ import SwiftUI
 
 
 struct SettingsView: View {
-  let store: Store<SettingsState, SettingsAction>
+  let store: Store<Settings.State, Settings.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
       IfLetStore(
         self.store.scope(
-          state: \.walletState,
-          action: SettingsAction.wallet
+          state: \.accountState,
+          action: Settings.Action.accountAction
         )
-      ) { WalletView(store: $0) }
+      ) { AccountView(store: $0) }
       else: {
           Form {
             Section(
@@ -34,7 +34,7 @@ struct SettingsView: View {
       .sheet(
         isPresented: viewStore.binding(
           get: \.isLinkWalletPresented,
-          send: SettingsAction.setLinkWallet(isPresented:)
+          send: Settings.Action.setLinkWallet(isPresented:)
         ),
         content: {
           Form {
@@ -46,14 +46,14 @@ struct SettingsView: View {
                 "Enter your private key",
                 text: viewStore.binding(
                   get: \.privateKeyTextField,
-                  send: SettingsAction.privateKeyTextChanged(text:)
+                  send: Settings.Action.privateKeyTextChanged(text:)
                 )
               )
               SecureField(
                 "Enter a password to protect it",
                 text: viewStore.binding(
                   get: \.passwordTextField,
-                  send: SettingsAction.passwordTextChanged(text:)
+                  send: Settings.Action.passwordTextChanged(text:)
                 )
               )
             }
@@ -72,7 +72,7 @@ struct SettingsView: View {
       .sheet(
         isPresented: viewStore.binding(
           get: \.isLoadWalletPresented,
-          send: SettingsAction.setLoadWallet(isPresented:)
+          send: Settings.Action.setLoadWallet(isPresented:)
         ),
         content: {
           Form {
@@ -81,7 +81,7 @@ struct SettingsView: View {
                 "Enter your password",
                 text: viewStore.binding(
                   get: \.loadWalletPasswordTextField,
-                  send: SettingsAction.loadWalletPasswordTextChanged(text:)
+                  send: Settings.Action.loadWalletPasswordTextChanged(text:)
                 )
               )
             }
@@ -107,21 +107,19 @@ struct SettingsView_Previews: PreviewProvider {
       SettingsView(
         store: Store(
           initialState: .init(),
-          reducer: settingsReducer,
-          environment: .mock
+          reducer: Settings()
         )
       )
       
       SettingsView(
         store: .init(
           initialState: .init(
-            walletState: WalletState(
+            accountState: Account.State(
               wallet: testWallet,
-              walletProfilesState: WalletProfilesState(wallet: testWallet, profiles: [.init(wallet: testWallet, profile: mockProfiles[2])])
+              walletProfilesState: WalletProfiles.State(wallet: testWallet, profiles: [.init(wallet: testWallet, profile: mockProfiles[2])])
             )
           ),
-          reducer: settingsReducer,
-          environment: .mock
+          reducer: Settings()
         )
       )
     }

@@ -3,8 +3,8 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct WalletView: View {
-  let store: Store<WalletState, WalletAction>
+struct AccountView: View {
+  let store: Store<Account.State, Account.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -42,7 +42,7 @@ struct WalletView: View {
         IfLetStore(
           self.store.scope(
             state: \.walletProfilesState,
-            action: WalletAction.walletProfilesAction
+            action: Account.Action.walletProfilesAction
           ),
           then: WalletProfilesView.init,
           else: {
@@ -67,11 +67,11 @@ struct WalletView: View {
 
 struct WalletView_Previews: PreviewProvider {
   static var previews: some View {
-    WalletView(
+    AccountView(
       store: .init(
         initialState: .init(
           wallet: testWallet,
-          walletProfilesState: WalletProfilesState(
+          walletProfilesState: WalletProfiles.State(
             wallet: testWallet,
             profiles: [
               .init(
@@ -81,8 +81,7 @@ struct WalletView_Previews: PreviewProvider {
             ]
           )
         ),
-        reducer: walletReducer,
-        environment: .mock
+        reducer: Account()
       )
     )
   }

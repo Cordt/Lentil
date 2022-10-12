@@ -1,5 +1,6 @@
 // Lentil
 
+import ComposableArchitecture
 import Foundation
 import web3
 
@@ -112,12 +113,43 @@ class Wallet: Equatable {
   }
 }
 
-#if DEBUG
+// MARK: Wallet Dependency
 
+struct WalletApi {
+  var walletExists: () throws -> Bool
+  var fetchWallet: (_ password: String) throws -> Wallet
+  var createWallet: (_ privateKey: String, _ password: String) throws -> Wallet
+}
+
+extension WalletApi: DependencyKey {
+  static var liveValue: WalletApi {
+    WalletApi(
+      walletExists: Wallet.hasAccount,
+      fetchWallet: Wallet.init,
+      createWallet: Wallet.init
+    )
+  }
+  
+  static var previewValue: WalletApi {
+    WalletApi(
+      walletExists: { true },
+      fetchWallet: { _ in testWallet },
+      createWallet: { _, _ in testWallet }
+    )
+  }
+}
+
+extension DependencyValues {
+  var walletApi: WalletApi {
+    get { self[WalletApi.self] }
+    set { self[WalletApi.self] = newValue }
+  }
+}
+
+#if DEBUG
 let testWallet = try! Wallet(
   privateKey: ProcessInfo.processInfo.environment["TEST_WALLET_PRIVATE_KEY"]!,
   password: ProcessInfo.processInfo.environment["TEST_WALLET_PASSWORD"]!
 )
-
 #endif
 

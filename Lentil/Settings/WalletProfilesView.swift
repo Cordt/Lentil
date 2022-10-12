@@ -4,13 +4,13 @@ import ComposableArchitecture
 import SwiftUI
 
 struct WalletProfilesView: View {
-  let store: Store<WalletProfilesState, WalletProfilesAction>
+  let store: Store<WalletProfiles.State, WalletProfiles.Action>
   
   var body: some View {
     ForEachStore(
       self.store.scope(
         state: \.profiles,
-        action: WalletProfilesAction.profileAction
+        action: WalletProfiles.Action.profileAction
       )
     ) { profileStore in
       WalletProfileView(store: profileStore)
@@ -29,14 +29,13 @@ struct WalletProfilesView_Previews: PreviewProvider {
       WalletProfilesView(
         store: .init(
           initialState: .init(
-            wallet: testWallet, 
+            wallet: testWallet,
             profiles: [
               .init(wallet: testWallet, profile: mockProfiles[2]),
-                .init(wallet: testWallet, profile: mockProfiles[3], isLast: true)
+              .init(wallet: testWallet, profile: mockProfiles[3], isLast: true)
             ]
           ),
-          reducer: walletProfilesReducer,
-          environment: .mock
+          reducer: WalletProfiles()
         )
       )
     }
