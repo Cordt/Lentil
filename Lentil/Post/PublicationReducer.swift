@@ -7,9 +7,9 @@ struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var publication: Model.Publication
     
-    var profile: ProfilePictureState {
+    var profile: ProfilePicture.State {
       get {
-        ProfilePictureState(
+        ProfilePicture.State(
           handle: self.publication.profileHandle,
           pictureUrl: self.publication.profilePictureUrl
         )
@@ -30,7 +30,7 @@ struct Publication: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    case profile(ProfilePictureAction)
+    case profile(ProfilePicture.Action)
   }
   
   func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {

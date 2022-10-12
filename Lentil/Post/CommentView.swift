@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct CommentView: View {
-  let store: Store<CommentState, CommentAction>
+  let store: Store<Comment.State, Comment.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -13,7 +13,7 @@ struct CommentView: View {
         PostHeaderView(
           store: self.store.scope(
             state: \.comment,
-            action: CommentAction.comment
+            action: Comment.Action.comment
           )
         )
         
@@ -22,7 +22,7 @@ struct CommentView: View {
             PostVotingView(
               store: self.store.scope(
                 state: \.comment,
-                action: CommentAction.comment
+                action: Comment.Action.comment
               )
             )
             .padding(.leading, 8)
@@ -34,7 +34,7 @@ struct CommentView: View {
           PostStatsShortDetailView(
             store: self.store.scope(
               state: \.comment,
-              action: CommentAction.comment
+              action: Comment.Action.comment
             )
           )
           .padding(.leading, 42)
@@ -51,22 +51,19 @@ struct CommentView_Previews: PreviewProvider {
       CommentView(
         store: .init(
           initialState: .init(comment: .init(publication: mockComments[0])),
-          reducer: commentReducer,
-          environment: .mock
+          reducer: Comment()
         )
       )
       CommentView(
         store: .init(
           initialState: .init(comment: .init(publication: mockComments[0])),
-          reducer: commentReducer,
-          environment: .mock
+          reducer: Comment()
         )
       )
       CommentView(
         store: .init(
           initialState: .init(comment: .init(publication: mockComments[0])),
-          reducer: commentReducer,
-          environment: .mock
+          reducer: Comment()
         )
       )
       Spacer()

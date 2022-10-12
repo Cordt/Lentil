@@ -14,21 +14,21 @@ struct RootView: View {
     case timeline, trending, townhall
   }
   
-  let store: Store<RootState, RootAction>
+  let store: Store<Root.State, Root.Action>
   
   var body: some View {
     WithViewStore(store) { viewStore in
       TabView(
         selection: viewStore.binding(
           get: \.activeTab,
-          send: RootAction.setActiveTab
+          send: Root.Action.setActiveTab
         )
       ) {
         NavigationView {
           TimelineView(
             store: self.store.scope(
               state: \.timelineState,
-              action: RootAction.timelineAction
+              action: Root.Action.timelineAction
             )
           )
           .rootToolbar(store: self.store)
@@ -40,7 +40,7 @@ struct RootView: View {
           TrendingView(
             store: self.store.scope(
               state: \.trendingState,
-              action: RootAction.trendingAction
+              action: Root.Action.trendingAction
             )
           )
           .rootToolbar(store: self.store)
@@ -63,7 +63,7 @@ struct RootView: View {
 
 extension View {
   func rootToolbar(
-    store: Store<RootState, RootAction>
+    store: Store<Root.State, Root.Action>
   ) -> some View {
     self.modifier(
       RootToolbar(store: store)
@@ -72,7 +72,7 @@ extension View {
 }
 
 struct RootToolbar: ViewModifier {
-  var store: Store<RootState, RootAction>
+  var store: Store<Root.State, Root.Action>
   
   func body(content: Content) -> some View {
     WithViewStore(self.store) { viewStore in
@@ -83,14 +83,14 @@ struct RootToolbar: ViewModifier {
               destination: SettingsView(
                 store: self.store.scope(
                   state: \.settingsState,
-                  action: RootAction.settingsAction
+                  action: Root.Action.settingsAction
                 )
               ),
               isActive: viewStore.binding(
                 get: \.route,
-                send: RootAction.setRoute
+                send: Root.Action.setRoute
               )
-              .isPresent(/RootState.RootRoute.settings)) {
+              .isPresent(/Root.State.Route.settings)) {
                 HStack {
                   Button(action: { viewStore.send(.setRoute(.settings))}) {
                     Icon.settings.view(.large)
@@ -116,13 +116,12 @@ struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
     RootView(
       store: Store(
-        initialState: RootState(
+        initialState: Root.State(
           timelineState: .init(),
           trendingState: .init(),
           settingsState: .init()
         ),
-        reducer: rootReducer,
-        environment: RootEnvironment(lensApi: .mock)
+        reducer: Root()
       )
     )
   }

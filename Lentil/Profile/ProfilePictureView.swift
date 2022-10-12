@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct ProfilePictureView: View {
-  let store: Store<ProfilePictureState, ProfilePictureAction>
+  let store: Store<ProfilePicture.State, ProfilePicture.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -36,8 +36,7 @@ struct ProfilePictureView_Previews: PreviewProvider {
           handle: mockProfiles[0].handle,
           pictureUrl: mockProfiles[0].profilePictureUrl
         ),
-        reducer: profileReducer,
-        environment: .mock
+        reducer: ProfilePicture()
       )
     )
   }

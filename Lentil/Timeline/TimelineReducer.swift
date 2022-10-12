@@ -3,26 +3,27 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct TimelineState: Equatable {
-  var punkState = PunkRaffleState()
-}
-
-enum TimelineAction: Equatable {
-  case punkAction(PunkRaffleAction)
-}
-
-let timelineReducer: Reducer<TimelineState, TimelineAction, RootEnvironment> =
-  .combine(
-    punkRaffleReducer.pullback(
+struct Timeline: ReducerProtocol {
+  struct State: Equatable {
+    var punkState = PunkRaffle.State()
+  }
+  
+  enum Action: Equatable {
+    case punkAction(PunkRaffle.Action)
+  }
+  
+  var body: some ReducerProtocol<State, Action> {
+    Scope(
       state: \.punkState,
-      action: /TimelineAction.punkAction,
-      environment: { _ in () }
-    ),
+      action: /Action.punkAction) {
+        PunkRaffle()
+      }
     
-    Reducer { state, action, env in
+    Reduce { state, action in
       switch action {
         case .punkAction(_):
           return .none
       }
     }
-  )
+  }
+}

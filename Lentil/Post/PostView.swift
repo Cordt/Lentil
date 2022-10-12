@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct PostView: View {
-  let store: Store<PostState, PostAction>
+  let store: Store<Post.State, Post.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -13,7 +13,7 @@ struct PostView: View {
         PostHeaderView(
           store: self.store.scope(
             state: \.post,
-            action: PostAction.post
+            action: Post.Action.post
           )
         )
         
@@ -23,7 +23,7 @@ struct PostView: View {
         PostStatsView(
           store: self.store.scope(
             state: \.post,
-            action: PostAction.post
+            action: Post.Action.post
           )
         )
         .padding([.top], 4)
@@ -50,11 +50,8 @@ struct PostView_Previews: PreviewProvider {
     VStack(spacing: 0) {
       PostView(
         store: .init(
-          initialState: .init(post: .init(publication: mockPublications[0])),
-          reducer: postReducer,
-          environment: .init(
-            lensApi: .mock
-          )
+          initialState: .init(post: Publication.State(publication: mockPublications[0])),
+          reducer: Post()
         )
       )
     }

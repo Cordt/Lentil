@@ -4,7 +4,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct TimelineView: View {
-  let store: Store<TimelineState, TimelineAction>
+  let store: Store<Timeline.State, Timeline.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -12,7 +12,7 @@ struct TimelineView: View {
         .punkRaffle(
           store: self.store.scope(
             state: \.punkState,
-            action: TimelineAction.punkAction
+            action: Timeline.Action.punkAction
           )
         )
         .onAppear { viewStore.send(.punkAction(.togglePopup(isPresented: true))) }
@@ -27,8 +27,7 @@ struct TimelineView_Previews: PreviewProvider {
     TimelineView(
       store: .init(
         initialState: .init(),
-        reducer: timelineReducer,
-        environment: .mock
+        reducer: Timeline()
       )
     )
   }

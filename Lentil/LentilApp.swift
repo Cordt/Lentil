@@ -16,13 +16,12 @@ struct LentilApp: App {
     WindowGroup {
       RootView(
         store: Store(
-          initialState: RootState(
+          initialState: Root.State(
             timelineState: .init(),
             trendingState: .init(),
             settingsState: .init()
           ),
-          reducer: rootReducer,
-          environment: RootEnvironment(lensApi: .live)
+          reducer: Root()
         )
       )
     }

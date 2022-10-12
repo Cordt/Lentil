@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct PostDetailView: View {
-  let store: Store<PostState, PostAction>
+  let store: Store<Post.State, Post.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -14,7 +14,7 @@ struct PostDetailView: View {
           PostHeaderView(
             store: self.store.scope(
               state: \.post,
-              action: PostAction.post
+              action: Post.Action.post
             )
           )
           
@@ -23,7 +23,7 @@ struct PostDetailView: View {
               PostVotingView(
                 store: self.store.scope(
                   state: \.post,
-                  action: PostAction.post
+                  action: Post.Action.post
                 )
               )
               .padding(.leading, 8)
@@ -36,7 +36,7 @@ struct PostDetailView: View {
             PostStatsDetailView(
               store: self.store.scope(
                 state: \.post,
-                action: PostAction.post
+                action: Post.Action.post
               )
             )
             .padding(.leading, 42)
@@ -46,7 +46,7 @@ struct PostDetailView: View {
           ForEachStore(
             self.store.scope(
               state: \.comments,
-              action: PostAction.comment
+              action: Post.Action.comment
             )
           ) {
             CommentView(store: $0)
@@ -78,8 +78,7 @@ struct PostDetail_Previews: PreviewProvider {
       PostDetailView(
         store: .init(
           initialState: .init(post: .init(publication: mockPublications[0])),
-          reducer: postReducer,
-          environment: .mock
+          reducer: Post()
         )
       )
     }

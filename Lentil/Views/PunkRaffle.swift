@@ -5,13 +5,13 @@ import CoreImage
 import SwiftUI
 
 extension View {
-  func punkRaffle(store: Store<PunkRaffleState, PunkRaffleAction>) -> some View {
-    self.modifier(PunkRaffle(store: store))
+  func punkRaffle(store: Store<PunkRaffle.State, PunkRaffle.Action>) -> some View {
+    self.modifier(PunkRaffleView(store: store))
   }
 }
 
-struct PunkRaffle: ViewModifier {
-  let store: Store<PunkRaffleState, PunkRaffleAction>
+struct PunkRaffleView: ViewModifier {
+  let store: Store<PunkRaffle.State, PunkRaffle.Action>
   
   func body(content: Content) -> some View {
     WithViewStore(self.store) { viewStore in
@@ -19,7 +19,7 @@ struct PunkRaffle: ViewModifier {
         .popup(
           isPresented: viewStore.binding(
             get: { $0.popupIsPresented },
-            send: PunkRaffleAction.togglePopup
+            send: PunkRaffle.Action.togglePopup
           )
         ) {
           ZStack {
@@ -67,10 +67,9 @@ struct PunkRaffle: ViewModifier {
 
 
 struct PunkRaffle_Previews: PreviewProvider {
-  static let store = Store<PunkRaffleState, PunkRaffleAction>(
+  static let store = Store<PunkRaffle.State, PunkRaffle.Action>(
     initialState: .init(),
-    reducer: punkRaffleReducer,
-    environment: ()
+    reducer: PunkRaffle()
   )
   
   static var previews: some View {
@@ -84,71 +83,71 @@ struct PunkRaffle_Previews: PreviewProvider {
 }
 
 
-
-struct PunkRaffleState: Equatable {
-  let images: [UIImage] = slice(image: UIImage(named: "punks")!, into: 100)
-  var image: Image?
-  var popupIsPresented: Bool = false
-  var punkOpacity: CGFloat = 0
-  var punkYOffset: CGFloat = 0
-}
-
-enum PunkRaffleAction: Equatable {
-  case togglePopup(isPresented: Bool)
-  case setPresentation(isPresented: Bool)
-  case setOpacity(isPresented: Bool)
-  case setOffset(isPresented: Bool)
-  case dismiss
-}
-
-let punkRaffleReducer: Reducer<PunkRaffleState, PunkRaffleAction, Void> = Reducer { state, action, _ in
-  enum ImageLoaderID {}
+struct PunkRaffle: ReducerProtocol {
+  struct State: Equatable {
+    let images: [UIImage] = slice(image: UIImage(named: "punks")!, into: 100)
+    var image: Image?
+    var popupIsPresented: Bool = false
+    var punkOpacity: CGFloat = 0
+    var punkYOffset: CGFloat = 0
+  }
   
-  switch action {
-    case .togglePopup(let isPresented):
-      if isPresented {
-        guard let image = state.images.randomElement()
-        else { return .none }
-        
-        state.image = Image(uiImage: image)
-      }
-      
-      return .run(priority: .userInitiated) { send in
+  enum Action: Equatable {
+    case togglePopup(isPresented: Bool)
+    case setPresentation(isPresented: Bool)
+    case setOpacity(isPresented: Bool)
+    case setOffset(isPresented: Bool)
+    case dismiss
+  }
+  
+  func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
+    enum ImageLoaderID {}
+    
+    switch action {
+      case .togglePopup(let isPresented):
         if isPresented {
-          try await Task.sleep(nanoseconds: NSEC_PER_SEC)
-          await send(.setPresentation(isPresented: isPresented))
-          await send(.setOpacity(isPresented: isPresented))
-          try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
-          await send(.setOffset(isPresented: isPresented), animation: .easeOut(duration: 0.25))
+          guard let image = state.images.randomElement()
+          else { return .none }
+          
+          state.image = Image(uiImage: image)
         }
-        else {
-          await send(.setOffset(isPresented: isPresented), animation: .easeIn(duration: 0.25))
-          try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
-          await send(.setOpacity(isPresented: isPresented))
-          await send(.setPresentation(isPresented: isPresented))
+        
+        return .run(priority: .userInitiated) { send in
+          if isPresented {
+            try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+            await send(.setPresentation(isPresented: isPresented))
+            await send(.setOpacity(isPresented: isPresented))
+            try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
+            await send(.setOffset(isPresented: isPresented), animation: .easeOut(duration: 0.25))
+          }
+          else {
+            await send(.setOffset(isPresented: isPresented), animation: .easeIn(duration: 0.25))
+            try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
+            await send(.setOpacity(isPresented: isPresented))
+            await send(.setPresentation(isPresented: isPresented))
+          }
         }
-      }
-      
-    case .setPresentation(let isPresented):
-      state.popupIsPresented = isPresented
-      return .none
-      
-    case .setOpacity(let isPresented):
-      state.punkOpacity = isPresented ? 1.0 : 0
-      return .none
-      
-    case .setOffset(let isPresented):
-      state.punkYOffset = isPresented ? -100 : 0
-      return .none
-      
-    case .dismiss:
-      state.popupIsPresented = false
-      state.punkOpacity = 0
-      state.punkYOffset = 0
-      return .none
+        
+      case .setPresentation(let isPresented):
+        state.popupIsPresented = isPresented
+        return .none
+        
+      case .setOpacity(let isPresented):
+        state.punkOpacity = isPresented ? 1.0 : 0
+        return .none
+        
+      case .setOffset(let isPresented):
+        state.punkYOffset = isPresented ? -100 : 0
+        return .none
+        
+      case .dismiss:
+        state.popupIsPresented = false
+        state.punkOpacity = 0
+        state.punkYOffset = 0
+        return .none
+    }
   }
 }
-
 
 func slice(image: UIImage, into howMany: Int) -> [UIImage] {
   let width: CGFloat

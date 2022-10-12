@@ -4,19 +4,21 @@ import ComposableArchitecture
 import SwiftUI
 
 
-struct CommentState: Equatable, Identifiable {
-  var comment: Publication.State
+struct Comment: ReducerProtocol {
+  struct State: Equatable, Identifiable {
+    var comment: Publication.State
+    
+    var id: String { self.comment.id }
+  }
   
-  var id: String { self.comment.id }
-}
-
-enum CommentAction: Equatable {
-  case comment(Publication.Action)
-}
-
-let commentReducer: Reducer<CommentState, CommentAction, RootEnvironment> = Reducer { state, action, env in
-  switch action {
-    case .comment(_):
-      return .none
+  enum Action: Equatable {
+    case comment(Publication.Action)
+  }
+  
+  func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
+    switch action {
+      case .comment:
+        return .none
+    }
   }
 }

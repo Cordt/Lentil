@@ -5,7 +5,7 @@ import SwiftUI
 
 
 struct TrendingView: View {
-  let store: Store<TrendingState, TrendingAction>
+  let store: Store<Trending.State, Trending.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -14,7 +14,7 @@ struct TrendingView: View {
           ForEachStore(
             self.store.scope(
               state: \.posts,
-              action: TrendingAction.post)
+              action: Trending.Action.post)
           ) {
             PostView(store: $0)
           }
@@ -47,8 +47,7 @@ struct TrendingView_Previews: PreviewProvider {
       TrendingView(
         store: .init(
           initialState: .init(),
-          reducer: trendingReducer,
-          environment: .mock
+          reducer: Trending()
         )
       )
     }

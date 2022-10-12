@@ -119,6 +119,7 @@ struct FrameGetter: ViewModifier {
             }
           }
           return AnyView(EmptyView())
-        })
+        }
+      )
   }
 }

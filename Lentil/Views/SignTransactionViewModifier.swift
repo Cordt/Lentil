@@ -31,7 +31,6 @@ struct SignTransaction: ReducerProtocol {
 }
 
 
-
 extension View {
   func signTransactionSheet(store: Store<SignTransaction.State?, SignTransaction.Action>) -> some View {
     IfLetStore(
