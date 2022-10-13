@@ -19,7 +19,7 @@ struct WalletProfileView: View {
         .tint(ThemeColor.primaryRed.color)
         .signTransactionSheet(
           store: self.store.scope(
-            state: \.signTransaction,
+            state: \WalletProfile.State.signTransaction,
             action: WalletProfile.Action.requestSignature
           )
         )
@@ -31,7 +31,7 @@ struct WalletProfileView: View {
         .tint(ThemeColor.primaryRed.color)
         .signTransactionSheet(
           store: self.store.scope(
-            state: \.signTransaction,
+            state: \WalletProfile.State.signTransaction,
             action: WalletProfile.Action.requestSignature
           )
         )

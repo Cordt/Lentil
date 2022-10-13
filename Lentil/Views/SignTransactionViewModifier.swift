@@ -35,13 +35,13 @@ extension View {
   func signTransactionSheet(store: Store<SignTransaction.State?, SignTransaction.Action>) -> some View {
     IfLetStore(
       store,
-      then: { self.modifier(SignTransactionView(store: $0)) },
+      then: { self.modifier(SignTransactionViewModifier(store: $0)) },
       else: { self }
     )
   }
 }
 
-struct SignTransactionView: ViewModifier {
+struct SignTransactionViewModifier: ViewModifier {
   let store: Store<SignTransaction.State, SignTransaction.Action>
   
   func body(content: Content) -> some View {
@@ -53,65 +53,137 @@ struct SignTransactionView: ViewModifier {
             send: SignTransaction.Action.setSheetPresented
           ),
           content: {
-            VStack {
-              Text("Signature request")
-                .font(.title)
-                .padding()
-              
-              TypedDataMessageView(
-                typedData: viewStore.typedDataResult.typedData
-              )
-              
-              HStack {
-                Button("Reject transaction") {
-                  viewStore.send(.rejectTransaction)
-                }
-                Button("Sign transaction") {
-                  viewStore.send(.signTransaction)
-                }
-              }
-              .buttonStyle(.borderedProminent)
-              .tint(ThemeColor.primaryRed.color)
-              .padding()
-              
-              Spacer()
-            }
-            .padding()
+            SignTransactionView(store: self.store)
           }
         )
     }
   }
 }
 
-struct TypedDataMessageView: View {
-  let typedData: TypedData
+struct SignTransactionView: View {
+  let store: Store<SignTransaction.State, SignTransaction.Action>
   
   var body: some View {
-    Text("\(typedData.description)")
-      .font(.body)
+    WithViewStore(self.store) { viewStore in
+      VStack {
+        Rectangle()
+          .fill(ThemeColor.faintGray.color)
+          .frame(height: 50)
+          .overlay {
+            HStack {
+              Text("Signature request")
+                .font(.headline)
+              
+              Spacer()
+              
+              Button {
+                viewStore.send(.setSheetPresented(false))
+              } label: {
+                Image(systemName: "multiply")
+                  .foregroundColor(ThemeColor.lightGrey.color)
+              }
+              
+            }
+            .padding()
+          }
+        
+        VStack(alignment: .leading, spacing: 4) {
+          Text("Requested by")
+            .font(.subheadline)
+            .fontWeight(.medium)
+            
+          Divider()
+            .padding(.top, 8)
+            .padding(.bottom, 16)
+          
+          VStack(alignment: .leading) {
+            dataFieldView(title: "Name", from: viewStore.typedDataResult.typedData.domain, id: "name")
+            dataFieldView(title: "Chain ID", from: viewStore.typedDataResult.typedData.domain, id: "chainId")
+            dataFieldView(title: "Version", from: viewStore.typedDataResult.typedData.domain, id: "version")
+            dataFieldView(title: "Contract", from: viewStore.typedDataResult.typedData.domain, id: "verifyingContract")
+          }
+          .padding(.bottom, 32)
+          
+          Text("Message")
+            .font(.subheadline)
+            .fontWeight(.medium)
+          
+          Divider()
+            .padding(.top, 8)
+            .padding(.bottom, 16)
+          
+          VStack(alignment: .leading) {
+            dataFieldView(title: "Profile ID", from: viewStore.typedDataResult.typedData.message, id: "profileId")
+            dataFieldView(title: "Nonce", from: viewStore.typedDataResult.typedData.message, id: "nonce")
+            dataFieldView(title: "Deadline", from: viewStore.typedDataResult.typedData.message, id: "deadline")
+            dataFieldView(title: "Wallet", from: viewStore.typedDataResult.typedData.message, id: "wallet")
+          }
+        }
+        .padding()
+        
+        VStack {
+          HStack {
+            Button("Reject transaction") {
+              viewStore.send(.rejectTransaction)
+            }
+            Button("Sign transaction") {
+              viewStore.send(.signTransaction)
+            }
+          }
+          .buttonStyle(.borderedProminent)
+          .tint(ThemeColor.primaryRed.color)
+          .padding()
+        }
+        .padding()
+        
+        Spacer()
+      }
+    }
+  }
+  
+  @ViewBuilder
+  func dataFieldView(title: String, from: JSON, id: String) -> some View {
+    if let field = from[id]?.stringValue {
+      let prefix = title.count < 8 ? "\t" : ""
+      if field.prefix(2) == "0x" && field.count == 42,
+         let explorerUrl = ProcessInfo.processInfo.environment["BLOCK_EXPLORER_URL"],
+         let url = URL(string: explorerUrl + field) {
+        let addressShortened = field.prefix(8) + "..." + field.suffix(8)
+        HStack(spacing: 0) {
+          Text("\(title):\(prefix)\t\t")
+          Link(addressShortened, destination: url)
+            .tint(ThemeColor.systemBlue.color)
+        }
+        .font(.subheadline)
+      }
+      else {
+        Text("\(title):\(prefix)\t\t\(field)")
+          .font(.subheadline)
+      }
+    }
+    else {
+      EmptyView()
+    }
   }
 }
 
-// FIXME: Need to emulate a store with optional state
-//struct SignTransactionViewModifier_Previews: PreviewProvider {
-//  static let state: SignTransaction.State? = .init(
-//    typedDataResult: .init(
-//      id: "abc",
-//      expires: Date().addingTimeInterval(60*60),
-//      typedData: mockTypedData
-//    )
-//  )
-//  static let store = Store<SignTransaction.State?, SignTransaction.Action>(
-//    initialState: state,
-//    reducer: SignTransaction()
-//  )
-//
-//  static var previews: some View {
-//    WithViewStore(Self.store) { viewStore in
-//      Button("Show signing sheet") {
-//        viewStore.send(.setSheetPresented(true))
-//      }
-//      .signTransactionSheet(store: Self.store)
-//    }
-//  }
-//}
+
+struct SignTransactionViewModifier_Previews: PreviewProvider {
+  static let store = Store<SignTransaction.State, SignTransaction.Action>(
+    initialState: SignTransaction.State(
+      typedDataResult: .init(
+        id: "abc",
+        expires: Date().addingTimeInterval(60*60),
+        typedData: mockTypedData
+      )
+    ),
+    reducer: SignTransaction()
+  )
+
+  static var previews: some View {
+    Text("Signature request sheet")
+      .sheet(isPresented: .constant(true)) {
+        SignTransactionView(store: self.store)
+      }
+  }
+}

@@ -129,14 +129,6 @@ extension WalletApi: DependencyKey {
       createWallet: Wallet.init
     )
   }
-  
-  static var previewValue: WalletApi {
-    WalletApi(
-      walletExists: { true },
-      fetchWallet: { _ in testWallet },
-      createWallet: { _, _ in testWallet }
-    )
-  }
 }
 
 extension DependencyValues {
@@ -147,6 +139,16 @@ extension DependencyValues {
 }
 
 #if DEBUG
+extension WalletApi {
+  static var previewValue: WalletApi {
+    WalletApi(
+      walletExists: { true },
+      fetchWallet: { _ in testWallet },
+      createWallet: { _, _ in testWallet }
+    )
+  }
+}
+
 let testWallet = try! Wallet(
   privateKey: ProcessInfo.processInfo.environment["TEST_WALLET_PRIVATE_KEY"]!,
   password: ProcessInfo.processInfo.environment["TEST_WALLET_PASSWORD"]!
