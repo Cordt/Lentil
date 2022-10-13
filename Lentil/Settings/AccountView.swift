@@ -21,7 +21,7 @@ struct AccountView: View {
               .tint(ThemeColor.systemRed.color)
           }
           HStack {
-            Text("Address: \(viewStore.publicAddressShort)")
+            Text("Address: \(viewStore.addressShort)")
             Spacer()
             Button("Copy") {  }
               .buttonStyle(.borderless)
@@ -66,21 +66,12 @@ struct AccountView: View {
 }
 
 struct WalletView_Previews: PreviewProvider {
-  @Dependency(\.walletApi) static var walletApi
-  
   static var previews: some View {
     AccountView(
       store: .init(
         initialState: .init(
-          wallet: try! walletApi.getWallet(),
           walletProfilesState: WalletProfiles.State(
-            wallet: try! walletApi.getWallet(),
-            profiles: [
-              .init(
-                wallet: try! walletApi.getWallet(),
-                profile: mockProfiles[2]
-              )
-            ]
+            profiles: [.init(profile: mockProfiles[2])]
           )
         ),
         reducer: Account()

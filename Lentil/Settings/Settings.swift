@@ -4,22 +4,19 @@ import ComposableArchitecture
 import Foundation
 
 
-
 struct Settings: ReducerProtocol {
   struct State: Equatable {
-    var accountState: Account.State?
-    
     var isLinkWalletPresented: Bool = false
     var privateKeyTextField = ProcessInfo.processInfo.environment["TEST_WALLET_PRIVATE_KEY"]!
     var passwordTextField = ProcessInfo.processInfo.environment["TEST_WALLET_PASSWORD"]!
     
     var isLoadWalletPresented: Bool = false
     var loadWalletPasswordTextField = ""
+    
+    var accountState: Account.State?
   }
   
   enum Action: Equatable {
-    case accountAction(_ action: Account.Action)
-    
     case didAppear
     
     case linkWalletTapped
@@ -34,6 +31,8 @@ struct Settings: ReducerProtocol {
     case loadWallet
     case linkWallet
     case unlinkWallet
+    
+    case accountAction(_ action: Account.Action)
   }
   
   @Dependency(\.lensApi) var lensApi
@@ -86,11 +85,8 @@ struct Settings: ReducerProtocol {
           
         case .linkWallet:
           do {
-            state.accountState = Account.State(
-              wallet: try walletApi.createWallet(state.privateKeyTextField, state.passwordTextField),
-              walletProfilesState: nil
-            )
-            
+            try walletApi.createWallet(state.privateKeyTextField, state.passwordTextField)
+            state.accountState = Account.State(walletProfilesState: nil)
             state.isLinkWalletPresented = false
             return Effect(value: .accountAction(.fetchProfiles))
             
@@ -101,11 +97,8 @@ struct Settings: ReducerProtocol {
           
         case .loadWallet:
           do {
-            state.accountState = Account.State(
-              wallet: try walletApi.loadWallet(state.loadWalletPasswordTextField),
-              walletProfilesState: nil
-            )
-            
+            try walletApi.loadWallet(state.loadWalletPasswordTextField)
+            state.accountState = Account.State(walletProfilesState: nil)
             state.isLoadWalletPresented = false
             return Effect(value: .accountAction(.fetchProfiles))
             
@@ -121,7 +114,7 @@ struct Settings: ReducerProtocol {
           
           state.accountState = nil
           do {
-            try Wallet.removeWallet()
+            try walletApi.removeWallet()
           } catch let error {
             print("[ERROR] Could not unlink wallet: \(error)")
           }

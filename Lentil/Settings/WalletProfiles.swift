@@ -5,7 +5,6 @@ import web3
 
 struct WalletProfiles: ReducerProtocol {
   struct State: Equatable {
-    var wallet: Wallet
     var setDefaultProfileConfirmationDialogue: ConfirmationDialogState<Action>?
     
     var profiles: IdentifiedArrayOf<WalletProfile.State>

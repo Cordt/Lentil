@@ -5,7 +5,6 @@ import ComposableArchitecture
 
 struct WalletProfile: ReducerProtocol {
   struct State: Equatable, Identifiable {
-    var wallet: Wallet
     var id: String { self.profile.id }
     var profile: Model.Profile
     var isLast: Bool = false
@@ -21,6 +20,7 @@ struct WalletProfile: ReducerProtocol {
   }
   
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.walletApi) var walletApi
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
@@ -58,10 +58,11 @@ struct WalletProfile: ReducerProtocol {
             case .signTransaction:
               guard let txnState = state.signTransaction
               else { return .none }
-              
-              return .task { [wallet = state.wallet] in
+
+              return .task {
                 await .defaultProfileTnxResult(
                   TaskResult {
+                    let wallet = try walletApi.getWallet()
                     let signedMessage = try wallet.sign(message: txnState.typedDataResult.typedData)
                     return try await lensApi.broadcast(txnState.typedDataResult.id, signedMessage)
                   }
