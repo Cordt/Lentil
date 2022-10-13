@@ -66,16 +66,18 @@ struct AccountView: View {
 }
 
 struct WalletView_Previews: PreviewProvider {
+  @Dependency(\.walletApi) static var walletApi
+  
   static var previews: some View {
     AccountView(
       store: .init(
         initialState: .init(
-          wallet: testWallet,
+          wallet: try! walletApi.getWallet(),
           walletProfilesState: WalletProfiles.State(
-            wallet: testWallet,
+            wallet: try! walletApi.getWallet(),
             profiles: [
               .init(
-                wallet: testWallet,
+                wallet: try! walletApi.getWallet(),
                 profile: mockProfiles[2]
               )
             ]

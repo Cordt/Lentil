@@ -87,6 +87,8 @@ struct SignTransactionView: View {
             .padding()
           }
         
+        // TODO: Add id and expiry date
+        
         VStack(alignment: .leading, spacing: 4) {
           Text("Requested by")
             .font(.subheadline)

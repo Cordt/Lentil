@@ -72,11 +72,13 @@ struct WalletProfileView: View {
 
 
 struct WalletProfileView_Previews: PreviewProvider {
+  @Dependency(\.walletApi) static var walletApi
+  
   static var previews: some View {
     Form {
       WalletProfileView(
         store: .init(
-          initialState: .init(wallet: testWallet, profile: mockProfiles[2], isLast: true),
+          initialState: .init(wallet: try! walletApi.getWallet(), profile: mockProfiles[2], isLast: true),
           reducer: WalletProfile()
         )
       )

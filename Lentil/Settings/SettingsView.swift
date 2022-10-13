@@ -97,11 +97,16 @@ struct SettingsView: View {
           .tint(ThemeColor.primaryRed.color)
         }
       )
+      .onAppear {
+        viewStore.send(.didAppear)
+      }
     }
   }
 }
 
 struct SettingsView_Previews: PreviewProvider {
+  @Dependency(\.walletApi) static var walletApi
+  
   static var previews: some View {
     VStack {
       SettingsView(
@@ -115,8 +120,8 @@ struct SettingsView_Previews: PreviewProvider {
         store: .init(
           initialState: .init(
             accountState: Account.State(
-              wallet: testWallet,
-              walletProfilesState: WalletProfiles.State(wallet: testWallet, profiles: [.init(wallet: testWallet, profile: mockProfiles[2])])
+              wallet: try! walletApi.getWallet(),
+              walletProfilesState: WalletProfiles.State(wallet: try! walletApi.getWallet(), profiles: [.init(wallet: try! walletApi.getWallet(), profile: mockProfiles[2])])
             )
           ),
           reducer: Settings()

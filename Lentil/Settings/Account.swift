@@ -58,7 +58,7 @@ struct Account: ReducerProtocol {
           return .none
           
         case .profilesResponse(.failure(let error)):
-          print("[ERROR] Could not fetch profiles from API: \(error.localizedDescription)")
+          print("[ERROR] Could not fetch profiles from API: \(error)")
           return .none
           
         case .unlinkWalletTapped:

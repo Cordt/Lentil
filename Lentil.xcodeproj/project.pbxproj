@@ -19,12 +19,12 @@
 		372248DC28DB47A80066BCE5 /* TrendingReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DB28DB47A80066BCE5 /* TrendingReducer.swift */; };
 		372248DF28DBFF080066BCE5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DE28DBFF080066BCE5 /* Theme.swift */; };
 		3723B5FA28E8726D00F9077F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B5F928E8726D00F9077F /* SettingsView.swift */; };
-		3723B5FC28E872AF00F9077F /* SettingsReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B5FB28E872AF00F9077F /* SettingsReducer.swift */; };
+		3723B5FC28E872AF00F9077F /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B5FB28E872AF00F9077F /* Settings.swift */; };
 		3723B5FF28E875D000F9077F /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B5FE28E875D000F9077F /* Keychain.swift */; };
 		3723B60128E875D500F9077F /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B60028E875D500F9077F /* Wallet.swift */; };
 		3723B60428E8763900F9077F /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 3723B60328E8763900F9077F /* web3.swift */; };
 		3723B60628E91FC300F9077F /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B60528E91FC300F9077F /* AccountView.swift */; };
-		3723B60828E9200700F9077F /* AccountReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B60728E9200700F9077F /* AccountReducer.swift */; };
+		3723B60828E9200700F9077F /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B60728E9200700F9077F /* Account.swift */; };
 		376C5ED628D4253F00BA908A /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* Profile.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
@@ -64,7 +64,7 @@
 		37F71B5F28E1B30C00F6D9B1 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5E28E1B30C00F6D9B1 /* TimelineView.swift */; };
 		37F71B6128E1B39100F6D9B1 /* TimelineReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B6028E1B39100F6D9B1 /* TimelineReducer.swift */; };
 		37FF3B8828E92BA2004B9BD3 /* WalletProfilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FF3B8728E92BA2004B9BD3 /* WalletProfilesView.swift */; };
-		37FF3B8A28E92BA9004B9BD3 /* WalletProfilesReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FF3B8928E92BA9004B9BD3 /* WalletProfilesReducer.swift */; };
+		37FF3B8A28E92BA9004B9BD3 /* WalletProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FF3B8928E92BA9004B9BD3 /* WalletProfiles.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,11 +98,11 @@
 		372248DB28DB47A80066BCE5 /* TrendingReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingReducer.swift; sourceTree = "<group>"; };
 		372248DE28DBFF080066BCE5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		3723B5F928E8726D00F9077F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		3723B5FB28E872AF00F9077F /* SettingsReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsReducer.swift; sourceTree = "<group>"; };
+		3723B5FB28E872AF00F9077F /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		3723B5FE28E875D000F9077F /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		3723B60028E875D500F9077F /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		3723B60528E91FC300F9077F /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
-		3723B60728E9200700F9077F /* AccountReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountReducer.swift; sourceTree = "<group>"; };
+		3723B60728E9200700F9077F /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		376C5ED528D4253F00BA908A /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		376C5ED728D4266100BA908A /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		3777830228CCA05D00E7E32A /* Lentil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lentil.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,7 +142,7 @@
 		37F71B5E28E1B30C00F6D9B1 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		37F71B6028E1B39100F6D9B1 /* TimelineReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineReducer.swift; sourceTree = "<group>"; };
 		37FF3B8728E92BA2004B9BD3 /* WalletProfilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletProfilesView.swift; sourceTree = "<group>"; };
-		37FF3B8928E92BA9004B9BD3 /* WalletProfilesReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletProfilesReducer.swift; sourceTree = "<group>"; };
+		37FF3B8928E92BA9004B9BD3 /* WalletProfiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletProfiles.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,11 +226,11 @@
 			isa = PBXGroup;
 			children = (
 				3723B5F928E8726D00F9077F /* SettingsView.swift */,
-				3723B5FB28E872AF00F9077F /* SettingsReducer.swift */,
+				3723B5FB28E872AF00F9077F /* Settings.swift */,
 				3723B60528E91FC300F9077F /* AccountView.swift */,
-				3723B60728E9200700F9077F /* AccountReducer.swift */,
+				3723B60728E9200700F9077F /* Account.swift */,
 				37FF3B8728E92BA2004B9BD3 /* WalletProfilesView.swift */,
-				37FF3B8928E92BA9004B9BD3 /* WalletProfilesReducer.swift */,
+				37FF3B8928E92BA9004B9BD3 /* WalletProfiles.swift */,
 				37BBB12528F1C52D00A6D202 /* WalletProfileView.swift */,
 				37BBB12728F1C53500A6D202 /* WalletProfile.swift */,
 			);
@@ -548,8 +548,8 @@
 			files = (
 				37BBB13128F30E1A00A6D202 /* LensApiClient+TypedData.swift in Sources */,
 				3723B60128E875D500F9077F /* Wallet.swift in Sources */,
-				3723B60828E9200700F9077F /* AccountReducer.swift in Sources */,
-				37FF3B8A28E92BA9004B9BD3 /* WalletProfilesReducer.swift in Sources */,
+				3723B60828E9200700F9077F /* Account.swift in Sources */,
+				37FF3B8A28E92BA9004B9BD3 /* WalletProfiles.swift in Sources */,
 				3723B60628E91FC300F9077F /* AccountView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* PostReducer.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* TrendingReducer.swift in Sources */,
@@ -581,7 +581,7 @@
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
-				3723B5FC28E872AF00F9077F /* SettingsReducer.swift in Sources */,
+				3723B5FC28E872AF00F9077F /* Settings.swift in Sources */,
 				37BBB12828F1C53500A6D202 /* WalletProfile.swift in Sources */,
 				37F71B6128E1B39100F6D9B1 /* TimelineReducer.swift in Sources */,
 				3723B5FA28E8726D00F9077F /* SettingsView.swift in Sources */,

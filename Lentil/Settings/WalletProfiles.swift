@@ -29,7 +29,7 @@ struct WalletProfiles: ReducerProtocol {
           return Effect(value: .profileAction(id, .requestSignature(.setSheetPresented(true))))
           
         case let .setDefaultProfile(_, .failure(error)):
-          print("[WARN] Could not set default profile: \(error.localizedDescription)")
+          print("[WARN] Could not set default profile: \(error)")
           return .none
           
         case .confirmSetDefaultProfile(let id):

@@ -5,38 +5,43 @@ import Foundation
 import web3
 
 
-enum WalletError: Error, Equatable {
-  case failedToStoreKey
-  case noAccountSetup
-  case invalidKey
-  case invalidMessage
-}
-
-
-// MARK: Storage
+// MARK: Key Storage
 
 fileprivate class KeyStorage: EthereumKeyStorageProtocol {
+  enum Error: Swift.Error, Equatable {
+    case failedToStoreKey
+    case failedToLoadKey
+    case failedToDeleteKey
+  }
+  
   static private let serviceIdentifier: String = Bundle.main.bundleIdentifier!
   static private let accountIdentifier: String = "ethereum-private-key"
   
   func storePrivateKey(key: Data) throws {
     do {
-      
       try KeychainInterface.save(
         secret: key,
         service: KeyStorage.serviceIdentifier,
         account: KeyStorage.accountIdentifier
       )
-    } catch let error {
-      print(error.localizedDescription)
+    }
+    catch let error {
+      print("[ERROR] Failed to save key to keychain: \(error)")
+      throw Error.failedToStoreKey
     }
   }
   
   func loadPrivateKey() throws -> Data {
-    return try KeychainInterface.readSecret(
-      service: KeyStorage.serviceIdentifier,
-      account: KeyStorage.accountIdentifier
-    )
+    do {
+      return try KeychainInterface.readSecret(
+        service: KeyStorage.serviceIdentifier,
+        account: KeyStorage.accountIdentifier
+      )
+    }
+    catch let error {
+      print("[ERROR] Failed to load key from keychain: \(error)")
+      throw Error.failedToLoadKey
+    }
   }
   
   static func checkForPrivateKey() throws -> Bool {
@@ -47,16 +52,23 @@ fileprivate class KeyStorage: EthereumKeyStorageProtocol {
       )
       return true
       
-    } catch KeychainInterface.KeychainError.itemNotFound {
+    }
+    catch KeychainInterface.KeychainError.itemNotFound {
       return false
     }
   }
   
   static func deletePrivateKey() throws {
-    try KeychainInterface.deleteSecret(
-      service: KeyStorage.serviceIdentifier,
-      account: KeyStorage.accountIdentifier
-    )
+    do {
+      try KeychainInterface.deleteSecret(
+        service: KeyStorage.serviceIdentifier,
+        account: KeyStorage.accountIdentifier
+      )
+    }
+    catch let error {
+      print("[ERROR] Failed to delete key from keychain: \(error)")
+      throw Error.failedToDeleteKey
+    }
   }
 }
 
@@ -64,26 +76,39 @@ fileprivate class KeyStorage: EthereumKeyStorageProtocol {
 // MARK: Wallet
 
 class Wallet: Equatable {
+  enum Error: Swift.Error, Equatable {
+    case keyInvalid
+    case noWalletFound
+    case walletAlreadyLoaded
+    case walletAlreadyStored
+    
+    case failedToSignMessage
+  }
+  
   private let storage: KeyStorage
   private let ethAccount: EthereumAccount
   
   var address: String
   var publicKey: String
   
+  private static var shared: Wallet?
+  
   static func == (lhs: Wallet, rhs: Wallet) -> Bool {
     lhs.address == rhs.address && lhs.publicKey == rhs.publicKey
   }
   
-  init(password: String) throws {
+  // MARK: - Initialiser
+  
+  private init(password: String) throws {
     self.storage = KeyStorage()
     self.ethAccount = try EthereumAccount(keyStorage: self.storage, keystorePassword: password)
     self.address = self.ethAccount.address.value
     self.publicKey = self.ethAccount.publicKey
   }
   
-  init(privateKey: String, password: String) throws {
+  private init(privateKey: String, password: String) throws {
     guard let key = privateKey.web3.hexData
-    else { throw WalletError.invalidKey }
+    else { throw Error.keyInvalid }
     
     self.storage = KeyStorage()
     try self.storage.encryptAndStorePrivateKey(key: key, keystorePassword: password)
@@ -93,40 +118,112 @@ class Wallet: Equatable {
     self.publicKey = self.ethAccount.publicKey
   }
   
-  func sign(message: String) throws -> String {
-    guard let message = message.data(using: .utf8)
-    else { throw WalletError.invalidMessage }
-    
-    return try self.ethAccount.signMessage(message: message)
-  }
+  // MARK: - Accessing the singleton
   
-  func sign(message: TypedData) throws -> String {
-    return try self.ethAccount.signMessage(message: message)
-  }
-  
-  static func hasAccount() throws -> Bool {
+  static func keyStored() throws -> Bool {
     try KeyStorage.checkForPrivateKey()
   }
   
-  static func removeAccount() throws {
+  static func walletLoaded() throws -> Bool {
+    return Wallet.shared != nil
+  }
+  
+  static func getWallet() throws -> Wallet {
+    guard let wallet = Wallet.shared
+    else { throw Error.noWalletFound }
+    
+    return wallet
+  }
+  
+  static func loadWallet(password: String) throws -> Wallet {
+    if let wallet = Wallet.shared {
+      return wallet
+    }
+    guard try KeyStorage.checkForPrivateKey()
+    else { throw Error.noWalletFound }
+    
+    let wallet = try Wallet(password: password)
+    Wallet.shared = wallet
+    
+    return wallet
+  }
+  
+  static func createWallet(privateKey: String, password: String) throws -> Wallet {
+    guard Wallet.shared == nil
+    else { throw Error.walletAlreadyLoaded }
+    
+    guard try !KeyStorage.checkForPrivateKey()
+    else { throw Error.walletAlreadyStored }
+    
+    let wallet = try Wallet(privateKey: privateKey, password: password)
+    Wallet.shared = wallet
+    
+    return wallet
+  }
+  
+  static func removeWallet() throws {
+    guard Wallet.shared != nil
+    else { throw Error.noWalletFound }
+    
     try KeyStorage.deletePrivateKey()
+    Wallet.shared = nil
+  }
+  
+  #if DEBUG
+  fileprivate static let testWallet = try! Wallet(
+    privateKey: ProcessInfo.processInfo.environment["TEST_WALLET_PRIVATE_KEY"]!,
+    password: ProcessInfo.processInfo.environment["TEST_WALLET_PASSWORD"]!
+  )
+  #endif
+  
+  // MARK: - Methods
+  
+  func sign(message: String) throws -> String {
+    guard let message = message.data(using: .utf8)
+    else { throw Error.failedToSignMessage }
+    
+    do {
+      return try self.ethAccount.signMessage(message: message)
+    }
+    catch let error {
+      print("[ERROR] Failed to sign message: \(error)")
+      throw Error.failedToSignMessage
+    }
+    
+  }
+  
+  func sign(message: TypedData) throws -> String {
+    do {
+      return try self.ethAccount.signMessage(message: message)
+    }
+    catch let error {
+      print("[ERROR] Failed to sign typed data: \(error)")
+      throw Error.failedToSignMessage
+    }
   }
 }
+
 
 // MARK: Wallet Dependency
 
 struct WalletApi {
-  var walletExists: () throws -> Bool
-  var fetchWallet: (_ password: String) throws -> Wallet
+  var keyStored: () throws -> Bool
+  var walletLoaded: () throws -> Bool
+  var getWallet: () throws -> Wallet
+  var loadWallet: (_ password: String) throws -> Wallet
   var createWallet: (_ privateKey: String, _ password: String) throws -> Wallet
+  var removeWallet: () throws -> Void
 }
 
 extension WalletApi: DependencyKey {
   static var liveValue: WalletApi {
     WalletApi(
-      walletExists: Wallet.hasAccount,
-      fetchWallet: Wallet.init,
-      createWallet: Wallet.init
+      keyStored: Wallet.keyStored,
+      walletLoaded: Wallet.walletLoaded,
+      getWallet: Wallet.getWallet,
+      loadWallet: Wallet.loadWallet,
+      createWallet: Wallet.createWallet,
+      removeWallet: Wallet.removeWallet
     )
   }
 }
@@ -138,20 +235,16 @@ extension DependencyValues {
   }
 }
 
-#if DEBUG
 extension WalletApi {
   static var previewValue: WalletApi {
     WalletApi(
-      walletExists: { true },
-      fetchWallet: { _ in testWallet },
-      createWallet: { _, _ in testWallet }
+      keyStored: { true },
+      walletLoaded: { true },
+      getWallet: { Wallet.testWallet },
+      loadWallet: { _ in Wallet.testWallet },
+      createWallet: { _, _ in Wallet.testWallet },
+      removeWallet: {}
     )
   }
 }
-
-let testWallet = try! Wallet(
-  privateKey: ProcessInfo.processInfo.environment["TEST_WALLET_PRIVATE_KEY"]!,
-  password: ProcessInfo.processInfo.environment["TEST_WALLET_PASSWORD"]!
-)
-#endif
 

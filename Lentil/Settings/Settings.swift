@@ -44,14 +44,14 @@ struct Settings: ReducerProtocol {
       switch action {
         case .didAppear:
           do {
-            if try walletApi.walletExists() {
+            if try walletApi.keyStored() {
               return .task {
                 try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
                 return .requestLoadWallet
               }
             }
           } catch let error {
-            print("[ERROR] \(error.localizedDescription)")
+            print("[ERROR] Could not access key store: \(error)")
           }
           return .none
           
@@ -95,14 +95,14 @@ struct Settings: ReducerProtocol {
             return Effect(value: .accountAction(.fetchProfiles))
             
           } catch let error {
-            print("[ERROR] \(error.localizedDescription)")
+            print("[ERROR] Could not link wallet: \(error)")
           }
           return .none
           
         case .loadWallet:
           do {
             state.accountState = Account.State(
-              wallet: try walletApi.fetchWallet(state.loadWalletPasswordTextField),
+              wallet: try walletApi.loadWallet(state.loadWalletPasswordTextField),
               walletProfilesState: nil
             )
             
@@ -110,7 +110,7 @@ struct Settings: ReducerProtocol {
             return Effect(value: .accountAction(.fetchProfiles))
             
           } catch let error {
-            print("[ERROR] \(error.localizedDescription)")
+            print("[ERROR] Could not load wallet: \(error)")
           }
           
           return .none
@@ -121,9 +121,9 @@ struct Settings: ReducerProtocol {
           
           state.accountState = nil
           do {
-            try Wallet.removeAccount()
+            try Wallet.removeWallet()
           } catch let error {
-            print("[ERROR] \(error.localizedDescription)")
+            print("[ERROR] Could not unlink wallet: \(error)")
           }
           return .none
           

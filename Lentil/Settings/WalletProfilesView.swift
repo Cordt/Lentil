@@ -24,15 +24,17 @@ struct WalletProfilesView: View {
 }
 
 struct WalletProfilesView_Previews: PreviewProvider {
+  @Dependency(\.walletApi) static var walletApi
+  
   static var previews: some View {
     Form {
       WalletProfilesView(
         store: .init(
           initialState: .init(
-            wallet: testWallet,
+            wallet: try! walletApi.getWallet(),
             profiles: [
-              .init(wallet: testWallet, profile: mockProfiles[2]),
-              .init(wallet: testWallet, profile: mockProfiles[3], isLast: true)
+              .init(wallet: try! walletApi.getWallet(), profile: mockProfiles[2]),
+              .init(wallet: try! walletApi.getWallet(), profile: mockProfiles[3], isLast: true)
             ]
           ),
           reducer: WalletProfiles()
