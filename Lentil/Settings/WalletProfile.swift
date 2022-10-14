@@ -68,6 +68,9 @@ struct WalletProfile: ReducerProtocol {
                   }
                 )
               }
+              
+            case .startTimer, .stopTimer, .timerTicked:
+              return .none
           }
       }
     }

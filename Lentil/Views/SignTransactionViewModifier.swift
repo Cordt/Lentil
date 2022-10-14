@@ -9,13 +9,22 @@ struct SignTransaction: ReducerProtocol {
   struct State: Equatable {
     var sheetIsPresented: Bool = false
     var typedDataResult: TypedDataResult
+    
+    var timerIsActive: Bool = true
+    var expiresIn: String = ""
   }
   
   enum Action: Equatable {
     case setSheetPresented(Bool)
     case rejectTransaction
     case signTransaction
+    case startTimer
+    case stopTimer
+    case timerTicked
   }
+  
+  @Dependency(\.mainQueue) var mainQueue
+  private enum TimerID {}
   
   func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
     switch action {
@@ -25,6 +34,29 @@ struct SignTransaction: ReducerProtocol {
         
       case .rejectTransaction, .signTransaction:
         // Handled by parent reducer
+        return .none
+        
+      case .startTimer:
+        return .run { [isActive = state.timerIsActive] send in
+          guard isActive else { return }
+          
+          for await _ in self.mainQueue.timer(interval: 1) {
+            await send(.timerTicked)
+          }
+        }
+        .cancellable(id: TimerID.self)
+        
+      case .stopTimer:
+        state.timerIsActive = false
+        return .none
+        
+      case .timerTicked:
+        let remainder = max(Int(state.typedDataResult.expires.timeIntervalSinceNow), 0)
+        if remainder == 0 {
+          state.timerIsActive = false
+          return .none
+        }
+        state.expiresIn = String(remainder) + " sec"
         return .none
     }
   }
@@ -56,6 +88,8 @@ struct SignTransactionViewModifier: ViewModifier {
             SignTransactionView(store: self.store)
           }
         )
+        .onAppear { viewStore.send(.startTimer) }
+        .onDisappear { viewStore.send(.stopTimer) }
     }
   }
 }
@@ -87,39 +121,44 @@ struct SignTransactionView: View {
             .padding()
           }
         
-        // TODO: Add id and expiry date
-        
         VStack(alignment: .leading, spacing: 4) {
-          Text("Requested by")
-            .font(.subheadline)
-            .fontWeight(.medium)
-            
-          Divider()
-            .padding(.top, 8)
-            .padding(.bottom, 16)
+          let expiresIn = viewStore.expiresIn == "0" ? "expired" : viewStore.expiresIn
+          let metadata = JSON(
+            dictionaryLiteral:
+              ("id", JSON(stringLiteral: viewStore.typedDataResult.id)),
+              ("expires", JSON(stringLiteral: expiresIn))
+          )
           
-          VStack(alignment: .leading) {
-            dataFieldView(title: "Name", from: viewStore.typedDataResult.typedData.domain, id: "name")
-            dataFieldView(title: "Chain ID", from: viewStore.typedDataResult.typedData.domain, id: "chainId")
-            dataFieldView(title: "Version", from: viewStore.typedDataResult.typedData.domain, id: "version")
-            dataFieldView(title: "Contract", from: viewStore.typedDataResult.typedData.domain, id: "verifyingContract")
-          }
-          .padding(.bottom, 32)
+          dataSection(
+            title: "Metadata",
+            fields: [
+              ("ID", "id"),
+              ("Expires in", "expires")
+            ],
+            data: metadata
+          )
           
-          Text("Message")
-            .font(.subheadline)
-            .fontWeight(.medium)
+          dataSection(
+            title: "Requested by",
+            fields: [
+              ("Name", "name"),
+              ("Chain ID", "chainId"),
+              ("Version", "version"),
+              ("Contract", "verifyingContract")
+            ],
+            data: viewStore.typedDataResult.typedData.domain
+          )
           
-          Divider()
-            .padding(.top, 8)
-            .padding(.bottom, 16)
-          
-          VStack(alignment: .leading) {
-            dataFieldView(title: "Profile ID", from: viewStore.typedDataResult.typedData.message, id: "profileId")
-            dataFieldView(title: "Nonce", from: viewStore.typedDataResult.typedData.message, id: "nonce")
-            dataFieldView(title: "Deadline", from: viewStore.typedDataResult.typedData.message, id: "deadline")
-            dataFieldView(title: "Wallet", from: viewStore.typedDataResult.typedData.message, id: "wallet")
-          }
+          dataSection(
+            title: "Message",
+            fields: [
+              ("Profile ID", "profileId"),
+              ("Nonce", "nonce"),
+              ("Deadline", "deadline"),
+              ("Wallet", "wallet")
+            ],
+            data: viewStore.typedDataResult.typedData.message
+          )
         }
         .padding()
         
@@ -144,24 +183,48 @@ struct SignTransactionView: View {
   }
   
   @ViewBuilder
+  func dataSection(title: String, fields: [(String, String)], data: JSON) -> some View {
+    Text("\(title)")
+      .font(.subheadline)
+      .fontWeight(.medium)
+    
+    Divider()
+      .padding(.top, 8)
+      .padding(.bottom, 16)
+    
+    VStack(alignment: .leading) {
+      ForEach(fields, id: \.0) {
+        dataFieldView(title: $0.0, from: data, id: $0.1)
+      }
+    }
+    .padding(.bottom, 32)
+  }
+  
+  @ViewBuilder
   func dataFieldView(title: String, from: JSON, id: String) -> some View {
     if let field = from[id]?.stringValue {
-      let prefix = title.count < 8 ? "\t" : ""
-      if field.prefix(2) == "0x" && field.count == 42,
-         let explorerUrl = ProcessInfo.processInfo.environment["BLOCK_EXPLORER_URL"],
-         let url = URL(string: explorerUrl + field) {
-        let addressShortened = field.prefix(8) + "..." + field.suffix(8)
-        HStack(spacing: 0) {
-          Text("\(title):\(prefix)\t\t")
+      HStack(spacing: 0) {
+        HStack {
+          Text("\(title):")
+          Spacer()
+        }
+        .frame(width: 120)
+        
+        if field.prefix(2) == "0x" && field.count == 42,
+           let explorerUrl = ProcessInfo.processInfo.environment["BLOCK_EXPLORER_URL"],
+           let url = URL(string: explorerUrl + field) {
+          
+          let addressShortened = field.prefix(8) + "..." + field.suffix(8)
           Link(addressShortened, destination: url)
             .tint(ThemeColor.systemBlue.color)
         }
-        .font(.subheadline)
+        else {
+          Text("\(field)")
+        }
+        
+        Spacer()
       }
-      else {
-        Text("\(title):\(prefix)\t\t\(field)")
-          .font(.subheadline)
-      }
+      .font(.subheadline)
     }
     else {
       EmptyView()
