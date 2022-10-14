@@ -19,8 +19,9 @@ struct SignTransaction: ReducerProtocol {
     case rejectTransaction
     case signTransaction
     case startTimer
-    case stopTimer
     case timerTicked
+    case stopTimer
+    case sheetDismissed
   }
   
   @Dependency(\.mainQueue) var mainQueue
@@ -39,16 +40,11 @@ struct SignTransaction: ReducerProtocol {
       case .startTimer:
         return .run { [isActive = state.timerIsActive] send in
           guard isActive else { return }
-          
           for await _ in self.mainQueue.timer(interval: 1) {
             await send(.timerTicked)
           }
         }
-        .cancellable(id: TimerID.self)
-        
-      case .stopTimer:
-        state.timerIsActive = false
-        return .none
+        .cancellable(id: TimerID.self, cancelInFlight: true)
         
       case .timerTicked:
         let remainder = max(Int(state.typedDataResult.expires.timeIntervalSinceNow), 0)
@@ -57,6 +53,13 @@ struct SignTransaction: ReducerProtocol {
           return .none
         }
         state.expiresIn = String(remainder) + " sec"
+        return .none
+        
+      case .stopTimer:
+        return .cancel(id: TimerID.self)
+     
+      case .sheetDismissed:
+        // Parent can perform cleanup logic
         return .none
     }
   }

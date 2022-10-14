@@ -82,7 +82,9 @@ class RequestLoggingInterceptor: ApolloInterceptor {
       if let requestVariables { log += "\nVariables:\t\(requestVariables)" }
       if request.additionalHeaders.count > 0 { log += "\nHeaders:\n\(requestHeaders)" }
       
-      print(log)
+      if ProcessInfo.processInfo.environment["DEBUG_LEVEL"]! == "INFO" {
+        print(log)
+      }
       
       chain.proceedAsync(
         request: request,

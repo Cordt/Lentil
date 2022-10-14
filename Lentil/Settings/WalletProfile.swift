@@ -21,6 +21,7 @@ struct WalletProfile: ReducerProtocol {
   
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.walletApi) var walletApi
+  @Dependency(\.mainQueue) var mainQueue
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
@@ -33,7 +34,7 @@ struct WalletProfile: ReducerProtocol {
             case .success(let mutationResult):
               switch mutationResult.data {
                 case .success(let broadcast):
-                  print("Successfully broadcasted:\n\(broadcast.txnHash)\n\(broadcast.txnId)")
+                  print("[INFO] Successfully broadcasted:\n\(broadcast.txnHash)\n\(broadcast.txnId)")
                 case .failure(let error):
                   print("[ERROR] Failed to broadcase transaction: \(error)")
               }
@@ -44,10 +45,6 @@ struct WalletProfile: ReducerProtocol {
           
         case .requestSignature(let signatureAction):
           switch signatureAction {
-            case .setSheetPresented(let present):
-              if !present { state.signTransaction = nil }
-              return .none
-              
             case .rejectTransaction:
               return Effect(
                 value: .requestSignature(
@@ -69,7 +66,11 @@ struct WalletProfile: ReducerProtocol {
                 )
               }
               
-            case .startTimer, .stopTimer, .timerTicked:
+            case .sheetDismissed:
+              state.signTransaction = nil
+              return .none
+              
+            case .setSheetPresented, .startTimer, .timerTicked, .stopTimer:
               return .none
           }
       }

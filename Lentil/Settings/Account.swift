@@ -1,6 +1,7 @@
 // Lentil
 
 import ComposableArchitecture
+import Foundation
 
 
 struct Account: ReducerProtocol {
@@ -97,7 +98,9 @@ struct Account: ReducerProtocol {
             // The tokens should be stored properly in the keychain, not as a global AND
             // the user should be asked to sign the transaction properly, otherwise
             // the whole wallet is at risk when the API is compromised
-            print("[INFO] Successfully retrieved tokens: \(tokens)")
+            if ProcessInfo.processInfo.environment["DEBUG_LEVEL"]! == "INFO" {
+              print("[INFO] Successfully retrieved tokens: \(tokens)")
+            }
             authenticationTokens = tokens
             state.authenticated = true
             return .none

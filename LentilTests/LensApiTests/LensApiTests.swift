@@ -10,7 +10,6 @@ final class LentilApiTests: XCTestCase {
   func testTypedDataForSetProfileIsDecodedAndAmended() throws {
     let typedData = try typedData(from: typedDataDictionary, for: .setDefaultProfile)
     XCTAssertNotNil(typedData)
-    print(typedData.types, typedData.primaryType.description, typedData.message.debugDescription, typedData.domain.debugDescription)
   }
 }
 
