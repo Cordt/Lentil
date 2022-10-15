@@ -85,6 +85,19 @@ fileprivate extension String {
   }
 }
 
+extension String {
+  var llamaToWords: String {
+    return self
+      .replacingOccurrences(
+        of: "([A-Z])",
+        with: " $1",
+        options: .regularExpression,
+        range: range(of: self)
+      )
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .capitalized
+  }
+}
 
 // MARK: Generated Profile picture
 

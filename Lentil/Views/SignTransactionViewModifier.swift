@@ -134,32 +134,16 @@ struct SignTransactionView: View {
           
           dataSection(
             title: "Metadata",
-            fields: [
-              ("ID", "id"),
-              ("Expires in", "expires")
-            ],
             data: metadata
           )
           
           dataSection(
             title: "Requested by",
-            fields: [
-              ("Name", "name"),
-              ("Chain ID", "chainId"),
-              ("Version", "version"),
-              ("Contract", "verifyingContract")
-            ],
             data: viewStore.typedDataResult.typedData.domain
           )
           
           dataSection(
             title: "Message",
-            fields: [
-              ("Profile ID", "profileId"),
-              ("Nonce", "nonce"),
-              ("Deadline", "deadline"),
-              ("Wallet", "wallet")
-            ],
             data: viewStore.typedDataResult.typedData.message
           )
         }
@@ -186,52 +170,59 @@ struct SignTransactionView: View {
   }
   
   @ViewBuilder
-  func dataSection(title: String, fields: [(String, String)], data: JSON) -> some View {
-    Text("\(title)")
-      .font(.subheadline)
-      .fontWeight(.medium)
-    
-    Divider()
-      .padding(.top, 8)
-      .padding(.bottom, 16)
-    
-    VStack(alignment: .leading) {
-      ForEach(fields, id: \.0) {
-        dataFieldView(title: $0.0, from: data, id: $0.1)
+  func dataSection(title: String, data: JSON) -> some View {
+    if let keys = data.objectValue?.keys {
+      let fields: [(String, String)] = keys
+        .compactMap { key in
+          guard let value = data[keyPath: key]?.stringValue
+          else { return nil }
+          return (key.llamaToWords, value)
+        }
+        .sorted { $0.0 < $1.0 }
+      Text("\(title)")
+        .font(.subheadline)
+        .fontWeight(.medium)
+      
+      Divider()
+        .padding(.top, 8)
+        .padding(.bottom, 16)
+      
+      VStack(alignment: .leading) {
+        ForEach(fields, id: \.0) {
+          dataFieldView(id: $0.0, value: $0.1)
+        }
       }
-    }
-    .padding(.bottom, 32)
-  }
-  
-  @ViewBuilder
-  func dataFieldView(title: String, from: JSON, id: String) -> some View {
-    if let field = from[id]?.stringValue {
-      HStack(spacing: 0) {
-        HStack {
-          Text("\(title):")
-          Spacer()
-        }
-        .frame(width: 120)
-        
-        if field.prefix(2) == "0x" && field.count == 42,
-           let explorerUrl = ProcessInfo.processInfo.environment["BLOCK_EXPLORER_URL"],
-           let url = URL(string: explorerUrl + field) {
-          
-          let addressShortened = field.prefix(8) + "..." + field.suffix(8)
-          Link(addressShortened, destination: url)
-            .tint(ThemeColor.systemBlue.color)
-        }
-        else {
-          Text("\(field)")
-        }
-        
-        Spacer()
-      }
-      .font(.subheadline)
+      .padding(.bottom, 32)
     }
     else {
       EmptyView()
     }
+  }
+  
+  @ViewBuilder
+  func dataFieldView(id: String, value: String) -> some View {
+    HStack(spacing: 0) {
+      HStack {
+        Text("\(id):")
+        Spacer()
+      }
+      .frame(width: 140)
+      
+      if value.prefix(2) == "0x" && value.count == 42,
+         let explorerUrl = ProcessInfo.processInfo.environment["BLOCK_EXPLORER_URL"],
+         let url = URL(string: explorerUrl + value) {
+        
+        let addressShortened = value.prefix(8) + "..." + value.suffix(8)
+        Link(addressShortened, destination: url)
+          .tint(ThemeColor.systemBlue.color)
+      }
+      else {
+        Text("\(value)")
+      }
+      
+      Spacer()
+    }
+    .font(.subheadline)
   }
 }
 
