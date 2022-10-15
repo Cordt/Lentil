@@ -11,7 +11,7 @@ struct Settings: ReducerProtocol {
     var passwordTextField = ProcessInfo.processInfo.environment["TEST_WALLET_PASSWORD"]!
     
     var isLoadWalletPresented: Bool = false
-    var loadWalletPasswordTextField = ""
+    var loadWalletPasswordTextField = ProcessInfo.processInfo.environment["TEST_WALLET_PASSWORD"]!
     
     var accountState: Account.State?
   }

@@ -15,7 +15,7 @@ struct Account: ReducerProtocol {
   
   enum Action: Equatable {
     case fetchProfiles
-    case profilesResponse(TaskResult<[Model.Profile]>)
+    case profilesResponse([Model.Profile])
     
     case unlinkWalletTapped
     case unlinkWalletConfirmed
@@ -41,24 +41,17 @@ struct Account: ReducerProtocol {
           case .fetchProfiles:
             return .concatenate(
               Effect(value: .authenticateTapped),
-              .task {
-                await .profilesResponse(
-                  TaskResult {
-                    try await lensApi.profiles(wallet.address).data
-                  }
-                )
+              .run { send in
+                let profiles = try await lensApi.profiles(wallet.address).data
+                await send(.profilesResponse(profiles), animation: .easeIn)
               }
             )
             
-          case .profilesResponse(.success(let profiles)):
+          case .profilesResponse(let profiles):
             let profilesState = profiles
               .enumerated()
               .map { WalletProfile.State(profile: $0.element, isLast: $0.offset == profiles.count - 1) }
             state.walletProfilesState = .init(profiles: .init(uniqueElements: profilesState))
-            return .none
-            
-          case .profilesResponse(.failure(let error)):
-            print("[ERROR] Could not fetch profiles from API: \(error)")
             return .none
             
           case .unlinkWalletTapped:
