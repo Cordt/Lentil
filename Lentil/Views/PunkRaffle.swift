@@ -51,13 +51,13 @@ struct PunkRaffleView: ViewModifier {
                 // TODO Send to settings
               }
               .buttonStyle(.borderedProminent)
-              .tint(ThemeColor.primaryRed.color)
+              .tint(Theme.Color.primaryRed)
               .padding()
             }
             .padding()
             .background(
               RoundedRectangle(cornerRadius: 8)
-                .fill(ThemeColor.faintGray.color)
+                .fill(Theme.Color.faintGray)
             )
           }
         }

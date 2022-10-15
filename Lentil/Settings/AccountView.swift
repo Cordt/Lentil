@@ -18,7 +18,7 @@ struct AccountView: View {
             Spacer()
             Button("Unlink") { viewStore.send(.unlinkWalletTapped) }
               .buttonStyle(.borderless)
-              .tint(ThemeColor.systemRed.color)
+              .tint(Theme.Color.systemRed)
           }
           HStack {
             Text("Address: \(viewStore.addressShort)")
@@ -47,7 +47,7 @@ struct AccountView: View {
           then: WalletProfilesView.init,
           else: {
             Section(
-              header: Text("Unable to load profile").foregroundColor(ThemeColor.systemRed.color),
+              header: Text("Unable to load profile").foregroundColor(Theme.Color.systemRed),
               footer: Text("We could not fetch the profiles for this wallet. Make sure to claim a Lens handle first.")
             ) {
               Button("Retry") { viewStore.send(.fetchProfiles) }
@@ -60,7 +60,7 @@ struct AccountView: View {
         
       }
       .alert(self.store.scope(state: \.unlinkAlert), dismiss: .unlinkWalletCanceled)
-      .tint(ThemeColor.primaryRed.color)
+      .tint(Theme.Color.primaryRed)
     }
   }
 }

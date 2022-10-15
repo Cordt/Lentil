@@ -30,7 +30,7 @@ struct SettingsView: View {
             }
           }
         }
-      .tint(ThemeColor.primaryRed.color)
+      .tint(Theme.Color.primaryRed)
       .sheet(
         isPresented: viewStore.binding(
           get: \.isLinkWalletPresented,
@@ -66,7 +66,7 @@ struct SettingsView: View {
               }
             }
           }
-          .tint(ThemeColor.primaryRed.color)
+          .tint(Theme.Color.primaryRed)
         }
       )
       .sheet(
@@ -94,7 +94,7 @@ struct SettingsView: View {
               }
             }
           }
-          .tint(ThemeColor.primaryRed.color)
+          .tint(Theme.Color.primaryRed)
         }
       )
       .onAppear {

@@ -104,7 +104,7 @@ struct SignTransactionView: View {
     WithViewStore(self.store) { viewStore in
       VStack {
         Rectangle()
-          .fill(ThemeColor.faintGray.color)
+          .fill(Theme.Color.faintGray)
           .frame(height: 50)
           .overlay {
             HStack {
@@ -117,7 +117,7 @@ struct SignTransactionView: View {
                 viewStore.send(.setSheetPresented(false))
               } label: {
                 Image(systemName: "multiply")
-                  .foregroundColor(ThemeColor.lightGrey.color)
+                  .foregroundColor(Theme.Color.lightGrey)
               }
               
             }
@@ -149,18 +149,13 @@ struct SignTransactionView: View {
         }
         .padding()
         
-        VStack {
-          HStack {
-            Button("Reject transaction") {
-              viewStore.send(.rejectTransaction)
-            }
-            Button("Sign transaction") {
-              viewStore.send(.signTransaction)
-            }
+        VStack(spacing: 12) {
+          FloatingButton(title: "Reject transaction", kind: .secondary, fullWidth: true) {
+            viewStore.send(.rejectTransaction)
           }
-          .buttonStyle(.borderedProminent)
-          .tint(ThemeColor.primaryRed.color)
-          .padding()
+          FloatingButton(title: "Sign transaction", kind: .primary, fullWidth: true) {
+            viewStore.send(.signTransaction)
+          }
         }
         .padding()
         
@@ -214,7 +209,7 @@ struct SignTransactionView: View {
         
         let addressShortened = value.prefix(8) + "..." + value.suffix(8)
         Link(addressShortened, destination: url)
-          .tint(ThemeColor.systemBlue.color)
+          .tint(Theme.Color.systemBlue)
       }
       else {
         Text("\(value)")

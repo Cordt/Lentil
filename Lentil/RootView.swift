@@ -47,7 +47,7 @@ struct RootView: View {
         }
         .tabItem { Label("Trending", systemImage: "lightbulb") }
         .tag(Tabs.trending)
-        .accentColor(ThemeColor.darkGrey.color)
+        .accentColor(Theme.Color.darkGrey)
         
         NavigationView {
           Text("Soon™")
@@ -56,7 +56,7 @@ struct RootView: View {
         .tabItem { Label("Townhall", systemImage: "building.columns") }
         .tag(Tabs.townhall)
       }
-      .accentColor(ThemeColor.primaryRed.color)
+      .accentColor(Theme.Color.primaryRed)
     }
   }
 }

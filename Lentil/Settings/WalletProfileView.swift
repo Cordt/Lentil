@@ -16,7 +16,7 @@ struct WalletProfileView: View {
         ) {
           self.content
         }
-        .tint(ThemeColor.primaryRed.color)
+        .tint(Theme.Color.primaryRed)
         .signTransactionSheet(
           store: self.store.scope(
             state: \WalletProfile.State.signTransaction,
@@ -28,7 +28,7 @@ struct WalletProfileView: View {
         Section(header: Text("Profile \(viewStore.profile.id)")) {
           self.content
         }
-        .tint(ThemeColor.primaryRed.color)
+        .tint(Theme.Color.primaryRed)
         .signTransactionSheet(
           store: self.store.scope(
             state: \WalletProfile.State.signTransaction,

@@ -5,23 +5,42 @@ import SwiftUI
 
 // MARK: Colors
 
-enum ThemeColor {
-  case primaryRed
-  case systemRed, systemBlue
-  case darkGrey, lightGrey, faintGray, white
+let col = Color(red: 0, green: 0, blue: 0)
+
+struct Theme {
+  struct Color {
+    static let primaryRed: SwiftUI.Color =   SwiftUI.Color(red: 177/255, green: 15/255, blue: 15/255)
+    static let systemRed: SwiftUI.Color =    SwiftUI.Color(red: 255/255, green: 59/255, blue: 48/255)
+    static let systemBlue: SwiftUI.Color =   SwiftUI.Color(red: 0/255, green: 122/255, blue: 255/255)
+    static let darkGrey: SwiftUI.Color =     SwiftUI.Color(red: 64/255, green: 64/255, blue: 64/255)
+    static let lightGrey: SwiftUI.Color =    SwiftUI.Color(red: 112/255, green: 112/255, blue: 112/255)
+    static let faintGray: SwiftUI.Color =    SwiftUI.Color(red: 242/255, green: 242/255, blue: 242/255)
+    static let white: SwiftUI.Color =        SwiftUI.Color(red: 255/255, green: 255/255, blue: 255/255)
+    static let shadow: SwiftUI.Color =       Theme.Color.lightGrey.opacity(0.2)
+  }
   
-  var color: Color {
-    switch self {
-      case .primaryRed:   return Color(red: 177/255, green: 15/255, blue: 15/255)
-      case .systemRed:    return Color(red: 255/255, green: 59/255, blue: 48/255)
-      case .systemBlue:   return Color(red: 0/255, green: 122/255, blue: 255/255)
-      case .darkGrey:     return Color(red: 64/255, green: 64/255, blue: 64/255)
-      case .lightGrey:    return Color(red: 112/255, green: 112/255, blue: 112/255)
-      case .faintGray:    return Color(red: 242/255, green: 242/255, blue: 242/255)
-      case .white:        return Color(red: 255/255, green: 255/255, blue: 255/255)
+  static let defaultRadius: CGFloat = 8.0
+  static let defaultBorderWidth: CGFloat = 2.0
+}
+
+struct Constants_Preview: PreviewProvider {
+  static var previews: some View {
+    VStack {
+      Group {
+        Rectangle().fill(Theme.Color.primaryRed)
+        Rectangle().fill(Theme.Color.systemRed)
+        Rectangle().fill(Theme.Color.systemBlue)
+        Rectangle().fill(Theme.Color.darkGrey)
+        Rectangle().fill(Theme.Color.lightGrey)
+        Rectangle().fill(Theme.Color.faintGray)
+        Rectangle().fill(Theme.Color.white)
+        Rectangle().fill(Theme.Color.shadow)
+      }
     }
+    .previewLayout(.fixed(width: 380, height: 800))
   }
 }
+
 
 
 // MARK: Line Aweseome Icons
