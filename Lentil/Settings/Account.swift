@@ -22,7 +22,7 @@ struct Account: ReducerProtocol {
     case unlinkWalletCanceled
     
     case authenticateTapped
-    case authenticationChallenge(TaskResult<String>)
+    case authenticationChallenge(String)
     case authenticationChallengeResponse(TaskResult<AuthenticationTokens>)
     
     case walletProfilesAction(WalletProfiles.Action)
@@ -30,6 +30,7 @@ struct Account: ReducerProtocol {
   
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.walletApi) var walletApi
+  @Dependency(\.authTokenApi) var authTokenApi
   
   var body: some ReducerProtocol<State, Action> {
     Reduce<State, Action> { state, action in
@@ -66,16 +67,16 @@ struct Account: ReducerProtocol {
             return .none
             
           case .authenticateTapped:
-            authenticationTokens = nil
-            return .task {
-              await .authenticationChallenge(
-                TaskResult {
-                  try await lensApi.authenticationChallenge(wallet.address).data
-                }
-              )
+            return .run { send in
+              if try authTokenApi.checkFor(.access) {
+                try authTokenApi.delete()
+              }
+              
+              let authTokens = try await lensApi.authenticationChallenge(wallet.address).data
+              await send(.authenticationChallenge(authTokens))
             }
             
-          case .authenticationChallenge(.success(let challenge)):
+          case .authenticationChallenge(let challenge):
             print("[INFO] Trying to sign challenge: \(challenge)")
             return .task {
               let signature = try wallet.sign(message: challenge)
@@ -87,19 +88,13 @@ struct Account: ReducerProtocol {
             }
             
           case .authenticationChallengeResponse(.success(let tokens)):
-            // FIXME: It's a little embarrassing, but works for the moment 😬
-            // The tokens should be stored properly in the keychain, not as a global AND
-            // the user should be asked to sign the transaction properly, otherwise
-            // the whole wallet is at risk when the API is compromised
             if ProcessInfo.processInfo.environment["DEBUG_LEVEL"]! == "INFO" {
               print("[INFO] Successfully retrieved tokens: \(tokens)")
             }
-            authenticationTokens = tokens
-            state.authenticated = true
-            return .none
+            try authTokenApi.store(.access, tokens.accessToken)
+            try authTokenApi.store(.refresh, tokens.refreshToken)
             
-          case .authenticationChallenge(.failure(let error)):
-            print("[ERROR] Could not retrieve challenge to authenticate: \(error)")
+            state.authenticated = true
             return .none
             
           case .authenticationChallengeResponse(.failure(let error)):

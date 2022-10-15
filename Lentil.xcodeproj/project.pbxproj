@@ -46,6 +46,7 @@
 		37BBB13128F30E1A00A6D202 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB13028F30E1A00A6D202 /* LensApiClient+TypedData.swift */; };
 		37BBB13428F3B42500A6D202 /* LensApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB13328F3B42500A6D202 /* LensApiTests.swift */; };
 		37BBB13728F3BA0E00A6D202 /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 37BBB13628F3BA0E00A6D202 /* web3.swift */; };
+		37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */; };
 		37CDEB0E28D03146009B2B7E /* Publication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0D28D03146009B2B7E /* Publication.swift */; };
 		37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0F28D0322F009B2B7E /* Helper.swift */; };
 		37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236928F70EC90037A4A7 /* ComposableArchitecture */; };
@@ -128,6 +129,7 @@
 		37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Interceptors.swift"; sourceTree = "<group>"; };
 		37BBB13028F30E1A00A6D202 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
 		37BBB13328F3B42500A6D202 /* LensApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiTests.swift; sourceTree = "<group>"; };
+		37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenStorage.swift; sourceTree = "<group>"; };
 		37CDEB0D28D03146009B2B7E /* Publication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publication.swift; sourceTree = "<group>"; };
 		37CDEB0F28D0322F009B2B7E /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		37F71B4728DDB40B00F6D9B1 /* ProfilePictureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePictureView.swift; sourceTree = "<group>"; };
@@ -240,7 +242,6 @@
 		3723B5FD28E875BB00F9077F /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
-				3723B5FE28E875D000F9077F /* Keychain.swift */,
 				3723B60028E875D500F9077F /* Wallet.swift */,
 			);
 			path = Wallet;
@@ -281,15 +282,17 @@
 			children = (
 				372248D628DAF4EC0066BCE5 /* Info.plist */,
 				372248CF28DAF4B80066BCE5 /* Assets */,
+				37CF6E1728FA620D0035A7CF /* AuthToken */,
+				37BBB12D28F2737600A6D202 /* LensApi */,
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
+				3723B5F828E8726000F9077F /* Settings */,
 				37F71B5D28E1B2F000F6D9B1 /* Timeline */,
 				372248DD28DB47AE0066BCE5 /* Trending */,
-				3723B5F828E8726000F9077F /* Settings */,
-				3723B5FD28E875BB00F9077F /* Wallet */,
 				37074C4528F3FF040027B75D /* Views */,
-				37BBB12D28F2737600A6D202 /* LensApi */,
+				3723B5FD28E875BB00F9077F /* Wallet */,
+				3723B5FE28E875D000F9077F /* Keychain.swift */,
 				3777830528CCA05D00E7E32A /* LentilApp.swift */,
 				3777830728CCA05D00E7E32A /* RootView.swift */,
 				372248D728DB46890066BCE5 /* RootReducer.swift */,
@@ -356,6 +359,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		37CF6E1728FA620D0035A7CF /* AuthToken */ = {
+			isa = PBXGroup;
+			children = (
+				37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */,
+			);
+			path = AuthToken;
 			sourceTree = "<group>";
 		};
 		37F71B4628DDB3FE00F6D9B1 /* Profile */ = {
@@ -588,6 +599,7 @@
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
 				37FF3B8828E92BA2004B9BD3 /* WalletProfilesView.swift in Sources */,
 				37B6461328E42F8700746D82 /* PopupModifier.swift in Sources */,
+				37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

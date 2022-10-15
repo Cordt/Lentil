@@ -179,9 +179,6 @@ extension LensApi: DependencyKey {
 #endif
 }
 
-
-// Reducer protocol dependencies
-
 extension DependencyValues {
   var lensApi: LensApi {
     get { self[LensApi.self] }

@@ -4,7 +4,7 @@
 import Foundation
 
 
-class KeychainInterface {
+struct KeychainInterface {
   enum KeychainError: Error {
     // Attempted read for an item that does not exist.
     case itemNotFound
@@ -133,5 +133,67 @@ class KeychainInterface {
   }
 }
 
-
-import Foundation
+struct KeyStorage {
+  enum Error: Swift.Error, Equatable {
+    case failedToStoreKey
+    case failedToLoadKey
+    case failedToDeleteKey
+  }
+  
+  private(set) var serviceIdentifier: String
+  private(set) var accountIdentifier: String
+  
+  func storeKey(key: Data) throws {
+    do {
+      try KeychainInterface.save(
+        secret: key,
+        service: self.serviceIdentifier,
+        account: self.accountIdentifier
+      )
+    }
+    catch let error {
+      print("[ERROR] Failed to save key to keychain: \(error)")
+      throw Error.failedToStoreKey
+    }
+  }
+  
+  func loadKey() throws -> Data {
+    do {
+      return try KeychainInterface.readSecret(
+        service: self.serviceIdentifier,
+        account: self.accountIdentifier
+      )
+    }
+    catch let error {
+      print("[ERROR] Failed to load key from keychain: \(error)")
+      throw Error.failedToLoadKey
+    }
+  }
+  
+  static func checkForKey(serviceIdentifier: String, accountIdentifier: String) throws -> Bool {
+    do {
+      _ = try KeychainInterface.readSecret(
+        service: serviceIdentifier,
+        account: accountIdentifier
+      )
+      return true
+      
+    }
+    catch KeychainInterface.KeychainError.itemNotFound {
+      return false
+    }
+  }
+  
+  static func deleteKey(serviceIdentifier: String, accountIdentifier: String) throws {
+    do {
+      try KeychainInterface.deleteSecret(
+        service: serviceIdentifier,
+        account: accountIdentifier
+      )
+    }
+    catch let error {
+      print("[ERROR] Failed to delete key from keychain: \(error)")
+      throw Error.failedToDeleteKey
+    }
+  }
+}

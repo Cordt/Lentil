@@ -54,8 +54,6 @@ struct AuthenticationTokens: Equatable {
   var refreshToken: String
 }
 
-var authenticationTokens: AuthenticationTokens?
-
 struct TypedDataResult: Equatable {
   var id: String
   var expires: Date

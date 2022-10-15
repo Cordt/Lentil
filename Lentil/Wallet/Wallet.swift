@@ -5,70 +5,31 @@ import Foundation
 import web3
 
 
-// MARK: Key Storage
+// MARK: Ethereum Key Storage
 
-fileprivate class KeyStorage: EthereumKeyStorageProtocol {
-  enum Error: Swift.Error, Equatable {
-    case failedToStoreKey
-    case failedToLoadKey
-    case failedToDeleteKey
-  }
+fileprivate struct EthereumKeyStorage: EthereumKeyStorageProtocol {
+  static private let serviceIdentifier: String = "ethereum-wallet-private-key"
+  static private let accountIdentifier: String = "lens-protocol"
   
-  static private let serviceIdentifier: String = Bundle.main.bundleIdentifier!
-  static private let accountIdentifier: String = "ethereum-private-key"
+  let keyStorage = KeyStorage(
+    serviceIdentifier: EthereumKeyStorage.serviceIdentifier,
+    accountIdentifier: EthereumKeyStorage.accountIdentifier
+  )
   
   func storePrivateKey(key: Data) throws {
-    do {
-      try KeychainInterface.save(
-        secret: key,
-        service: KeyStorage.serviceIdentifier,
-        account: KeyStorage.accountIdentifier
-      )
-    }
-    catch let error {
-      print("[ERROR] Failed to save key to keychain: \(error)")
-      throw Error.failedToStoreKey
-    }
+    try self.keyStorage.storeKey(key: key)
   }
   
   func loadPrivateKey() throws -> Data {
-    do {
-      return try KeychainInterface.readSecret(
-        service: KeyStorage.serviceIdentifier,
-        account: KeyStorage.accountIdentifier
-      )
-    }
-    catch let error {
-      print("[ERROR] Failed to load key from keychain: \(error)")
-      throw Error.failedToLoadKey
-    }
+    try self.keyStorage.loadKey()
   }
   
   static func checkForPrivateKey() throws -> Bool {
-    do {
-      _ = try KeychainInterface.readSecret(
-        service: KeyStorage.serviceIdentifier,
-        account: KeyStorage.accountIdentifier
-      )
-      return true
-      
-    }
-    catch KeychainInterface.KeychainError.itemNotFound {
-      return false
-    }
+    try KeyStorage.checkForKey(serviceIdentifier: serviceIdentifier, accountIdentifier: accountIdentifier)
   }
   
   static func deletePrivateKey() throws {
-    do {
-      try KeychainInterface.deleteSecret(
-        service: KeyStorage.serviceIdentifier,
-        account: KeyStorage.accountIdentifier
-      )
-    }
-    catch let error {
-      print("[ERROR] Failed to delete key from keychain: \(error)")
-      throw Error.failedToDeleteKey
-    }
+    try KeyStorage.deleteKey(serviceIdentifier: serviceIdentifier, accountIdentifier: accountIdentifier)
   }
 }
 
@@ -109,7 +70,7 @@ class EthereumWallet: Wallet {
     case failedToSignMessage
   }
   
-  private let storage: KeyStorage
+  private let storage: EthereumKeyStorage
   private let ethAccount: EthereumAccount
   
   var address: String
@@ -124,7 +85,7 @@ class EthereumWallet: Wallet {
   // MARK: - Initialiser
   
   private init(password: String) throws {
-    self.storage = KeyStorage()
+    self.storage = EthereumKeyStorage()
     self.ethAccount = try EthereumAccount(keyStorage: self.storage, keystorePassword: password)
     self.address = self.ethAccount.address.value
     self.publicKey = self.ethAccount.publicKey
@@ -134,7 +95,7 @@ class EthereumWallet: Wallet {
     guard let key = privateKey.web3.hexData
     else { throw Error.keyInvalid }
     
-    self.storage = KeyStorage()
+    self.storage = EthereumKeyStorage()
     try self.storage.encryptAndStorePrivateKey(key: key, keystorePassword: password)
     self.ethAccount = try EthereumAccount(keyStorage: self.storage, keystorePassword: password)
     
@@ -145,7 +106,7 @@ class EthereumWallet: Wallet {
   // MARK: - Accessing the singleton
   
   static func keyStored() throws -> Bool {
-    try KeyStorage.checkForPrivateKey()
+    try EthereumKeyStorage.checkForPrivateKey()
   }
   
   static func walletLoaded() throws -> Bool {
@@ -163,7 +124,7 @@ class EthereumWallet: Wallet {
     if EthereumWallet.shared != nil {
       return
     }
-    guard try KeyStorage.checkForPrivateKey()
+    guard try EthereumKeyStorage.checkForPrivateKey()
     else { throw Error.noWalletFound }
     
     let wallet = try EthereumWallet(password: password)
@@ -174,7 +135,7 @@ class EthereumWallet: Wallet {
     guard EthereumWallet.shared == nil
     else { throw Error.walletAlreadyLoaded }
     
-    guard try !KeyStorage.checkForPrivateKey()
+    guard try !EthereumKeyStorage.checkForPrivateKey()
     else { throw Error.walletAlreadyStored }
     
     let wallet = try EthereumWallet(privateKey: privateKey, password: password)
@@ -185,7 +146,7 @@ class EthereumWallet: Wallet {
     guard EthereumWallet.shared != nil
     else { throw Error.noWalletFound }
     
-    try KeyStorage.deletePrivateKey()
+    try EthereumKeyStorage.deletePrivateKey()
     EthereumWallet.shared = nil
   }
   

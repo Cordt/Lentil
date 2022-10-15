@@ -1,6 +1,7 @@
 // Lentil
 
 import Apollo
+import Dependencies
 import Foundation
 
 
@@ -42,25 +43,29 @@ class NetworkInterceptorProvider: DefaultInterceptorProvider {
 }
 
 class TokenAddingInterceptor: ApolloInterceptor {
+  @Dependency(\.authTokenApi) var authTokenApi
+  
   func interceptAsync<Operation>(
     chain: RequestChain,
     request: HTTPRequest<Operation>,
     response: HTTPResponse<Operation>?,
     completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) where Operation : GraphQLOperation {
-      if let token = authenticationTokens?.accessToken{
+      do {
+        let accessToken = try authTokenApi.load(.access)
         request.addHeader(
           name: "x-access-token",
-          value: token
+          value: accessToken
+        )
+        chain.proceedAsync(
+          request: request,
+          response: response,
+          completion: completion
         )
       }
-      else {
-        print("[INFO] No access token available, cannot add authentication to request")
+      catch let storageError {
+        print("[ERROR] No access token available, cannot add authentication to request: \(storageError)")
+        chain.cancel()
       }
-      chain.proceedAsync(
-        request: request,
-        response: response,
-        completion: completion
-      )
   }
 }
 
