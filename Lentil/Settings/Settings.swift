@@ -37,6 +37,7 @@ struct Settings: ReducerProtocol {
   
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.walletApi) var walletApi
+  @Dependency(\.authTokenApi) var authTokenApi
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
@@ -88,7 +89,10 @@ struct Settings: ReducerProtocol {
             try walletApi.createWallet(state.privateKeyTextField, state.passwordTextField)
             state.accountState = Account.State(walletProfilesState: nil)
             state.isLinkWalletPresented = false
-            return Effect(value: .accountAction(.fetchProfiles))
+            return .concatenate(
+              Effect(value: .accountAction(.checkAuthenticationStatus)),
+              Effect(value: .accountAction(.fetchProfiles))
+            )
             
           } catch let error {
             print("[ERROR] Could not link wallet: \(error)")
@@ -100,7 +104,10 @@ struct Settings: ReducerProtocol {
             try walletApi.loadWallet(state.loadWalletPasswordTextField)
             state.accountState = Account.State(walletProfilesState: nil)
             state.isLoadWalletPresented = false
-            return Effect(value: .accountAction(.fetchProfiles))
+            return .concatenate(
+              Effect(value: .accountAction(.checkAuthenticationStatus)),
+              Effect(value: .accountAction(.fetchProfiles))
+            )
             
           } catch let error {
             print("[ERROR] Could not load wallet: \(error)")
@@ -114,6 +121,7 @@ struct Settings: ReducerProtocol {
           
           state.accountState = nil
           do {
+            try authTokenApi.delete()
             try walletApi.removeWallet()
           } catch let error {
             print("[ERROR] Could not unlink wallet: \(error)")
@@ -122,7 +130,7 @@ struct Settings: ReducerProtocol {
           
         case .accountAction(let walletAction):
           switch walletAction {
-            case .fetchProfiles, .profilesResponse:
+            case  .checkAuthenticationStatus, .fetchProfiles, .profilesResponse:
               return .none
               
             case .unlinkWalletTapped, .unlinkWalletCanceled:
@@ -131,7 +139,7 @@ struct Settings: ReducerProtocol {
             case .unlinkWalletConfirmed:
               return Effect(value: .unlinkWallet)
               
-            case .authenticateTapped, .authenticationChallenge, .authenticationChallengeResponse:
+            case .authenticateTapped, .challengeResponse, .requestSignature, .authenticate, .authenticationChallengeResponse:
               return .none
               
             case .walletProfilesAction:

@@ -102,6 +102,12 @@ fileprivate func addDefaultProfileTypes(in dict: Dictionary<AnyHashable, Any>) -
 }
 
 #if DEBUG
+let mockChallenge: Challenge = .init(
+  message: """
+  \nhttps://api-mumbai.lens.dev wants you to sign in with your Ethereum account:\n0xCCC25867F3241d6d697d2Faa78D387DBD3E9B1ff\n\nSign in with ethereum to lens\n\nURI: https://api-mumbai.lens.dev\nVersion: 1\nChain ID: 80001\nNonce: af577b6dc4072219\nIssued At: 2022-10-18T03:45:16.825Z\n
+  """,
+  expires: Date().addingTimeInterval(60*5)
+)
 let mockTypedData: TypedData = try! typedData(from: typedDataDictionary, for: .setDefaultProfile)
 let typedDataDictionary: [String: Any] =
   [

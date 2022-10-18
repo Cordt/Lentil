@@ -6,9 +6,14 @@ import SwiftUI
 import web3
 
 struct SignTransaction: ReducerProtocol {
+  enum DataType: Equatable {
+    case message(Challenge)
+    case typedData(TypedDataResult)
+  }
+  
   struct State: Equatable {
     var sheetIsPresented: Bool = false
-    var typedDataResult: TypedDataResult
+    var dataToSign: DataType
     
     var timerIsActive: Bool = true
     var expiresIn: String = ""
@@ -47,7 +52,13 @@ struct SignTransaction: ReducerProtocol {
         .cancellable(id: TimerID.self, cancelInFlight: true)
         
       case .timerTicked:
-        let remainder = max(Int(state.typedDataResult.expires.timeIntervalSinceNow), 0)
+        let remainder: Int
+        switch state.dataToSign {
+          case .message(let challenge):
+            remainder = max(Int(challenge.expires.timeIntervalSinceNow), 0)
+          case .typedData(let typedData):
+            remainder = max(Int(typedData.expires.timeIntervalSinceNow), 0)
+        }
         if remainder == 0 {
           state.timerIsActive = false
           return .none
@@ -124,30 +135,14 @@ struct SignTransactionView: View {
             .padding()
           }
         
-        VStack(alignment: .leading, spacing: 4) {
-          let expiresIn = viewStore.expiresIn == "0" ? "expired" : viewStore.expiresIn
-          let metadata = JSON(
-            dictionaryLiteral:
-              ("id", JSON(stringLiteral: viewStore.typedDataResult.id)),
-              ("expires", JSON(stringLiteral: expiresIn))
-          )
-          
-          dataSection(
-            title: "Metadata",
-            data: metadata
-          )
-          
-          dataSection(
-            title: "Requested by",
-            data: viewStore.typedDataResult.typedData.domain
-          )
-          
-          dataSection(
-            title: "Message",
-            data: viewStore.typedDataResult.typedData.message
-          )
+        switch viewStore.dataToSign {
+          case .message(let challenge):
+            challengeBody(expiresIn: viewStore.expiresIn, challenge: challenge)
+              .padding()
+          case .typedData(let typedData):
+            typedDataBody(expiresIn: viewStore.expiresIn, typedDataResult: typedData)
+              .padding()
         }
-        .padding()
         
         VStack(spacing: 12) {
           FloatingButton(title: "Reject transaction", kind: .secondary, fullWidth: true) {
@@ -161,6 +156,58 @@ struct SignTransactionView: View {
         
         Spacer()
       }
+    }
+  }
+  
+  @ViewBuilder
+  func challengeBody(expiresIn: String, challenge: Challenge) -> some View {
+    VStack(alignment: .leading, spacing: 4) {
+      let expiresIn = expiresIn == "0" ? "expired" : expiresIn
+      let metadata = JSON(
+        dictionaryLiteral:
+          ("expiresIn", JSON(stringLiteral: expiresIn))
+      )
+      let message = JSON(
+        dictionaryLiteral:
+          ("message", JSON(stringLiteral: challenge.message))
+      )
+      
+      dataSection(
+        title: "Metadata",
+        data: metadata
+      )
+      
+      dataSection(
+        title: "You are signing",
+        data: message
+      )
+    }
+  }
+  
+  @ViewBuilder
+  func typedDataBody(expiresIn: String, typedDataResult: TypedDataResult) -> some View {
+    VStack(alignment: .leading, spacing: 4) {
+      let expiresIn = expiresIn == "0" ? "expired" : expiresIn
+      let metadata = JSON(
+        dictionaryLiteral:
+          ("id", JSON(stringLiteral: typedDataResult.id)),
+        ("expires", JSON(stringLiteral: expiresIn))
+      )
+      
+      dataSection(
+        title: "Metadata",
+        data: metadata
+      )
+      
+      dataSection(
+        title: "Requested by",
+        data: typedDataResult.typedData.domain
+      )
+      
+      dataSection(
+        title: "Message",
+        data: typedDataResult.typedData.message
+      )
     }
   }
   
@@ -196,7 +243,7 @@ struct SignTransactionView: View {
   
   @ViewBuilder
   func dataFieldView(id: String, value: String) -> some View {
-    HStack(spacing: 0) {
+    HStack(alignment: .top, spacing: 0) {
       HStack {
         Text("\(id):")
         Spacer()
@@ -223,21 +270,35 @@ struct SignTransactionView: View {
 
 
 struct SignTransactionViewModifier_Previews: PreviewProvider {
-  static let store = Store<SignTransaction.State, SignTransaction.Action>(
+  static let challengeStore = Store<SignTransaction.State, SignTransaction.Action>(
     initialState: SignTransaction.State(
-      typedDataResult: .init(
-        id: "abc",
-        expires: Date().addingTimeInterval(60*60),
-        typedData: mockTypedData
+      dataToSign: .message(mockChallenge)
+    ),
+    reducer: SignTransaction()
+  )
+  static let typedDataStore = Store<SignTransaction.State, SignTransaction.Action>(
+    initialState: SignTransaction.State(
+      dataToSign: .typedData(
+        .init(
+          id: "abc",
+          expires: Date().addingTimeInterval(60*60),
+          typedData: mockTypedData
+        )
       )
     ),
     reducer: SignTransaction()
   )
 
   static var previews: some View {
-    Text("Signature request sheet")
-      .sheet(isPresented: .constant(true)) {
-        SignTransactionView(store: self.store)
-      }
+    Group {
+      Text("Signature request sheet for a message")
+        .sheet(isPresented: .constant(true)) {
+          SignTransactionView(store: self.challengeStore)
+        }
+      Text("Signature request sheet for typed Data")
+        .sheet(isPresented: .constant(true)) {
+          SignTransactionView(store: self.typedDataStore)
+        }
+    }
   }
 }

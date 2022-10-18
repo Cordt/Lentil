@@ -11,8 +11,10 @@ struct WalletProfileView: View {
     WithViewStore(self.store) { viewStore in
       if viewStore.isLast {
         Section(
-          header: Text("Profile \(viewStore.profile.id)"),
+          header: Text("Profile \(viewStore.profile.id)")
+            .font(.caption),
           footer: Text("Your wallet can hold any number of profile NFTs. The default profile is the one that will be used for interacting with Lens Protocol.")
+            .font(.caption)
         ) {
           self.content
         }
@@ -25,7 +27,10 @@ struct WalletProfileView: View {
         )
       }
       else {
-        Section(header: Text("Profile \(viewStore.profile.id)")) {
+        Section(
+          header: Text("Profile \(viewStore.profile.id)")
+            .font(.caption)
+        ) {
           self.content
         }
         .tint(Theme.Color.primaryRed)
@@ -47,6 +52,7 @@ struct WalletProfileView: View {
           Spacer()
           Button("Edit") { }
         }
+        .font(.subheadline)
       }
       else {
         HStack {
@@ -56,9 +62,11 @@ struct WalletProfileView: View {
           Button("Set") { }
             .buttonStyle(.borderless)
         }
+        .font(.subheadline)
       }
       
       Text("Handle: \(viewStore.profile.handle)")
+        .font(.subheadline)
       Toggle(
         "Default Profile",
         isOn: viewStore.binding(
@@ -66,6 +74,7 @@ struct WalletProfileView: View {
           send: WalletProfile.Action.defaultProfileToggled
         )
       )
+      .font(.subheadline)
     }
   }
 }

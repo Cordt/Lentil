@@ -10,8 +10,10 @@ struct AccountView: View {
     WithViewStore(self.store) { viewStore in
       Form {
         Section(
-          header: Text("Wallet"),
+          header: Text("Wallet")
+            .font(.caption),
           footer: Text("Your wallet is used to sign transactions and write to Lens Protocol on Polygon. Lens Protocol uses a relayer that allows you to write gasless to the chain.")
+            .font(.caption)
         ) {
           HStack {
             Text("Status: Linked")
@@ -26,15 +28,24 @@ struct AccountView: View {
             Button("Copy") {  }
               .buttonStyle(.borderless)
           }
-          HStack {
-            if viewStore.authenticated {
-              Text("Authenticated")
-            }
-            else {
-              Text("Not authenticated")
+        }
+        
+        
+        Section(
+          header: Text("Authentication status")
+            .font(.caption)
+        ) {
+          if viewStore.authenticated {
+            Text("Signed in")
+          } else {
+            HStack(spacing: 0) {
+              Text("Signed out")
               Spacer()
-              Button("Sign in", action: { viewStore.send(.authenticateTapped) })
-                .buttonStyle(.borderless)
+              SignInWithLens {
+                viewStore.send(.authenticateTapped)
+              }
+              .buttonStyle(.plain)
+              .offset(x: 12)
             }
           }
         }
@@ -47,23 +58,33 @@ struct AccountView: View {
           then: WalletProfilesView.init,
           else: {
             Section(
-              header: Text("Unable to load profile").foregroundColor(Theme.Color.systemRed),
+              header: Text("Unable to load profile")
+                .foregroundColor(Theme.Color.systemRed)
+                .font(.caption),
               footer: Text("We could not fetch the profiles for this wallet. Make sure to claim a Lens handle first.")
+                .font(.caption)
             ) {
               Button("Retry") { viewStore.send(.fetchProfiles) }
-              if let url = URL(string: "https://claim.lens.xyz/") {
+              if let url = URL(string: "https:claim.lens.xyz/") {
                 Link("Claim handle", destination: url)
               }
             }
           }
         )
-        
       }
-      .alert(self.store.scope(state: \.unlinkAlert), dismiss: .unlinkWalletCanceled)
+      .font(.subheadline)
       .tint(Theme.Color.primaryRed)
+      .alert(self.store.scope(state: \.unlinkAlert), dismiss: .unlinkWalletCanceled)
+      .signTransactionSheet(
+        store: self.store.scope(
+          state: \.signTransaction,
+          action: Account.Action.requestSignature
+        )
+      )
     }
   }
 }
+
 
 struct WalletView_Previews: PreviewProvider {
   static var previews: some View {
@@ -79,3 +100,4 @@ struct WalletView_Previews: PreviewProvider {
     )
   }
 }
+

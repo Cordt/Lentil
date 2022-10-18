@@ -48,6 +48,7 @@
 		37BBB13728F3BA0E00A6D202 /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 37BBB13628F3BA0E00A6D202 /* web3.swift */; };
 		37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */; };
 		37BE767128FAA73800282ED0 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* FloatingButton.swift */; };
+		37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */; };
 		37CDEB0E28D03146009B2B7E /* Publication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0D28D03146009B2B7E /* Publication.swift */; };
 		37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0F28D0322F009B2B7E /* Helper.swift */; };
 		37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236928F70EC90037A4A7 /* ComposableArchitecture */; };
@@ -132,6 +133,7 @@
 		37BBB13328F3B42500A6D202 /* LensApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiTests.swift; sourceTree = "<group>"; };
 		37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenStorage.swift; sourceTree = "<group>"; };
 		37BE767028FAA73800282ED0 /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
+		37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithLens.swift; sourceTree = "<group>"; };
 		37CDEB0D28D03146009B2B7E /* Publication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publication.swift; sourceTree = "<group>"; };
 		37CDEB0F28D0322F009B2B7E /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		37F71B4728DDB40B00F6D9B1 /* ProfilePictureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePictureView.swift; sourceTree = "<group>"; };
@@ -367,6 +369,7 @@
 			isa = PBXGroup;
 			children = (
 				37BE767028FAA73800282ED0 /* FloatingButton.swift */,
+				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 				372248DE28DBFF080066BCE5 /* Theme.swift */,
 			);
 			path = "UILibrary+Theme";
@@ -604,6 +607,7 @@
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
+				37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */,
 				3723B5FC28E872AF00F9077F /* Settings.swift in Sources */,
 				37BBB12828F1C53500A6D202 /* WalletProfile.swift in Sources */,
 				37F71B6128E1B39100F6D9B1 /* TimelineReducer.swift in Sources */,

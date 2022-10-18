@@ -24,7 +24,7 @@ struct WalletProfiles: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case let .setDefaultProfile(id, .success(typedDataResult)):
-          state.profiles[id: id]?.signTransaction = .init(typedDataResult: typedDataResult)
+          state.profiles[id: id]?.signTransaction = .init(dataToSign: .typedData(typedDataResult))
           return Effect(value: .profileAction(id, .requestSignature(.setSheetPresented(true))))
           
         case let .setDefaultProfile(_, .failure(error)):

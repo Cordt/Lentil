@@ -41,7 +41,11 @@ struct WalletProfile: ReducerProtocol {
             case .failure(let error):
               print("[ERROR] Failed to broadcase transaction: \(error)")
           }
-          return .none
+          return Effect(
+            value: .requestSignature(
+              .setSheetPresented(false)
+            )
+          )
           
         case .requestSignature(let signatureAction):
           switch signatureAction {
@@ -53,15 +57,16 @@ struct WalletProfile: ReducerProtocol {
               )
               
             case .signTransaction:
-              guard let txnState = state.signTransaction
+              guard let txnState = state.signTransaction,
+                    case let .typedData(typedDataResult) = txnState.dataToSign
               else { return .none }
 
               return .task {
                 await .defaultProfileTnxResult(
                   TaskResult {
                     let wallet = try walletApi.getWallet()
-                    let signedMessage = try wallet.sign(message: txnState.typedDataResult.typedData)
-                    return try await lensApi.broadcast(txnState.typedDataResult.id, signedMessage)
+                    let signedMessage = try wallet.sign(message: typedDataResult.typedData)
+                    return try await lensApi.broadcast(typedDataResult.id, signedMessage)
                   }
                 )
               }

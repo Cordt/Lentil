@@ -13,7 +13,13 @@ extension LensApi: DependencyKey {
       try await run(
         query: ChallengeQuery(request: .init(address: address)),
         mapResult: { data in
-          QueryResult(data: data.challenge.text)
+          QueryResult(
+            data:
+              Challenge(
+                message: data.challenge.text,
+                expires: Date().addingTimeInterval(60 * 5)
+              )
+          )
         }
       )
     },
@@ -165,7 +171,7 @@ extension LensApi: DependencyKey {
   
 #if DEBUG
   static let previewValue = LensApi(
-    authenticationChallenge: { _ in QueryResult(data: "Sign this message!") },
+    authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
     trendingPublications: { _, _, _, _ in return QueryResult(data: mockPublications) },
     commentsOfPublication: { _ in QueryResult(data: mockComments) },
     reactionsOfPublication: { publication in QueryResult(data: mockPosts.first(where: { $0.id == publication.id })!) },

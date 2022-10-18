@@ -60,6 +60,11 @@ struct TypedDataResult: Equatable {
   var typedData: TypedData
 }
 
+struct Challenge: Equatable {
+  var message: String
+  var expires: Date
+}
+
 enum ApiError: Error, Equatable {
   case requestFailed
   case graphQLError
@@ -72,7 +77,7 @@ struct LensApi {
   
   var authenticationChallenge: @Sendable (
     _ address: String
-  ) async throws -> QueryResult<String>
+  ) async throws -> QueryResult<Challenge>
   
   var trendingPublications: @Sendable (
     _ limit: Int,
