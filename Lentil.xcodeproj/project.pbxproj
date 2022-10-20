@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		37074C4728F3FF6A0027B75D /* SignTransactionViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37074C4628F3FF6A0027B75D /* SignTransactionViewModifier.swift */; };
 		372248C628DABA5E0066BCE5 /* PostReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248C528DABA5E0066BCE5 /* PostReducer.swift */; };
 		372248CC28DADE3C0066BCE5 /* HelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248CB28DADE3C0066BCE5 /* HelperTests.swift */; };
 		372248CE28DAF38D0066BCE5 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248CD28DAF38D0066BCE5 /* PostDetailView.swift */; };
@@ -18,13 +17,7 @@
 		372248DA28DB479D0066BCE5 /* TrendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248D928DB479D0066BCE5 /* TrendingView.swift */; };
 		372248DC28DB47A80066BCE5 /* TrendingReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DB28DB47A80066BCE5 /* TrendingReducer.swift */; };
 		372248DF28DBFF080066BCE5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DE28DBFF080066BCE5 /* Theme.swift */; };
-		3723B5FA28E8726D00F9077F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B5F928E8726D00F9077F /* SettingsView.swift */; };
-		3723B5FC28E872AF00F9077F /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B5FB28E872AF00F9077F /* Settings.swift */; };
-		3723B5FF28E875D000F9077F /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B5FE28E875D000F9077F /* Keychain.swift */; };
-		3723B60128E875D500F9077F /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B60028E875D500F9077F /* Wallet.swift */; };
 		3723B60428E8763900F9077F /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 3723B60328E8763900F9077F /* web3.swift */; };
-		3723B60628E91FC300F9077F /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B60528E91FC300F9077F /* AccountView.swift */; };
-		3723B60828E9200700F9077F /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3723B60728E9200700F9077F /* Account.swift */; };
 		376C5ED628D4253F00BA908A /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* Profile.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
@@ -37,15 +30,13 @@
 		3777834328CCD39500E7E32A /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834228CCD39500E7E32A /* API.swift */; };
 		3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834628CDA27600E7E32A /* LensApiClient.swift */; };
 		37933DB128EA978400C11792 /* Binding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37933DB028EA978400C11792 /* Binding.swift */; };
-		37B6461328E42F8700746D82 /* PopupModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B6461228E42F8700746D82 /* PopupModifier.swift */; };
-		37BBB12628F1C52D00A6D202 /* WalletProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12528F1C52D00A6D202 /* WalletProfileView.swift */; };
-		37BBB12828F1C53500A6D202 /* WalletProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12728F1C53500A6D202 /* WalletProfile.swift */; };
 		37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */; };
 		37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */; };
 		37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */; };
 		37BBB13128F30E1A00A6D202 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB13028F30E1A00A6D202 /* LensApiClient+TypedData.swift */; };
 		37BBB13428F3B42500A6D202 /* LensApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB13328F3B42500A6D202 /* LensApiTests.swift */; };
 		37BBB13728F3BA0E00A6D202 /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 37BBB13628F3BA0E00A6D202 /* web3.swift */; };
+		37BBBAFE2901292900E74462 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBBAFD2901292900E74462 /* Keychain.swift */; };
 		37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */; };
 		37BE767128FAA73800282ED0 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* FloatingButton.swift */; };
 		37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */; };
@@ -63,11 +54,6 @@
 		37F71B5228DF487000F6D9B1 /* CommentReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5128DF487000F6D9B1 /* CommentReducer.swift */; };
 		37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5328DF488400F6D9B1 /* CommentView.swift */; };
 		37F71B5628DF4D6400F6D9B1 /* PublicationReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5528DF4D6400F6D9B1 /* PublicationReducer.swift */; };
-		37F71B5C28E03F3700F6D9B1 /* PunkRaffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5B28E03F3700F6D9B1 /* PunkRaffle.swift */; };
-		37F71B5F28E1B30C00F6D9B1 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5E28E1B30C00F6D9B1 /* TimelineView.swift */; };
-		37F71B6128E1B39100F6D9B1 /* TimelineReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B6028E1B39100F6D9B1 /* TimelineReducer.swift */; };
-		37FF3B8828E92BA2004B9BD3 /* WalletProfilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FF3B8728E92BA2004B9BD3 /* WalletProfilesView.swift */; };
-		37FF3B8A28E92BA9004B9BD3 /* WalletProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FF3B8928E92BA9004B9BD3 /* WalletProfiles.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,7 +74,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		37074C4628F3FF6A0027B75D /* SignTransactionViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignTransactionViewModifier.swift; sourceTree = "<group>"; };
 		372248C528DABA5E0066BCE5 /* PostReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostReducer.swift; sourceTree = "<group>"; };
 		372248CB28DADE3C0066BCE5 /* HelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperTests.swift; sourceTree = "<group>"; };
 		372248CD28DAF38D0066BCE5 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
@@ -100,12 +85,6 @@
 		372248D928DB479D0066BCE5 /* TrendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingView.swift; sourceTree = "<group>"; };
 		372248DB28DB47A80066BCE5 /* TrendingReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingReducer.swift; sourceTree = "<group>"; };
 		372248DE28DBFF080066BCE5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		3723B5F928E8726D00F9077F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		3723B5FB28E872AF00F9077F /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
-		3723B5FE28E875D000F9077F /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
-		3723B60028E875D500F9077F /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
-		3723B60528E91FC300F9077F /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
-		3723B60728E9200700F9077F /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		376C5ED528D4253F00BA908A /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		376C5ED728D4266100BA908A /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		3777830228CCA05D00E7E32A /* Lentil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lentil.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,14 +102,12 @@
 		3777834228CCD39500E7E32A /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		3777834628CDA27600E7E32A /* LensApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiClient.swift; sourceTree = "<group>"; };
 		37933DB028EA978400C11792 /* Binding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Binding.swift; sourceTree = "<group>"; };
-		37B6461228E42F8700746D82 /* PopupModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupModifier.swift; sourceTree = "<group>"; };
-		37BBB12528F1C52D00A6D202 /* WalletProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletProfileView.swift; sourceTree = "<group>"; };
-		37BBB12728F1C53500A6D202 /* WalletProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletProfile.swift; sourceTree = "<group>"; };
 		37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Run.swift"; sourceTree = "<group>"; };
 		37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Environment.swift"; sourceTree = "<group>"; };
 		37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Interceptors.swift"; sourceTree = "<group>"; };
 		37BBB13028F30E1A00A6D202 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
 		37BBB13328F3B42500A6D202 /* LensApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiTests.swift; sourceTree = "<group>"; };
+		37BBBAFD2901292900E74462 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenStorage.swift; sourceTree = "<group>"; };
 		37BE767028FAA73800282ED0 /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
 		37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithLens.swift; sourceTree = "<group>"; };
@@ -144,11 +121,6 @@
 		37F71B5128DF487000F6D9B1 /* CommentReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentReducer.swift; sourceTree = "<group>"; };
 		37F71B5328DF488400F6D9B1 /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
 		37F71B5528DF4D6400F6D9B1 /* PublicationReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationReducer.swift; sourceTree = "<group>"; };
-		37F71B5B28E03F3700F6D9B1 /* PunkRaffle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PunkRaffle.swift; sourceTree = "<group>"; };
-		37F71B5E28E1B30C00F6D9B1 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
-		37F71B6028E1B39100F6D9B1 /* TimelineReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineReducer.swift; sourceTree = "<group>"; };
-		37FF3B8728E92BA2004B9BD3 /* WalletProfilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletProfilesView.swift; sourceTree = "<group>"; };
-		37FF3B8928E92BA9004B9BD3 /* WalletProfiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletProfiles.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,16 +154,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		37074C4528F3FF040027B75D /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				37074C4628F3FF6A0027B75D /* SignTransactionViewModifier.swift */,
-				37F71B5B28E03F3700F6D9B1 /* PunkRaffle.swift */,
-				37B6461228E42F8700746D82 /* PopupModifier.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
 		372248C428DABA3E0066BCE5 /* Post */ = {
 			isa = PBXGroup;
 			children = (
@@ -225,29 +187,6 @@
 				372248DB28DB47A80066BCE5 /* TrendingReducer.swift */,
 			);
 			path = Trending;
-			sourceTree = "<group>";
-		};
-		3723B5F828E8726000F9077F /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				3723B5F928E8726D00F9077F /* SettingsView.swift */,
-				3723B5FB28E872AF00F9077F /* Settings.swift */,
-				3723B60528E91FC300F9077F /* AccountView.swift */,
-				3723B60728E9200700F9077F /* Account.swift */,
-				37FF3B8728E92BA2004B9BD3 /* WalletProfilesView.swift */,
-				37FF3B8928E92BA9004B9BD3 /* WalletProfiles.swift */,
-				37BBB12528F1C52D00A6D202 /* WalletProfileView.swift */,
-				37BBB12728F1C53500A6D202 /* WalletProfile.swift */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
-		3723B5FD28E875BB00F9077F /* Wallet */ = {
-			isa = PBXGroup;
-			children = (
-				3723B60028E875D500F9077F /* Wallet.swift */,
-			);
-			path = Wallet;
 			sourceTree = "<group>";
 		};
 		376C5ED428D4245500BA908A /* Models */ = {
@@ -290,18 +229,14 @@
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
-				3723B5F828E8726000F9077F /* Settings */,
-				37F71B5D28E1B2F000F6D9B1 /* Timeline */,
 				372248DD28DB47AE0066BCE5 /* Trending */,
-				37074C4528F3FF040027B75D /* Views */,
-				3723B5FD28E875BB00F9077F /* Wallet */,
-				37BE767228FAA77D00282ED0 /* UILibrary+Theme */,
-				3723B5FE28E875D000F9077F /* Keychain.swift */,
+				37BE767228FAA77D00282ED0 /* Theme */,
 				3777830528CCA05D00E7E32A /* LentilApp.swift */,
 				3777830728CCA05D00E7E32A /* RootView.swift */,
 				372248D728DB46890066BCE5 /* RootReducer.swift */,
 				37933DB028EA978400C11792 /* Binding.swift */,
 				37CDEB0F28D0322F009B2B7E /* Helper.swift */,
+				37BBBAFD2901292900E74462 /* Keychain.swift */,
 				3777834228CCD39500E7E32A /* API.swift */,
 				3777833F28CCD21400E7E32A /* operations.graphql */,
 				3777834128CCD35300E7E32A /* schema.json */,
@@ -365,14 +300,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		37BE767228FAA77D00282ED0 /* UILibrary+Theme */ = {
+		37BE767228FAA77D00282ED0 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
 				37BE767028FAA73800282ED0 /* FloatingButton.swift */,
 				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 				372248DE28DBFF080066BCE5 /* Theme.swift */,
 			);
-			path = "UILibrary+Theme";
+			path = Theme;
 			sourceTree = "<group>";
 		};
 		37CF6E1728FA620D0035A7CF /* AuthToken */ = {
@@ -390,15 +325,6 @@
 				37F71B4928DDB41200F6D9B1 /* ProfilePictureReducer.swift */,
 			);
 			path = Profile;
-			sourceTree = "<group>";
-		};
-		37F71B5D28E1B2F000F6D9B1 /* Timeline */ = {
-			isa = PBXGroup;
-			children = (
-				37F71B5E28E1B30C00F6D9B1 /* TimelineView.swift */,
-				37F71B6028E1B39100F6D9B1 /* TimelineReducer.swift */,
-			);
-			path = Timeline;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -572,19 +498,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				37BBB13128F30E1A00A6D202 /* LensApiClient+TypedData.swift in Sources */,
-				3723B60128E875D500F9077F /* Wallet.swift in Sources */,
-				3723B60828E9200700F9077F /* Account.swift in Sources */,
-				37FF3B8A28E92BA9004B9BD3 /* WalletProfiles.swift in Sources */,
-				3723B60628E91FC300F9077F /* AccountView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* PostReducer.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* TrendingReducer.swift in Sources */,
 				372248D828DB46890066BCE5 /* RootReducer.swift in Sources */,
 				372248CE28DAF38D0066BCE5 /* PostDetailView.swift in Sources */,
+				37BBBAFE2901292900E74462 /* Keychain.swift in Sources */,
 				3777830828CCA05D00E7E32A /* RootView.swift in Sources */,
 				37CDEB0E28D03146009B2B7E /* Publication.swift in Sources */,
 				376C5ED828D4266100BA908A /* PostView.swift in Sources */,
-				3723B5FF28E875D000F9077F /* Keychain.swift in Sources */,
-				37F71B5F28E1B30C00F6D9B1 /* TimelineView.swift in Sources */,
 				37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */,
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
 				37F71B4828DDB40B00F6D9B1 /* ProfilePictureView.swift in Sources */,
@@ -593,14 +514,11 @@
 				372248DA28DB479D0066BCE5 /* TrendingView.swift in Sources */,
 				37F71B4A28DDB41200F6D9B1 /* ProfilePictureReducer.swift in Sources */,
 				37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */,
-				37BBB12628F1C52D00A6D202 /* WalletProfileView.swift in Sources */,
 				37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */,
 				37F71B5228DF487000F6D9B1 /* CommentReducer.swift in Sources */,
-				37F71B5C28E03F3700F6D9B1 /* PunkRaffle.swift in Sources */,
 				37BE767128FAA73800282ED0 /* FloatingButton.swift in Sources */,
 				376C5ED628D4253F00BA908A /* Profile.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
-				37074C4728F3FF6A0027B75D /* SignTransactionViewModifier.swift in Sources */,
 				37F71B5628DF4D6400F6D9B1 /* PublicationReducer.swift in Sources */,
 				37933DB128EA978400C11792 /* Binding.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
@@ -608,13 +526,7 @@
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
 				37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */,
-				3723B5FC28E872AF00F9077F /* Settings.swift in Sources */,
-				37BBB12828F1C53500A6D202 /* WalletProfile.swift in Sources */,
-				37F71B6128E1B39100F6D9B1 /* TimelineReducer.swift in Sources */,
-				3723B5FA28E8726D00F9077F /* SettingsView.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
-				37FF3B8828E92BA2004B9BD3 /* WalletProfilesView.swift in Sources */,
-				37B6461328E42F8700746D82 /* PopupModifier.swift in Sources */,
 				37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
