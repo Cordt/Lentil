@@ -17,7 +17,9 @@
 		372248DA28DB479D0066BCE5 /* TrendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248D928DB479D0066BCE5 /* TrendingView.swift */; };
 		372248DC28DB47A80066BCE5 /* TrendingReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DB28DB47A80066BCE5 /* TrendingReducer.swift */; };
 		372248DF28DBFF080066BCE5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DE28DBFF080066BCE5 /* Theme.swift */; };
-		3723B60428E8763900F9077F /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 3723B60328E8763900F9077F /* web3.swift */; };
+		3738FB322906C91D00BCE06E /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 3738FB312906C91D00BCE06E /* Starscream */; };
+		37580FD129056742002EA858 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37580FD029056742002EA858 /* SettingsView.swift */; };
+		37580FD329056764002EA858 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37580FD229056764002EA858 /* Settings.swift */; };
 		376C5ED628D4253F00BA908A /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* Profile.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
@@ -29,17 +31,20 @@
 		3777832328CCA05F00E7E32A /* LentilUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777832228CCA05F00E7E32A /* LentilUITestsLaunchTests.swift */; };
 		3777834328CCD39500E7E32A /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834228CCD39500E7E32A /* API.swift */; };
 		3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834628CDA27600E7E32A /* LensApiClient.swift */; };
+		377979BF290696A0005D38E0 /* WalletConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377979BE290696A0005D38E0 /* WalletConnect.swift */; };
+		37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */; };
 		37933DB128EA978400C11792 /* Binding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37933DB028EA978400C11792 /* Binding.swift */; };
 		37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */; };
 		37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */; };
 		37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */; };
-		37BBB13128F30E1A00A6D202 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB13028F30E1A00A6D202 /* LensApiClient+TypedData.swift */; };
 		37BBB13428F3B42500A6D202 /* LensApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB13328F3B42500A6D202 /* LensApiTests.swift */; };
-		37BBB13728F3BA0E00A6D202 /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 37BBB13628F3BA0E00A6D202 /* web3.swift */; };
 		37BBBAFE2901292900E74462 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBBAFD2901292900E74462 /* Keychain.swift */; };
 		37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */; };
 		37BE767128FAA73800282ED0 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* FloatingButton.swift */; };
 		37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */; };
+		37C4561529122DE10058BCA5 /* WalletConnect in Frameworks */ = {isa = PBXBuildFile; productRef = 37C4561429122DE10058BCA5 /* WalletConnect */; };
+		37C4561729122DE10058BCA5 /* WalletConnectNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 37C4561629122DE10058BCA5 /* WalletConnectNetworking */; };
+		37C4561929122DE10058BCA5 /* WalletConnectPairing in Frameworks */ = {isa = PBXBuildFile; productRef = 37C4561829122DE10058BCA5 /* WalletConnectPairing */; };
 		37CDEB0E28D03146009B2B7E /* Publication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0D28D03146009B2B7E /* Publication.swift */; };
 		37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0F28D0322F009B2B7E /* Helper.swift */; };
 		37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236928F70EC90037A4A7 /* ComposableArchitecture */; };
@@ -85,6 +90,8 @@
 		372248D928DB479D0066BCE5 /* TrendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingView.swift; sourceTree = "<group>"; };
 		372248DB28DB47A80066BCE5 /* TrendingReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingReducer.swift; sourceTree = "<group>"; };
 		372248DE28DBFF080066BCE5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		37580FD029056742002EA858 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		37580FD229056764002EA858 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		376C5ED528D4253F00BA908A /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		376C5ED728D4266100BA908A /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		3777830228CCA05D00E7E32A /* Lentil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lentil.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,11 +108,12 @@
 		3777834128CCD35300E7E32A /* schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		3777834228CCD39500E7E32A /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		3777834628CDA27600E7E32A /* LensApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiClient.swift; sourceTree = "<group>"; };
+		377979BE290696A0005D38E0 /* WalletConnect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnect.swift; sourceTree = "<group>"; };
+		37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
 		37933DB028EA978400C11792 /* Binding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Binding.swift; sourceTree = "<group>"; };
 		37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Run.swift"; sourceTree = "<group>"; };
 		37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Environment.swift"; sourceTree = "<group>"; };
 		37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Interceptors.swift"; sourceTree = "<group>"; };
-		37BBB13028F30E1A00A6D202 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
 		37BBB13328F3B42500A6D202 /* LensApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiTests.swift; sourceTree = "<group>"; };
 		37BBBAFD2901292900E74462 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenStorage.swift; sourceTree = "<group>"; };
@@ -129,10 +137,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
+				37C4561929122DE10058BCA5 /* WalletConnectPairing in Frameworks */,
 				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
+				37C4561729122DE10058BCA5 /* WalletConnectNetworking in Frameworks */,
+				37C4561529122DE10058BCA5 /* WalletConnect in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
-				3723B60428E8763900F9077F /* web3.swift in Frameworks */,
+				3738FB322906C91D00BCE06E /* Starscream in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,7 +151,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37BBB13728F3BA0E00A6D202 /* web3.swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,6 +199,16 @@
 			path = Trending;
 			sourceTree = "<group>";
 		};
+		37580FCF29056731002EA858 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				37580FD029056742002EA858 /* SettingsView.swift */,
+				37580FD229056764002EA858 /* Settings.swift */,
+				377979BE290696A0005D38E0 /* WalletConnect.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		376C5ED428D4245500BA908A /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -229,6 +249,7 @@
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
+				37580FCF29056731002EA858 /* Settings */,
 				372248DD28DB47AE0066BCE5 /* Trending */,
 				37BE767228FAA77D00282ED0 /* Theme */,
 				3777830528CCA05D00E7E32A /* LentilApp.swift */,
@@ -280,7 +301,7 @@
 				37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */,
 				37F71B4F28DF34E400F6D9B1 /* LensApiClient+Model.swift */,
 				37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */,
-				37BBB13028F30E1A00A6D202 /* LensApiClient+TypedData.swift */,
+				37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */,
 			);
 			path = LensApi;
 			sourceTree = "<group>";
@@ -345,11 +366,14 @@
 			);
 			name = Lentil;
 			packageProductDependencies = (
-				3723B60328E8763900F9077F /* web3.swift */,
 				37D1236928F70EC90037A4A7 /* ComposableArchitecture */,
 				37D1236B28F70EC90037A4A7 /* Dependencies */,
 				37D1236E28F70EE90037A4A7 /* Apollo */,
 				37D1237028F70EE90037A4A7 /* ApolloWebSocket */,
+				3738FB312906C91D00BCE06E /* Starscream */,
+				37C4561429122DE10058BCA5 /* WalletConnect */,
+				37C4561629122DE10058BCA5 /* WalletConnectNetworking */,
+				37C4561829122DE10058BCA5 /* WalletConnectPairing */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -370,7 +394,6 @@
 			);
 			name = LentilTests;
 			packageProductDependencies = (
-				37BBB13628F3BA0E00A6D202 /* web3.swift */,
 			);
 			productName = LentilTests;
 			productReference = 3777831228CCA05E00E7E32A /* LentilTests.xctest */;
@@ -427,9 +450,10 @@
 			);
 			mainGroup = 377782F928CCA05D00E7E32A;
 			packageReferences = (
-				3723B60228E8763900F9077F /* XCRemoteSwiftPackageReference "web3" */,
 				37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */,
+				3738FB302906C91D00BCE06E /* XCRemoteSwiftPackageReference "Starscream" */,
+				37C4561329122DE10058BCA5 /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -497,7 +521,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37BBB13128F30E1A00A6D202 /* LensApiClient+TypedData.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* PostReducer.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* TrendingReducer.swift in Sources */,
 				372248D828DB46890066BCE5 /* RootReducer.swift in Sources */,
@@ -506,6 +529,7 @@
 				3777830828CCA05D00E7E32A /* RootView.swift in Sources */,
 				37CDEB0E28D03146009B2B7E /* Publication.swift in Sources */,
 				376C5ED828D4266100BA908A /* PostView.swift in Sources */,
+				37580FD329056764002EA858 /* Settings.swift in Sources */,
 				37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */,
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
 				37F71B4828DDB40B00F6D9B1 /* ProfilePictureView.swift in Sources */,
@@ -515,13 +539,16 @@
 				37F71B4A28DDB41200F6D9B1 /* ProfilePictureReducer.swift in Sources */,
 				37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */,
 				37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */,
+				377979BF290696A0005D38E0 /* WalletConnect.swift in Sources */,
 				37F71B5228DF487000F6D9B1 /* CommentReducer.swift in Sources */,
 				37BE767128FAA73800282ED0 /* FloatingButton.swift in Sources */,
 				376C5ED628D4253F00BA908A /* Profile.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
 				37F71B5628DF4D6400F6D9B1 /* PublicationReducer.swift in Sources */,
+				37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */,
 				37933DB128EA978400C11792 /* Binding.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
+				37580FD129056742002EA858 /* SettingsView.swift in Sources */,
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
@@ -697,6 +724,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -727,6 +755,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -860,12 +889,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3723B60228E8763900F9077F /* XCRemoteSwiftPackageReference "web3" */ = {
+		3738FB302906C91D00BCE06E /* XCRemoteSwiftPackageReference "Starscream" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/argentlabs/web3.swift";
+			repositoryURL = "https://github.com/daltoniam/Starscream.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 3.1.1;
+			};
+		};
+		37C4561329122DE10058BCA5 /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WalletConnect/WalletConnectSwiftV2";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 		37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
@@ -873,7 +910,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.42.0;
+				minimumVersion = 0.44.0;
 			};
 		};
 		37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
@@ -887,15 +924,25 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		3723B60328E8763900F9077F /* web3.swift */ = {
+		3738FB312906C91D00BCE06E /* Starscream */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3723B60228E8763900F9077F /* XCRemoteSwiftPackageReference "web3" */;
-			productName = web3.swift;
+			package = 3738FB302906C91D00BCE06E /* XCRemoteSwiftPackageReference "Starscream" */;
+			productName = Starscream;
 		};
-		37BBB13628F3BA0E00A6D202 /* web3.swift */ = {
+		37C4561429122DE10058BCA5 /* WalletConnect */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3723B60228E8763900F9077F /* XCRemoteSwiftPackageReference "web3" */;
-			productName = web3.swift;
+			package = 37C4561329122DE10058BCA5 /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */;
+			productName = WalletConnect;
+		};
+		37C4561629122DE10058BCA5 /* WalletConnectNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37C4561329122DE10058BCA5 /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */;
+			productName = WalletConnectNetworking;
+		};
+		37C4561829122DE10058BCA5 /* WalletConnectPairing */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37C4561329122DE10058BCA5 /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */;
+			productName = WalletConnectPairing;
 		};
 		37D1236928F70EC90037A4A7 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;

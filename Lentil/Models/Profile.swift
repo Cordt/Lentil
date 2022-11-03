@@ -43,7 +43,7 @@ let mockProfiles: [Model.Profile] = [
     id: "3",
     name: "Cordt",
     handle: "@cordt.lens",
-    ownedBy: ProcessInfo.processInfo.environment["TEST_WALLET_PRIVATE_KEY"]!,
+    ownedBy: ProcessInfo.processInfo.environment["TEST_WALLET_PUBLIC_KEY"]!,
     isFollowedByMe: false,
     profilePictureUrl: URL(string: "https://cloudflare-ipfs.com/ipfs/QmaZdyGNxdM2AB37PXp4bUjF3Mc5VR33r8pwMqmJF3P6be/dev_6163.png")!,
     isDefault: true

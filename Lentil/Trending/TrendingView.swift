@@ -33,7 +33,6 @@ struct TrendingView: View {
       }
       .navigationTitle("Trending")
       .listStyle(.plain)
-      .scrollIndicators(.hidden)
       .refreshable { viewStore.send(.refreshFeed) }
       .task { viewStore.send(.refreshFeed) }
     }

@@ -1,7 +1,7 @@
 // LentilTests
 
 import Foundation
-import web3
+import Web3
 import XCTest
 @testable import Lentil
 

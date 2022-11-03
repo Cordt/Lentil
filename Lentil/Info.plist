@@ -8,5 +8,9 @@
 		<string>la-regular-400.ttf</string>
 		<string>la-solid-900.ttf</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>wc</string>
+	</array>
 </dict>
 </plist>

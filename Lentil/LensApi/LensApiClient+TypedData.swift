@@ -2,29 +2,24 @@
 
 import Apollo
 import Foundation
-import web3
 
 
 enum LensTypedData {
   case setDefaultProfile
 }
 
-func typedData(from: JSONObject, for: LensTypedData) throws -> TypedData {
-  let decoder = JSONDecoder()
-  
-  // The web3 library requires a 'Primary Type' to be specified and uses the term 'message' instead of 'value'
+func typedData(from: JSONObject, for: LensTypedData) throws -> Data {
   var updatedTypedData = addPrimaryType(to: from, for: `for`)
   updatedTypedData = renameValue(in: updatedTypedData)
   updatedTypedData = traverse(dict: updatedTypedData, removing: "__typename")
   
-  // Lens API doesn't provide the types for the domain, but the web3 library requires them
+  // Lens API doesn't provide the types for the domain
   switch `for` {
     case .setDefaultProfile:
       updatedTypedData = addDefaultProfileTypes(in: updatedTypedData)
   }
   
-  let jsonData = try JSONSerialization.data(withJSONObject: updatedTypedData)
-  return try decoder.decode(TypedData.self, from: jsonData)
+  return try JSONSerialization.data(withJSONObject: updatedTypedData)
 }
 
 fileprivate func addPrimaryType(to dict: Dictionary<AnyHashable, Any>, for: LensTypedData) -> Dictionary<AnyHashable, Any> {
@@ -108,7 +103,7 @@ let mockChallenge: Challenge = .init(
   """,
   expires: Date().addingTimeInterval(60*5)
 )
-let mockTypedData: TypedData = try! typedData(from: typedDataDictionary, for: .setDefaultProfile)
+let mockTypedData: Data = try! typedData(from: typedDataDictionary, for: .setDefaultProfile)
 let typedDataDictionary: [String: Any] =
   [
     "__typename": "SetDefaultProfileEIP712TypedData",

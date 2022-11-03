@@ -14,14 +14,15 @@ struct LentilApp: App {
   
   var body: some Scene {
     WindowGroup {
-      RootView(
-        store: Store(
-          initialState: Root.State(
-            trendingState: .init()
-          ),
-          reducer: Root()
-        )
-      )
+      SettingsView(store: .init(initialState: .init(), reducer: Settings()))
+//      RootView(
+//        store: Store(
+//          initialState: Root.State(
+//            trendingState: .init()
+//          ),
+//          reducer: Root()
+//        )
+//      )
     }
   }
 }

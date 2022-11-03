@@ -4,7 +4,6 @@ import Apollo
 import ComposableArchitecture
 import SwiftUI
 import UIKit
-import web3
 
 
 extension LensApi: DependencyKey {

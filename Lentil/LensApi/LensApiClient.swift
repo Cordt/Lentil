@@ -3,7 +3,6 @@
 import Apollo
 import Foundation
 import SwiftUI
-import web3
 
 
 class Network {
@@ -57,7 +56,7 @@ struct AuthenticationTokens: Equatable {
 struct TypedDataResult: Equatable {
   var id: String
   var expires: Date
-  var typedData: TypedData
+  var typedData: Data
 }
 
 struct Challenge: Equatable {

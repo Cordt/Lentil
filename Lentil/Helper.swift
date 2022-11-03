@@ -99,6 +99,7 @@ extension String {
   }
 }
 
+
 // MARK: Generated Profile picture
 
 func profileGradient(from handle: String) -> some View {
@@ -136,3 +137,4 @@ func profileGradient(from handle: String) -> some View {
 fileprivate func hexString(_ iterator: Array<UInt8>.Iterator) -> String {
   return iterator.map { String(format: "%02x", $0) }.joined()
 }
+
