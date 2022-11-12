@@ -19,10 +19,10 @@ struct RootView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       NavigationView {
-        TrendingView(
+        TimelineView(
           store: self.store.scope(
-            state: \.trendingState,
-            action: Root.Action.trendingAction
+            state: \.timelineState,
+            action: Root.Action.timelineAction
           )
         )
       }
@@ -36,7 +36,7 @@ struct ContentView_Previews: PreviewProvider {
     RootView(
       store: Store(
         initialState: Root.State(
-          trendingState: .init()
+          timelineState: .init()
         ),
         reducer: Root()
       )

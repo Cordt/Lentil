@@ -17,7 +17,7 @@ struct LentilApp: App {
       RootView(
         store: Store(
           initialState: Root.State(
-            trendingState: .init()
+            timelineState: .init()
           ),
           reducer: Root()
         )

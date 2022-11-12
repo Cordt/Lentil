@@ -4,8 +4,8 @@ import ComposableArchitecture
 import SwiftUI
 
 
-struct TrendingView: View {
-  let store: Store<Trending.State, Trending.Action>
+struct TimelineView: View {
+  let store: Store<Timeline.State, Timeline.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -14,7 +14,7 @@ struct TrendingView: View {
           ForEachStore(
             self.store.scope(
               state: \.posts,
-              action: Trending.Action.post)
+              action: Timeline.Action.post)
           ) {
             PostView(store: $0)
           }
@@ -31,7 +31,7 @@ struct TrendingView: View {
         .listRowSeparator(.hidden)
         .listRowInsets(EdgeInsets())
       }
-      .navigationTitle("Trending")
+      .navigationTitle("Timeline")
       .listStyle(.plain)
       .refreshable { viewStore.send(.refreshFeed) }
       .task { viewStore.send(.refreshFeed) }
@@ -43,10 +43,10 @@ struct TrendingView: View {
 struct TrendingView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
-      TrendingView(
+      TimelineView(
         store: .init(
           initialState: .init(),
-          reducer: Trending()
+          reducer: Timeline()
         )
       )
     }

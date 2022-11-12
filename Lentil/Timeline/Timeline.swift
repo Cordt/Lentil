@@ -3,7 +3,7 @@
 import ComposableArchitecture
 
 
-struct Trending: ReducerProtocol {
+struct Timeline: ReducerProtocol {
   struct State: Equatable {
     var posts: IdentifiedArrayOf<Post.State> = []
     var cursorToNext: String?

@@ -5,24 +5,24 @@ import SwiftUI
 
 struct Root: ReducerProtocol {
   struct State: Equatable {
-    var trendingState: Trending.State
+    var timelineState: Timeline.State
   }
   
   enum Action: Equatable {
-    case trendingAction(Trending.Action)
+    case timelineAction(Timeline.Action)
   }
   
   var body: some ReducerProtocol<State, Action> {
     Scope(
-      state: \State.trendingState,
-      action: /Action.trendingAction
+      state: \State.timelineState,
+      action: /Action.timelineAction
     ) {
-      Trending()
+      Timeline()
     }
     
     Reduce { state, action in
       switch action {
-        case .trendingAction:
+        case .timelineAction:
           return .none
       }
     }
