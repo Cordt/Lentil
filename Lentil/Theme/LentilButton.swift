@@ -3,7 +3,7 @@
 import SwiftUI
 
 
-struct FloatingButton: View {
+struct LentilButton: View {
   enum Kind {
     case primary, secondary
   }
@@ -39,11 +39,10 @@ struct FloatingButton: View {
       HStack {
         if fullWidth { Spacer() }
         Text("\(title)")
-          .font(.callout)
-          .fontWeight(.medium)
-          .padding([.top, .bottom], 12)
-          .padding([.leading, .trailing], 16)
-          .foregroundColor(self.foregroundColor)
+          .textCase(.uppercase)
+          .font(style: .button, color: self.foregroundColor)
+          .padding([.top, .bottom], 10)
+          .padding([.leading, .trailing], 24)
         if fullWidth { Spacer() }
       }
       .background(self.backgroundColor)
@@ -52,7 +51,6 @@ struct FloatingButton: View {
           .stroke(self.borderColor, lineWidth: Theme.defaultBorderWidth)
       )
       .cornerRadius(Theme.defaultRadius)
-      .shadow(color: Theme.Color.shadow, radius: 6.0, x: 6, y: 6)
     }
   }
 }
@@ -60,10 +58,10 @@ struct FloatingButton: View {
 struct FloatingButton_Previews: PreviewProvider {
   static var previews: some View {
     VStack {
-      FloatingButton(title: "Active button") {}
-      FloatingButton(title: "Disabled button", disabled: true) {}
-      FloatingButton(title: "Secondary button", kind: .secondary) {}
-      FloatingButton(title: "Full width button", fullWidth: true) {}
+      LentilButton(title: "Active button") {}
+      LentilButton(title: "Disabled button", disabled: true) {}
+      LentilButton(title: "Secondary button", kind: .secondary) {}
+      LentilButton(title: "Full width button", fullWidth: true) {}
     }
     .padding()
   }

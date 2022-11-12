@@ -31,7 +31,27 @@ struct TimelineView: View {
         .listRowSeparator(.hidden)
         .listRowInsets(EdgeInsets())
       }
-      .navigationTitle("Timeline")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .navigationBarLeading) {
+          NavigationLink {
+            WalletConnectView(
+              store: self.store.scope(
+                state: \.walletConnect,
+                action: Timeline.Action.walletConnect
+              )
+            )
+          } label: {
+            Image(systemName: "link")
+              .foregroundColor(Theme.Color.white)
+          }
+
+        }
+        ToolbarItem(placement: .principal) {
+          Text("Lentil")
+            .font(highlight: .largeHeadline, color: Theme.Color.primary)
+        }
+      }
       .listStyle(.plain)
       .refreshable { viewStore.send(.refreshFeed) }
       .task { viewStore.send(.refreshFeed) }

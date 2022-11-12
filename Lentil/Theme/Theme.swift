@@ -26,7 +26,7 @@ struct Theme {
     static let shadow: SwiftUI.Color =         Theme.Color.greyShade3.opacity(0.2)
   }
   
-  static let defaultRadius: CGFloat = 8.0
+  static let defaultRadius: CGFloat = 5.0
   static let defaultBorderWidth: CGFloat = 2.0
 }
 
@@ -58,6 +58,15 @@ struct Constants_Preview: PreviewProvider {
     .previewLayout(.fixed(width: 380, height: 800))
   }
 }
+
+func lentilGradient() -> LinearGradient {
+  LinearGradient(
+    gradient: Gradient(colors: [Theme.Color.primary, Theme.Color.secondary]),
+    startPoint: .top,
+    endPoint: .bottom
+  )
+}
+
 
 
 // MARK: Fonts
@@ -97,9 +106,34 @@ struct PrimaryFont: ViewModifier {
   }
 }
 
+struct HighlightFont: ViewModifier {
+  enum Style {
+    case largeHeadline
+  }
+  
+  private var font: Font {
+    switch self.style {
+      case .largeHeadline:    return Font.custom("Righteous-Regular", size: 24, relativeTo: .title3)
+    }
+  }
+  
+  var style: Style
+  var color: Color
+  
+  func body(content: Content) -> some View {
+    content
+      .font(self.font)
+      .foregroundColor(self.color)
+  }
+}
+
 extension View {
   func font(style: PrimaryFont.Style, color: Color = Theme.Color.text) -> some View {
     modifier(PrimaryFont(style: style, color: color))
+  }
+  
+  func font(highlight style: HighlightFont.Style, color: Color = Theme.Color.text) -> some View {
+    modifier(HighlightFont(style: style, color: color))
   }
 }
 

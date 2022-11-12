@@ -23,6 +23,7 @@
 		372248DA28DB479D0066BCE5 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248D928DB479D0066BCE5 /* TimelineView.swift */; };
 		372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DB28DB47A80066BCE5 /* Timeline.swift */; };
 		372248DF28DBFF080066BCE5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DE28DBFF080066BCE5 /* Theme.swift */; };
+		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
 		376C5ED628D4253F00BA908A /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* Profile.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
@@ -42,7 +43,7 @@
 		37BBB13428F3B42500A6D202 /* LensApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB13328F3B42500A6D202 /* LensApiTests.swift */; };
 		37BBBAFE2901292900E74462 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBBAFD2901292900E74462 /* Keychain.swift */; };
 		37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */; };
-		37BE767128FAA73800282ED0 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* FloatingButton.swift */; };
+		37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* LentilButton.swift */; };
 		37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */; };
 		37C5178C291E9E91002D2B6D /* Glaip in Frameworks */ = {isa = PBXBuildFile; productRef = 37C5178B291E9E91002D2B6D /* Glaip */; };
 		37C5178E291EA986002D2B6D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C5178D291EA986002D2B6D /* ProfileView.swift */; };
@@ -53,6 +54,8 @@
 		37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236B28F70EC90037A4A7 /* Dependencies */; };
 		37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236E28F70EE90037A4A7 /* Apollo */; };
 		37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1237028F70EE90037A4A7 /* ApolloWebSocket */; };
+		37F5C5E6291FBC34003C9E40 /* WalletConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E5291FBC34003C9E40 /* WalletConnectView.swift */; };
+		37F5C5E8291FBC4E003C9E40 /* WalletConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E7291FBC4E003C9E40 /* WalletConnect.swift */; };
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
 		37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */; };
 		37F71B5028DF34E400F6D9B1 /* LensApiClient+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4F28DF34E400F6D9B1 /* LensApiClient+Model.swift */; };
@@ -96,6 +99,7 @@
 		372248D928DB479D0066BCE5 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		372248DB28DB47A80066BCE5 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		372248DE28DBFF080066BCE5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		376C5ED528D4253F00BA908A /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		376C5ED728D4266100BA908A /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		3777830228CCA05D00E7E32A /* Lentil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lentil.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -120,12 +124,14 @@
 		37BBB13328F3B42500A6D202 /* LensApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiTests.swift; sourceTree = "<group>"; };
 		37BBBAFD2901292900E74462 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenStorage.swift; sourceTree = "<group>"; };
-		37BE767028FAA73800282ED0 /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
+		37BE767028FAA73800282ED0 /* LentilButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilButton.swift; sourceTree = "<group>"; };
 		37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithLens.swift; sourceTree = "<group>"; };
 		37C5178D291EA986002D2B6D /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		37C51792291F518C002D2B6D /* RemoteImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImage.swift; sourceTree = "<group>"; };
 		37CDEB0D28D03146009B2B7E /* Publication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publication.swift; sourceTree = "<group>"; };
 		37CDEB0F28D0322F009B2B7E /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		37F5C5E5291FBC34003C9E40 /* WalletConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectView.swift; sourceTree = "<group>"; };
+		37F5C5E7291FBC4E003C9E40 /* WalletConnect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnect.swift; sourceTree = "<group>"; };
 		37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
 		37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostStatsView.swift; sourceTree = "<group>"; };
 		37F71B4F28DF34E400F6D9B1 /* LensApiClient+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Model.swift"; sourceTree = "<group>"; };
@@ -205,6 +211,7 @@
 		372248CF28DAF4B80066BCE5 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				3737037C291FF56E0006FB04 /* Righteous */,
 				370D8E87291F8C27004A091F /* DMSans */,
 				370D8E86291F8C1B004A091F /* LineAwesome */,
 				3777830928CCA05E00E7E32A /* Assets.xcassets */,
@@ -219,6 +226,14 @@
 				372248DB28DB47A80066BCE5 /* Timeline.swift */,
 			);
 			path = Timeline;
+			sourceTree = "<group>";
+		};
+		3737037C291FF56E0006FB04 /* Righteous */ = {
+			isa = PBXGroup;
+			children = (
+				3737037D291FF5770006FB04 /* Righteous-Regular.ttf */,
+			);
+			path = Righteous;
 			sourceTree = "<group>";
 		};
 		376C5ED428D4245500BA908A /* Models */ = {
@@ -262,14 +277,14 @@
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
-				372248DD28DB47AE0066BCE5 /* Timeline */,
 				37BE767228FAA77D00282ED0 /* Theme */,
+				372248DD28DB47AE0066BCE5 /* Timeline */,
+				37F5C5E4291FBC25003C9E40 /* Wallet */,
 				3777830528CCA05D00E7E32A /* LentilApp.swift */,
 				3777830728CCA05D00E7E32A /* RootView.swift */,
 				372248D728DB46890066BCE5 /* Root.swift */,
 				37933DB028EA978400C11792 /* Binding.swift */,
 				37CDEB0F28D0322F009B2B7E /* Helper.swift */,
-				37BBBAFD2901292900E74462 /* Keychain.swift */,
 				3777834228CCD39500E7E32A /* API.swift */,
 				3777833F28CCD21400E7E32A /* operations.graphql */,
 				3777834128CCD35300E7E32A /* schema.json */,
@@ -336,7 +351,7 @@
 		37BE767228FAA77D00282ED0 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
-				37BE767028FAA73800282ED0 /* FloatingButton.swift */,
+				37BE767028FAA73800282ED0 /* LentilButton.swift */,
 				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 				372248DE28DBFF080066BCE5 /* Theme.swift */,
 			);
@@ -355,8 +370,18 @@
 			isa = PBXGroup;
 			children = (
 				37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */,
+				37BBBAFD2901292900E74462 /* Keychain.swift */,
 			);
 			path = AuthToken;
+			sourceTree = "<group>";
+		};
+		37F5C5E4291FBC25003C9E40 /* Wallet */ = {
+			isa = PBXGroup;
+			children = (
+				37F5C5E5291FBC34003C9E40 /* WalletConnectView.swift */,
+				37F5C5E7291FBC4E003C9E40 /* WalletConnect.swift */,
+			);
+			path = Wallet;
 			sourceTree = "<group>";
 		};
 		37F71B4628DDB3FE00F6D9B1 /* Profile */ = {
@@ -496,6 +521,7 @@
 				372248D528DAF4C40066BCE5 /* la-regular-400.ttf in Resources */,
 				370D8E8F291F8C3B004A091F /* DMSans-Bold.ttf in Resources */,
 				370D8E90291F8C3B004A091F /* DMSans-Italic.ttf in Resources */,
+				3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */,
 				370D8E8E291F8C3B004A091F /* DMSans-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -542,6 +568,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				37F5C5E6291FBC34003C9E40 /* WalletConnectView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* PostReducer.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */,
 				372248D828DB46890066BCE5 /* Root.swift in Sources */,
@@ -559,7 +586,7 @@
 				37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */,
 				37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */,
 				37F71B5228DF487000F6D9B1 /* CommentReducer.swift in Sources */,
-				37BE767128FAA73800282ED0 /* FloatingButton.swift in Sources */,
+				37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */,
 				376C5ED628D4253F00BA908A /* Profile.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
 				37F71B5628DF4D6400F6D9B1 /* PublicationReducer.swift in Sources */,
@@ -570,6 +597,7 @@
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
+				37F5C5E8291FBC4E003C9E40 /* WalletConnect.swift in Sources */,
 				37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
 				37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */,
@@ -661,7 +689,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -715,7 +743,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

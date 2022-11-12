@@ -7,6 +7,8 @@ struct Timeline: ReducerProtocol {
   struct State: Equatable {
     var posts: IdentifiedArrayOf<Post.State> = []
     var cursorToNext: String?
+    
+    var walletConnect: WalletConnect.State = .init()
   }
   
   enum Action: Equatable {
@@ -15,12 +17,17 @@ struct Timeline: ReducerProtocol {
     case publicationsResponse(TaskResult<QueryResult<[Model.Publication]>>)
     case loadMore
     
+    case walletConnect(WalletConnect.Action)
     case post(id: Post.State.ID, action: Post.Action)
   }
   
   @Dependency(\.lensApi) var lensApi
   
   var body: some ReducerProtocol<State, Action> {
+    Scope(state: \.walletConnect, action: /Action.walletConnect) {
+        WalletConnect()
+      }
+    
     Reduce { state, action in
       enum CancelFetchPublicationsID {}
       
@@ -65,6 +72,9 @@ struct Timeline: ReducerProtocol {
               print("[WARN] Could not fetch publications from API: \(error)")
               return .none
           }
+          
+        case .walletConnect:
+          return .none
           
         case .post:
           return .none

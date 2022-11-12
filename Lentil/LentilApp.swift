@@ -10,7 +10,16 @@ import ComposableArchitecture
 
 @main
 struct LentilApp: App {
-  @State var isPresented = false
+  
+  init() {
+    let navBarAppearance = UINavigationBarAppearance()
+    navBarAppearance.configureWithDefaultBackground()
+    navBarAppearance.backgroundColor = UIColor(Theme.Color.secondary)
+    
+    UINavigationBar.appearance().standardAppearance = navBarAppearance
+    UINavigationBar.appearance().compactAppearance = navBarAppearance
+    UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
+  }
   
   var body: some Scene {
     WindowGroup {
