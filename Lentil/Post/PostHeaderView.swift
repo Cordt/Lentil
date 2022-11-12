@@ -10,12 +10,15 @@ struct PostHeaderView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       HStack(spacing: 8) {
-        ProfilePictureView(
-          store: self.store.scope(
-            state: \.profile,
-            action: Publication.Action.profile
-          )
-        )
+        if let image = viewStore.profilePicture {
+          image
+            .resizable()
+            .frame(width: 32, height: 32)
+            .clipShape(Circle())
+        } else {
+          profileGradient(from: viewStore.publication.profileHandle)
+            .frame(width: 32, height: 32)
+        }
         
         if let creatorName = viewStore.publication.profileName {
           VStack(alignment: .leading) {
@@ -40,6 +43,7 @@ struct PostHeaderView: View {
         
         Spacer()
       }
+      .task { viewStore.send(.remoteProfilePicture(.fetchImage)) }
     }
   }
 }

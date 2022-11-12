@@ -100,7 +100,7 @@ extension String {
 }
 
 
-// MARK: Generated Profile picture
+// MARK: Profile
 
 func profileGradient(from handle: String) -> some View {
   let handleHash = SHA256.hash(data: Data(handle.utf8))
@@ -138,3 +138,15 @@ fileprivate func hexString(_ iterator: Array<UInt8>.Iterator) -> String {
   return iterator.map { String(format: "%02x", $0) }.joined()
 }
 
+func simpleCount(from: Int) -> String {
+  switch from {
+    case 0 ..< 1000:
+      return "\(from)"
+    case 1_000 ..< 10_000:
+      return "\(from)"
+    case 10_000 ..< 100_000:
+      return "\(from)"
+    default:
+      return "\(from)"
+  }
+}

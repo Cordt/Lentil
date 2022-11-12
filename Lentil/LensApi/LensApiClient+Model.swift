@@ -58,36 +58,57 @@ extension Model.Profile {
   static func from(_ profile: DefaultProfileQuery.Data.DefaultProfile?) -> Self? {
     guard
       let profile = profile?.fragments.profileFields,
-      profile.isDefault,
-      let profilePictureURL = profile.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let url = URL(string: profilePictureURL)
+      profile.isDefault
     else { return nil }
+    
+    let profilePictureURL = profile.picture?.asMediaSet?.original.fragments.mediaFields.url
+    let coverPictureURL = profile.coverPicture?.asMediaSet?.original.fragments.mediaFields.url
+    var profileUrl: URL? = nil
+    var coverUrl: URL? = nil
+    if let urlString = profilePictureURL { profileUrl =  URL(string: urlString) }
+    if let urlString = coverPictureURL { coverUrl =  URL(string: urlString) }
     
     return Model.Profile(
       id: profile.id,
       name: profile.name,
       handle: profile.handle,
       ownedBy: profile.ownedBy,
-      isFollowedByMe: false,
-      profilePictureUrl: url,
+      profilePictureUrl: profileUrl,
+      coverPictureUrl: coverUrl,
+      bio: profile.bio,
+      isFollowedByMe: profile.isFollowedByMe,
+      following: profile.stats.totalFollowing,
+      followers: profile.stats.totalFollowers,
+      location: nil,
+      joinedDate: Date(),
       isDefault: profile.isDefault
     )
   }
   
   static func from(_ profiles: ProfilesQuery.Data.Profile) -> [Self] {
     return profiles.items.map { profile in
-      let fields = profile.fragments.profileFields
-      var url: URL? = nil
-      if let urlString = fields.picture?.asMediaSet?.original.fragments.mediaFields.url { url = URL(string: urlString) }
+      let profile = profile.fragments.profileFields
+      let profilePictureURL = profile.picture?.asMediaSet?.original.fragments.mediaFields.url
+      let coverPictureURL = profile.coverPicture?.asMediaSet?.original.fragments.mediaFields.url
+      var profileUrl: URL? = nil
+      var coverUrl: URL? = nil
+      if let urlString = profilePictureURL { profileUrl =  URL(string: urlString) }
+      if let urlString = coverPictureURL { coverUrl =  URL(string: urlString) }
       
       return Model.Profile(
-        id: fields.id,
-        name: fields.name,
-        handle: fields.handle,
-        ownedBy: fields.ownedBy,
-        isFollowedByMe: false,
-        profilePictureUrl: url,
-        isDefault: fields.isDefault
+        id: profile.id,
+        name: profile.name,
+        handle: profile.handle,
+        ownedBy: profile.ownedBy,
+        profilePictureUrl: profileUrl,
+        coverPictureUrl: coverUrl,
+        bio: profile.bio,
+        isFollowedByMe: profile.isFollowedByMe,
+        following: profile.stats.totalFollowing,
+        followers: profile.stats.totalFollowers,
+        location: nil,
+        joinedDate: Date(),
+        isDefault: profile.isDefault
       )
     }
   }

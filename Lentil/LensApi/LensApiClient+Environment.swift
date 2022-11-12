@@ -97,7 +97,7 @@ extension LensApi: DependencyKey {
         }
       )
     },
-    getProfilePicture: { url in
+    fetchImage: { url in
       let (data, _) = try await URLSession.shared.data(from: url)
       guard let uiImage = UIImage(data: data)
       else { throw ApiError.requestFailed }
@@ -176,7 +176,11 @@ extension LensApi: DependencyKey {
     reactionsOfPublication: { publication in QueryResult(data: mockPosts.first(where: { $0.id == publication.id })!) },
     defaultProfile: { _ in QueryResult(data: mockProfiles[2]) },
     profiles: { _ in QueryResult(data: mockProfiles) },
-    getProfilePicture: { _ in throw ApiError.requestFailed },
+    fetchImage: { url in
+      if url.absoluteString == "https://profile-picture" { return Image("cryptopunk1") }
+      else if url.absoluteString == "https://cover-picture" { return Image("munich") }
+      else { throw ApiError.requestFailed }
+    },
     broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
     authenticate: { _, _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }

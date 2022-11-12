@@ -101,7 +101,7 @@ struct LensApi {
     _ ownedBy: String
   ) async throws -> QueryResult<[Model.Profile]>
   
-  var getProfilePicture: @Sendable (
+  var fetchImage: @Sendable (
     _ from: URL
   ) async throws -> Image
   

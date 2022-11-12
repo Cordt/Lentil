@@ -1,18 +1,23 @@
 // Lentil
 
 import ComposableArchitecture
+import SwiftUI
 
 
 struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var publication: Model.Publication
     
-    var profile: ProfilePicture.State {
+    var profilePicture: Image?
+    var remoteProfilePicture: RemoteImage.State {
       get {
-        ProfilePicture.State(
-          handle: self.publication.profileHandle,
-          pictureUrl: self.publication.profilePictureUrl
+        RemoteImage.State(
+          imageUrl: self.publication.profilePictureUrl,
+          image: self.profilePicture
         )
+      }
+      set {
+        self.profilePicture = newValue.image
       }
     }
     
@@ -30,13 +35,19 @@ struct Publication: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    case profile(ProfilePicture.Action)
+    case remoteProfilePicture(RemoteImage.Action)
   }
   
-  func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
-    switch action {
-      case .profile(_):
-        return .none
+  var body: some ReducerProtocol<State, Action> {
+    Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
+      RemoteImage()
+    }
+    
+    Reduce { state, action in
+      switch action {
+        case .remoteProfilePicture:
+          return .none
+      }
     }
   }
 }

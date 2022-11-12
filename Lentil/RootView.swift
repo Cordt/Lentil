@@ -26,7 +26,7 @@ struct RootView: View {
           )
         )
       }
-      .accentColor(Theme.Color.primaryRed)
+      .accentColor(Theme.Color.primary)
     }
   }
 }

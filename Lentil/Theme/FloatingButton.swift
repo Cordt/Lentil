@@ -16,13 +16,13 @@ struct FloatingButton: View {
   var foregroundColor: Color {
     switch self.kind {
       case .primary:    return Theme.Color.white
-      case .secondary:  return Theme.Color.primaryRed
+      case .secondary:  return Theme.Color.primary
     }
   }
   var backgroundColor: Color {
     var color: Color
     switch self.kind {
-      case .primary:    color = Theme.Color.primaryRed
+      case .primary:    color = Theme.Color.primary
       case .secondary:  color = Theme.Color.white
     }
     return self.disabled ? color.opacity(0.5) : color
@@ -30,7 +30,7 @@ struct FloatingButton: View {
   var borderColor: Color {
     switch self.kind {
       case .primary:    return .clear
-      case .secondary:  return Theme.Color.primaryRed
+      case .secondary:  return Theme.Color.primary
     }
   }
   
