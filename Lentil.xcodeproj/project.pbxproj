@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3704F6B329220FDD00AAF569 /* WalletConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3704F6B229220FDD00AAF569 /* WalletConnector.swift */; };
+		3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3704F6B5292288E900AAF569 /* WalletConnectSwift */; };
 		370D8E8E291F8C3B004A091F /* DMSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E88291F8C3B004A091F /* DMSans-Medium.ttf */; };
 		370D8E8F291F8C3B004A091F /* DMSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E89291F8C3B004A091F /* DMSans-Bold.ttf */; };
 		370D8E90291F8C3B004A091F /* DMSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E8A291F8C3B004A091F /* DMSans-Italic.ttf */; };
@@ -45,7 +47,6 @@
 		37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */; };
 		37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* LentilButton.swift */; };
 		37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */; };
-		37C5178C291E9E91002D2B6D /* Glaip in Frameworks */ = {isa = PBXBuildFile; productRef = 37C5178B291E9E91002D2B6D /* Glaip */; };
 		37C5178E291EA986002D2B6D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C5178D291EA986002D2B6D /* ProfileView.swift */; };
 		37C51793291F518C002D2B6D /* RemoteImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C51792291F518C002D2B6D /* RemoteImage.swift */; };
 		37CDEB0E28D03146009B2B7E /* Publication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0D28D03146009B2B7E /* Publication.swift */; };
@@ -54,8 +55,8 @@
 		37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236B28F70EC90037A4A7 /* Dependencies */; };
 		37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236E28F70EE90037A4A7 /* Apollo */; };
 		37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1237028F70EE90037A4A7 /* ApolloWebSocket */; };
-		37F5C5E6291FBC34003C9E40 /* WalletConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E5291FBC34003C9E40 /* WalletConnectView.swift */; };
-		37F5C5E8291FBC4E003C9E40 /* WalletConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E7291FBC4E003C9E40 /* WalletConnect.swift */; };
+		37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E5291FBC34003C9E40 /* WalletView.swift */; };
+		37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E7291FBC4E003C9E40 /* Wallet.swift */; };
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
 		37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */; };
 		37F71B5028DF34E400F6D9B1 /* LensApiClient+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4F28DF34E400F6D9B1 /* LensApiClient+Model.swift */; };
@@ -82,6 +83,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3704F6B229220FDD00AAF569 /* WalletConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnector.swift; sourceTree = "<group>"; };
 		370D8E88291F8C3B004A091F /* DMSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-Medium.ttf"; sourceTree = "<group>"; };
 		370D8E89291F8C3B004A091F /* DMSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-Bold.ttf"; sourceTree = "<group>"; };
 		370D8E8A291F8C3B004A091F /* DMSans-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-Italic.ttf"; sourceTree = "<group>"; };
@@ -130,8 +132,8 @@
 		37C51792291F518C002D2B6D /* RemoteImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImage.swift; sourceTree = "<group>"; };
 		37CDEB0D28D03146009B2B7E /* Publication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publication.swift; sourceTree = "<group>"; };
 		37CDEB0F28D0322F009B2B7E /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
-		37F5C5E5291FBC34003C9E40 /* WalletConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectView.swift; sourceTree = "<group>"; };
-		37F5C5E7291FBC4E003C9E40 /* WalletConnect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnect.swift; sourceTree = "<group>"; };
+		37F5C5E5291FBC34003C9E40 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
+		37F5C5E7291FBC4E003C9E40 /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
 		37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostStatsView.swift; sourceTree = "<group>"; };
 		37F71B4F28DF34E400F6D9B1 /* LensApiClient+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Model.swift"; sourceTree = "<group>"; };
@@ -145,9 +147,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37C5178C291E9E91002D2B6D /* Glaip in Frameworks */,
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
 				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
+				3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
 			);
@@ -378,8 +380,9 @@
 		37F5C5E4291FBC25003C9E40 /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
-				37F5C5E5291FBC34003C9E40 /* WalletConnectView.swift */,
-				37F5C5E7291FBC4E003C9E40 /* WalletConnect.swift */,
+				37F5C5E5291FBC34003C9E40 /* WalletView.swift */,
+				37F5C5E7291FBC4E003C9E40 /* Wallet.swift */,
+				3704F6B229220FDD00AAF569 /* WalletConnector.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -414,7 +417,7 @@
 				37D1236B28F70EC90037A4A7 /* Dependencies */,
 				37D1236E28F70EE90037A4A7 /* Apollo */,
 				37D1237028F70EE90037A4A7 /* ApolloWebSocket */,
-				37C5178B291E9E91002D2B6D /* Glaip */,
+				3704F6B5292288E900AAF569 /* WalletConnectSwift */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -493,7 +496,7 @@
 			packageReferences = (
 				37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */,
-				37C5178A291E9E91002D2B6D /* XCRemoteSwiftPackageReference "Glaip" */,
+				3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -568,7 +571,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37F5C5E6291FBC34003C9E40 /* WalletConnectView.swift in Sources */,
+				3704F6B329220FDD00AAF569 /* WalletConnector.swift in Sources */,
+				37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* PostReducer.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */,
 				372248D828DB46890066BCE5 /* Root.swift in Sources */,
@@ -597,7 +601,7 @@
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
-				37F5C5E8291FBC4E003C9E40 /* WalletConnect.swift in Sources */,
+				37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */,
 				37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
 				37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */,
@@ -935,12 +939,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		37C5178A291E9E91002D2B6D /* XCRemoteSwiftPackageReference "Glaip" */ = {
+		3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/maurovz/Glaip.git";
+			repositoryURL = "https://github.com/WalletConnect/WalletConnectSwift.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.2;
+				branch = master;
+				kind = branch;
 			};
 		};
 		37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
@@ -962,10 +966,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		37C5178B291E9E91002D2B6D /* Glaip */ = {
+		3704F6B5292288E900AAF569 /* WalletConnectSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 37C5178A291E9E91002D2B6D /* XCRemoteSwiftPackageReference "Glaip" */;
-			productName = Glaip;
+			package = 3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */;
+			productName = WalletConnectSwift;
 		};
 		37D1236928F70EC90037A4A7 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;

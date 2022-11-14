@@ -35,7 +35,7 @@ struct TimelineView: View {
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           NavigationLink {
-            WalletConnectView(
+            WalletView(
               store: self.store.scope(
                 state: \.walletConnect,
                 action: Timeline.Action.walletConnect
@@ -49,7 +49,7 @@ struct TimelineView: View {
         }
         ToolbarItem(placement: .principal) {
           Text("Lentil")
-            .font(highlight: .largeHeadline, color: Theme.Color.primary)
+            .font(highlight: .largeHeadline, color: Theme.Color.white)
         }
       }
       .listStyle(.plain)

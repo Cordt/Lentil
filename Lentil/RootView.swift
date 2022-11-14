@@ -10,10 +10,6 @@ import SwiftUI
 
 
 struct RootView: View {
-  enum Tabs {
-    case timeline, trending, townhall
-  }
-  
   let store: Store<Root.State, Root.Action>
   
   var body: some View {

@@ -8,7 +8,7 @@ struct Timeline: ReducerProtocol {
     var posts: IdentifiedArrayOf<Post.State> = []
     var cursorToNext: String?
     
-    var walletConnect: WalletConnect.State = .init()
+    var walletConnect: Wallet.State = .init()
   }
   
   enum Action: Equatable {
@@ -17,7 +17,7 @@ struct Timeline: ReducerProtocol {
     case publicationsResponse(TaskResult<QueryResult<[Model.Publication]>>)
     case loadMore
     
-    case walletConnect(WalletConnect.Action)
+    case walletConnect(Wallet.Action)
     case post(id: Post.State.ID, action: Post.Action)
   }
   
@@ -25,7 +25,7 @@ struct Timeline: ReducerProtocol {
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.walletConnect, action: /Action.walletConnect) {
-        WalletConnect()
+        Wallet()
       }
     
     Reduce { state, action in

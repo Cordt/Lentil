@@ -14,7 +14,7 @@ struct LentilApp: App {
   init() {
     let navBarAppearance = UINavigationBarAppearance()
     navBarAppearance.configureWithDefaultBackground()
-    navBarAppearance.backgroundColor = UIColor(Theme.Color.secondary)
+    navBarAppearance.backgroundColor = UIColor(Theme.Color.primary)
     
     UINavigationBar.appearance().standardAppearance = navBarAppearance
     UINavigationBar.appearance().compactAppearance = navBarAppearance
