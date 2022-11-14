@@ -20,12 +20,14 @@ struct Wallet: ReducerProtocol {
   }
   
   @Dependency(\.walletConnect) var walletConnect
+  @Dependency(\.lensApi) var lensApi
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
     switch action {
       case .connect:
         self.walletConnect.connect()
         state.connectionStatus = .connected
+        self.lensApi.authenticationChallenge
         return .none
         
       case .signChallenge(let message):

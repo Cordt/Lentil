@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Righteous-Regular.ttf</string>
@@ -15,7 +19,5 @@
 		<string>la-regular-400.ttf</string>
 		<string>la-solid-900.ttf</string>
 	</array>
-	<key>LSApplicationQueriesSchemes</key>
-	<array/>
 </dict>
 </plist>
