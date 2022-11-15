@@ -66,10 +66,10 @@ struct BackButton: View {
     .frame(width: 30, height: 30)
     .background(
       Circle()
-        .fill(Theme.Color.white)
+        .fill(Theme.Color.primary)
         .frame(width: 30, height: 30)
     )
-    .accentColor(Theme.Color.primary)
+    .accentColor(Theme.Color.white)
   }
 }
 
@@ -89,8 +89,9 @@ struct LentilButton_Previews: PreviewProvider {
           BackButton(action: {})
         }
       }
+      .toolbarBackground(Theme.Color.primary, for: .navigationBar)
+      .toolbarBackground(.visible, for: .navigationBar)
     }
-    .navigationBarBackground()
   }
 }
 

@@ -42,19 +42,22 @@ struct PostDetailView: View {
           
           Spacer()
         }
+        .padding()
       }
-      .padding()
+      .padding(.top, 1)
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
-          BackButton(action: {dismiss()})
+          BackButton { dismiss() }
         }
         ToolbarItem(placement: .principal) {
-          Text(" Post ")
-            .font(style: .headline, color: Theme.Color.white)
+          Text("Post")
+            .font(style: .headline, color: Theme.Color.primary)
         }
       }
-      .navigationBarTitleDisplayMode(.inline)
+      .toolbarBackground(Theme.Color.white, for: .navigationBar)
+      .toolbarBackground(.hidden, for: .navigationBar)
       .navigationBarBackButtonHidden(true)
+      .accentColor(Theme.Color.primary)
       .task {
         viewStore.send(.fetchComments)
       }
@@ -71,7 +74,7 @@ struct PostDetail_Previews: PreviewProvider {
           reducer: Post()
         )
       )
+      .navigationBarTitleDisplayMode(.inline)
     }
-    .navigationBarBackground(color: Theme.Color.primary, accentColor: Theme.Color.white)
   }
 }

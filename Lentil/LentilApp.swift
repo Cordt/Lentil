@@ -7,9 +7,11 @@
 
 import SwiftUI
 import ComposableArchitecture
+import UIKit
 
 @main
 struct LentilApp: App {
+  
   var body: some Scene {
     WindowGroup {
       RootView(

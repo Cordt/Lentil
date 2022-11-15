@@ -21,8 +21,9 @@ struct RootView: View {
             action: Root.Action.timelineAction
           )
         )
+        .toolbarBackground(Theme.Color.primary, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
       }
-      .navigationBarBackground()
     }
   }
 }

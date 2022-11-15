@@ -46,7 +46,7 @@ struct TimelineView: View {
           }
         }
         ToolbarItem(placement: .principal) {
-          Text("Lentil")
+          Text("lentil")
             .font(highlight: .largeHeadline, color: Theme.Color.white)
         }
       }
@@ -68,7 +68,8 @@ struct TrendingView_Previews: PreviewProvider {
           reducer: Timeline()
         )
       )
+      .toolbarBackground(Theme.Color.primary, for: .navigationBar)
+      .toolbarBackground(.visible, for: .navigationBar)
     }
-    .navigationBarBackground()
   }
 }
