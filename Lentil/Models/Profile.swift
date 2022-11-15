@@ -75,7 +75,7 @@ let mockProfiles: [Model.Profile] = [
   ),
   .init(
     id: "4",
-    name: "nil",
+    name: nil,
     handle: "@naval.lens",
     ownedBy: "0x9DD183EB4Cc8202239879e163e53578598030c7b",
     profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmVBfhfgfhGsRVxTNURVUgceqyzjdVe11ic5rCghmePuKX")!,

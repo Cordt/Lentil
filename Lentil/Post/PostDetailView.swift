@@ -5,42 +5,29 @@ import SwiftUI
 
 
 struct PostDetailView: View {
+  @Environment(\.dismiss) var dismiss
   let store: Store<Post.State, Post.Action>
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
       ScrollView(showsIndicators: false) {
         VStack(alignment: .leading, spacing: 8) {
-          PostHeaderView(
+          PostDetailHeaderView(
             store: self.store.scope(
               state: \.post,
               action: Post.Action.post
             )
           )
           
-          VStack(alignment: .leading, spacing: 16) {
-            HStack(alignment: .top, spacing: 16) {
-              PostVotingView(
-                store: self.store.scope(
-                  state: \.post,
-                  action: Post.Action.post
-                )
-              )
-              .padding(.leading, 8)
-              
-              Text(viewStore.post.publicationContent)
-                .font(.subheadline)
-              
-            }
-            
-            PostStatsDetailView(
-              store: self.store.scope(
-                state: \.post,
-                action: Post.Action.post
-              )
+          Text(viewStore.post.publicationContent)
+            .font(style: .bodyDetailed)
+          
+          PostStatsView(
+            store: self.store.scope(
+              state: \.post,
+              action: Post.Action.post
             )
-            .padding(.leading, 42)
-          }
+          )
           .padding(.bottom, 16)
           
           ForEachStore(
@@ -51,20 +38,23 @@ struct PostDetailView: View {
           ) {
             CommentView(store: $0)
           }
-          .padding(.leading, 12)
           .padding(.bottom, 16)
           
           Spacer()
         }
       }
       .padding()
-      .navigationTitle("Thread")
-      .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
-          Icon.share.view(.large)
+        ToolbarItem(placement: .navigationBarLeading) {
+          BackButton(action: {dismiss()})
+        }
+        ToolbarItem(placement: .principal) {
+          Text(" Post ")
+            .font(style: .headline, color: Theme.Color.white)
         }
       }
+      .navigationBarTitleDisplayMode(.inline)
+      .navigationBarBackButtonHidden(true)
       .task {
         viewStore.send(.fetchComments)
       }
@@ -82,5 +72,6 @@ struct PostDetail_Previews: PreviewProvider {
         )
       )
     }
+    .navigationBarBackground(color: Theme.Color.primary, accentColor: Theme.Color.white)
   }
 }

@@ -9,7 +9,7 @@ struct PostHeaderView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      HStack(spacing: 8) {
+      HStack(alignment: .top, spacing: 8) {
         if let image = viewStore.profilePicture {
           image
             .resizable()
@@ -21,16 +21,18 @@ struct PostHeaderView: View {
         }
         
         if let creatorName = viewStore.publication.profileName {
-          VStack(alignment: .leading) {
+          HStack {
             Text(creatorName)
-              .fontWeight(.bold)
+              .font(style: .bodyBold)
             Text(viewStore.publication.profileHandle)
+              .font(style: .body)
           }
-          .font(.footnote)
+          .truncationMode(.tail)
+          
         } else {
           Text(viewStore.publication.profileHandle)
-            .font(.footnote)
-            .fontWeight(.bold)
+            .font(style: .bodyBold)
+            .truncationMode(.tail)
         }
         
         HStack(spacing: 8) {
@@ -38,16 +40,59 @@ struct PostHeaderView: View {
           Text("·")
           Text(age(viewStore.publication.createdAt))
         }
-        .font(.footnote)
-        .frame(height: 32)
+        .font(style: .body, color: Theme.Color.greyShade3)
         
         Spacer()
       }
+      .lineLimit(1)
       .task { viewStore.send(.remoteProfilePicture(.fetchImage)) }
     }
   }
 }
 
+struct PostDetailHeaderView: View {
+  let store: Store<Publication.State, Publication.Action>
+  
+  var body: some View {
+    WithViewStore(self.store) { viewStore in
+      HStack(alignment: .top, spacing: 8) {
+        if let image = viewStore.profilePicture {
+          image
+            .resizable()
+            .frame(width: 32, height: 32)
+            .clipShape(Circle())
+        } else {
+          profileGradient(from: viewStore.publication.profileHandle)
+            .frame(width: 32, height: 32)
+        }
+        
+        VStack(alignment: .leading) {
+          if let creatorName = viewStore.publication.profileName {
+            HStack {
+              Text(creatorName)
+                .font(style: .bodyBold)
+              Text(viewStore.publication.profileHandle)
+                .font(style: .body)
+            }
+            .truncationMode(.tail)
+            
+          } else {
+            Text(viewStore.publication.profileHandle)
+              .font(style: .bodyBold)
+              .truncationMode(.tail)
+          }
+
+          Text(age(viewStore.publication.createdAt))
+            .font(style: .body, color: Theme.Color.greyShade3)
+        }
+        
+        Spacer()
+      }
+      .lineLimit(1)
+      .task { viewStore.send(.remoteProfilePicture(.fetchImage)) }
+    }
+  }
+}
 
 struct PostHeaderView_Previews: PreviewProvider {
   
@@ -61,6 +106,20 @@ struct PostHeaderView_Previews: PreviewProvider {
       )
       
       PostHeaderView(
+        store: .init(
+          initialState: .init(publication: mockPublications[2]),
+          reducer: Publication()
+        )
+      )
+      
+      PostDetailHeaderView(
+        store: .init(
+          initialState: .init(publication: mockPublications[0]),
+          reducer: Publication()
+        )
+      )
+      
+      PostDetailHeaderView(
         store: .init(
           initialState: .init(publication: mockPublications[2]),
           reducer: Publication()

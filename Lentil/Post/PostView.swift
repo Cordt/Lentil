@@ -17,23 +17,27 @@ struct PostView: View {
           )
         )
         
-        Text(viewStore.post.shortenedContent)
-          .font(.subheadline)
-        
-        PostStatsView(
-          store: self.store.scope(
-            state: \.post,
-            action: Post.Action.post
+        Group {
+          Text(viewStore.post.shortenedContent)
+            .font(style: .body)
+          
+          PostStatsView(
+            store: self.store.scope(
+              state: \.post,
+              action: Post.Action.post
+            )
           )
-        )
-        .padding([.top], 4)
+          .padding([.top], 4)
+        }
+        .offset(y: -15)
+        .padding(.leading, 40)
       }
       .padding(.all)
       .background(
         NavigationLink("") {
           PostDetailView(store: self.store)
         }
-          .opacity(0)
+        .opacity(0)
       )
       .buttonStyle(.plain)
       .task {

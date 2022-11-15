@@ -43,7 +43,7 @@ struct Timeline: ReducerProtocol {
           return .task { [cursor = state.cursorToNext] in
             await .publicationsResponse(
               TaskResult {
-                return try await lensApi.trendingPublications(5, cursor, .topCommented, [.post])
+                return try await lensApi.trendingPublications(50, cursor, .topCommented, [.post, .comment])
               }
             )
           }

@@ -15,8 +15,8 @@ struct TimelineView: View {
             self.store.scope(
               state: \.posts,
               action: Timeline.Action.post)
-          ) {
-            PostView(store: $0)
+          ) { store in
+            PostView(store: store)
           }
           HStack {
             Spacer()
@@ -31,7 +31,6 @@ struct TimelineView: View {
         .listRowSeparator(.hidden)
         .listRowInsets(EdgeInsets())
       }
-      .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           NavigationLink {
@@ -45,13 +44,13 @@ struct TimelineView: View {
             Image(systemName: "link")
               .foregroundColor(Theme.Color.white)
           }
-
         }
         ToolbarItem(placement: .principal) {
           Text("Lentil")
             .font(highlight: .largeHeadline, color: Theme.Color.white)
         }
       }
+      .navigationBarTitleDisplayMode(.inline)
       .listStyle(.plain)
       .refreshable { viewStore.send(.refreshFeed) }
       .task { viewStore.send(.refreshFeed) }
@@ -70,5 +69,6 @@ struct TrendingView_Previews: PreviewProvider {
         )
       )
     }
+    .navigationBarBackground()
   }
 }

@@ -55,15 +55,42 @@ struct LentilButton: View {
   }
 }
 
-struct FloatingButton_Previews: PreviewProvider {
-  static var previews: some View {
-    VStack {
-      LentilButton(title: "Active button") {}
-      LentilButton(title: "Disabled button", disabled: true) {}
-      LentilButton(title: "Secondary button", kind: .secondary) {}
-      LentilButton(title: "Full width button", fullWidth: true) {}
+struct BackButton: View {
+  var action: () -> ()
+  
+  var body: some View {
+    Button(action: self.action) {
+      Icon.back.view()
+        .offset(x: 5)
     }
-    .padding()
+    .frame(width: 30, height: 30)
+    .background(
+      Circle()
+        .fill(Theme.Color.white)
+        .frame(width: 30, height: 30)
+    )
+    .accentColor(Theme.Color.primary)
+  }
+}
+
+struct LentilButton_Previews: PreviewProvider {
+  static var previews: some View {
+    NavigationView {
+      VStack {
+        LentilButton(title: "Active button") {}
+        LentilButton(title: "Disabled button", disabled: true) {}
+        LentilButton(title: "Secondary button", kind: .secondary) {}
+        LentilButton(title: "Full width button", fullWidth: true) {}
+      }
+      .padding()
+      .accentColor(Theme.Color.white)
+      .toolbar {
+        ToolbarItem(placement: .navigationBarLeading) {
+          BackButton(action: {})
+        }
+      }
+    }
+    .navigationBarBackground()
   }
 }
 

@@ -142,7 +142,7 @@ extension View {
 
 enum Icon {
   case back, notification, settings, share
-  case upvote, downvote, comment, mirror, collect
+  case heart, heartFilled, comment, mirror, collect
   case twitter, website, nft
   case location, lens
   case follow, collection
@@ -162,11 +162,11 @@ enum Icon {
       case .back:         return ""
       case .notification: return ""
       case .settings:     return ""
-      case .share:        return ""
-      case .upvote:       return ""
-      case .downvote:     return ""
+      case .share:        return ""
+      case .heart:        return ""
+      case .heartFilled:  return ""
       case .comment:      return ""
-      case .mirror:       return ""
+      case .mirror:       return ""
       case .collect:      return ""
       case .twitter:      return ""
       case .website:      return ""
@@ -182,6 +182,9 @@ enum Icon {
     switch self {
       case .twitter, .lens, .collection:
         return Text(self.symbol()).font(.custom("la-brands-400", size: fontSize.size, relativeTo: .callout))
+        
+      case .heart, .comment, .share:
+        return Text(self.symbol()).font(.custom("la-regular-400", size: fontSize.size, relativeTo: .callout))
         
       default:
         return Text(self.symbol()).font(.custom("la-solid-900", size: fontSize.size, relativeTo: .callout))

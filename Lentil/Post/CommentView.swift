@@ -19,28 +19,19 @@ struct CommentView: View {
         
         VStack(alignment: .leading, spacing: 8) {
           HStack(alignment: .top, spacing: 16) {
-            PostVotingView(
-              store: self.store.scope(
-                state: \.comment,
-                action: Comment.Action.comment
-              )
-            )
-            .padding(.leading, 8)
-              
             Text(viewStore.comment.shortenedContent)
               .font(.subheadline)
           }
           
-          PostStatsShortDetailView(
+          PostStatsView(
             store: self.store.scope(
               state: \.comment,
               action: Comment.Action.comment
             )
           )
-          .padding(.leading, 42)
         }
+        .padding(.leading, 40)
       }
-      .padding([.leading, .trailing])
     }
   }
 }
@@ -68,5 +59,6 @@ struct CommentView_Previews: PreviewProvider {
       )
       Spacer()
     }
+    .padding()
   }
 }

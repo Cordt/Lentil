@@ -55,6 +55,7 @@
 		37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236B28F70EC90037A4A7 /* Dependencies */; };
 		37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236E28F70EE90037A4A7 /* Apollo */; };
 		37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1237028F70EE90037A4A7 /* ApolloWebSocket */; };
+		37D6808F292386B100F31669 /* NavigationView+Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D6808E292386B100F31669 /* NavigationView+Background.swift */; };
 		37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E5291FBC34003C9E40 /* WalletView.swift */; };
 		37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E7291FBC4E003C9E40 /* Wallet.swift */; };
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
@@ -132,6 +133,7 @@
 		37C51792291F518C002D2B6D /* RemoteImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImage.swift; sourceTree = "<group>"; };
 		37CDEB0D28D03146009B2B7E /* Publication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publication.swift; sourceTree = "<group>"; };
 		37CDEB0F28D0322F009B2B7E /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		37D6808E292386B100F31669 /* NavigationView+Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NavigationView+Background.swift"; sourceTree = "<group>"; };
 		37F5C5E5291FBC34003C9E40 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		37F5C5E7291FBC4E003C9E40 /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
@@ -354,6 +356,7 @@
 			isa = PBXGroup;
 			children = (
 				37BE767028FAA73800282ED0 /* LentilButton.swift */,
+				37D6808E292386B100F31669 /* NavigationView+Background.swift */,
 				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 				372248DE28DBFF080066BCE5 /* Theme.swift */,
 			);
@@ -584,6 +587,7 @@
 				37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */,
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
 				37C51793291F518C002D2B6D /* RemoteImage.swift in Sources */,
+				37D6808F292386B100F31669 /* NavigationView+Background.swift in Sources */,
 				3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */,
 				37F71B5028DF34E400F6D9B1 /* LensApiClient+Model.swift in Sources */,
 				372248DA28DB479D0066BCE5 /* TimelineView.swift in Sources */,

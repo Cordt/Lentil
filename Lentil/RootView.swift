@@ -22,7 +22,7 @@ struct RootView: View {
           )
         )
       }
-      .accentColor(Theme.Color.primary)
+      .navigationBarBackground()
     }
   }
 }

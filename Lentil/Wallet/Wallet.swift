@@ -27,7 +27,7 @@ struct Wallet: ReducerProtocol {
       case .connect:
         self.walletConnect.connect()
         state.connectionStatus = .connected
-        self.lensApi.authenticationChallenge
+        // TODO: Integrate authentication challenge - needs wallet address from delegate
         return .none
         
       case .signChallenge(let message):
