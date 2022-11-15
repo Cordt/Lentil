@@ -5,6 +5,7 @@ import SwiftUI
 
 
 struct WalletView: View {
+  @Environment(\.dismiss) var dismiss
   let store: Store<Wallet.State, Wallet.Action>
   
   func step(state: Wallet.ConnectionState) -> String {
@@ -62,12 +63,10 @@ struct WalletView: View {
               LentilButton(title: "Connect now") {
                 viewStore.send(.connect)
               }
-              
             case .connected:
               LentilButton(title: "Sign in with Lens", kind: .primary) {
                 viewStore.send(.signChallenge("Sign this message!"))
               }
-              
             case .validToken:
               Text(viewStore.signedMessage ?? "")
               LentilButton(title: "Let's go!", kind: .primary) {
@@ -75,7 +74,25 @@ struct WalletView: View {
               }
           }
         }
+        .offset(y: -50)
       }
+      .toolbar {
+        ToolbarItem(placement: .navigationBarLeading) {
+          Button {
+            self.dismiss()
+          } label: {
+            Icon.back.view(.xlarge)
+              .foregroundColor(Theme.Color.white)
+          }
+        }
+        ToolbarItem(placement: .principal) {
+          Text("lentil")
+            .font(highlight: .largeHeadline, color: Theme.Color.white)
+        }
+      }
+      .toolbarBackground(.hidden, for: .navigationBar)
+      .navigationBarBackButtonHidden(true)
+      .accentColor(Theme.Color.primary)
     }
   }
 }
@@ -83,11 +100,13 @@ struct WalletView: View {
 
 struct WalletConnectView_Previews: PreviewProvider {
   static var previews: some View {
-    WalletView(
-      store: .init(
-        initialState: Wallet.State(connectionStatus: .validToken),
-        reducer: Wallet()
+    NavigationView {
+      WalletView(
+        store: .init(
+          initialState: Wallet.State(connectionStatus: .notConnected),
+          reducer: Wallet()
+        )
       )
-    )
+    }
   }
 }

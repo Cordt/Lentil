@@ -148,11 +148,12 @@ enum Icon {
   case follow, collection
   
   enum FontSize {
-    case `default`, large
+    case `default`, large, xlarge
     fileprivate var size: CGFloat {
       switch self {
-        case .default: return 16
-        case .large: return 21
+        case .`default`:  return 16
+        case .large:      return 21
+        case .xlarge:     return 28
       }
     }
   }
