@@ -1,4 +1,5 @@
 // LentilTests
+// Created by Laura and Cordt Zermin
 
 import XCTest
 @testable import Lentil

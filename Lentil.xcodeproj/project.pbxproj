@@ -26,7 +26,7 @@
 		372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DB28DB47A80066BCE5 /* Timeline.swift */; };
 		372248DF28DBFF080066BCE5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DE28DBFF080066BCE5 /* Theme.swift */; };
 		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
-		376C5ED628D4253F00BA908A /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* Profile.swift */; };
+		376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* ProfileModel.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
 		3777830828CCA05D00E7E32A /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830728CCA05D00E7E32A /* RootView.swift */; };
@@ -49,13 +49,14 @@
 		37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */; };
 		37C5178E291EA986002D2B6D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C5178D291EA986002D2B6D /* ProfileView.swift */; };
 		37C51793291F518C002D2B6D /* RemoteImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C51792291F518C002D2B6D /* RemoteImage.swift */; };
-		37CDEB0E28D03146009B2B7E /* Publication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0D28D03146009B2B7E /* Publication.swift */; };
+		37CDEB0E28D03146009B2B7E /* PublicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0D28D03146009B2B7E /* PublicationModel.swift */; };
 		37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CDEB0F28D0322F009B2B7E /* Helper.swift */; };
 		37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236928F70EC90037A4A7 /* ComposableArchitecture */; };
 		37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236B28F70EC90037A4A7 /* Dependencies */; };
 		37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236E28F70EE90037A4A7 /* Apollo */; };
 		37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1237028F70EE90037A4A7 /* ApolloWebSocket */; };
 		37D6808F292386B100F31669 /* UINavigationController+BackGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */; };
+		37D680912924AB3200F31669 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D680902924AB3200F31669 /* Profile.swift */; };
 		37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E5291FBC34003C9E40 /* WalletView.swift */; };
 		37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E7291FBC4E003C9E40 /* Wallet.swift */; };
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
@@ -103,7 +104,7 @@
 		372248DB28DB47A80066BCE5 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		372248DE28DBFF080066BCE5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
-		376C5ED528D4253F00BA908A /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		376C5ED528D4253F00BA908A /* ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModel.swift; sourceTree = "<group>"; };
 		376C5ED728D4266100BA908A /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		3777830228CCA05D00E7E32A /* Lentil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lentil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3777830528CCA05D00E7E32A /* LentilApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilApp.swift; sourceTree = "<group>"; };
@@ -131,9 +132,10 @@
 		37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithLens.swift; sourceTree = "<group>"; };
 		37C5178D291EA986002D2B6D /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		37C51792291F518C002D2B6D /* RemoteImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImage.swift; sourceTree = "<group>"; };
-		37CDEB0D28D03146009B2B7E /* Publication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publication.swift; sourceTree = "<group>"; };
+		37CDEB0D28D03146009B2B7E /* PublicationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationModel.swift; sourceTree = "<group>"; };
 		37CDEB0F28D0322F009B2B7E /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+BackGesture.swift"; sourceTree = "<group>"; };
+		37D680902924AB3200F31669 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		37F5C5E5291FBC34003C9E40 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		37F5C5E7291FBC4E003C9E40 /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
@@ -243,8 +245,8 @@
 		376C5ED428D4245500BA908A /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				37CDEB0D28D03146009B2B7E /* Publication.swift */,
-				376C5ED528D4253F00BA908A /* Profile.swift */,
+				37CDEB0D28D03146009B2B7E /* PublicationModel.swift */,
+				376C5ED528D4253F00BA908A /* ProfileModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -394,6 +396,7 @@
 			isa = PBXGroup;
 			children = (
 				37C5178D291EA986002D2B6D /* ProfileView.swift */,
+				37D680902924AB3200F31669 /* Profile.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -582,7 +585,7 @@
 				372248CE28DAF38D0066BCE5 /* PostDetailView.swift in Sources */,
 				37BBBAFE2901292900E74462 /* Keychain.swift in Sources */,
 				3777830828CCA05D00E7E32A /* RootView.swift in Sources */,
-				37CDEB0E28D03146009B2B7E /* Publication.swift in Sources */,
+				37CDEB0E28D03146009B2B7E /* PublicationModel.swift in Sources */,
 				376C5ED828D4266100BA908A /* PostView.swift in Sources */,
 				37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */,
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
@@ -595,10 +598,11 @@
 				37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */,
 				37F71B5228DF487000F6D9B1 /* CommentReducer.swift in Sources */,
 				37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */,
-				376C5ED628D4253F00BA908A /* Profile.swift in Sources */,
+				376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
 				37F71B5628DF4D6400F6D9B1 /* PublicationReducer.swift in Sources */,
 				37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */,
+				37D680912924AB3200F31669 /* Profile.swift in Sources */,
 				37933DB128EA978400C11792 /* Binding.swift in Sources */,
 				37C5178E291EA986002D2B6D /* ProfileView.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,

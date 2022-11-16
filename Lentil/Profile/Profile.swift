@@ -5,15 +5,27 @@ import ComposableArchitecture
 import SwiftUI
 
 
-struct Publication: ReducerProtocol {
-  struct State: Equatable, Identifiable {
-    var publication: Model.Publication
+struct Profile: ReducerProtocol {
+  struct State: Equatable {
+    var profile: Model.Profile
     
+    var coverPicture: Image?
+    var remoteCoverPicture: RemoteImage.State {
+      get {
+        RemoteImage.State(
+          imageUrl: self.profile.coverPictureUrl,
+          image: self.coverPicture
+        )
+      }
+      set {
+        self.coverPicture = newValue.image
+      }
+    }
     var profilePicture: Image?
     var remoteProfilePicture: RemoteImage.State {
       get {
         RemoteImage.State(
-          imageUrl: self.publication.profilePictureUrl,
+          imageUrl: self.profile.profilePictureUrl,
           image: self.profilePicture
         )
       }
@@ -21,32 +33,24 @@ struct Publication: ReducerProtocol {
         self.profilePicture = newValue.image
       }
     }
-    
-    var id: String { self.publication.id }
-    private let maxLength: Int = 256
-    var publicationContent: String { self.publication.content.trimmingCharacters(in: .whitespacesAndNewlines) }
-    var shortenedContent: String {
-      if self.publicationContent.count > self.maxLength {
-        return String(self.publicationContent.prefix(self.maxLength)) + "..."
-      }
-      else {
-        return self.publicationContent
-      }
-    }
   }
   
   enum Action: Equatable {
+    case remoteCoverPicture(RemoteImage.Action)
     case remoteProfilePicture(RemoteImage.Action)
   }
   
   var body: some ReducerProtocol<State, Action> {
+    Scope(state: \.remoteCoverPicture, action: /Action.remoteCoverPicture) {
+      RemoteImage()
+    }
     Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
       RemoteImage()
     }
     
     Reduce { state, action in
       switch action {
-        case .remoteProfilePicture:
+        case .remoteCoverPicture, .remoteProfilePicture:
           return .none
       }
     }

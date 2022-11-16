@@ -1,4 +1,5 @@
 // Lentil
+// Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
 import SwiftUI
@@ -12,7 +13,7 @@ struct WalletView: View {
     switch state {
       case .notConnected: return "1/3"
       case .connected:    return "2/3"
-      case .validToken:   return "3/3"
+      case .authenticated:       return "3/3"
     }
   }
   
@@ -20,7 +21,7 @@ struct WalletView: View {
     switch state {
       case .notConnected: return "Connect your Wallet"
       case .connected:    return "Sign in"
-      case .validToken:   return "Success!"
+      case .authenticated:       return "Success!"
     }
   }
   
@@ -28,7 +29,7 @@ struct WalletView: View {
     switch state {
       case .notConnected: return "You need to connect your wallet and Lens handle to Lentil in order to interact with content on Lentil.\n\nDon't have access to Lens yet? Reach out to them to get yourself a Lens handle!"
       case .connected:    return "Sign in with Lens to interact with content on Lentil.\n\nDon’t have access to Lens yet? Reach out to them to get yourself a Lens handle!"
-      case .validToken:   return "You are now logged in and can start interacting.\n\nHave fun!"
+      case .authenticated:       return "You are now logged in and can start interacting.\n\nHave fun!"
     }
   }
   
@@ -61,16 +62,15 @@ struct WalletView: View {
           switch viewStore.connectionStatus {
             case .notConnected:
               LentilButton(title: "Connect now") {
-                viewStore.send(.connect)
+                viewStore.send(.connectTapped)
               }
             case .connected:
               LentilButton(title: "Sign in with Lens", kind: .primary) {
-                viewStore.send(.signChallenge("Sign this message!"))
+                viewStore.send(.signInTapped)
               }
-            case .validToken:
-              Text(viewStore.signedMessage ?? "")
+            case .authenticated:
               LentilButton(title: "Let's go!", kind: .primary) {
-                
+                self.dismiss()
               }
           }
         }

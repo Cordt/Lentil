@@ -1,4 +1,5 @@
 // Lentil
+// Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
 import Foundation
@@ -16,6 +17,7 @@ enum WalletConnectorError: Error {
 extension WalletConnectorApi: DependencyKey {
   static var liveValue: WalletConnectorApi {
     WalletConnectorApi(
+      eventStream: WalletConnector.shared.eventStream,
       connect: WalletConnector.shared.connect,
       sign: WalletConnector.shared.sign
     )
@@ -30,16 +32,19 @@ extension DependencyValues {
 }
 
 struct WalletConnectorApi {
+  var eventStream: WalletEvents
   var connect: () -> ()
   var sign: (_ message: String) async throws -> String
 }
 
-fileprivate final class WalletConnector {
+fileprivate class WalletConnector {
   private let appTitle = "Lentil App"
   private let appDescription = "The last social media app you'll need."
   private let clientUrl = URL(string: "https://lentil.xyz")!
   
   static let shared: WalletConnector = WalletConnector()
+  var eventStream: WalletEvents { WalletConnect.shared.walletEvents }
+  
   private init() {}
   
   func connect() {
@@ -83,6 +88,7 @@ fileprivate final class WalletConnector {
     
     return URL(string: urlString)
   }
+  
   private func open(url: URL) {
     guard UIApplication.shared.canOpenURL(url)
     else {
@@ -98,11 +104,13 @@ fileprivate final class WalletConnect {
   let bridgeUrl = URL(string: "https://safe-walletconnect.safe.global/")!
   let sessionKey = "walletconnect-session"
   
+  var walletEvents: WalletEvents = WalletEvents()
   var session: Session?
   var client: Client?
   var wcurl: WCURL?
   
   static let shared: WalletConnect = WalletConnect()
+  
   private init() {}
   
   
@@ -197,11 +205,13 @@ fileprivate final class WalletConnect {
 
 extension WalletConnect: ClientDelegate {
   func client(_ client: Client, didFailToConnect url: WCURL) {
+    self.walletEvents.eventsToEmit.append(.didFailToConnect)
     print("[INFO] Failed to connect to WC")
   }
   
   func client(_ client: Client, didConnect url: WCURL) {
     self.wcurl = url
+    self.walletEvents.eventsToEmit.append(.didConnect(url))
     print("[INFO] Successfully connected with WC")
   }
   
@@ -211,6 +221,7 @@ extension WalletConnect: ClientDelegate {
       let encodedSession = try encoder.encode(session)
       UserDefaults.standard.set(encodedSession, forKey: self.sessionKey)
       self.session = session
+      self.walletEvents.eventsToEmit.append(.didEstablishSession(session))
       print("[INFO] Successfully established a session with WC")
       
     } catch let error {
@@ -220,12 +231,40 @@ extension WalletConnect: ClientDelegate {
   
   func client(_ client: Client, didDisconnect session: Session) {
     UserDefaults.standard.removeObject(forKey: self.sessionKey)
+    self.walletEvents.eventsToEmit.append(.didDisconnect)
     print("[INFO] Successfully disconeccted from WC")
   }
   
   func client(_ client: Client, didUpdate session: Session) {
+    self.walletEvents.eventsToEmit.append(.didUpdate(session))
     print("[INFO] Updated WC Session")
   }
 }
 
 
+
+class WalletEvents: AsyncSequence, AsyncIteratorProtocol {
+  enum Event {
+    case didFailToConnect
+    case didConnect(WCURL)
+    case didEstablishSession(Session)
+    case didDisconnect
+    case didUpdate(Session)
+  }
+  
+  typealias Element = Event
+  var eventsToEmit: [Event] = []
+  
+  func next() async throws -> Element? {
+    while true {
+      try await Task.sleep(nanoseconds: NSEC_PER_SEC / 4)
+      if !self.eventsToEmit.isEmpty {
+        return self.eventsToEmit.removeFirst()
+      }
+    }
+  }
+  
+  func makeAsyncIterator() -> WalletEvents {
+    self
+  }
+}

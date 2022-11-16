@@ -1,4 +1,5 @@
 // Lentil
+// Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
 import SwiftUI
