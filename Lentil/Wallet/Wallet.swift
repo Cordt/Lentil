@@ -23,11 +23,13 @@ struct Wallet: ReducerProtocol {
     case signInTapped
     case challengeResponse(TaskResult<Challenge>)
     case authenticationChallengeResponse(TaskResult<AuthenticationTokens>)
+    case defaultProfileResponse(UserProfile)
   }
   
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.authTokenApi) var authTokenApi
+  @Dependency(\.profileStorageApi) var profileStorageApi
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
     switch action {
@@ -111,10 +113,26 @@ struct Wallet: ReducerProtocol {
         }
         
         state.connectionStatus = .authenticated
-        return .none
+        
+        guard let address = state.address else { return .none }
+        return .run { send in
+          let defaultProfile = try await lensApi.defaultProfile(address).data
+          let userProfile = UserProfile(id: defaultProfile.id, handle: defaultProfile.handle, name: defaultProfile.name, address: address)
+          await send(.defaultProfileResponse(userProfile))
+        }
         
       case .authenticationChallengeResponse(.failure(let error)):
         log("Could not retrieve tokens for signature", level: .error, error: error)
+        return .none
+        
+        
+        
+      case .defaultProfileResponse(let userProfile):
+        do {
+          try self.profileStorageApi.store(userProfile)
+        } catch let error {
+          log("Failed to store user profile to defaults", level: .error, error: error)
+        }
         return .none
     }
   }

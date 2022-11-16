@@ -6,6 +6,10 @@ query Challenge($request: ChallengeRequest!) {
 	}
 }
 
+query Verify($request: VerifyRequest!) {
+	verify(request: $request)
+}
+
 query ExplorePublications($request: ExplorePublicationRequest!) {
   explorePublications(request: $request) {
     items {
@@ -99,6 +103,13 @@ mutation Broadcast($request: BroadcastRequest!) {
 
 mutation Authenticate($request: SignedAuthChallenge!) {
 	authenticate(request: $request) {
+		accessToken
+		refreshToken
+	}
+}
+
+mutation Refresh($request: RefreshRequest!) {
+	refresh(request: $request) {
 		accessToken
 		refreshToken
 	}

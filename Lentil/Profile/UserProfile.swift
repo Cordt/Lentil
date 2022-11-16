@@ -5,7 +5,7 @@ import Dependencies
 import Foundation
 
 
-struct UserProfile: Codable {
+struct UserProfile: Codable, Equatable {
   var id: String
   var handle: String
   var name: String?
@@ -21,12 +21,17 @@ class ProfileStorage {
     UserDefaults.standard.set(encodedProfile, forKey: self.profileKey)
   }
   
-  static func load() throws -> UserProfile? {
+  static func load() -> UserProfile? {
     guard let encodedProfile = UserDefaults.standard.object(forKey: self.profileKey) as? Data
     else { return nil }
     
-    let decoder = JSONDecoder()
-    return try decoder.decode(UserProfile.self, from: encodedProfile)
+    do {
+      let decoder = JSONDecoder()
+      return try decoder.decode(UserProfile.self, from: encodedProfile)
+    } catch let error {
+      log("Failed to decode User Profile from defaults", level: .error, error: error)
+      return nil
+    }
   }
   
   static func remove() {
@@ -36,7 +41,7 @@ class ProfileStorage {
 
 struct ProfileStorageApi {
   var store: (_ profile: UserProfile) throws -> Void
-  var load: () throws -> UserProfile?
+  var load: () -> UserProfile?
   var remove: () -> Void
 }
 
@@ -65,7 +70,7 @@ extension DependencyValues {
 #if DEBUG
 var mockUserProfile = UserProfile(
   id: "3",
-  handle: "@cordt.lens",
+  handle: "cordt.lens",
   name: "Cordt",
   address: ProcessInfo.processInfo.environment["TEST_WALLET_PUBLIC_KEY"]!
 )

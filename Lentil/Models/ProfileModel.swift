@@ -32,7 +32,7 @@ let mockProfiles: [Model.Profile] = [
   .init(
     id: "1",
     name: "NIDAVELLiR",
-    handle: "@nidavellir.lens",
+    handle: "nidavellir.lens",
     ownedBy: "0x823A234Df5d302bA0371f2859554f727875B6EA0",
     profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmUv8ABqYwfAXrxHVzxJwaWNjPxCzGtFKPNcXHmHqN8ArQ")!,
     coverPictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmUv8ABqYwfAXrxHVzxJwaWNjPxCzGtFKPNcXHmHqN8ArQ")!,
@@ -47,7 +47,7 @@ let mockProfiles: [Model.Profile] = [
   .init(
     id: "2",
     name: "Nader Dabit",
-    handle: "@nader.lens",
+    handle: "nader.lens",
     ownedBy: "0x2651Ef4b545831D4601A59cFfb18a86b337ea5F5",
     profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmVBfhfgfhGsRVxTNURVUgceqyzjdVe11ic5rCghmePuKX")!,
     coverPictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmUv8ABqYwfAXrxHVzxJwaWNjPxCzGtFKPNcXHmHqN8ArQ")!,
@@ -62,7 +62,7 @@ let mockProfiles: [Model.Profile] = [
   .init(
     id: "3",
     name: "Cordt",
-    handle: "@cordt.lens",
+    handle: "cordt.lens",
     ownedBy: ProcessInfo.processInfo.environment["TEST_WALLET_PUBLIC_KEY"]!,
     profilePictureUrl: URL(string: "https://profile-picture")!,
     coverPictureUrl: URL(string: "https://cover-picture")!,
@@ -77,7 +77,7 @@ let mockProfiles: [Model.Profile] = [
   .init(
     id: "4",
     name: nil,
-    handle: "@naval.lens",
+    handle: "naval.lens",
     ownedBy: "0x9DD183EB4Cc8202239879e163e53578598030c7b",
     profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmVBfhfgfhGsRVxTNURVUgceqyzjdVe11ic5rCghmePuKX")!,
     coverPictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/bafkreig3vqmj3nbhoqwtzk25ikpk47yxdcoflax6ks7npzmo5wsbysojhu")!,

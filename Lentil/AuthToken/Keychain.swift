@@ -112,6 +112,43 @@ struct KeychainInterface {
     }
   }
   
+  static func update(secret: Data, service: String, account: String) throws {
+    let query: [String: AnyObject] = [
+      // kSecAttrService,  kSecAttrAccount, and kSecClass
+      // uniquely identify the item to update in Keychain
+      kSecAttrService as String: service as AnyObject,
+      kSecAttrAccount as String: account as AnyObject,
+      kSecClass as String: kSecClassGenericPassword
+    ]
+    
+    // attributes is passed to SecItemUpdate with
+    // kSecValueData as the updated item value
+    let attributes: [String: AnyObject] = [
+      kSecValueData as String: secret as AnyObject
+    ]
+    
+    // SecItemUpdate attempts to update the item identified
+    // by query, overriding the previous value
+    let status = SecItemUpdate(
+      query as CFDictionary,
+      attributes as CFDictionary
+    )
+    
+    // errSecItemNotFound is a special status indicating the
+    // item to update does not exist. Throw itemNotFound so
+    // the client can determine whether or not to handle
+    // this as an error
+    guard status != errSecItemNotFound else {
+      throw KeychainError.itemNotFound
+    }
+    
+    // Any status other than errSecSuccess indicates the
+    // update operation failed.
+    guard status == errSecSuccess else {
+      throw KeychainError.unexpectedStatus(status)
+    }
+  }
+  
   static func deleteSecret(service: String, account: String) throws {
     let query: [String: AnyObject] = [
       // kSecAttrService,  kSecAttrAccount, and kSecClass
@@ -146,11 +183,22 @@ struct KeyStorage {
   
   func storeKey(key: Data) throws {
     do {
-      try KeychainInterface.save(
-        secret: key,
-        service: self.serviceIdentifier,
-        account: self.accountIdentifier
-      )
+      if try KeyStorage.checkForKey(
+        serviceIdentifier: self.serviceIdentifier,
+        accountIdentifier: self.accountIdentifier
+      ) {
+        try KeychainInterface.update(
+          secret: key,
+          service: self.serviceIdentifier,
+          account: self.accountIdentifier
+        )
+      } else { 
+        try KeychainInterface.save(
+          secret: key,
+          service: self.serviceIdentifier,
+          account: self.accountIdentifier
+        )
+      }
     }
     catch let error {
       log("Failed to save key to keychain", level: .error, error: error)

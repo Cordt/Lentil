@@ -18,7 +18,6 @@ struct Post: ReducerProtocol {
     case reactionsResponse(TaskResult<QueryResult<Model.Publication>>)
     case fetchComments
     case commentsResponse(TaskResult<QueryResult<[Model.Publication]>>)
-    case toggleReaction
     
     case post(action: Publication.Action)
     case comment(id: Comment.State.ID, action: Comment.Action)
@@ -26,60 +25,65 @@ struct Post: ReducerProtocol {
   
   @Dependency(\.lensApi) var lensApi
   
-  func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
-    switch action {
-      case .fetchReactions:
-        return .task { [publication = state.post.publication] in
-          await .reactionsResponse(
-            TaskResult {
-              try await lensApi.reactionsOfPublication(publication)
-            }
-          )
-        }
-        
-      case .reactionsResponse(let response):
-        switch response {
-          case .success(let result):
-            state.post.publication = result.data
-            return .none
-            
-          case .failure(let error):
-            log("Could not fetch publications from API", level: .warn, error: error)
-            return .none
-        }
-        
-      case .fetchComments:
-        return .task { [publication = state.post.publication] in
-          await .commentsResponse(
-            TaskResult {
-              try await lensApi.commentsOfPublication(publication)
-            }
-          )
-        }
-        
-      case .commentsResponse(let response):
-        switch response {
-          case .success(let result):
-            state.comments.append(
-              contentsOf: result.data.map {
-                Comment.State(comment: Publication.State(publication: $0))
+  var body: some ReducerProtocol<State, Action> {
+    Scope(
+      state: \.post,
+      action: /Action.post) {
+        Publication()
+      }
+    
+    Reduce { state, action in
+      switch action {
+        case .fetchReactions:
+          return .task { [publication = state.post.publication] in
+            await .reactionsResponse(
+              TaskResult {
+                try await lensApi.reactionsOfPublication(publication)
               }
             )
-            return .none
-            
-          case .failure(let error):
-            log("Could not fetch publications from API", level: .warn, error: error)
-            return .none
-        }
-        
-      case .toggleReaction:
-        return .none
-        
-      case .post(_):
-        return .none
-        
-      case .comment(_, _):
-        return .none
+          }
+          
+        case .reactionsResponse(let response):
+          switch response {
+            case .success(let result):
+              state.post.publication = result.data
+              return .none
+              
+            case .failure(let error):
+              log("Could not fetch publications from API", level: .warn, error: error)
+              return .none
+          }
+          
+        case .fetchComments:
+          return .task { [publication = state.post.publication] in
+            await .commentsResponse(
+              TaskResult {
+                try await lensApi.commentsOfPublication(publication)
+              }
+            )
+          }
+          
+        case .commentsResponse(let response):
+          switch response {
+            case .success(let result):
+              state.comments.append(
+                contentsOf: result.data.map {
+                  Comment.State(comment: Publication.State(publication: $0))
+                }
+              )
+              return .none
+              
+            case .failure(let error):
+              log("Could not fetch publications from API", level: .warn, error: error)
+              return .none
+          }
+          
+        case .post(_):
+          return .none
+          
+        case .comment(_, _):
+          return .none
+      }
     }
   }
 }

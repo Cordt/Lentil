@@ -79,6 +79,10 @@ struct LensApi {
     _ address: String
   ) async throws -> QueryResult<Challenge>
   
+  var verify: @Sendable (
+    _ accessToken: String
+  ) async throws -> QueryResult<Bool>
+  
   var trendingPublications: @Sendable (
     _ limit: Int,
     _ cursor: String?,
@@ -116,6 +120,10 @@ struct LensApi {
   var authenticate: @Sendable (
     _ address: String,
     _ signature: String
+  ) async throws -> MutationResult<AuthenticationTokens>
+  
+  var refreshAuthentication: @Sendable (
+    _ refreshToken: String
   ) async throws -> MutationResult<AuthenticationTokens>
   
   var addReaction: @Sendable (

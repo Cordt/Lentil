@@ -162,7 +162,7 @@ enum LogLevel: String {
     switch self {
       case .info:  return "[INFO] "  + message
       case .debug: return "[DEBUG] " + message
-      case .warn:  return "[WARN]"   + message
+      case .warn:  return "[WARN] "  + message
       case .error: return "[ERROR] " + message
     }
   }

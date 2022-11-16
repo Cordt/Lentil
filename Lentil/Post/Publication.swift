@@ -37,7 +37,11 @@ struct Publication: ReducerProtocol {
   
   enum Action: Equatable {
     case remoteProfilePicture(RemoteImage.Action)
+    case toggleReaction
   }
+  
+  @Dependency(\.lensApi) var lensApi
+  @Dependency(\.profileStorageApi) var profileStorageApi
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
@@ -48,6 +52,13 @@ struct Publication: ReducerProtocol {
       switch action {
         case .remoteProfilePicture:
           return .none
+          
+        case .toggleReaction:
+          guard let userProfile = self.profileStorageApi.load()
+          else { return .none }
+          return .fireAndForget { [publicationId = state.publication.id] in
+            try await self.lensApi.addReaction(userProfile.id, .upvote, publicationId)
+          }
       }
     }
   }

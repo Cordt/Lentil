@@ -34,16 +34,26 @@ struct TimelineView: View {
       }
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
-          NavigationLink {
-            WalletView(
-              store: self.store.scope(
-                state: \.walletConnect,
-                action: Timeline.Action.walletConnect
+          if let userProfile = viewStore.userProfile {
+            NavigationLink {
+              // TODO: Load and open user's profile
+            } label: {
+              profileGradient(from: userProfile.handle)
+                .frame(width: 32, height: 32)
+            }
+          }
+          else {
+            NavigationLink {
+              WalletView(
+                store: self.store.scope(
+                  state: \.walletConnect,
+                  action: Timeline.Action.walletConnect
+                )
               )
-            )
-          } label: {
-            Image(systemName: "link")
-              .foregroundColor(Theme.Color.white)
+            } label: {
+              Image(systemName: "link")
+                .foregroundColor(Theme.Color.white)
+            }
           }
         }
         ToolbarItem(placement: .principal) {
@@ -53,8 +63,8 @@ struct TimelineView: View {
       }
       .navigationBarTitleDisplayMode(.inline)
       .listStyle(.plain)
-      .refreshable { viewStore.send(.refreshFeed) }
-      .task { viewStore.send(.refreshFeed) }
+      .refreshable { await viewStore.send(.refreshFeed).finish() }
+      .task { viewStore.send(.timelineAppeared) }
     }
   }
 }

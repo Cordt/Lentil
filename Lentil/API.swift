@@ -25,6 +25,27 @@ public struct ChallengeRequest: GraphQLMapConvertible {
   }
 }
 
+/// The access request
+public struct VerifyRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - accessToken: The access token
+  public init(accessToken: String) {
+    graphQLMap = ["accessToken": accessToken]
+  }
+
+  /// The access token
+  public var accessToken: String {
+    get {
+      return graphQLMap["accessToken"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "accessToken")
+    }
+  }
+}
+
 public struct ExplorePublicationRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -841,6 +862,27 @@ public struct SignedAuthChallenge: GraphQLMapConvertible {
   }
 }
 
+/// The refresh request
+public struct RefreshRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - refreshToken: The refresh token
+  public init(refreshToken: String) {
+    graphQLMap = ["refreshToken": refreshToken]
+  }
+
+  /// The refresh token
+  public var refreshToken: String {
+    get {
+      return graphQLMap["refreshToken"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "refreshToken")
+    }
+  }
+}
+
 public struct ReactionRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -1196,6 +1238,57 @@ public final class ChallengeQuery: GraphQLQuery {
         set {
           resultMap.updateValue(newValue, forKey: "text")
         }
+      }
+    }
+  }
+}
+
+public final class VerifyQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query Verify($request: VerifyRequest!) {
+      verify(request: $request)
+    }
+    """
+
+  public let operationName: String = "Verify"
+
+  public var request: VerifyRequest
+
+  public init(request: VerifyRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("verify", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.scalar(Bool.self))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(verify: Bool) {
+      self.init(unsafeResultMap: ["__typename": "Query", "verify": verify])
+    }
+
+    public var verify: Bool {
+      get {
+        return resultMap["verify"]! as! Bool
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "verify")
       }
     }
   }
@@ -2896,6 +2989,112 @@ public final class AuthenticateMutation: GraphQLMutation {
     }
 
     public struct Authenticate: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["AuthenticationResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("accessToken", type: .nonNull(.scalar(String.self))),
+          GraphQLField("refreshToken", type: .nonNull(.scalar(String.self))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(accessToken: String, refreshToken: String) {
+        self.init(unsafeResultMap: ["__typename": "AuthenticationResult", "accessToken": accessToken, "refreshToken": refreshToken])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// The access token
+      public var accessToken: String {
+        get {
+          return resultMap["accessToken"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "accessToken")
+        }
+      }
+
+      /// The refresh token
+      public var refreshToken: String {
+        get {
+          return resultMap["refreshToken"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "refreshToken")
+        }
+      }
+    }
+  }
+}
+
+public final class RefreshMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation Refresh($request: RefreshRequest!) {
+      refresh(request: $request) {
+        __typename
+        accessToken
+        refreshToken
+      }
+    }
+    """
+
+  public let operationName: String = "Refresh"
+
+  public var request: RefreshRequest
+
+  public init(request: RefreshRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("refresh", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(Refresh.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(refresh: Refresh) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "refresh": refresh.resultMap])
+    }
+
+    public var refresh: Refresh {
+      get {
+        return Refresh(unsafeResultMap: resultMap["refresh"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "refresh")
+      }
+    }
+
+    public struct Refresh: GraphQLSelectionSet {
       public static let possibleTypes: [String] = ["AuthenticationResult"]
 
       public static var selections: [GraphQLSelection] {

@@ -14,7 +14,11 @@ struct PostStatsView: View {
         
         HStack(spacing: 4) {
           HStack(spacing: 4) {
-            Icon.heart.view()
+            Button {
+              viewStore.send(.toggleReaction)
+            } label: {
+              Icon.heart.view()
+            }
             Text("\(viewStore.publication.upvotes)")
               .font(style: .body)
               .font(.footnote)
