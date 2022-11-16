@@ -357,9 +357,7 @@
 		37BE767228FAA77D00282ED0 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
-				37BE767028FAA73800282ED0 /* LentilButton.swift */,
 				37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */,
-				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 				372248DE28DBFF080066BCE5 /* Theme.swift */,
 			);
 			path = Theme;
@@ -368,7 +366,9 @@
 		37C5178F291F5142002D2B6D /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				37BE767028FAA73800282ED0 /* LentilButton.swift */,
 				37C51792291F518C002D2B6D /* RemoteImage.swift */,
+				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";

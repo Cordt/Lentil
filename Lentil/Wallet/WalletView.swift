@@ -93,6 +93,15 @@ struct WalletView: View {
       .toolbarBackground(.hidden, for: .navigationBar)
       .navigationBarBackButtonHidden(true)
       .accentColor(Theme.Color.primary)
+      .task {
+        await viewStore
+          .send(.walletOpened)
+          .finish()
+      }
+      .onDisappear {
+        viewStore
+          .send(.walletClosed)
+      }
     }
   }
 }

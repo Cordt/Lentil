@@ -151,3 +151,37 @@ func simpleCount(from: Int) -> String {
       return "\(from)"
   }
 }
+
+
+// MARK: Logging
+
+//enum LogLevel {
+//  case info, debug, error
+//  
+//  func prefixed(message: String) -> String {
+//    switch self {
+//      case .info:  return "[INFO] "  + message
+//      case .debug: return "[DEBUG] " + message
+//      case .error: return "[ERROR] " + message
+//    }
+//  }
+//  
+//  func shouldLog() -> Bool {
+//    let logLevel = ProcessInfo.processInfo.environment["BASE_URL"]!
+//    switch self {
+//      case .info:  return "[INFO] "  + message
+//      case .debug: return "[DEBUG] " + message
+//      case .error: return "[ERROR] " + message
+//    }
+//  }
+//}
+//
+//func log(_ text: String, level: LogLevel, error: Error? = nil) {
+//  #if DEBUG
+//  let logLevel = ProcessInfo.processInfo.environment["LOG_LEVEL"]!
+//  var message = level.prefixed(message: text)
+//  if let error {
+//    message += ": \(error)"
+//  }
+//  #endif
+//}

@@ -17,6 +17,7 @@ struct Wallet: ReducerProtocol {
   
   enum Action: Equatable {
     case walletOpened
+    case walletClosed
     case updateConnectionState(ConnectionState)
     case connectTapped
     case signInTapped
@@ -55,7 +56,14 @@ struct Wallet: ReducerProtocol {
           }
         }
         
+      case .walletClosed:
+        self.walletConnect.disconnect()
+        return .none
+        
       case .updateConnectionState(let connectionState):
+        if case let .connected(address) = connectionState {
+          state.address = address
+        }
         state.connectionStatus = connectionState
         return .none
         
@@ -92,7 +100,7 @@ struct Wallet: ReducerProtocol {
         return .none
         
       case .authenticationChallengeResponse(.success(let tokens)):
-        if ProcessInfo.processInfo.environment["DEBUG_LEVEL"]! == "INFO" {
+        if ProcessInfo.processInfo.environment["LOG_LEVEL"]! == "INFO" {
           print("[INFO] Successfully retrieved tokens: \(tokens)")
         }
         do {

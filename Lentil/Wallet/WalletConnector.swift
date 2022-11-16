@@ -19,6 +19,7 @@ extension WalletConnectorApi: DependencyKey {
     WalletConnectorApi(
       eventStream: WalletConnector.shared.eventStream,
       connect: WalletConnector.shared.connect,
+      disconnect: WalletConnector.shared.disconnect,
       sign: WalletConnector.shared.sign
     )
   }
@@ -34,6 +35,7 @@ extension DependencyValues {
 struct WalletConnectorApi {
   var eventStream: WalletEvents
   var connect: () -> ()
+  var disconnect: () -> ()
   var sign: (_ message: String) async throws -> String
 }
 
@@ -58,6 +60,14 @@ fileprivate class WalletConnector {
     }
     
     self.open(url: deepLink)
+  }
+  
+  func disconnect() {
+    do {
+      try WalletConnect.shared.disconnect()
+    } catch let error {
+      print("[WARN] Could not disconnect from WC: \(error)")
+    }
   }
   
   func sign(message: String) async throws -> String {
@@ -156,6 +166,14 @@ fileprivate final class WalletConnect {
       print("[ERROR] Failed to re-connect with WC Client: Could not find session object")
       throw WalletConnectorError.couldNotReconnectClient
     }
+  }
+  
+  func disconnect() throws {
+    guard let session = self.session,
+          let client = self.client
+    else { return }
+    
+    try client.disconnect(from: session)
   }
   
   func sign(message: String) async throws -> String {

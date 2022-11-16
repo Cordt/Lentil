@@ -2,7 +2,6 @@
 // Created by Laura and Cordt Zermin
 
 import Foundation
-import Web3
 import XCTest
 @testable import Lentil
 
