@@ -23,6 +23,7 @@ extension LensApi: DependencyKey {
         }
       )
     },
+    
     trendingPublications: { limit, cursor, sortCriteria, publicationTypes in
       try await run(
         query: ExplorePublicationsQuery(
@@ -41,6 +42,7 @@ extension LensApi: DependencyKey {
         }
       )
     },
+    
     commentsOfPublication: { publication in
       try await run(
         query: PublicationsQuery(
@@ -57,6 +59,7 @@ extension LensApi: DependencyKey {
         }
       )
     },
+    
     reactionsOfPublication: { publication in
       try await run(
         query: WhoReactedPublicationQuery(
@@ -75,6 +78,7 @@ extension LensApi: DependencyKey {
         }
       )
     },
+    
     defaultProfile: { address in
       try await run(
         query: DefaultProfileQuery(
@@ -90,6 +94,7 @@ extension LensApi: DependencyKey {
         }
       )
     },
+    
     profiles: { ownedBy in
       try await run(
         query: ProfilesQuery(request: ProfileQueryRequest(ownedBy: [ownedBy])),
@@ -98,6 +103,7 @@ extension LensApi: DependencyKey {
         }
       )
     },
+    
     fetchImage: { url in
       let (data, _) = try await URLSession.shared.data(from: url)
       guard let uiImage = UIImage(data: data)
@@ -139,6 +145,20 @@ extension LensApi: DependencyKey {
             )
           )
         }
+      )
+    },
+    
+    addReaction: { profileId, reaction, publicationId in
+      try await run(
+        networkClient: .authenticated,
+        mutation: AddReactionMutation(request: .init(profileId: profileId, reaction: reaction, publicationId: publicationId))
+      )
+    },
+    
+    removeReaction: { profileId, reaction, publicationId in
+      try await run(
+        networkClient: .authenticated,
+        mutation: RemoveReactionMutation(request: .init(profileId: profileId, reaction: reaction, publicationId: publicationId))
       )
     },
     
@@ -184,6 +204,8 @@ extension LensApi: DependencyKey {
     },
     broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
     authenticate: { _, _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
+    addReaction: { _, _, _ in },
+    removeReaction: { _, _, _ in },
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }
   )
 #endif

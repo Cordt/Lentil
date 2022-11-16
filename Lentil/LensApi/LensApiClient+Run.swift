@@ -52,6 +52,17 @@ extension LensApi {
     }
   }
   
+  static func run<Mutation: GraphQLMutation>(
+    networkClient: NetworkClient = .unauthenticated,
+    mutation: Mutation
+  ) async throws -> Void {
+    try await withCheckedThrowingContinuation { continuation in
+      networkClient.client.perform(mutation: mutation) { result in
+        transform(continuation: continuation, result: result) { _ in () }
+      }
+    }
+  }
+  
   fileprivate static func transform<Data, Output>(
     continuation: CheckedContinuation<Output, Error>,
     result: Result<GraphQLResult<Data>, Error>,
@@ -65,7 +76,7 @@ extension LensApi {
           let errorMessage = apiData.errors!
             .map { $0.localizedDescription }
             .joined(separator: "\n")
-          print("[WARN] GraphQL error: \(errorMessage)")
+          log("GraphQL error: " + errorMessage , level: .warn)
           continuation.resume(throwing: ApiError.graphQLError)
           return
         }
@@ -79,7 +90,7 @@ extension LensApi {
         }
         
       case .failure(let error):
-        print("[WARN] GraphQL error: \(error)")
+        log("GraphQL error: " , level: .warn, error: error)
         continuation.resume(throwing: ApiError.requestFailed)
         return
     }

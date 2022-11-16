@@ -118,6 +118,18 @@ struct LensApi {
     _ signature: String
   ) async throws -> MutationResult<AuthenticationTokens>
   
+  var addReaction: @Sendable (
+    _ profileId: String,
+    _ reaction: ReactionTypes,
+    _ publicationId: String
+  ) async throws -> Void
+  
+  var removeReaction: @Sendable (
+    _ profileId: String,
+    _ reaction: ReactionTypes,
+    _ publicationId: String
+  ) async throws -> Void
+  
   var getDefaultProfileTypedData: @Sendable (
     _ profileId: String
   ) async throws -> MutationResult<TypedDataResult>

@@ -841,6 +841,48 @@ public struct SignedAuthChallenge: GraphQLMapConvertible {
   }
 }
 
+public struct ReactionRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: Profile id to perform the action
+  ///   - reaction: The reaction
+  ///   - publicationId: The internal publication id
+  public init(profileId: String, reaction: ReactionTypes, publicationId: String) {
+    graphQLMap = ["profileId": profileId, "reaction": reaction, "publicationId": publicationId]
+  }
+
+  /// Profile id to perform the action
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// The reaction
+  public var reaction: ReactionTypes {
+    get {
+      return graphQLMap["reaction"] as! ReactionTypes
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "reaction")
+    }
+  }
+
+  /// The internal publication id
+  public var publicationId: String {
+    get {
+      return graphQLMap["publicationId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "publicationId")
+    }
+  }
+}
+
 public struct CreateSetDefaultProfileRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -2901,6 +2943,108 @@ public final class AuthenticateMutation: GraphQLMutation {
         set {
           resultMap.updateValue(newValue, forKey: "refreshToken")
         }
+      }
+    }
+  }
+}
+
+public final class AddReactionMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation AddReaction($request: ReactionRequest!) {
+      addReaction(request: $request)
+    }
+    """
+
+  public let operationName: String = "AddReaction"
+
+  public var request: ReactionRequest
+
+  public init(request: ReactionRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("addReaction", arguments: ["request": GraphQLVariable("request")], type: .scalar(String.self)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(addReaction: String? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "addReaction": addReaction])
+    }
+
+    public var addReaction: String? {
+      get {
+        return resultMap["addReaction"] as? String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "addReaction")
+      }
+    }
+  }
+}
+
+public final class RemoveReactionMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation RemoveReaction($request: ReactionRequest!) {
+      removeReaction(request: $request)
+    }
+    """
+
+  public let operationName: String = "RemoveReaction"
+
+  public var request: ReactionRequest
+
+  public init(request: ReactionRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("removeReaction", arguments: ["request": GraphQLVariable("request")], type: .scalar(String.self)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(removeReaction: String? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "removeReaction": removeReaction])
+    }
+
+    public var removeReaction: String? {
+      get {
+        return resultMap["removeReaction"] as? String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "removeReaction")
       }
     }
   }

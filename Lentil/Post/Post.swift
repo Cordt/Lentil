@@ -18,6 +18,7 @@ struct Post: ReducerProtocol {
     case reactionsResponse(TaskResult<QueryResult<Model.Publication>>)
     case fetchComments
     case commentsResponse(TaskResult<QueryResult<[Model.Publication]>>)
+    case toggleReaction
     
     case post(action: Publication.Action)
     case comment(id: Comment.State.ID, action: Comment.Action)
@@ -43,7 +44,7 @@ struct Post: ReducerProtocol {
             return .none
             
           case .failure(let error):
-            print("[WARN] Could not fetch publications from API: \(error)")
+            log("Could not fetch publications from API", level: .warn, error: error)
             return .none
         }
         
@@ -67,10 +68,12 @@ struct Post: ReducerProtocol {
             return .none
             
           case .failure(let error):
-            print("[WARN] Could not fetch publications from API: \(error)")
+            log("Could not fetch publications from API", level: .warn, error: error)
             return .none
         }
         
+      case .toggleReaction:
+        return .none
         
       case .post(_):
         return .none

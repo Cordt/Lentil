@@ -64,7 +64,7 @@ class TokenAddingInterceptor: ApolloInterceptor {
         )
       }
       catch let storageError {
-        print("[ERROR] No access token available, cannot add authentication to request: \(storageError)")
+        log("No access token available, cannot add authentication to request", level: .error, error: storageError)
         chain.cancel()
       }
   }
@@ -82,15 +82,12 @@ class RequestLoggingInterceptor: ApolloInterceptor {
         current + "\tKey:\t\t\(next.key)\n\tValue:\t\(next.value)\n"
       }
       
-      var log = "[INFO] Running GraphQL operation:"
-      log += "\nOperation:\t\(request.operation.operationName)"
-      if let requestUrl { log += "\nURL:\t\t\t\t\(requestUrl)" }
-      if let requestVariables { log += "\nVariables:\t\(requestVariables)" }
-      if request.additionalHeaders.count > 0 { log += "\nHeaders:\n\(requestHeaders)" }
-      
-      if ProcessInfo.processInfo.environment["LOG_LEVEL"]! == "INFO" {
-        print(log)
-      }
+      var logMessage = "Running GraphQL operation:"
+      logMessage += "\nOperation:\t\(request.operation.operationName)"
+      if let requestUrl { logMessage += "\nURL:\t\t\t\t\(requestUrl)" }
+      if let requestVariables { logMessage += "\nVariables:\t\(requestVariables)" }
+      if request.additionalHeaders.count > 0 { logMessage += "\nHeaders:\n\(requestHeaders)" }
+      log(logMessage, level: .info)
       
       chain.proceedAsync(
         request: request,

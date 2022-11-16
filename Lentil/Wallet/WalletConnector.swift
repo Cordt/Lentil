@@ -55,7 +55,7 @@ fileprivate class WalletConnector {
       let url = URL(string: urlString),
       let deepLink = self.deepLink(for: url)
     else {
-      print("[ERROR] Cannot create URL or Deeplink from WCURL")
+      log("Cannot create URL or Deeplink from WCURL", level: .error)
       return
     }
     
@@ -66,7 +66,7 @@ fileprivate class WalletConnector {
     do {
       try WalletConnect.shared.disconnect()
     } catch let error {
-      print("[WARN] Could not disconnect from WC: \(error)")
+      log("Could not disconnect from WC", level: .warn, error: error)
     }
   }
   
@@ -76,7 +76,7 @@ fileprivate class WalletConnector {
       let url = URL(string: urlString),
       let deepLink = self.deepLink(for: url)
     else {
-      print("[ERROR] Cannot create URL or Deeplink from WCURL")
+      log("Cannot create URL or Deeplink from WCURL", level: .error)
       throw WalletConnectorError.couldNotSignMessage
     }
     
@@ -102,7 +102,7 @@ fileprivate class WalletConnector {
   private func open(url: URL) {
     guard UIApplication.shared.canOpenURL(url)
     else {
-      print("[ERROR] WCURL cannot be opened: \(url.absoluteString)")
+      log("WCURL cannot be opened: \(url.absoluteString)", level: .error)
       return
     }
     
@@ -144,7 +144,7 @@ fileprivate final class WalletConnect {
       return wcUrl.absoluteString
       
     } catch let error {
-      print("[ERROR] Failed to connect with WC Client: \(error)")
+      log("Failed to connect with WC Client", level: .error, error: error)
       throw WalletConnectorError.couldNotConnectClient
     }
   }
@@ -159,11 +159,11 @@ fileprivate final class WalletConnect {
         return session.url.absoluteString
         
       } catch let error {
-        print("[ERROR] Failed to re-connect with WC Client: \(error)")
+        log("Failed to re-connect with WC Client", level: .error, error: error)
         throw WalletConnectorError.couldNotReconnectClient
       }
     } else {
-      print("[ERROR] Failed to re-connect with WC Client: Could not find session object")
+      log("Failed to re-connect with WC Client: Could not find session object", level: .warn)
       throw WalletConnectorError.couldNotReconnectClient
     }
   }
@@ -194,7 +194,7 @@ fileprivate final class WalletConnect {
           completion: { response in
             guard let signedMessage = try? response.result(as: String.self)
             else {
-              print("[ERROR] Failed to sign message with WC Client: \(String(describing: response.error))")
+              log("Failed to sign message with WC Client: \(String(describing: response.error))", level: .error)
               continuation.resume(throwing: WalletConnectorError.couldNotSignMessage)
               return
             }
@@ -203,7 +203,7 @@ fileprivate final class WalletConnect {
         )
       }
       catch let error {
-        print("[ERROR] Failed to sign message with WC Client: \(error)")
+        log("Failed to sign message with WC Client", level: .error, error: error)
         continuation.resume(throwing: WalletConnectorError.couldNotSignMessage)
       }
     }
@@ -224,13 +224,15 @@ fileprivate final class WalletConnect {
 extension WalletConnect: ClientDelegate {
   func client(_ client: Client, didFailToConnect url: WCURL) {
     self.walletEvents.eventsToEmit.append(.didFailToConnect)
-    print("[INFO] Failed to connect to WC")
+    print("[INFO] ")
+    log("Failed to connect to WC", level: .info)
   }
   
   func client(_ client: Client, didConnect url: WCURL) {
     self.wcurl = url
     self.walletEvents.eventsToEmit.append(.didConnect(url))
-    print("[INFO] Successfully connected with WC")
+    print("[INFO] ")
+    log("Successfully connected with WC", level: .info)
   }
   
   func client(_ client: Client, didConnect session: Session) {
@@ -240,22 +242,24 @@ extension WalletConnect: ClientDelegate {
       UserDefaults.standard.set(encodedSession, forKey: self.sessionKey)
       self.session = session
       self.walletEvents.eventsToEmit.append(.didEstablishSession(session))
-      print("[INFO] Successfully established a session with WC")
+      print("[INFO] ")
+      log("Successfully established a session with WC", level: .info)
       
     } catch let error {
-      print("[ERROR] Failed to encode WC session: \(error)")
+      log("Failed to encode WC session", level: .error, error: error)
     }
   }
   
   func client(_ client: Client, didDisconnect session: Session) {
     UserDefaults.standard.removeObject(forKey: self.sessionKey)
     self.walletEvents.eventsToEmit.append(.didDisconnect)
-    print("[INFO] Successfully disconeccted from WC")
+    print("[INFO] ")
+    log("Successfully disconeccted from WC", level: .info)
   }
   
   func client(_ client: Client, didUpdate session: Session) {
     self.walletEvents.eventsToEmit.append(.didUpdate(session))
-    print("[INFO] Updated WC Session")
+    log("Updated WC Session", level: .info)
   }
 }
 

@@ -153,7 +153,7 @@ struct KeyStorage {
       )
     }
     catch let error {
-      print("[ERROR] Failed to save key to keychain: \(error)")
+      log("Failed to save key to keychain", level: .error, error: error)
       throw Error.failedToStoreKey
     }
   }
@@ -166,7 +166,7 @@ struct KeyStorage {
       )
     }
     catch let error {
-      print("[ERROR] Failed to load key from keychain: \(error)")
+      log("Failed to load key from keychain", level: .error, error: error)
       throw Error.failedToLoadKey
     }
   }
@@ -193,7 +193,7 @@ struct KeyStorage {
       )
     }
     catch let error {
-      print("[ERROR] Failed to delete key from keychain: \(error)")
+      log("Failed to delete key from keychain", level: .error, error: error)
       throw Error.failedToDeleteKey
     }
   }

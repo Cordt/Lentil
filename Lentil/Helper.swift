@@ -155,33 +155,38 @@ func simpleCount(from: Int) -> String {
 
 // MARK: Logging
 
-//enum LogLevel {
-//  case info, debug, error
-//  
-//  func prefixed(message: String) -> String {
-//    switch self {
-//      case .info:  return "[INFO] "  + message
-//      case .debug: return "[DEBUG] " + message
-//      case .error: return "[ERROR] " + message
-//    }
-//  }
-//  
-//  func shouldLog() -> Bool {
-//    let logLevel = ProcessInfo.processInfo.environment["BASE_URL"]!
-//    switch self {
-//      case .info:  return "[INFO] "  + message
-//      case .debug: return "[DEBUG] " + message
-//      case .error: return "[ERROR] " + message
-//    }
-//  }
-//}
-//
-//func log(_ text: String, level: LogLevel, error: Error? = nil) {
-//  #if DEBUG
-//  let logLevel = ProcessInfo.processInfo.environment["LOG_LEVEL"]!
-//  var message = level.prefixed(message: text)
-//  if let error {
-//    message += ": \(error)"
-//  }
-//  #endif
-//}
+enum LogLevel: String {
+  case info, debug, warn, error
+  
+  func prefixed(message: String) -> String {
+    switch self {
+      case .info:  return "[INFO] "  + message
+      case .debug: return "[DEBUG] " + message
+      case .warn:  return "[WARN]"   + message
+      case .error: return "[ERROR] " + message
+    }
+  }
+  
+  func shouldLog() -> Bool {
+    guard let logLevel = ProcessInfo.processInfo.environment["LOG_LEVEL"],
+          let level = LogLevel(rawValue: logLevel)
+    else { return true }
+          
+    switch self {
+      case .info:  return true
+      case .debug: return level == .warn  || level == .debug || level == .error
+      case .warn:  return level == .debug || level == .error
+      case .error: return level == .error
+    }
+  }
+}
+
+func log(_ text: String, level: LogLevel, error: Error? = nil) {
+  #if DEBUG
+  if level.shouldLog() {
+    var message = level.prefixed(message: text)
+    if let error { message += ": \(error)" }
+    print(message)
+  }
+  #endif
+}

@@ -45,14 +45,14 @@ struct Wallet: ReducerProtocol {
                 case .didEstablishSession(let session):
                   guard let address = session.walletInfo?.accounts.first
                   else {
-                    print("[ERROR] Could not get wallet address from session")
+                    log("Could not get wallet address from session", level: .error)
                     break
                   }
                   await send(.updateConnectionState(.connected(address)))
               }
             }
           } catch let error {
-            print("Failed to receive wallet events: \(error)")
+            log("Failed to receive wallet events", level: .warn, error: error)
           }
         }
         
@@ -82,7 +82,7 @@ struct Wallet: ReducerProtocol {
         }
         
       case let .challengeResponse(.success(challenge)):
-        print("[INFO] Trying to sign challenge: \(challenge)")
+        log("Trying to sign challenge", level: .info)
         guard let address = state.address else { return .none }
         
         return .task { [walletConnect = self.walletConnect] in
@@ -96,25 +96,25 @@ struct Wallet: ReducerProtocol {
         }
         
       case let .challengeResponse(.failure(error)):
-        print("[ERROR] Could not retrieve challenge to sign: \(error)")
+        log("Could not retrieve challenge to sign", level: .error, error: error)
         return .none
         
       case .authenticationChallengeResponse(.success(let tokens)):
         if ProcessInfo.processInfo.environment["LOG_LEVEL"]! == "INFO" {
-          print("[INFO] Successfully retrieved tokens: \(tokens)")
+          log("Successfully retrieved tokens", level: .info)
         }
         do {
           try authTokenApi.store(.access, tokens.accessToken)
           try authTokenApi.store(.refresh, tokens.refreshToken)
         } catch let error {
-          print("[ERROR] Could not store auth tokens: \(error)")
+          log("Could not store auth tokens", level: .error, error: error)
         }
         
         state.connectionStatus = .authenticated
         return .none
         
       case .authenticationChallengeResponse(.failure(let error)):
-        print("[ERROR] Could not retrieve tokens for signature: \(error)")
+        log("Could not retrieve tokens for signature", level: .error, error: error)
         return .none
     }
   }

@@ -70,7 +70,7 @@ struct Timeline: ReducerProtocol {
               return .none
               
             case .failure(let error):
-              print("[WARN] Could not fetch publications from API: \(error)")
+              log("Could not fetch publications from API", level: .warn, error: error)
               return .none
           }
           

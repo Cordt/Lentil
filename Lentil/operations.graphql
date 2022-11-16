@@ -104,6 +104,14 @@ mutation Authenticate($request: SignedAuthChallenge!) {
 	}
 }
 
+mutation AddReaction($request: ReactionRequest!) {
+	addReaction(request: $request)
+}
+
+mutation RemoveReaction($request: ReactionRequest!) {
+	removeReaction(request: $request)
+}
+
 mutation CreateSetDefaultProfileTypedData($request: CreateSetDefaultProfileRequest!) {
 	createSetDefaultProfileTypedData(request: $request) {
 		id
