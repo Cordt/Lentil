@@ -22,10 +22,13 @@ extension Model.Publication {
       profileHandle: postFields.profile.fragments.profileFields.handle,
       profilePictureUrl: profilePictureUrl,
       upvotes: postFields.stats.fragments.publicationStatsFields.totalUpvotes,
-      downvotes: postFields.stats.fragments.publicationStatsFields.totalDownvotes,
       collects: postFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
       comments: postFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
-      mirrors: postFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors
+      mirrors: postFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors,
+      upvotedByUser: item.asPost?.postReaction == .upvote,
+      collectdByUser: postFields.hasCollectedByMe,
+      commentdByUser: false,
+      mirrordByUser: false
     )
   }
   
@@ -47,10 +50,13 @@ extension Model.Publication {
       profileHandle: commentFields.profile.fragments.profileFields.handle,
       profilePictureUrl: profilePictureUrl,
       upvotes: commentFields.stats.fragments.publicationStatsFields.totalUpvotes,
-      downvotes: commentFields.stats.fragments.publicationStatsFields.totalDownvotes,
       collects: commentFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
       comments: commentFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
-      mirrors: commentFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors
+      mirrors: commentFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors,
+      upvotedByUser: item.asComment?.commentReaction == .upvote,
+      collectdByUser: commentFields.hasCollectedByMe,
+      commentdByUser: false,
+      mirrordByUser: false
     )
   }
 }

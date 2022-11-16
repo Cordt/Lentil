@@ -87,16 +87,14 @@ struct LensApi {
     _ limit: Int,
     _ cursor: String?,
     _ sortCriteria: PublicationSortCriteria,
-    _ publicationTypes: [PublicationTypes]
+    _ publicationTypes: [PublicationTypes],
+    _ reactionsForProfile: String?
   ) async throws -> QueryResult<[Model.Publication]>
   
   var commentsOfPublication: @Sendable (
-    _ publication: Model.Publication
+    _ publication: Model.Publication,
+    _ reactionsForProfile: String?
   ) async throws -> QueryResult<[Model.Publication]>
-  
-  var reactionsOfPublication: @Sendable (
-    _ publication: Model.Publication
-  ) async throws -> QueryResult<Model.Publication>
   
   var defaultProfile: @Sendable (
     _ ethereumAddress: String

@@ -115,7 +115,7 @@ struct ProfileView_Previews: PreviewProvider {
   static var previews: some View {
     ProfileView(
       store: .init(
-        initialState: .init(profile: mockProfiles[2]),
+        initialState: .init(profile: MockData.mockProfiles[2]),
         reducer: Profile()
       )
     )

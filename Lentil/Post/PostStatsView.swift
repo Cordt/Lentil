@@ -17,7 +17,12 @@ struct PostStatsView: View {
             Button {
               viewStore.send(.toggleReaction)
             } label: {
-              Icon.heart.view()
+              if viewStore.publication.upvotedByUser {
+                Icon.heartFilled.view()
+              }
+              else {
+                Icon.heart.view()
+              }
             }
             Text("\(viewStore.publication.upvotes)")
               .font(style: .body)
@@ -59,7 +64,7 @@ struct PostStats_Previews: PreviewProvider {
         
         PostStatsView(
           store: .init(
-            initialState: .init(publication: mockPublications[0]),
+            initialState: .init(publication: MockData.mockPublications[0]),
             reducer: Publication()
           )
         )
@@ -78,7 +83,7 @@ struct PostStats_Previews: PreviewProvider {
           
           PostStatsView(
             store: .init(
-              initialState: .init(publication: mockPublications[0]),
+              initialState: .init(publication: MockData.mockPublications[0]),
               reducer: Publication()
             )
           )
@@ -99,7 +104,7 @@ struct PostStats_Previews: PreviewProvider {
           
           PostStatsView(
             store: .init(
-              initialState: .init(publication: mockPublications[0]),
+              initialState: .init(publication: MockData.mockPublications[0]),
               reducer: Publication()
             )
           )

@@ -14,8 +14,6 @@ struct Post: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    case fetchReactions
-    case reactionsResponse(TaskResult<QueryResult<Model.Publication>>)
     case fetchComments
     case commentsResponse(TaskResult<QueryResult<[Model.Publication]>>)
     
@@ -24,6 +22,7 @@ struct Post: ReducerProtocol {
   }
   
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.profileStorageApi) var profileStorageApi
   
   var body: some ReducerProtocol<State, Action> {
     Scope(
@@ -34,31 +33,12 @@ struct Post: ReducerProtocol {
     
     Reduce { state, action in
       switch action {
-        case .fetchReactions:
-          return .task { [publication = state.post.publication] in
-            await .reactionsResponse(
-              TaskResult {
-                try await lensApi.reactionsOfPublication(publication)
-              }
-            )
-          }
-          
-        case .reactionsResponse(let response):
-          switch response {
-            case .success(let result):
-              state.post.publication = result.data
-              return .none
-              
-            case .failure(let error):
-              log("Could not fetch publications from API", level: .warn, error: error)
-              return .none
-          }
-          
         case .fetchComments:
           return .task { [publication = state.post.publication] in
             await .commentsResponse(
               TaskResult {
-                try await lensApi.commentsOfPublication(publication)
+                let userProfile = self.profileStorageApi.load()
+                return try await lensApi.commentsOfPublication(publication, userProfile?.id)
               }
             )
           }

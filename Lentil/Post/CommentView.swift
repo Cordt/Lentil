@@ -42,19 +42,19 @@ struct CommentView_Previews: PreviewProvider {
     VStack(spacing: 16) {
       CommentView(
         store: .init(
-          initialState: .init(comment: .init(publication: mockComments[0])),
+          initialState: .init(comment: .init(publication: MockData.mockComments[0])),
           reducer: Comment()
         )
       )
       CommentView(
         store: .init(
-          initialState: .init(comment: .init(publication: mockComments[0])),
+          initialState: .init(comment: .init(publication: MockData.mockComments[0])),
           reducer: Comment()
         )
       )
       CommentView(
         store: .init(
-          initialState: .init(comment: .init(publication: mockComments[0])),
+          initialState: .init(comment: .init(publication: MockData.mockComments[0])),
           reducer: Comment()
         )
       )

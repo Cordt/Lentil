@@ -10,18 +10,21 @@ query Verify($request: VerifyRequest!) {
 	verify(request: $request)
 }
 
-query ExplorePublications($request: ExplorePublicationRequest!) {
+query ExplorePublications($request: ExplorePublicationRequest!, $reactionRequest: ReactionFieldResolverRequest) {
   explorePublications(request: $request) {
     items {
       __typename
       ... on Post {
         ...PostFields
+        postReaction: reaction(request: $reactionRequest)
       }
       ... on Comment {
         ...CommentFields
+        postReaction: reaction(request: $reactionRequest)
       }
       ... on Mirror {
         ...MirrorFields
+        postReaction: reaction(request: $reactionRequest)
       }
     }
     pageInfo {
@@ -32,18 +35,21 @@ query ExplorePublications($request: ExplorePublicationRequest!) {
   }
 }
 
-query Publications($request: PublicationsQueryRequest!) {
+query Publications($request: PublicationsQueryRequest!, $reactionRequest: ReactionFieldResolverRequest) {
 	publications(request: $request) {
 		items {
 			__typename
 			... on Post {
 				...PostFields
+				postReaction: reaction(request: $reactionRequest)
 			}
 			... on Comment {
 				...CommentFields
+				commentReaction: reaction(request: $reactionRequest)
 			}
 			... on Mirror {
 				...MirrorFields
+				mirrorReaction: reaction(request: $reactionRequest)
 			}
 		}
 		pageInfo {

@@ -169,14 +169,14 @@ enum LogLevel: String {
   
   func shouldLog() -> Bool {
     guard let logLevel = ProcessInfo.processInfo.environment["LOG_LEVEL"],
-          let level = LogLevel(rawValue: logLevel)
+          let level = LogLevel(rawValue: logLevel.lowercased())
     else { return true }
           
-    switch self {
+    switch level {
       case .info:  return true
-      case .debug: return level == .warn  || level == .debug || level == .error
-      case .warn:  return level == .debug || level == .error
-      case .error: return level == .error
+      case .debug: return self == .warn  || self == .debug || self == .error
+      case .warn:  return self == .debug || self == .error
+      case .error: return self == .error
     }
   }
 }

@@ -42,12 +42,16 @@ struct Timeline: ReducerProtocol {
         case .timelineAppeared:
           do {
             // Verify that both access token and user are available
-            guard try self.authTokenApi.checkFor(.access)
+            guard try self.authTokenApi.checkFor(.access),
+                  try self.authTokenApi.checkFor(.refresh),
+                  self.profileStorageApi.load() != nil
             else {
+              try self.authTokenApi.delete()
               self.profileStorageApi.remove()
               state.userProfile = nil
               return Effect(value: .refreshFeed)
             }
+            
             let accessToken = try self.authTokenApi.load(.access)
             let refreshToken = try self.authTokenApi.load(.refresh)
             
@@ -57,13 +61,13 @@ struct Timeline: ReducerProtocol {
             }
           } catch let error {
             log("Failed to load user profile", level: .error, error: error)
-            return .none
+            return Effect(value: .refreshFeed)
           }
           
         case .refreshTokenResponse(let refreshToken, let tokenIsValid):
           if tokenIsValid.data {
             state.userProfile = self.profileStorageApi.load()
-            return .none
+            return Effect(value: .refreshFeed)
             
           } else {
             return .run { send in
@@ -79,7 +83,7 @@ struct Timeline: ReducerProtocol {
           } catch let error {
             log("Failed to store access tokens", level: .error, error: error)
           }
-          return .none
+          return Effect(value: .refreshFeed)
           
         case .refreshFeed:
           state.cursorToNext = nil
@@ -89,10 +93,10 @@ struct Timeline: ReducerProtocol {
           )
           
         case .fetchPublications:
-          return .task { [cursor = state.cursorToNext] in
+          return .task { [cursor = state.cursorToNext, id = state.userProfile?.id] in
             await .publicationsResponse(
               TaskResult {
-                return try await lensApi.trendingPublications(50, cursor, .topCommented, [.post, .comment])
+                return try await lensApi.trendingPublications(50, cursor, .topCommented, [.post, .comment], id)
               }
             )
           }
@@ -114,6 +118,7 @@ struct Timeline: ReducerProtocol {
                   .sorted { $0.createdAt > $1.createdAt }
                   .map { Post.State(post: .init(publication: $0)) }
               )
+              
               state.cursorToNext = result.cursorToNext
               return .none
               

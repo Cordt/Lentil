@@ -192,7 +192,7 @@ struct KeyStorage {
           service: self.serviceIdentifier,
           account: self.accountIdentifier
         )
-      } else { 
+      } else {
         try KeychainInterface.save(
           secret: key,
           service: self.serviceIdentifier,

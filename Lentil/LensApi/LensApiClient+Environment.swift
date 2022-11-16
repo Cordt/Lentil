@@ -35,15 +35,18 @@ extension LensApi: DependencyKey {
       )
     },
     
-    trendingPublications: { limit, cursor, sortCriteria, publicationTypes in
-      try await run(
+    trendingPublications: { limit, cursor, sortCriteria, publicationTypes, reactionsForProfile in
+      var reactionFieldRequest: ReactionFieldResolverRequest?
+      if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
+      return try await run(
         query: ExplorePublicationsQuery(
           request: ExplorePublicationRequest(
             limit: "\(limit)",
             cursor: cursor,
             sortCriteria: sortCriteria,
             publicationTypes: publicationTypes
-          )
+          ),
+          reactionRequest: reactionFieldRequest
         ),
         mapResult: { data in
           QueryResult(
@@ -54,37 +57,21 @@ extension LensApi: DependencyKey {
       )
     },
     
-    commentsOfPublication: { publication in
-      try await run(
+    commentsOfPublication: { publication, reactionsForProfile in
+      var reactionFieldRequest: ReactionFieldResolverRequest?
+      if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
+      return try await run(
         query: PublicationsQuery(
           request: PublicationsQueryRequest(
             commentsOf: publication.id
-          )
+          ),
+          reactionRequest: reactionFieldRequest
         ),
         mapResult: { data in
           QueryResult(
             data: data.publications.items.compactMap {
               Model.Publication.from($0, child: publication)
             }
-          )
-        }
-      )
-    },
-    
-    reactionsOfPublication: { publication in
-      try await run(
-        query: WhoReactedPublicationQuery(
-          request: WhoReactedPublicationRequest(publicationId: publication.id)
-        ),
-        mapResult: { data in
-          var updatedPublication = publication
-          data.whoReactedPublication.items.forEach { item in
-            if item.reaction == .upvote { updatedPublication.upvotes += 1 }
-            if item.reaction == .downvote { updatedPublication.downvotes += 1 }
-            
-          }
-          return QueryResult(
-            data: updatedPublication
           )
         }
       )
@@ -218,11 +205,10 @@ extension LensApi: DependencyKey {
   static let previewValue = LensApi(
     authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
     verify: { _ in QueryResult(data: true) },
-    trendingPublications: { _, _, _, _ in return QueryResult(data: mockPublications) },
-    commentsOfPublication: { _ in QueryResult(data: mockComments) },
-    reactionsOfPublication: { publication in QueryResult(data: mockPosts.first(where: { $0.id == publication.id })!) },
-    defaultProfile: { _ in QueryResult(data: mockProfiles[2]) },
-    profiles: { _ in QueryResult(data: mockProfiles) },
+    trendingPublications: { _, _, _, _, _ in return QueryResult(data: MockData.mockPublications) },
+    commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
+    defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
+    profiles: { _ in QueryResult(data: MockData.mockProfiles) },
     fetchImage: { url in
       if url.absoluteString == "https://profile-picture" { return Image("cryptopunk1") }
       else if url.absoluteString == "https://cover-picture" { return Image("munich") }

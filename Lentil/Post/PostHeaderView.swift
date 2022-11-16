@@ -101,28 +101,28 @@ struct PostHeaderView_Previews: PreviewProvider {
     VStack {
       PostHeaderView(
         store: .init(
-          initialState: .init(publication: mockPublications[0]),
+          initialState: .init(publication: MockData.mockPublications[0]),
           reducer: Publication()
         )
       )
       
       PostHeaderView(
         store: .init(
-          initialState: .init(publication: mockPublications[2]),
+          initialState: .init(publication: MockData.mockPublications[2]),
           reducer: Publication()
         )
       )
       
       PostDetailHeaderView(
         store: .init(
-          initialState: .init(publication: mockPublications[0]),
+          initialState: .init(publication: MockData.mockPublications[0]),
           reducer: Publication()
         )
       )
       
       PostDetailHeaderView(
         store: .init(
-          initialState: .init(publication: mockPublications[2]),
+          initialState: .init(publication: MockData.mockPublications[2]),
           reducer: Publication()
         )
       )

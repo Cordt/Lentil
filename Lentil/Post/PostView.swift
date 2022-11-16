@@ -41,9 +41,6 @@ struct PostView: View {
         .opacity(0)
       )
       .buttonStyle(.plain)
-      .task {
-        viewStore.send(.fetchReactions)
-      }
     }
   }
 }
@@ -55,7 +52,7 @@ struct PostView_Previews: PreviewProvider {
     VStack(spacing: 0) {
       PostView(
         store: .init(
-          initialState: .init(post: Publication.State(publication: mockPublications[0])),
+          initialState: .init(post: Publication.State(publication: MockData.mockPublications[0])),
           reducer: Post()
         )
       )

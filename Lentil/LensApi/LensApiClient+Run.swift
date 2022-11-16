@@ -26,7 +26,10 @@ extension LensApi {
   ) async throws -> QueryResult<Output> {
     
     try await withCheckedThrowingContinuation { continuation in
-      networkClient.client.fetch(query: query) { result in
+      networkClient.client.fetch(
+        query: query,
+        queue: DispatchQueue.global(qos: .userInteractive)
+      ) { result in
         transform(
           continuation: continuation,
           result: result,
@@ -42,7 +45,10 @@ extension LensApi {
     mapResult: @escaping (Mutation.Data) throws -> MutationResult<Output>
   ) async throws -> MutationResult<Output> {
     try await withCheckedThrowingContinuation { continuation in
-      networkClient.client.perform(mutation: mutation) { result in
+      networkClient.client.perform(
+        mutation: mutation,
+        queue: DispatchQueue.global(qos: .userInteractive)
+      ) { result in
         transform(
           continuation: continuation,
           result: result,
@@ -57,7 +63,10 @@ extension LensApi {
     mutation: Mutation
   ) async throws -> Void {
     try await withCheckedThrowingContinuation { continuation in
-      networkClient.client.perform(mutation: mutation) { result in
+      networkClient.client.perform(
+        mutation: mutation,
+        queue: DispatchQueue.global(qos: .userInteractive)
+      ) { result in
         transform(continuation: continuation, result: result) { _ in () }
       }
     }

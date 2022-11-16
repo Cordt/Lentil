@@ -467,6 +467,67 @@ public struct PublicationMetadataTagsFilter: GraphQLMapConvertible {
   }
 }
 
+public struct ReactionFieldResolverRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: Profile id
+  public init(profileId: Swift.Optional<String?> = nil) {
+    graphQLMap = ["profileId": profileId]
+  }
+
+  /// Profile id
+  public var profileId: Swift.Optional<String?> {
+    get {
+      return graphQLMap["profileId"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+}
+
+/// Reaction types
+public enum ReactionTypes: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case upvote
+  case downvote
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "UPVOTE": self = .upvote
+      case "DOWNVOTE": self = .downvote
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .upvote: return "UPVOTE"
+      case .downvote: return "DOWNVOTE"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: ReactionTypes, rhs: ReactionTypes) -> Bool {
+    switch (lhs, rhs) {
+      case (.upvote, .upvote): return true
+      case (.downvote, .downvote): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [ReactionTypes] {
+    return [
+      .upvote,
+      .downvote,
+    ]
+  }
+}
+
 public struct PublicationsQueryRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -609,47 +670,6 @@ public struct WhoReactedPublicationRequest: GraphQLMapConvertible {
     set {
       graphQLMap.updateValue(newValue, forKey: "publicationId")
     }
-  }
-}
-
-/// Reaction types
-public enum ReactionTypes: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
-  public typealias RawValue = String
-  case upvote
-  case downvote
-  /// Auto generated constant for unknown enum values
-  case __unknown(RawValue)
-
-  public init?(rawValue: RawValue) {
-    switch rawValue {
-      case "UPVOTE": self = .upvote
-      case "DOWNVOTE": self = .downvote
-      default: self = .__unknown(rawValue)
-    }
-  }
-
-  public var rawValue: RawValue {
-    switch self {
-      case .upvote: return "UPVOTE"
-      case .downvote: return "DOWNVOTE"
-      case .__unknown(let value): return value
-    }
-  }
-
-  public static func == (lhs: ReactionTypes, rhs: ReactionTypes) -> Bool {
-    switch (lhs, rhs) {
-      case (.upvote, .upvote): return true
-      case (.downvote, .downvote): return true
-      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
-      default: return false
-    }
-  }
-
-  public static var allCases: [ReactionTypes] {
-    return [
-      .upvote,
-      .downvote,
-    ]
   }
 }
 
@@ -1298,7 +1318,7 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition: String =
     """
-    query ExplorePublications($request: ExplorePublicationRequest!) {
+    query ExplorePublications($request: ExplorePublicationRequest!, $reactionRequest: ReactionFieldResolverRequest) {
       explorePublications(request: $request) {
         __typename
         items {
@@ -1306,14 +1326,17 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
           ... on Post {
             __typename
             ...PostFields
+            postReaction: reaction(request: $reactionRequest)
           }
           ... on Comment {
             __typename
             ...CommentFields
+            postReaction: reaction(request: $reactionRequest)
           }
           ... on Mirror {
             __typename
             ...MirrorFields
+            postReaction: reaction(request: $reactionRequest)
           }
         }
         pageInfo {
@@ -1346,13 +1369,15 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
   }
 
   public var request: ExplorePublicationRequest
+  public var reactionRequest: ReactionFieldResolverRequest?
 
-  public init(request: ExplorePublicationRequest) {
+  public init(request: ExplorePublicationRequest, reactionRequest: ReactionFieldResolverRequest? = nil) {
     self.request = request
+    self.reactionRequest = reactionRequest
   }
 
   public var variables: GraphQLMap? {
-    return ["request": request]
+    return ["request": request, "reactionRequest": reactionRequest]
   }
 
   public struct Data: GraphQLSelectionSet {
@@ -1479,6 +1504,7 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLFragmentSpread(PostFields.self),
+              GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
             ]
           }
 
@@ -1494,6 +1520,15 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
             }
             set {
               resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var postReaction: ReactionTypes? {
+            get {
+              return resultMap["postReaction"] as? ReactionTypes
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "postReaction")
             }
           }
 
@@ -1543,6 +1578,7 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLFragmentSpread(CommentFields.self),
+              GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
             ]
           }
 
@@ -1558,6 +1594,15 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
             }
             set {
               resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var postReaction: ReactionTypes? {
+            get {
+              return resultMap["postReaction"] as? ReactionTypes
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "postReaction")
             }
           }
 
@@ -1607,6 +1652,7 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLFragmentSpread(MirrorFields.self),
+              GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
             ]
           }
 
@@ -1622,6 +1668,15 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
             }
             set {
               resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var postReaction: ReactionTypes? {
+            get {
+              return resultMap["postReaction"] as? ReactionTypes
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "postReaction")
             }
           }
 
@@ -1722,7 +1777,7 @@ public final class PublicationsQuery: GraphQLQuery {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition: String =
     """
-    query Publications($request: PublicationsQueryRequest!) {
+    query Publications($request: PublicationsQueryRequest!, $reactionRequest: ReactionFieldResolverRequest) {
       publications(request: $request) {
         __typename
         items {
@@ -1730,14 +1785,17 @@ public final class PublicationsQuery: GraphQLQuery {
           ... on Post {
             __typename
             ...PostFields
+            postReaction: reaction(request: $reactionRequest)
           }
           ... on Comment {
             __typename
             ...CommentFields
+            commentReaction: reaction(request: $reactionRequest)
           }
           ... on Mirror {
             __typename
             ...MirrorFields
+            mirrorReaction: reaction(request: $reactionRequest)
           }
         }
         pageInfo {
@@ -1770,13 +1828,15 @@ public final class PublicationsQuery: GraphQLQuery {
   }
 
   public var request: PublicationsQueryRequest
+  public var reactionRequest: ReactionFieldResolverRequest?
 
-  public init(request: PublicationsQueryRequest) {
+  public init(request: PublicationsQueryRequest, reactionRequest: ReactionFieldResolverRequest? = nil) {
     self.request = request
+    self.reactionRequest = reactionRequest
   }
 
   public var variables: GraphQLMap? {
-    return ["request": request]
+    return ["request": request, "reactionRequest": reactionRequest]
   }
 
   public struct Data: GraphQLSelectionSet {
@@ -1903,6 +1963,7 @@ public final class PublicationsQuery: GraphQLQuery {
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLFragmentSpread(PostFields.self),
+              GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
             ]
           }
 
@@ -1918,6 +1979,15 @@ public final class PublicationsQuery: GraphQLQuery {
             }
             set {
               resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var postReaction: ReactionTypes? {
+            get {
+              return resultMap["postReaction"] as? ReactionTypes
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "postReaction")
             }
           }
 
@@ -1967,6 +2037,7 @@ public final class PublicationsQuery: GraphQLQuery {
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLFragmentSpread(CommentFields.self),
+              GraphQLField("reaction", alias: "commentReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
             ]
           }
 
@@ -1982,6 +2053,15 @@ public final class PublicationsQuery: GraphQLQuery {
             }
             set {
               resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var commentReaction: ReactionTypes? {
+            get {
+              return resultMap["commentReaction"] as? ReactionTypes
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "commentReaction")
             }
           }
 
@@ -2031,6 +2111,7 @@ public final class PublicationsQuery: GraphQLQuery {
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLFragmentSpread(MirrorFields.self),
+              GraphQLField("reaction", alias: "mirrorReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
             ]
           }
 
@@ -2046,6 +2127,15 @@ public final class PublicationsQuery: GraphQLQuery {
             }
             set {
               resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var mirrorReaction: ReactionTypes? {
+            get {
+              return resultMap["mirrorReaction"] as? ReactionTypes
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "mirrorReaction")
             }
           }
 
