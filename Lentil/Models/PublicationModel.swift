@@ -66,9 +66,9 @@ struct MockData {
       collects: 32,
       comments: 2,
       mirrors: 1,
-      upvotedByUser: false,
+      upvotedByUser: true,
       collectdByUser: false,
-      commentdByUser: false,
+      commentdByUser: true,
       mirrordByUser: false
     ),
     .init(
@@ -84,9 +84,9 @@ struct MockData {
       comments: 0,
       mirrors: 0,
       upvotedByUser: false,
-      collectdByUser: false,
+      collectdByUser: true,
       commentdByUser: false,
-      mirrordByUser: false
+      mirrordByUser: true
     )
   ]
   static let mockComments: [Model.Publication] = [
@@ -103,9 +103,9 @@ struct MockData {
       comments: 0,
       mirrors: 1,
       upvotedByUser: false,
-      collectdByUser: false,
+      collectdByUser: true,
       commentdByUser: false,
-      mirrordByUser: false
+      mirrordByUser: true
     ),
     .init(
       id: "d5260ad6-c81b-42a2-a32e-8e8c4d79d309",
@@ -119,8 +119,8 @@ struct MockData {
       collects: 32,
       comments: 0,
       mirrors: 0,
-      upvotedByUser: false,
-      collectdByUser: false,
+      upvotedByUser: true,
+      collectdByUser: true,
       commentdByUser: false,
       mirrordByUser: false
     ),
@@ -138,8 +138,8 @@ struct MockData {
       mirrors: 0,
       upvotedByUser: false,
       collectdByUser: false,
-      commentdByUser: false,
-      mirrordByUser: false
+      commentdByUser: true,
+      mirrordByUser: true
     )
   ]
   static let mockMirrors: [Model.Publication] = [

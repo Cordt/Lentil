@@ -27,7 +27,8 @@ struct PostDetailView: View {
             store: self.store.scope(
               state: \.post,
               action: Post.Action.post
-            )
+            ),
+            statsSize: .large
           )
           .padding(.bottom, 16)
           
