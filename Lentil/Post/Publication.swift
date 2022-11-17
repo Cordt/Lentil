@@ -56,8 +56,20 @@ struct Publication: ReducerProtocol {
         case .toggleReaction:
           guard let userProfile = self.profileStorageApi.load()
           else { return .none }
-          return .fireAndForget { [publicationId = state.publication.id] in
-            try await self.lensApi.addReaction(userProfile.id, .upvote, publicationId)
+          
+          if state.publication.upvotedByUser {
+            state.publication.upvotes -= 1
+            state.publication.upvotedByUser = false
+            return .fireAndForget { [publicationId = state.publication.id] in
+              try await self.lensApi.removeReaction(userProfile.id, .upvote, publicationId)
+            }
+          }
+          else {
+            state.publication.upvotes += 1
+            state.publication.upvotedByUser = true
+            return .fireAndForget { [publicationId = state.publication.id] in
+              try await self.lensApi.addReaction(userProfile.id, .upvote, publicationId)
+            }
           }
       }
     }
