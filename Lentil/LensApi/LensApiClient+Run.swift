@@ -19,6 +19,8 @@ extension LensApi {
     }
   }
   
+  static let queue: DispatchQueue = DispatchQueue.global(qos: .userInteractive)
+  
   static func run<Query: GraphQLQuery, Output: Equatable>(
     networkClient: NetworkClient = .unauthenticated,
     query: Query,
@@ -28,7 +30,7 @@ extension LensApi {
     try await withCheckedThrowingContinuation { continuation in
       networkClient.client.fetch(
         query: query,
-        queue: DispatchQueue.global(qos: .userInteractive)
+        queue: self.queue
       ) { result in
         transform(
           continuation: continuation,
@@ -47,7 +49,7 @@ extension LensApi {
     try await withCheckedThrowingContinuation { continuation in
       networkClient.client.perform(
         mutation: mutation,
-        queue: DispatchQueue.global(qos: .userInteractive)
+        queue: self.queue
       ) { result in
         transform(
           continuation: continuation,
@@ -65,7 +67,7 @@ extension LensApi {
     try await withCheckedThrowingContinuation { continuation in
       networkClient.client.perform(
         mutation: mutation,
-        queue: DispatchQueue.global(qos: .userInteractive)
+        queue: self.queue
       ) { result in
         transform(continuation: continuation, result: result) { _ in () }
       }

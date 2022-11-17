@@ -8,16 +8,20 @@ struct Timeline: ReducerProtocol {
   struct State: Equatable {
     var userProfile: UserProfile? = nil
     var posts: IdentifiedArrayOf<Post.State> = []
-    var cursorToNext: String?
+    var cursorPublications: String?
+    var cursorExplore: String?
     
     var walletConnect: Wallet.State = .init()
   }
   
   enum Action: Equatable {
+    enum ResponseType: Equatable {
+      case explore, personal
+    }
     case timelineAppeared
     case refreshFeed
     case fetchPublications
-    case publicationsResponse(TaskResult<QueryResult<[Model.Publication]>>)
+    case publicationsResponse(QueryResult<[Model.Publication]>, ResponseType)
     case loadMore
     
     case walletConnect(Wallet.Action)
@@ -41,21 +45,26 @@ struct Timeline: ReducerProtocol {
           return Effect(value: .refreshFeed)
           
         case .refreshFeed:
-          state.cursorToNext = nil
+          state.cursorPublications = nil
           return .concatenate(
             .cancel(id: CancelFetchPublicationsID.self),
             .init(value: .fetchPublications)
           )
           
         case .fetchPublications:
-          return .task { [cursor = state.cursorToNext, id = state.userProfile?.id] in
-            await .publicationsResponse(
-              TaskResult {
-                return try await lensApi.trendingPublications(50, cursor, .topCommented, [.post, .comment], id)
-              }
-            )
+          if let userProfile = state.userProfile {
+            return .run { [cursorPublications = state.cursorPublications, cursorExplore = state.cursorExplore, id = userProfile.id] send in
+              try await send(.publicationsResponse(lensApi.publications(40, cursorPublications, id, [.post, .comment, .mirror], id), .personal))
+              try await send(.publicationsResponse(lensApi.trendingPublications(40, cursorExplore, .topCommented, [.post, .comment, .mirror], id), .explore))
+            }
+            .cancellable(id: CancelFetchPublicationsID.self)
           }
-          .cancellable(id: CancelFetchPublicationsID.self)
+          else {
+            return .run { [cursor = state.cursorExplore, id = state.userProfile?.id] send in
+              try await send(.publicationsResponse(lensApi.trendingPublications(50, cursor, .topCommented, [.post, .comment, .mirror], id), .explore))
+            }
+            .cancellable(id: CancelFetchPublicationsID.self)
+          }
           
         case .loadMore:
           return .concatenate(
@@ -63,24 +72,26 @@ struct Timeline: ReducerProtocol {
             .init(value: .fetchPublications)
           )
           
-        case .publicationsResponse(let response):
-          switch response {
-            case .success(let result):
-              state.posts.append(
-                contentsOf: result
-                  .data
-                  .filter { $0.typename == .post }
-                  .sorted { $0.createdAt > $1.createdAt }
-                  .map { Post.State(post: .init(publication: $0)) }
-              )
-              
-              state.cursorToNext = result.cursorToNext
-              return .none
-              
-            case .failure(let error):
-              log("Could not fetch publications from API", level: .warn, error: error)
-              return .none
+        case .publicationsResponse(let response, let responseType):
+          response.data
+            .filter { $0.typename == .post }
+            .map { Post.State(post: .init(publication: $0)) }
+            .forEach { postState in
+              if let index = state.posts.firstIndex(where: { $0.post.publication.createdAt < postState.post.publication.createdAt }) {
+                state.posts.updateOrInsert(postState, at: index)
+              }
+              else {
+                state.posts.updateOrAppend(postState)
+              }
+            }
+          
+          switch responseType {
+            case .explore:
+              state.cursorExplore = response.cursorToNext
+            case .personal:
+              state.cursorPublications = response.cursorToNext
           }
+          return .none
           
         case .walletConnect:
           return .none

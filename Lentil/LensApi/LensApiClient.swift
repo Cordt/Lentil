@@ -83,6 +83,14 @@ struct LensApi {
     _ accessToken: String
   ) async throws -> QueryResult<Bool>
   
+  var publications: @Sendable (
+    _ limit: Int,
+    _ cursor: String?,
+    _ profileId: String,
+    _ publicationTypes: [PublicationTypes],
+    _ reactionsForProfile: String?
+  ) async throws -> QueryResult<[Model.Publication]>
+  
   var trendingPublications: @Sendable (
     _ limit: Int,
     _ cursor: String?,

@@ -8,8 +8,8 @@ struct Model {
   struct Publication: Identifiable, Equatable {
     indirect enum Typename: Equatable {
       case post
-      case comment(of: Publication)
-      case mirror(of: Publication)
+      case comment(of: Publication?)
+      case mirror(of: Publication?)
     }
     
     let id: String

@@ -18,7 +18,7 @@ struct PostView: View {
           )
         )
         
-        VStack(spacing: 10) {
+        VStack(alignment: .leading, spacing: 10) {
           Text(viewStore.post.shortenedContent)
             .font(style: .body)
           

@@ -4,15 +4,16 @@
 import Foundation
 
 extension Model.Publication {
-  static func from(_ item: ExplorePublicationsQuery.Data.ExplorePublication.Item) -> Self? {
-    guard
-      let postFields = item.asPost?.fragments.postFields,
-      let content = postFields.metadata.fragments.metadataOutputFields.content,
-      let createdDate = date(from: postFields.createdAt),
-      let profilePictureUrlString = postFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString)
-    else { return nil }
-    
+  private static func postFrom(
+    postFields: PostFields,
+    content: String,
+    createdDate: Date,
+    profilePictureUrl: URL,
+    upvotedByUser: Bool,
+    collectdByUser: Bool,
+    commentdByUser: Bool,
+    mirrordByUser: Bool
+  ) -> Self? {
     return Model.Publication(
       id: postFields.id,
       typename: .post,
@@ -25,22 +26,24 @@ extension Model.Publication {
       collects: postFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
       comments: postFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
       mirrors: postFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors,
-      upvotedByUser: item.asPost?.postReaction == .upvote,
-      collectdByUser: postFields.hasCollectedByMe,
-      commentdByUser: false,
-      mirrordByUser: false
+      upvotedByUser: upvotedByUser,
+      collectdByUser: collectdByUser,
+      commentdByUser: commentdByUser,
+      mirrordByUser: mirrordByUser
     )
   }
   
-  static func from(_ item: PublicationsQuery.Data.Publication.Item, child of: Model.Publication) -> Self? {
-    guard
-      let commentFields = item.asComment?.fragments.commentFields.fragments.commentBaseFields,
-      let content = commentFields.metadata.fragments.metadataOutputFields.content,
-      let createdDate = date(from: commentFields.createdAt),
-      let profilePictureUrlString = commentFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString)
-    else { return nil }
-    
+  private static func commentFrom(
+    commentFields: CommentBaseFields,
+    child of: Model.Publication?,
+    content: String,
+    createdDate: Date,
+    profilePictureUrl: URL,
+    upvotedByUser: Bool,
+    collectdByUser: Bool,
+    commentdByUser: Bool,
+    mirrordByUser: Bool
+  ) -> Self? {
     return Model.Publication(
       id: commentFields.id,
       typename: .comment(of: of),
@@ -53,11 +56,101 @@ extension Model.Publication {
       collects: commentFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
       comments: commentFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
       mirrors: commentFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors,
-      upvotedByUser: item.asComment?.commentReaction == .upvote,
-      collectdByUser: commentFields.hasCollectedByMe,
-      commentdByUser: false,
-      mirrordByUser: false
+      upvotedByUser: upvotedByUser,
+      collectdByUser: collectdByUser,
+      commentdByUser: commentdByUser,
+      mirrordByUser: mirrordByUser
     )
+  }
+  
+  static func publication(from item: PublicationsQuery.Data.Publication.Item, child of: Model.Publication? = nil) -> Self? {
+    if let postFields = item.asPost?.fragments.postFields {
+      guard
+        let content = postFields.metadata.fragments.metadataOutputFields.content,
+        let createdDate = date(from: postFields.createdAt),
+        let profilePictureUrlString = postFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
+        let profilePictureUrl = URL(string: profilePictureUrlString)
+      else { return nil }
+      
+      return postFrom(
+        postFields: postFields,
+        content: content,
+        createdDate: createdDate,
+        profilePictureUrl: profilePictureUrl,
+        upvotedByUser: item.asPost?.postReaction == .upvote,
+        collectdByUser: postFields.hasCollectedByMe,
+        commentdByUser: false,
+        mirrordByUser: false
+      )
+    }
+    else if let commentFields = item.asComment?.fragments.commentFields.fragments.commentBaseFields {
+      guard
+        let content = commentFields.metadata.fragments.metadataOutputFields.content,
+        let createdDate = date(from: commentFields.createdAt),
+        let profilePictureUrlString = commentFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
+        let profilePictureUrl = URL(string: profilePictureUrlString)
+      else { return nil }
+      
+      return commentFrom(
+        commentFields: commentFields,
+        child: of,
+        content: content,
+        createdDate: createdDate,
+        profilePictureUrl: profilePictureUrl,
+        upvotedByUser: item.asComment?.commentReaction == .upvote,
+        collectdByUser: commentFields.hasCollectedByMe,
+        commentdByUser: false,
+        mirrordByUser: false
+      )
+    }
+    else {
+      return nil
+    }
+  }
+  
+  static func publication(from item: ExplorePublicationsQuery.Data.ExplorePublication.Item, child of: Model.Publication? = nil) -> Self? {
+    if let postFields = item.asPost?.fragments.postFields {
+      guard
+        let content = postFields.metadata.fragments.metadataOutputFields.content,
+        let createdDate = date(from: postFields.createdAt),
+        let profilePictureUrlString = postFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
+        let profilePictureUrl = URL(string: profilePictureUrlString)
+      else { return nil }
+      
+      return postFrom(
+        postFields: postFields,
+        content: content,
+        createdDate: createdDate,
+        profilePictureUrl: profilePictureUrl,
+        upvotedByUser: item.asPost?.postReaction == .upvote,
+        collectdByUser: postFields.hasCollectedByMe,
+        commentdByUser: false,
+        mirrordByUser: false
+      )
+    }
+    else if let commentFields = item.asComment?.fragments.commentFields.fragments.commentBaseFields {
+      guard
+        let content = commentFields.metadata.fragments.metadataOutputFields.content,
+        let createdDate = date(from: commentFields.createdAt),
+        let profilePictureUrlString = commentFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
+        let profilePictureUrl = URL(string: profilePictureUrlString)
+      else { return nil }
+      
+      return commentFrom(
+        commentFields: commentFields,
+        child: of,
+        content: content,
+        createdDate: createdDate,
+        profilePictureUrl: profilePictureUrl,
+        upvotedByUser: item.asComment?.postReaction == .upvote,
+        collectdByUser: commentFields.hasCollectedByMe,
+        commentdByUser: false,
+        mirrordByUser: false
+      )
+    }
+    else {
+      return nil
+    }
   }
 }
 

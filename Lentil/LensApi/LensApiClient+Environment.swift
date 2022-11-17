@@ -34,6 +34,28 @@ extension LensApi: DependencyKey {
         }
       )
     },
+  
+    publications: { limit, cursor, profileId, publicationTypes, reactionsForProfile in
+      var reactionFieldRequest: ReactionFieldResolverRequest?
+      if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
+      return try await run(
+        query: PublicationsQuery(
+          request: PublicationsQueryRequest(
+            limit: "\(limit)",
+            cursor: cursor,
+            profileId: profileId,
+            publicationTypes: publicationTypes
+          ),
+          reactionRequest: reactionFieldRequest
+        ),
+        mapResult: { data in
+          QueryResult(
+            data: data.publications.items.compactMap { Model.Publication.publication(from: $0) },
+            cursorToNext: data.publications.pageInfo.next
+          )
+        }
+      )
+    },
     
     trendingPublications: { limit, cursor, sortCriteria, publicationTypes, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
@@ -50,7 +72,7 @@ extension LensApi: DependencyKey {
         ),
         mapResult: { data in
           QueryResult(
-            data: data.explorePublications.items.compactMap(Model.Publication.from),
+            data: data.explorePublications.items.compactMap { Model.Publication.publication(from: $0) },
             cursorToNext: data.explorePublications.pageInfo.next
           )
         }
@@ -70,7 +92,7 @@ extension LensApi: DependencyKey {
         mapResult: { data in
           QueryResult(
             data: data.publications.items.compactMap {
-              Model.Publication.from($0, child: publication)
+              Model.Publication.publication(from: $0, child: publication)
             }
           )
         }
@@ -205,7 +227,8 @@ extension LensApi: DependencyKey {
   static let previewValue = LensApi(
     authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
     verify: { _ in QueryResult(data: true) },
-    trendingPublications: { _, _, _, _, _ in return QueryResult(data: MockData.mockPublications) },
+    publications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    trendingPublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
     defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
     profiles: { _ in QueryResult(data: MockData.mockProfiles) },
