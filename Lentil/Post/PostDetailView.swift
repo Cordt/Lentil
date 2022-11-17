@@ -12,7 +12,7 @@ struct PostDetailView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       ScrollView(showsIndicators: false) {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
           PostDetailHeaderView(
             store: self.store.scope(
               state: \.post,

@@ -14,11 +14,11 @@ struct PostHeaderView: View {
         if let image = viewStore.profilePicture {
           image
             .resizable()
-            .frame(width: 32, height: 32)
+            .frame(width: 40, height: 40)
             .clipShape(Circle())
         } else {
           profileGradient(from: viewStore.publication.profileHandle)
-            .frame(width: 32, height: 32)
+            .frame(width: 40, height: 40)
         }
         
         if let creatorName = viewStore.publication.profileName {
@@ -60,11 +60,11 @@ struct PostDetailHeaderView: View {
         if let image = viewStore.profilePicture {
           image
             .resizable()
-            .frame(width: 32, height: 32)
+            .frame(width: 40, height: 40)
             .clipShape(Circle())
         } else {
           profileGradient(from: viewStore.publication.profileHandle)
-            .frame(width: 32, height: 32)
+            .frame(width: 40, height: 40)
         }
         
         VStack(alignment: .leading) {

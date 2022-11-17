@@ -15,8 +15,6 @@ struct Timeline: ReducerProtocol {
   
   enum Action: Equatable {
     case timelineAppeared
-    case refreshTokenResponse(_ accessToken: String, QueryResult<Bool>)
-    case authTokenResponse(MutationResult<AuthenticationTokens>)
     case refreshFeed
     case fetchPublications
     case publicationsResponse(TaskResult<QueryResult<[Model.Publication]>>)
@@ -26,7 +24,6 @@ struct Timeline: ReducerProtocol {
     case post(id: Post.State.ID, action: Post.Action)
   }
   
-  @Dependency(\.authTokenApi) var authTokenApi
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
   
@@ -40,49 +37,7 @@ struct Timeline: ReducerProtocol {
       
       switch action {
         case .timelineAppeared:
-          do {
-            // Verify that both access token and user are available
-            guard try self.authTokenApi.checkFor(.access),
-                  try self.authTokenApi.checkFor(.refresh),
-                  self.profileStorageApi.load() != nil
-            else {
-              try self.authTokenApi.delete()
-              self.profileStorageApi.remove()
-              state.userProfile = nil
-              return Effect(value: .refreshFeed)
-            }
-            
-            let accessToken = try self.authTokenApi.load(.access)
-            let refreshToken = try self.authTokenApi.load(.refresh)
-            
-            // Verify that the access token is still valid
-            return .run { send in
-              try await send(.refreshTokenResponse(refreshToken, self.lensApi.verify(accessToken)))
-            }
-          } catch let error {
-            log("Failed to load user profile", level: .error, error: error)
-            return Effect(value: .refreshFeed)
-          }
-          
-        case .refreshTokenResponse(let refreshToken, let tokenIsValid):
-          if tokenIsValid.data {
-            state.userProfile = self.profileStorageApi.load()
-            return Effect(value: .refreshFeed)
-            
-          } else {
-            return .run { send in
-              try await send(.authTokenResponse(self.lensApi.refreshAuthentication(refreshToken)))
-            }
-          }
-          
-        case .authTokenResponse(let tokens):
-          do {
-            try self.authTokenApi.store(.access, tokens.data.accessToken)
-            try self.authTokenApi.store(.refresh, tokens.data.refreshToken)
-            state.userProfile = self.profileStorageApi.load()
-          } catch let error {
-            log("Failed to store access tokens", level: .error, error: error)
-          }
+          state.userProfile = profileStorageApi.load()
           return Effect(value: .refreshFeed)
           
         case .refreshFeed:

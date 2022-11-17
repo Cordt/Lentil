@@ -285,12 +285,11 @@
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
+				37F37F5E2926044A00469E21 /* Root */,
 				37BE767228FAA77D00282ED0 /* Theme */,
 				372248DD28DB47AE0066BCE5 /* Timeline */,
 				37F5C5E4291FBC25003C9E40 /* Wallet */,
 				3777830528CCA05D00E7E32A /* LentilApp.swift */,
-				3777830728CCA05D00E7E32A /* RootView.swift */,
-				372248D728DB46890066BCE5 /* Root.swift */,
 				37933DB028EA978400C11792 /* Binding.swift */,
 				37CDEB0F28D0322F009B2B7E /* Helper.swift */,
 				3777834228CCD39500E7E32A /* API.swift */,
@@ -382,6 +381,15 @@
 				37BBBAFD2901292900E74462 /* Keychain.swift */,
 			);
 			path = AuthToken;
+			sourceTree = "<group>";
+		};
+		37F37F5E2926044A00469E21 /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				3777830728CCA05D00E7E32A /* RootView.swift */,
+				372248D728DB46890066BCE5 /* Root.swift */,
+			);
+			path = Root;
 			sourceTree = "<group>";
 		};
 		37F5C5E4291FBC25003C9E40 /* Wallet */ = {

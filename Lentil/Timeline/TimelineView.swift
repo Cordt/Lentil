@@ -19,17 +19,8 @@ struct TimelineView: View {
           ) { store in
             PostView(store: store)
           }
-          HStack {
-            Spacer()
-            Button("Load more") {
-              viewStore.send(.loadMore)
-            }
-            .buttonStyle(.borderedProminent)
-            Spacer()
-          }
         }
         .listRowBackground(Color.clear)
-        .listRowSeparator(.hidden)
         .listRowInsets(EdgeInsets())
       }
       .toolbar {

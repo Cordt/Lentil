@@ -18,7 +18,7 @@ struct PostView: View {
           )
         )
         
-        Group {
+        VStack(spacing: 10) {
           Text(viewStore.post.shortenedContent)
             .font(style: .body)
           
@@ -28,12 +28,11 @@ struct PostView: View {
               action: Post.Action.post
             )
           )
-          .padding([.top], 4)
         }
-        .offset(y: -15)
-        .padding(.leading, 40)
+        .offset(y: -25)
+        .padding(.leading, 48)
       }
-      .padding(.all)
+      .padding([.leading, .trailing, .top])
       .background(
         NavigationLink("") {
           PostDetailView(store: self.store)

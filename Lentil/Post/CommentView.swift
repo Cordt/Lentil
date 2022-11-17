@@ -10,7 +10,7 @@ struct CommentView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      VStack(alignment: .leading, spacing: 8) {
+      VStack(alignment: .leading, spacing: 10) {
         PostHeaderView(
           store: self.store.scope(
             state: \.comment,
@@ -18,11 +18,9 @@ struct CommentView: View {
           )
         )
         
-        VStack(alignment: .leading, spacing: 8) {
-          HStack(alignment: .top, spacing: 16) {
-            Text(viewStore.comment.shortenedContent)
-              .font(.subheadline)
-          }
+        VStack(alignment: .leading, spacing: 10) {
+          Text(viewStore.comment.shortenedContent)
+            .font(.subheadline)
           
           PostStatsView(
             store: self.store.scope(
@@ -31,7 +29,8 @@ struct CommentView: View {
             )
           )
         }
-        .padding(.leading, 40)
+        .offset(y: -25)
+        .padding(.leading, 48)
       }
     }
   }
