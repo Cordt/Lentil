@@ -54,14 +54,14 @@ struct Timeline: ReducerProtocol {
         case .fetchPublications:
           if let userProfile = state.userProfile {
             return .run { [cursorPublications = state.cursorPublications, cursorExplore = state.cursorExplore, id = userProfile.id] send in
-              try await send(.publicationsResponse(lensApi.publications(40, cursorPublications, id, [.post, .comment, .mirror], id), .personal))
-              try await send(.publicationsResponse(lensApi.trendingPublications(40, cursorExplore, .topCommented, [.post, .comment, .mirror], id), .explore))
+              try await send(.publicationsResponse(lensApi.publications(40, cursorPublications, id, [.post], id), .personal))
+              try await send(.publicationsResponse(lensApi.trendingPublications(40, cursorExplore, .topCommented, [.post], id), .explore))
             }
             .cancellable(id: CancelFetchPublicationsID.self)
           }
           else {
             return .run { [cursor = state.cursorExplore, id = state.userProfile?.id] send in
-              try await send(.publicationsResponse(lensApi.trendingPublications(50, cursor, .topCommented, [.post, .comment, .mirror], id), .explore))
+              try await send(.publicationsResponse(lensApi.trendingPublications(50, cursor, .topCommented, [.post], id), .explore))
             }
             .cancellable(id: CancelFetchPublicationsID.self)
           }

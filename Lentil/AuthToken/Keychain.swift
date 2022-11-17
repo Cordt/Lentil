@@ -235,10 +235,12 @@ struct KeyStorage {
   
   static func deleteKey(serviceIdentifier: String, accountIdentifier: String) throws {
     do {
-      try KeychainInterface.deleteSecret(
-        service: serviceIdentifier,
-        account: accountIdentifier
-      )
+      if try checkForKey(serviceIdentifier: serviceIdentifier, accountIdentifier: accountIdentifier) {
+        try KeychainInterface.deleteSecret(
+          service: serviceIdentifier,
+          account: accountIdentifier
+        )
+      }
     }
     catch let error {
       log("Failed to delete key from keychain", level: .error, error: error)

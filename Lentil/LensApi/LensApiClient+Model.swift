@@ -69,7 +69,7 @@ extension Model.Publication {
         let content = postFields.metadata.fragments.metadataOutputFields.content,
         let createdDate = date(from: postFields.createdAt),
         let profilePictureUrlString = postFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-        let profilePictureUrl = URL(string: profilePictureUrlString)
+        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
       else { return nil }
       
       return postFrom(
@@ -88,7 +88,7 @@ extension Model.Publication {
         let content = commentFields.metadata.fragments.metadataOutputFields.content,
         let createdDate = date(from: commentFields.createdAt),
         let profilePictureUrlString = commentFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-        let profilePictureUrl = URL(string: profilePictureUrlString)
+        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
       else { return nil }
       
       return commentFrom(
@@ -114,7 +114,7 @@ extension Model.Publication {
         let content = postFields.metadata.fragments.metadataOutputFields.content,
         let createdDate = date(from: postFields.createdAt),
         let profilePictureUrlString = postFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-        let profilePictureUrl = URL(string: profilePictureUrlString)
+        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
       else { return nil }
       
       return postFrom(
@@ -133,7 +133,7 @@ extension Model.Publication {
         let content = commentFields.metadata.fragments.metadataOutputFields.content,
         let createdDate = date(from: commentFields.createdAt),
         let profilePictureUrlString = commentFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-        let profilePictureUrl = URL(string: profilePictureUrlString)
+        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
       else { return nil }
       
       return commentFrom(
@@ -165,8 +165,8 @@ extension Model.Profile {
     let coverPictureURL = profile.coverPicture?.asMediaSet?.original.fragments.mediaFields.url
     var profileUrl: URL? = nil
     var coverUrl: URL? = nil
-    if let urlString = profilePictureURL { profileUrl =  URL(string: urlString) }
-    if let urlString = coverPictureURL { coverUrl =  URL(string: urlString) }
+    if let urlString = profilePictureURL { profileUrl = URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/")) }
+    if let urlString = coverPictureURL { coverUrl = URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/")) }
     
     return Model.Profile(
       id: profile.id,
@@ -192,8 +192,8 @@ extension Model.Profile {
       let coverPictureURL = profile.coverPicture?.asMediaSet?.original.fragments.mediaFields.url
       var profileUrl: URL? = nil
       var coverUrl: URL? = nil
-      if let urlString = profilePictureURL { profileUrl =  URL(string: urlString) }
-      if let urlString = coverPictureURL { coverUrl =  URL(string: urlString) }
+      if let urlString = profilePictureURL { profileUrl =  URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/")) }
+      if let urlString = coverPictureURL { coverUrl =  URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/")) }
       
       return Model.Profile(
         id: profile.id,

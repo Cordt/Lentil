@@ -25,13 +25,13 @@ struct PostHeaderView: View {
           HStack {
             Text(creatorName)
               .font(style: .bodyBold)
-            Text(viewStore.publication.profileHandle)
+            Text("@\(viewStore.publication.profileHandle)")
               .font(style: .body)
           }
           .truncationMode(.tail)
           
         } else {
-          Text(viewStore.publication.profileHandle)
+          Text("@\(viewStore.publication.profileHandle)")
             .font(style: .bodyBold)
             .truncationMode(.tail)
         }
@@ -72,13 +72,13 @@ struct PostDetailHeaderView: View {
             HStack {
               Text(creatorName)
                 .font(style: .bodyBold)
-              Text(viewStore.publication.profileHandle)
+              Text("@\(viewStore.publication.profileHandle)")
                 .font(style: .body)
             }
             .truncationMode(.tail)
             
           } else {
-            Text(viewStore.publication.profileHandle)
+            Text("@\(viewStore.publication.profileHandle)")
               .font(style: .bodyBold)
               .truncationMode(.tail)
           }
