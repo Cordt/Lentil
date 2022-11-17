@@ -6,6 +6,7 @@ import SwiftUI
 
 
 struct ProfileView: View {
+  @Environment(\.dismiss) var dismiss
   let store: Store<Profile.State, Profile.Action>
   
   @ViewBuilder
@@ -44,7 +45,7 @@ struct ProfileView: View {
                   .font(style: .largeHeadline)
                 
                 if viewStore.profile.name != nil {
-                  Text(viewStore.profile.handle)
+                  Text("@\(viewStore.profile.handle)")
                     .font(style: .body)
                 }
               }
@@ -101,6 +102,14 @@ struct ProfileView: View {
           .padding([.leading, .trailing])
         }
         .ignoresSafeArea()
+        .toolbar {
+          ToolbarItem(placement: .navigationBarLeading) {
+            BackButton { dismiss() }
+          }
+        }
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
+        .accentColor(Theme.Color.primary)
         .task {
           viewStore.send(.remoteCoverPicture(.fetchImage))
           viewStore.send(.remoteProfilePicture(.fetchImage))

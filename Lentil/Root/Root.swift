@@ -9,7 +9,10 @@ struct Root: ReducerProtocol {
     "plowing beds",
     "planting seeds",
     "tending to seedlings",
-    "spreading some fertiliser"
+    "spreading some fertiliser",
+    "letting the sun in",
+    "hunting bugs",
+    "loving thy garden 🌱"
   ]
   
   struct State: Equatable {
@@ -60,7 +63,7 @@ struct Root: ReducerProtocol {
           
         case .startTimer:
           return .run { send in
-            for await _ in self.clock.timer(interval: .seconds(1)) {
+            for await _ in self.clock.timer(interval: .seconds(1.5)) {
               await send(.switchProgressLabel, animation: .default)
             }
           }
@@ -104,7 +107,7 @@ struct Root: ReducerProtocol {
         case .refreshTokenResponse(let refreshToken, let tokenIsValid):
           if tokenIsValid.data {
             // Valid tokens and profile available, open app
-            state.isLoading = false
+//            state.isLoading = false
             return .none
           }
           else {

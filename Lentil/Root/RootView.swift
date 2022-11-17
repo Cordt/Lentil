@@ -19,8 +19,12 @@ struct RootView: View {
           Theme.Color.primary
             .ignoresSafeArea()
           
-          ProgressView(viewStore.loadingText)
-            .transition(.scale)
+          VStack {
+            Text("lentil")
+              .font(highlight: .largeTitle, color: Theme.Color.white)
+            ProgressView(viewStore.loadingText)
+              .transition(.scale)
+          }
         }
         .onAppear { viewStore.send(.loadingScreenAppeared) }
         .onDisappear { viewStore.send(.loadingScreenDisappeared) }
@@ -46,6 +50,7 @@ struct ContentView_Previews: PreviewProvider {
     RootView(
       store: Store(
         initialState: Root.State(
+          isLoading: true,
           timelineState: .init()
         ),
         reducer: Root()

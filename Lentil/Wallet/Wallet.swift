@@ -23,7 +23,7 @@ struct Wallet: ReducerProtocol {
     case signInTapped
     case challengeResponse(TaskResult<Challenge>)
     case authenticationChallengeResponse(TaskResult<AuthenticationTokens>)
-    case defaultProfileResponse(UserProfile)
+    case defaultProfileResponse(Model.Profile)
   }
   
   @Dependency(\.walletConnect) var walletConnect
@@ -117,8 +117,7 @@ struct Wallet: ReducerProtocol {
         guard let address = state.address else { return .none }
         return .run { send in
           let defaultProfile = try await lensApi.defaultProfile(address).data
-          let userProfile = UserProfile(id: defaultProfile.id, handle: defaultProfile.handle, name: defaultProfile.name, address: address)
-          await send(.defaultProfileResponse(userProfile))
+          await send(.defaultProfileResponse(defaultProfile))
         }
         
       case .authenticationChallengeResponse(.failure(let error)):
@@ -127,8 +126,10 @@ struct Wallet: ReducerProtocol {
         
         
         
-      case .defaultProfileResponse(let userProfile):
+      case .defaultProfileResponse(let defaultProfile):
         do {
+          guard let address = state.address else { return .none }
+          let userProfile = UserProfile(id: defaultProfile.id, handle: defaultProfile.handle, name: defaultProfile.name, address: address)
           try self.profileStorageApi.store(userProfile)
         } catch let error {
           log("Failed to store user profile to defaults", level: .error, error: error)

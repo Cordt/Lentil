@@ -78,7 +78,7 @@ struct PostStatsView: View {
         
         Spacer()
         
-        Icon.share.view()
+        /* Icon.share.view() */
       }
       .font(style: .annotationSmall, color: Theme.Color.text)
     }

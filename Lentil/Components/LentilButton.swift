@@ -84,14 +84,13 @@ struct LentilButton_Previews: PreviewProvider {
         LentilButton(title: "Full width button", fullWidth: true) {}
       }
       .padding()
-      .accentColor(Theme.Color.white)
+      .accentColor(Theme.Color.primary)
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           BackButton(action: {})
         }
       }
-      .toolbarBackground(Theme.Color.primary, for: .navigationBar)
-      .toolbarBackground(.visible, for: .navigationBar)
+      .toolbarBackground(.hidden, for: .navigationBar)
     }
   }
 }

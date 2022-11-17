@@ -27,7 +27,16 @@ struct TimelineView: View {
         ToolbarItem(placement: .navigationBarLeading) {
           if let userProfile = viewStore.userProfile {
             NavigationLink {
-              // TODO: Load and open user's profile
+              IfLetStore(
+                self.store.scope(
+                  state: \.profile,
+                  action: Timeline.Action.profile
+                ), then: {
+                  ProfileView(
+                    store: $0
+                  )
+                }
+              )
             } label: {
               profileGradient(from: userProfile.handle)
                 .frame(width: 32, height: 32)
@@ -66,7 +75,9 @@ struct TrendingView_Previews: PreviewProvider {
     NavigationView {
       TimelineView(
         store: .init(
-          initialState: .init(),
+          initialState: .init(
+            profile: Profile.State(profile: MockData.mockProfiles[2])
+          ),
           reducer: Timeline()
         )
       )

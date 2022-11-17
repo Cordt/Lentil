@@ -12,6 +12,7 @@ struct Timeline: ReducerProtocol {
     var cursorExplore: String?
     
     var walletConnect: Wallet.State = .init()
+    var profile: Profile.State? = nil
   }
   
   enum Action: Equatable {
@@ -25,6 +26,7 @@ struct Timeline: ReducerProtocol {
     case loadMore
     
     case walletConnect(Wallet.Action)
+    case profile(Profile.Action)
     case post(id: Post.State.ID, action: Post.Action)
   }
   
@@ -93,12 +95,25 @@ struct Timeline: ReducerProtocol {
           }
           return .none
           
-        case .walletConnect:
+        case .walletConnect(let walletConnectAction):
+          switch walletConnectAction {
+            case .defaultProfileResponse(let defaultProfile):
+              state.profile = Profile.State(profile: defaultProfile)
+              return .none
+              
+            default:
+              return .none
+          }
+          
+        case .profile:
           return .none
           
         case .post:
           return .none
       }
+    }
+    .ifLet(\.profile, action: /Action.profile) {
+      Profile()
     }
     .forEach(\.posts, action: /Action.post) {
       Post()

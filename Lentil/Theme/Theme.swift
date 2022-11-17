@@ -109,11 +109,12 @@ struct PrimaryFont: ViewModifier {
 
 struct HighlightFont: ViewModifier {
   enum Style {
-    case largeHeadline
+    case largeTitle, largeHeadline
   }
   
   private var font: Font {
     switch self.style {
+      case .largeTitle:       return Font.custom("Righteous-Regular", size: 40, relativeTo: .largeTitle)
       case .largeHeadline:    return Font.custom("Righteous-Regular", size: 24, relativeTo: .title3)
     }
   }
