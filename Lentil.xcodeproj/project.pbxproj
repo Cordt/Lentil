@@ -26,6 +26,7 @@
 		372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DB28DB47A80066BCE5 /* Timeline.swift */; };
 		372248DF28DBFF080066BCE5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DE28DBFF080066BCE5 /* Theme.swift */; };
 		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
+		37557A23292744FB005524C5 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 37557A22292744FB005524C5 /* Sentry */; };
 		376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* ProfileModel.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
@@ -158,6 +159,7 @@
 				3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
+				37557A23292744FB005524C5 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -244,6 +246,15 @@
 			path = Righteous;
 			sourceTree = "<group>";
 		};
+		37557A2429274510005524C5 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				37933DB028EA978400C11792 /* Binding.swift */,
+				37CDEB0F28D0322F009B2B7E /* Helper.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
 		376C5ED428D4245500BA908A /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -281,6 +292,7 @@
 				372248CF28DAF4B80066BCE5 /* Assets */,
 				37CF6E1728FA620D0035A7CF /* AuthToken */,
 				37C5178F291F5142002D2B6D /* Components */,
+				37557A2429274510005524C5 /* Helper */,
 				37BBB12D28F2737600A6D202 /* LensApi */,
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
@@ -290,8 +302,6 @@
 				372248DD28DB47AE0066BCE5 /* Timeline */,
 				37F5C5E4291FBC25003C9E40 /* Wallet */,
 				3777830528CCA05D00E7E32A /* LentilApp.swift */,
-				37933DB028EA978400C11792 /* Binding.swift */,
-				37CDEB0F28D0322F009B2B7E /* Helper.swift */,
 				3777834228CCD39500E7E32A /* API.swift */,
 				3777833F28CCD21400E7E32A /* operations.graphql */,
 				3777834128CCD35300E7E32A /* schema.json */,
@@ -435,6 +445,7 @@
 				37D1236E28F70EE90037A4A7 /* Apollo */,
 				37D1237028F70EE90037A4A7 /* ApolloWebSocket */,
 				3704F6B5292288E900AAF569 /* WalletConnectSwift */,
+				37557A22292744FB005524C5 /* Sentry */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -514,6 +525,7 @@
 				37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */,
+				37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -783,12 +795,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Lentil/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Lentil;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -819,12 +832,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Lentil/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Lentil;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -977,6 +991,14 @@
 				kind = branch;
 			};
 		};
+		37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.31.1;
+			};
+		};
 		37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
@@ -1000,6 +1022,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */;
 			productName = WalletConnectSwift;
+		};
+		37557A22292744FB005524C5 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 		37D1236928F70EC90037A4A7 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;

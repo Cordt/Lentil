@@ -95,8 +95,8 @@ struct PostDetailHeaderView: View {
   }
 }
 
+#if DEBUG
 struct PostHeaderView_Previews: PreviewProvider {
-  
   static var previews: some View {
     VStack {
       PostHeaderView(
@@ -130,3 +130,4 @@ struct PostHeaderView_Previews: PreviewProvider {
     .padding()
   }
 }
+#endif

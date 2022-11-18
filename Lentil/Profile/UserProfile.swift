@@ -52,11 +52,13 @@ extension ProfileStorageApi: DependencyKey {
     remove: ProfileStorage.remove
   )
   
+  #if DEBUG
   static let previewValue = ProfileStorageApi(
     store: { _ in },
     load: { mockUserProfile },
     remove: {}
   )
+  #endif
 }
 
 extension DependencyValues {

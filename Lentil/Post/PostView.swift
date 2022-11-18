@@ -45,8 +45,8 @@ struct PostView: View {
 }
 
 
+#if DEBUG
 struct PostView_Previews: PreviewProvider {
-  
   static var previews: some View {
     VStack(spacing: 0) {
       PostView(
@@ -58,3 +58,4 @@ struct PostView_Previews: PreviewProvider {
     }
   }
 }
+#endif

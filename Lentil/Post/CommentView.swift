@@ -36,6 +36,7 @@ struct CommentView: View {
   }
 }
 
+#if DEBUG
 struct CommentView_Previews: PreviewProvider {
   static var previews: some View {
     VStack(spacing: 16) {
@@ -62,3 +63,4 @@ struct CommentView_Previews: PreviewProvider {
     .padding()
   }
 }
+#endif

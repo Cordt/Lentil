@@ -66,6 +66,7 @@ struct PostDetailView: View {
   }
 }
 
+#if DEBUG
 struct PostDetail_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
@@ -79,3 +80,4 @@ struct PostDetail_Previews: PreviewProvider {
     }
   }
 }
+#endif

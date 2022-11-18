@@ -85,6 +85,7 @@ struct PostStatsView: View {
   }
 }
 
+#if DEBUG
 struct PostStats_Previews: PreviewProvider {
   static var previews: some View {
     VStack {
@@ -148,3 +149,4 @@ struct PostStats_Previews: PreviewProvider {
     .padding()
   }
 }
+#endif

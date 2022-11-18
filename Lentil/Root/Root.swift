@@ -107,7 +107,7 @@ struct Root: ReducerProtocol {
         case .refreshTokenResponse(let refreshToken, let tokenIsValid):
           if tokenIsValid.data {
             // Valid tokens and profile available, open app
-//            state.isLoading = false
+            state.isLoading = false
             return .none
           }
           else {

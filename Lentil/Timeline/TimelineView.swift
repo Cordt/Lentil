@@ -69,7 +69,7 @@ struct TimelineView: View {
   }
 }
 
-
+#if DEBUG
 struct TrendingView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
@@ -86,3 +86,4 @@ struct TrendingView_Previews: PreviewProvider {
     }
   }
 }
+#endif
