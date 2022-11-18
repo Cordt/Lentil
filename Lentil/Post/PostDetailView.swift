@@ -20,6 +20,12 @@ struct PostDetailView: View {
             )
           )
           
+          if let image = viewStore.post.publicationImage {
+            image
+              .resizable()
+              .scaledToFit()
+          }
+          
           Text(viewStore.post.publicationContent)
             .font(style: .bodyDetailed)
           
@@ -72,7 +78,7 @@ struct PostDetail_Previews: PreviewProvider {
     NavigationView {
       PostDetailView(
         store: .init(
-          initialState: .init(post: Publication.State(publication: MockData.mockPublications[0])),
+          initialState: .init(post: Publication.State(publication: MockData.mockPublications[1])),
           reducer: Post()
         )
       )
