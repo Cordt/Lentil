@@ -56,11 +56,8 @@ struct Timeline: ReducerProtocol {
         case .fetchPublications:
           if let userProfile = state.userProfile {
             return .run { [cursorPublications = state.cursorPublications, cursorExplore = state.cursorExplore, id = userProfile.id] send in
-              print(1)
               await send(.publicationsResponse(try await lensApi.publications(40, cursorPublications, id, [.post], id), .personal))
-              print(2)
               await send(.publicationsResponse(try await lensApi.trendingPublications(40, cursorExplore, .topCommented, [.post], id), .explore))
-              print(3)
             }
             .cancellable(id: CancelFetchPublicationsID.self)
           }
@@ -78,7 +75,6 @@ struct Timeline: ReducerProtocol {
           )
           
         case .publicationsResponse(let response, let responseType):
-          print("response")
           response.data
             .filter { $0.typename == .post }
             .map { Post.State(post: .init(publication: $0)) }

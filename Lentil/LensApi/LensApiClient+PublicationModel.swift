@@ -63,6 +63,10 @@ extension Model.Publication {
     )
   }
   
+  static func media() {
+//    item.asPost?.fragments.postFields.metadata.fragments.metadataOutputFields.media.first?.original.fragments.mediaFields
+  }
+  
   static func publication(from item: PublicationsQuery.Data.Publication.Item, child of: Model.Publication? = nil) -> Self? {
     if let postFields = item.asPost?.fragments.postFields {
       guard

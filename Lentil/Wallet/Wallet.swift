@@ -13,6 +13,8 @@ struct Wallet: ReducerProtocol {
   struct State: Equatable {
     var connectionStatus: ConnectionState = .notConnected
     var address: String?
+    
+    var errorMessage: Toast? = nil
   }
   
   enum Action: Equatable {
@@ -24,12 +26,15 @@ struct Wallet: ReducerProtocol {
     case challengeResponse(TaskResult<Challenge>)
     case authenticationChallengeResponse(TaskResult<AuthenticationTokens>)
     case defaultProfileResponse(Model.Profile)
+    case failedToLoadDefaultProfile
+    case errorMessageUpdated(Toast?)
   }
   
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.authTokenApi) var authTokenApi
   @Dependency(\.profileStorageApi) var profileStorageApi
+  enum WalletEventsCancellationID {}
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
     switch action {
@@ -57,10 +62,11 @@ struct Wallet: ReducerProtocol {
             log("Failed to receive wallet events", level: .warn, error: error)
           }
         }
+        .cancellable(id: WalletEventsCancellationID.self)
         
       case .walletClosed:
         self.walletConnect.disconnect()
-        return .none
+        return .cancel(id: WalletEventsCancellationID.self)
         
       case .updateConnectionState(let connectionState):
         if case let .connected(address) = connectionState {
@@ -114,14 +120,20 @@ struct Wallet: ReducerProtocol {
         
         guard let address = state.address else { return .none }
         return .run { send in
-          let defaultProfile = try await lensApi.defaultProfile(address).data
-          await send(.defaultProfileResponse(defaultProfile))
+          do {
+            let defaultProfile = try await lensApi.defaultProfile(address).data
+            await send(.defaultProfileResponse(defaultProfile))
+          } catch let error {
+            try authTokenApi.delete()
+            await send(.failedToLoadDefaultProfile)
+            log("Could not retrieve profile for user", level: .info, error: error)
+          }
         }
         
       case .authenticationChallengeResponse(.failure(let error)):
         log("Could not retrieve tokens for signature", level: .error, error: error)
+        state.errorMessage = Toast(message: "We couldn't authenticate you :( Please try again")
         return .none
-        
         
         
       case .defaultProfileResponse(let defaultProfile):
@@ -132,6 +144,14 @@ struct Wallet: ReducerProtocol {
         } catch let error {
           log("Failed to store user profile to defaults", level: .error, error: error)
         }
+        return .none
+        
+      case .failedToLoadDefaultProfile:
+        state.errorMessage = Toast(message: "Default Profile could not be loaded. Did you claim your Lens Handle with this wallet?")
+        return .none
+        
+      case .errorMessageUpdated(let toast):
+        state.errorMessage = toast
         return .none
     }
   }

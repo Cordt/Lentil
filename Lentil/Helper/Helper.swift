@@ -181,7 +181,7 @@ func log(_ text: String, level: LogLevel, error: Error? = nil) {
   #if DEBUG
   if level.shouldLog() {
     var message = level.prefixed(message: text)
-    if let error { message += ": \(error)" }
+    if let error { message += ": \(error.localizedDescription)" }
     print(message)
   }
   #endif

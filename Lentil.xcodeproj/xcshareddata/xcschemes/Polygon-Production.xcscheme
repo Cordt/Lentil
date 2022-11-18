@@ -77,8 +77,13 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "TEST_WALLET_ADDRESS"
+            value = "0x2e5d2Da3f0c8454c7310b6F3B688447f38153018"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "LOG_LEVEL"
-            value = "ERROR"
+            value = "INFO"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

@@ -76,6 +76,12 @@ struct WalletView: View {
         }
         .offset(y: -50)
       }
+      .toastView(
+        toast: viewStore.binding(
+          get: \.errorMessage,
+          send: { Wallet.Action.errorMessageUpdated($0) }
+        )
+      )
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           Button {
