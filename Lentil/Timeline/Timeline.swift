@@ -54,28 +54,17 @@ struct Timeline: ReducerProtocol {
           )
           
         case .fetchPublications:
-          
-            if let userProfile = state.userProfile {
-              return .run { [cursorPublications = state.cursorPublications, cursorExplore = state.cursorExplore, id = userProfile.id] send in
-                do {
-                  await send(.publicationsResponse(try await lensApi.publications(40, cursorPublications, id, [.post], id), .personal))
-                  await send(.publicationsResponse(try await lensApi.trendingPublications(40, cursorExplore, .topCommented, [.post], id), .explore))
-                } catch let error {
-                  log("Failed to load timeline", level: .error, error: error)
-                }
+          return .run { [cursorPublications = state.cursorPublications, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
+            do {
+              if let id {
+                await send(.publicationsResponse(try await lensApi.publications(40, cursorPublications, id, [.post], id), .personal))
               }
-              .cancellable(id: CancelFetchPublicationsID.self)
+              await send(.publicationsResponse(try await lensApi.trendingPublications(40, cursorExplore, .topCommented, [.post], id), .explore))
+            } catch let error {
+              log("Failed to load timeline", level: .error, error: error)
             }
-          else {
-            return .run { [cursor = state.cursorExplore, id = state.userProfile?.id] send in
-              do {
-                await send(.publicationsResponse(try await lensApi.trendingPublications(50, cursor, .topCommented, [.post], id), .explore))
-              } catch let error {
-                log("Failed to load timeline", level: .error, error: error)
-              }
-            }
-            .cancellable(id: CancelFetchPublicationsID.self)
           }
+          .cancellable(id: CancelFetchPublicationsID.self)
           
         case .loadMore:
           return .concatenate(
