@@ -31,6 +31,8 @@ struct Model {
     var collectdByUser: Bool
     var commentdByUser: Bool
     var mirrordByUser: Bool
+    
+    var media: [Model.Media] = []
   }
 }
   
@@ -69,7 +71,8 @@ struct MockData {
       upvotedByUser: true,
       collectdByUser: false,
       commentdByUser: true,
-      mirrordByUser: false
+      mirrordByUser: false,
+      media: [Model.Media(mediaType: .image(.jpeg), url: URL(string: "https://feed-picture")!)]
     ),
     .init(
       id: "ba13fa94-30f9-4b6e-84ce-85ce316c7f4e",

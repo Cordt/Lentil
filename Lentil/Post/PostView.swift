@@ -18,7 +18,14 @@ struct PostView: View {
           )
         )
         
+        
         VStack(alignment: .leading, spacing: 10) {
+          if let image = viewStore.post.publicationImage {
+            image
+              .resizable()
+              .scaledToFit()
+          }
+          
           Text(viewStore.post.shortenedContent)
             .font(style: .body)
           
@@ -40,6 +47,9 @@ struct PostView: View {
         .opacity(0)
       )
       .buttonStyle(.plain)
+      .task {
+        viewStore.send(.post(action: .remotePublicationImage(.fetchImage)))
+      }
     }
   }
 }
@@ -52,6 +62,12 @@ struct PostView_Previews: PreviewProvider {
       PostView(
         store: .init(
           initialState: .init(post: Publication.State(publication: MockData.mockPublications[0])),
+          reducer: Post()
+        )
+      )
+      PostView(
+        store: .init(
+          initialState: .init(post: Publication.State(publication: MockData.mockPublications[1])),
           reducer: Post()
         )
       )

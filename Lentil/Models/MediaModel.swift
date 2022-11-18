@@ -4,8 +4,8 @@
 import Foundation
 
 extension Model {
-  struct Media {
-    enum MediaType {
+  struct Media: Equatable {
+    enum MediaType: Equatable {
       case image(ImageMimeType)
     }
     

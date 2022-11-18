@@ -25,11 +25,9 @@ struct Post: ReducerProtocol {
   @Dependency(\.profileStorageApi) var profileStorageApi
   
   var body: some ReducerProtocol<State, Action> {
-    Scope(
-      state: \.post,
-      action: /Action.post) {
-        Publication()
-      }
+    Scope(state: \.post, action: /Action.post) {
+      Publication()
+    }
     
     Reduce { state, action in
       switch action {

@@ -22,6 +22,19 @@ struct Publication: ReducerProtocol {
       }
     }
     
+    var publicationImage: Image?
+    var remotePublicationImage: RemoteImage.State {
+      get {
+        RemoteImage.State(
+          imageUrl: self.publication.media.first?.url,
+          image: self.publicationImage
+        )
+      }
+      set {
+        self.publicationImage = newValue.image
+      }
+    }
+    
     var id: String { self.publication.id }
     private let maxLength: Int = 256
     var publicationContent: String { self.publication.content.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -37,6 +50,7 @@ struct Publication: ReducerProtocol {
   
   enum Action: Equatable {
     case remoteProfilePicture(RemoteImage.Action)
+    case remotePublicationImage(RemoteImage.Action)
     case toggleReaction
   }
   
@@ -48,9 +62,16 @@ struct Publication: ReducerProtocol {
       RemoteImage()
     }
     
+    Scope(state: \.remotePublicationImage, action: /Action.remotePublicationImage) {
+      RemoteImage()
+    }
+    
     Reduce { state, action in
       switch action {
         case .remoteProfilePicture:
+          return .none
+          
+        case .remotePublicationImage:
           return .none
           
         case .toggleReaction:

@@ -25,6 +25,7 @@
 		372248DA28DB479D0066BCE5 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248D928DB479D0066BCE5 /* TimelineView.swift */; };
 		372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DB28DB47A80066BCE5 /* Timeline.swift */; };
 		372248DF28DBFF080066BCE5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DE28DBFF080066BCE5 /* Theme.swift */; };
+		373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */; };
 		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
 		37557A23292744FB005524C5 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 37557A22292744FB005524C5 /* Sentry */; };
 		376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* ProfileModel.swift */; };
@@ -109,6 +110,7 @@
 		372248D928DB479D0066BCE5 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		372248DB28DB47A80066BCE5 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		372248DE28DBFF080066BCE5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+ProfileModel.swift"; sourceTree = "<group>"; };
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		376C5ED528D4253F00BA908A /* ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModel.swift; sourceTree = "<group>"; };
 		376C5ED728D4266100BA908A /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
@@ -353,8 +355,9 @@
 				3777834628CDA27600E7E32A /* LensApiClient.swift */,
 				37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */,
 				37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */,
-				37F71B4F28DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift */,
 				37CC0CFF292796780036C6E9 /* LensApiClient+MediaModel.swift */,
+				373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */,
+				37F71B4F28DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift */,
 				37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */,
 				37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */,
 			);
@@ -616,6 +619,7 @@
 				37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* Post.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */,
+				373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */,
 				372248D828DB46890066BCE5 /* Root.swift in Sources */,
 				372248CE28DAF38D0066BCE5 /* PostDetailView.swift in Sources */,
 				37BBBAFE2901292900E74462 /* Keychain.swift in Sources */,

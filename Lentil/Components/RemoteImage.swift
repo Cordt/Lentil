@@ -12,7 +12,7 @@ struct RemoteImage: ReducerProtocol {
   
   enum Action: Equatable {
     case fetchImage
-    case updateProfilePicture(TaskResult<Image?>)
+    case updateImage(TaskResult<Image?>)
   }
   
   @Dependency(\.lensApi) var lensApi
@@ -21,7 +21,7 @@ struct RemoteImage: ReducerProtocol {
     switch action {
       case .fetchImage:
         return .task { [url = state.imageUrl] in
-          await .updateProfilePicture(
+          await .updateImage(
             TaskResult {
               if let url {
                 return try await lensApi.fetchImage(url)
@@ -33,11 +33,11 @@ struct RemoteImage: ReducerProtocol {
           )
         }
         
-      case .updateProfilePicture(let .success(profilePicture)):
-        state.image = profilePicture
+      case .updateImage(let .success(image)):
+        state.image = image
         return .none
         
-      case .updateProfilePicture(.failure):
+      case .updateImage(.failure):
         // Handle error
         return .none
     }
