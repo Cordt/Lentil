@@ -74,6 +74,6 @@ var mockUserProfile = UserProfile(
   id: "3",
   handle: "cordt.lens",
   name: "Cordt",
-  address: ProcessInfo.processInfo.environment["TEST_WALLET_PUBLIC_KEY"]!
+  address: LentilEnvironment.shared.testWalletAddress
 )
 #endif

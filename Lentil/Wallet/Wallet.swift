@@ -102,9 +102,7 @@ struct Wallet: ReducerProtocol {
         return .none
         
       case .authenticationChallengeResponse(.success(let tokens)):
-        if ProcessInfo.processInfo.environment["LOG_LEVEL"]! == "INFO" {
-          log("Successfully retrieved tokens", level: .info)
-        }
+        log("Successfully retrieved tokens", level: .info)
         do {
           try authTokenApi.store(.access, tokens.accessToken)
           try authTokenApi.store(.refresh, tokens.refreshToken)

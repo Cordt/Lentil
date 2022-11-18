@@ -16,11 +16,7 @@ struct LentilApp: App {
   init() {
     SentrySDK.start { options in
       options.dsn = "https://84059162a1c245b58a59c12a70468883@o4504178318639104.ingest.sentry.io/4504178320670720"
-      #if DEBUG
-      options.debug = true
-      #else
       options.debug = false
-      #endif
       
       options.enableAppHangTracking = true
       options.enableFileIOTracking = true

@@ -16,7 +16,7 @@ class Network {
     let provider = NetworkInterceptorProvider(client: client, store: store, setup: [.tokenAdding, .requestLogging])
     let transport = RequestChainNetworkTransport(
       interceptorProvider: provider,
-      endpointURL: URL(string: ProcessInfo.processInfo.environment["BASE_URL"]!)!)
+      endpointURL: URL(string: LentilEnvironment.shared.baseUrl)!)
     
     return ApolloClient(networkTransport: transport, store: store)
   }()
@@ -28,7 +28,7 @@ class Network {
     let provider = NetworkInterceptorProvider(client: client, store: store, setup: [.requestLogging])
     let transport = RequestChainNetworkTransport(
       interceptorProvider: provider,
-      endpointURL: URL(string: ProcessInfo.processInfo.environment["BASE_URL"]!)!)
+      endpointURL: URL(string: LentilEnvironment.shared.baseUrl)!)
     
     return ApolloClient(networkTransport: transport, store: store)
   }()

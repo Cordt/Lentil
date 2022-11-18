@@ -168,11 +168,7 @@ enum LogLevel: String {
   }
   
   func shouldLog() -> Bool {
-    guard let logLevel = ProcessInfo.processInfo.environment["LOG_LEVEL"],
-          let level = LogLevel(rawValue: logLevel.lowercased())
-    else { return true }
-          
-    switch level {
+    switch LentilEnvironment.shared.logLevel {
       case .info:  return true
       case .debug: return self == .warn  || self == .debug || self == .error
       case .warn:  return self == .debug || self == .error

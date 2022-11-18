@@ -77,18 +77,8 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "WALLETCONNECT_PROJECT_ID"
-            value = "6a2bd4d07232889f771844d4328477e3"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
             key = "LOG_LEVEL"
             value = "ERROR"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "BLOCK_EXPLORER_URL"
-            value = "https://polygonscan.com/address/"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

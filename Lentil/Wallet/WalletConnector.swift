@@ -224,14 +224,12 @@ fileprivate final class WalletConnect {
 extension WalletConnect: ClientDelegate {
   func client(_ client: Client, didFailToConnect url: WCURL) {
     self.walletEvents.eventsToEmit.append(.didFailToConnect)
-    print("[INFO] ")
     log("Failed to connect to WC", level: .info)
   }
   
   func client(_ client: Client, didConnect url: WCURL) {
     self.wcurl = url
     self.walletEvents.eventsToEmit.append(.didConnect(url))
-    print("[INFO] ")
     log("Successfully connected with WC", level: .info)
   }
   
@@ -242,7 +240,6 @@ extension WalletConnect: ClientDelegate {
       UserDefaults.standard.set(encodedSession, forKey: self.sessionKey)
       self.session = session
       self.walletEvents.eventsToEmit.append(.didEstablishSession(session))
-      print("[INFO] ")
       log("Successfully established a session with WC", level: .info)
       
     } catch let error {
@@ -253,7 +250,6 @@ extension WalletConnect: ClientDelegate {
   func client(_ client: Client, didDisconnect session: Session) {
     UserDefaults.standard.removeObject(forKey: self.sessionKey)
     self.walletEvents.eventsToEmit.append(.didDisconnect)
-    print("[INFO] ")
     log("Successfully disconeccted from WC", level: .info)
   }
   

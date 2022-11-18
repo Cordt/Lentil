@@ -64,7 +64,7 @@ extension MockData {
       id: "3",
       name: "Cordt",
       handle: "cordt.lens",
-      ownedBy: ProcessInfo.processInfo.environment["TEST_WALLET_PUBLIC_KEY"]!,
+      ownedBy: LentilEnvironment.shared.testWalletAddress,
       profilePictureUrl: URL(string: "https://profile-picture")!,
       coverPictureUrl: URL(string: "https://cover-picture")!,
       bio: "I ELI5 Web3. But sometimes I’m the 5 year old.\nProduct at day, functional Swift at night.",
