@@ -72,7 +72,7 @@ struct ProfileView: View {
                 .padding(.bottom, 5)
             }
             
-            HStack {
+            HStack(alignment: .top) {
               VStack(alignment: .leading, spacing: 5) {
                 HStack(spacing: 5) {
                   Text(simpleCount(from: viewStore.profile.followers))
@@ -81,9 +81,9 @@ struct ProfileView: View {
                     .font(style: .body)
                 }
                 HStack {
-                  if let location = viewStore.profile.location {
-                    Icon.location.view()
-                    Text(location)
+                  Icon.lens.view()
+                  if let joined = viewStore.profile.joinedDate {
+                    Text("Joined " + age(joined))
                       .font(style: .body)
                   }
                 }
@@ -97,9 +97,11 @@ struct ProfileView: View {
                     .font(style: .body)
                 }
                 HStack {
-                  Icon.lens.view()
-                  Text("Joined " + age(viewStore.profile.joinedDate))
-                    .font(style: .body)
+                  if let location = viewStore.profile.location {
+                    Icon.location.view()
+                    Text(location)
+                      .font(style: .body)
+                  }
                 }
               }
             }

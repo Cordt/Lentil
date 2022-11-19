@@ -25,7 +25,7 @@ extension Model.Profile {
       following: profile.stats.totalFollowing,
       followers: profile.stats.totalFollowers,
       location: nil,
-      joinedDate: Date(),
+      joinedDate: nil,
       isDefault: profile.isDefault
     )
   }

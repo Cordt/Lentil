@@ -17,7 +17,7 @@ extension Model {
     var following: Int
     var followers: Int
     var location: String?
-    var joinedDate: Date
+    var joinedDate: Date?
     
     var isDefault: Bool
     
