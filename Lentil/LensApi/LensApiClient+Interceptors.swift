@@ -35,11 +35,31 @@ class NetworkInterceptorProvider: DefaultInterceptorProvider {
     for operation: Operation
   ) -> [ApolloInterceptor] where Operation : GraphQLOperation {
     var interceptors = super.interceptors(for: operation)
+    // Always add origin
+    interceptors.insert(OriginHeaderInterceptor(), at: 0)
+    
     for setupItem in self.setup.enumerated() {
-      interceptors.insert(setupItem.element.interceptor(), at: setupItem.offset)
+      interceptors.insert(setupItem.element.interceptor(), at: setupItem.offset + 1)
     }
     
     return interceptors
+  }
+}
+
+class OriginHeaderInterceptor: ApolloInterceptor {
+  func interceptAsync<Operation>(
+    chain: RequestChain,
+    request: HTTPRequest<Operation>,
+    response: HTTPResponse<Operation>?,
+    completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) where Operation : GraphQLOperation {
+      
+      request.addHeader(name: "Origin", value: LentilEnvironment.shared.origin)
+      
+      chain.proceedAsync(
+        request: request,
+        response: response,
+        completion: completion
+      )
   }
 }
 
