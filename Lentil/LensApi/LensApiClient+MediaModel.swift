@@ -11,7 +11,7 @@ extension Model.Media {
     guard
       let mimeTypeString = mediaFields.mimeType,
       let mimeType = Model.Media.ImageMimeType(rawValue: mimeTypeString),
-      let url = URL(string: mediaFields.url)
+      let url = URL(string: mediaFields.url.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
     else { return nil }
     
     return Model.Media(

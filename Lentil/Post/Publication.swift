@@ -9,8 +9,12 @@ struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var publication: Model.Publication
     var profile: Profile.State {
-      get { Profile.State(profile: self.publication.profile, profilePicture: self.profilePicture) }
-      set { self.publication.profile = newValue.profile }
+      get { Profile.State(profile: self.publication.profile, coverPicture: self.coverPicture, profilePicture: self.profilePicture) }
+      set {
+        self.publication.profile = newValue.profile
+        self.profilePicture = newValue.profilePicture
+        self.coverPicture = newValue.coverPicture
+      }
     }
     var id: String { self.publication.id }
     
@@ -24,6 +28,18 @@ struct Publication: ReducerProtocol {
       }
       set {
         self.profilePicture = newValue.image
+      }
+    }
+    var coverPicture: Image?
+    var remoteCoverPicture: RemoteImage.State {
+      get {
+        RemoteImage.State(
+          imageUrl: self.publication.profile.coverPictureUrl,
+          image: self.coverPicture
+        )
+      }
+      set {
+        self.coverPicture = newValue.image
       }
     }
     
@@ -55,6 +71,7 @@ struct Publication: ReducerProtocol {
   enum Action: Equatable {
     case profile(Profile.Action)
     case remoteProfilePicture(RemoteImage.Action)
+    case remoteCoverPicture(RemoteImage.Action)
     case remotePublicationImage(RemoteImage.Action)
     case toggleReaction
   }
@@ -71,6 +88,10 @@ struct Publication: ReducerProtocol {
       RemoteImage()
     }
     
+    Scope(state: \.remoteCoverPicture, action: /Action.remoteCoverPicture) {
+      RemoteImage()
+    }
+    
     Scope(state: \.remotePublicationImage, action: /Action.remotePublicationImage) {
       RemoteImage()
     }
@@ -80,10 +101,7 @@ struct Publication: ReducerProtocol {
         case .profile:
           return .none
           
-        case .remoteProfilePicture:
-          return .none
-          
-        case .remotePublicationImage:
+        case .remoteProfilePicture, .remoteCoverPicture, .remotePublicationImage:
           return .none
           
         case .toggleReaction:

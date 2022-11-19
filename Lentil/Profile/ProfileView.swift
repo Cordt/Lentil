@@ -10,16 +10,6 @@ struct ProfileView: View {
   let store: Store<Profile.State, Profile.Action>
   
   @ViewBuilder
-  func lazy(image: Image?, placeholder: some View) -> some View {
-    if let image {
-      image
-        .resizable()
-    } else {
-      placeholder
-    }
-  }
-  
-  @ViewBuilder
   func linkIcon(icon: Icon, url: URL) -> some View {
     Theme.Color.white
       .opacity(0.7)
@@ -34,8 +24,15 @@ struct ProfileView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       GeometryReader { geometry in
         VStack(spacing: 0) {
-          lazy(image: viewStore.coverPicture, placeholder: Theme.Color.primary)
-            .frame(height: geometry.size.height * 0.35)
+          if let coverPicture = viewStore.coverPicture {
+            coverPicture
+              .resizable()
+              .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
+              .aspectRatio(contentMode: .fill)
+          } else {
+            lentilGradient()
+              .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
+          }
           
           VStack(alignment: .leading) {
             HStack {
@@ -53,10 +50,19 @@ struct ProfileView: View {
               
               Spacer()
               
-              lazy(image: viewStore.profilePicture, placeholder: profileGradient(from: viewStore.profile.handle))
-                .frame(width: 112, height: 112)
-                .clipShape(Circle())
-                .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
+              if let profilePicture = viewStore.profilePicture {
+                profilePicture
+                  .resizable()
+                  .frame(width: 112, height: 112)
+                  .aspectRatio(contentMode: .fill)
+                  .clipShape(Circle())
+                  .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
+              } else {
+                profileGradient(from: viewStore.profile.handle)
+                  .frame(width: 112, height: 112)
+                  .clipShape(Circle())
+                  .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
+              }
             }
             .padding(.bottom, 5)
             
