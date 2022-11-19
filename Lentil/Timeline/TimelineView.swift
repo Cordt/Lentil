@@ -17,7 +17,9 @@ struct TimelineView: View {
               state: \.posts,
               action: Timeline.Action.post)
           ) { store in
-            PostView(store: store)
+            VStack(spacing: 0) {
+              PostView(store: store)
+            }
           }
         }
       }

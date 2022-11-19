@@ -42,7 +42,10 @@ struct PostView: View {
           }
         )
         .offset(y: -25)
+        .padding(.bottom, -20)
         .padding(.leading, 48)
+        
+        Divider()
       }
       .padding([.leading, .trailing, .top])
       .task {

@@ -144,7 +144,6 @@ struct PostStats_Previews: PreviewProvider {
         }
         .padding(.leading, 32)
       }
-      .padding(.bottom, 32)
     }
     .padding()
   }
