@@ -177,12 +177,18 @@ enum LogLevel: String {
   }
 }
 
-func log(_ text: String, level: LogLevel, error: Error? = nil) {
+func log(_ text: String, level: LogLevel, error: Error) {
   #if DEBUG
+  log(text, level: level, error: error.localizedDescription)
+  #endif
+}
+
+func log(_ text: String, level: LogLevel, error: String? = nil) {
+#if DEBUG
   if level.shouldLog() {
     var message = level.prefixed(message: text)
-    if let error { message += ": \(error.localizedDescription)" }
+    if let error { message += ": \(error)" }
     print(message)
   }
-  #endif
+#endif
 }

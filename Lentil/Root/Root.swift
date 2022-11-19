@@ -31,7 +31,7 @@ struct Root: ReducerProtocol {
     
     case checkAuthenticationStatus
     case refreshTokenResponse(_ accessToken: String, QueryResult<Bool>)
-    case authTokenResponse(MutationResult<AuthenticationTokens>)
+    case authTokenResponse(TaskResult<MutationResult<AuthenticationTokens>>)
     
     case timelineAction(Timeline.Action)
   }
@@ -111,12 +111,16 @@ struct Root: ReducerProtocol {
             return .none
           }
           else {
-            return .run { send in
-              try await send(.authTokenResponse(self.lensApi.refreshAuthentication(refreshToken)))
+            return .task {
+              await .authTokenResponse(
+                TaskResult {
+                  try await self.lensApi.refreshAuthentication(refreshToken)
+                }
+              )
             }
           }
           
-        case .authTokenResponse(let tokens):
+        case .authTokenResponse(let .success(tokens)):
           do {
             try self.authTokenApi.store(.access, tokens.data.accessToken)
             try self.authTokenApi.store(.refresh, tokens.data.refreshToken)
@@ -131,6 +135,13 @@ struct Root: ReducerProtocol {
             return .none
           }
           
+        case .authTokenResponse(let .failure(error)):
+          try? self.authTokenApi.delete()
+          self.profileStorageApi.remove()
+          state.isLoading = false
+          
+          log("Failed to refresh token, logging user out", level: .debug, error: error)
+          return .none
           
         case .timelineAction:
           return .none

@@ -24,7 +24,6 @@ struct RemoteImage: ReducerProtocol {
           await .updateImage(
             TaskResult {
               if let url {
-                print("Requesting \(url.absoluteString)")
                 return try await lensApi.fetchImage(url)
               }
               else {

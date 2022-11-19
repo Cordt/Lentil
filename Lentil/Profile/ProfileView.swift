@@ -81,8 +81,8 @@ struct ProfileView: View {
                     .font(style: .body)
                 }
                 HStack {
-                  Icon.lens.view()
                   if let joined = viewStore.profile.joinedDate {
+                    Icon.lens.view()
                     Text("Joined " + age(joined))
                       .font(style: .body)
                   }
