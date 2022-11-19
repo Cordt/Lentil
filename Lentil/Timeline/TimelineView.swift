@@ -10,8 +10,8 @@ struct TimelineView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      List {
-        Group {
+      ScrollView(.vertical, showsIndicators: false) {
+        LazyVStack(alignment: .leading) {
           ForEachStore(
             self.store.scope(
               state: \.posts,
@@ -20,8 +20,6 @@ struct TimelineView: View {
             PostView(store: store)
           }
         }
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets())
       }
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
@@ -62,7 +60,6 @@ struct TimelineView: View {
         }
       }
       .navigationBarTitleDisplayMode(.inline)
-      .listStyle(.plain)
       .refreshable { await viewStore.send(.refreshFeed).finish() }
       .task { viewStore.send(.timelineAppeared) }
     }

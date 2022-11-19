@@ -108,6 +108,10 @@ struct LensApi {
     _ ethereumAddress: String
   ) async throws -> QueryResult<Model.Profile>
   
+  var profile: @Sendable (
+    _ forHandle: String
+  ) async throws -> QueryResult<Model.Profile?>
+  
   var profiles: @Sendable (
     _ ownedBy: String
   ) async throws -> QueryResult<[Model.Profile]>

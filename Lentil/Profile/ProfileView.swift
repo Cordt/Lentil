@@ -41,7 +41,7 @@ struct ProfileView: View {
             HStack {
               VStack(alignment: .leading) {
                 Spacer()
-                Text(viewStore.profile.name ?? viewStore.profile.handle)
+                Text(viewStore.profile.name ?? "@\(viewStore.profile.handle)")
                   .font(style: .largeHeadline)
                 
                 if viewStore.profile.name != nil {
@@ -111,8 +111,7 @@ struct ProfileView: View {
         .navigationBarBackButtonHidden(true)
         .accentColor(Theme.Color.primary)
         .task {
-          viewStore.send(.remoteCoverPicture(.fetchImage))
-          viewStore.send(.remoteProfilePicture(.fetchImage))
+          viewStore.send(.loadProfile)
         }
       }
     }

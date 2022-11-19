@@ -8,12 +8,17 @@ import SwiftUI
 struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var publication: Model.Publication
+    var profile: Profile.State {
+      get { Profile.State(profile: self.publication.profile, profilePicture: self.profilePicture) }
+      set { self.publication.profile = newValue.profile }
+    }
+    var id: String { self.publication.id }
     
     var profilePicture: Image?
     var remoteProfilePicture: RemoteImage.State {
       get {
         RemoteImage.State(
-          imageUrl: self.publication.profilePictureUrl,
+          imageUrl: self.publication.profile.profilePictureUrl,
           image: self.profilePicture
         )
       }
@@ -35,7 +40,6 @@ struct Publication: ReducerProtocol {
       }
     }
     
-    var id: String { self.publication.id }
     private let maxLength: Int = 256
     var publicationContent: String { self.publication.content.trimmingCharacters(in: .whitespacesAndNewlines) }
     var shortenedContent: String {
@@ -49,6 +53,7 @@ struct Publication: ReducerProtocol {
   }
   
   enum Action: Equatable {
+    case profile(Profile.Action)
     case remoteProfilePicture(RemoteImage.Action)
     case remotePublicationImage(RemoteImage.Action)
     case toggleReaction
@@ -58,6 +63,10 @@ struct Publication: ReducerProtocol {
   @Dependency(\.profileStorageApi) var profileStorageApi
   
   var body: some ReducerProtocol<State, Action> {
+    Scope(state: \.profile, action: /Action.profile) {
+      Profile()
+    }
+    
     Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
       RemoteImage()
     }
@@ -68,6 +77,9 @@ struct Publication: ReducerProtocol {
     
     Reduce { state, action in
       switch action {
+        case .profile:
+          return .none
+          
         case .remoteProfilePicture:
           return .none
           

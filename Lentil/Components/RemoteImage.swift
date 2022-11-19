@@ -37,7 +37,8 @@ struct RemoteImage: ReducerProtocol {
         state.image = image
         return .none
         
-      case .updateImage(.failure):
+      case .updateImage(.failure(let error)):
+        log("Failed to load remote image", level: .debug, error: error)
         // Handle error
         return .none
     }

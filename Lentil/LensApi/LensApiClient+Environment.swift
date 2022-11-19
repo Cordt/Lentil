@@ -107,10 +107,19 @@ extension LensApi: DependencyKey {
           )
         ),
         mapResult: { data in
-          if let defaultProfile = Model.Profile.from(data.defaultProfile) {
-            return QueryResult(data: defaultProfile)
-          }
+          guard let profileFields = data.defaultProfile?.fragments.profileFields
           else { throw ApiError.requestFailed }
+          return QueryResult(data: Model.Profile.from(profileFields))
+        }
+      )
+    },
+    
+    profile: { forHandle in
+      try await run(
+        query: ProfileQuery(request: SingleProfileQueryRequest(handle: forHandle)),
+        mapResult: { data in
+          guard let profileFields = data.profile?.fragments.profileFields else { return QueryResult(data: nil) }
+          return QueryResult(data: Model.Profile.from(profileFields))
         }
       )
     },
@@ -231,6 +240,7 @@ extension LensApi: DependencyKey {
     trendingPublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
     defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
+    profile: { _ in QueryResult(data: MockData.mockProfiles[0]) },
     profiles: { _ in QueryResult(data: MockData.mockProfiles) },
     fetchImage: { url in
       if url.absoluteString == "https://profile-picture" { return Image("cryptopunk1") }

@@ -18,35 +18,33 @@ struct PostView: View {
           )
         )
         
-        
-        VStack(alignment: .leading, spacing: 10) {
-          if let image = viewStore.post.publicationImage {
-            image
-              .resizable()
-              .scaledToFit()
+        NavigationLink(
+          destination: { PostDetailView(store: self.store) },
+          label: {
+            VStack(alignment: .leading, spacing: 10) {
+              if let image = viewStore.post.publicationImage {
+                image
+                  .resizable()
+                  .scaledToFit()
+              }
+              
+              Text(viewStore.post.shortenedContent)
+                .font(style: .body)
+                .multilineTextAlignment(.leading)
+              
+              PostStatsView(
+                store: self.store.scope(
+                  state: \.post,
+                  action: Post.Action.post
+                )
+              )
+            }
           }
-          
-          Text(viewStore.post.shortenedContent)
-            .font(style: .body)
-          
-          PostStatsView(
-            store: self.store.scope(
-              state: \.post,
-              action: Post.Action.post
-            )
-          )
-        }
+        )
         .offset(y: -25)
         .padding(.leading, 48)
       }
       .padding([.leading, .trailing, .top])
-      .background(
-        NavigationLink("") {
-          PostDetailView(store: self.store)
-        }
-        .opacity(0)
-      )
-      .buttonStyle(.plain)
       .task {
         viewStore.send(.post(action: .remotePublicationImage(.fetchImage)))
       }

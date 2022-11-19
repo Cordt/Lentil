@@ -36,9 +36,12 @@ struct Profile: ReducerProtocol {
   }
   
   enum Action: Equatable {
+    case loadProfile
     case remoteCoverPicture(RemoteImage.Action)
     case remoteProfilePicture(RemoteImage.Action)
   }
+  
+  @Dependency(\.lensApi) var lensApi
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.remoteCoverPicture, action: /Action.remoteCoverPicture) {
@@ -50,6 +53,12 @@ struct Profile: ReducerProtocol {
     
     Reduce { state, action in
       switch action {
+        case .loadProfile:
+          return .merge(
+            Effect(value: .remoteCoverPicture(.fetchImage)),
+            Effect(value: .remoteProfilePicture(.fetchImage))
+          )
+          
         case .remoteCoverPicture, .remoteProfilePicture:
           return .none
       }

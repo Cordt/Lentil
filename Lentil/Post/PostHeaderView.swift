@@ -11,27 +11,19 @@ struct PostHeaderView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       HStack(alignment: .top, spacing: 8) {
-        if let image = viewStore.profilePicture {
-          image
-            .resizable()
-            .frame(width: 40, height: 40)
-            .clipShape(Circle())
-        } else {
-          profileGradient(from: viewStore.publication.profileHandle)
-            .frame(width: 40, height: 40)
-        }
+        PostProfilePicture(store: self.store)
         
-        if let creatorName = viewStore.publication.profileName {
+        if let creatorName = viewStore.publication.profile.name {
           HStack {
             Text(creatorName)
               .font(style: .bodyBold)
-            Text("@\(viewStore.publication.profileHandle)")
+            Text("@\(viewStore.publication.profile.handle)")
               .font(style: .body)
           }
           .truncationMode(.tail)
           
         } else {
-          Text("@\(viewStore.publication.profileHandle)")
+          Text("@\(viewStore.publication.profile.handle)")
             .font(style: .bodyBold)
             .truncationMode(.tail)
         }
@@ -57,32 +49,24 @@ struct PostDetailHeaderView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       HStack(alignment: .top, spacing: 8) {
-        if let image = viewStore.profilePicture {
-          image
-            .resizable()
-            .frame(width: 40, height: 40)
-            .clipShape(Circle())
-        } else {
-          profileGradient(from: viewStore.publication.profileHandle)
-            .frame(width: 40, height: 40)
-        }
+        PostProfilePicture(store: self.store)
         
         VStack(alignment: .leading) {
-          if let creatorName = viewStore.publication.profileName {
+          if let creatorName = viewStore.publication.profile.name {
             HStack {
               Text(creatorName)
                 .font(style: .bodyBold)
-              Text("@\(viewStore.publication.profileHandle)")
+              Text("@\(viewStore.publication.profile.handle)")
                 .font(style: .body)
             }
             .truncationMode(.tail)
             
           } else {
-            Text("@\(viewStore.publication.profileHandle)")
+            Text("@\(viewStore.publication.profile.handle)")
               .font(style: .bodyBold)
               .truncationMode(.tail)
           }
-
+          
           Text(age(viewStore.publication.createdAt))
             .font(style: .body, color: Theme.Color.greyShade3)
         }
@@ -94,6 +78,38 @@ struct PostDetailHeaderView: View {
     }
   }
 }
+
+fileprivate struct PostProfilePicture: View {
+  let store: Store<Publication.State, Publication.Action>
+  
+  var body: some View {
+    WithViewStore(self.store) { viewStore in
+      NavigationLink(
+        destination: {
+          ProfileView(
+            store: self.store.scope(
+              state: \.profile,
+              action: Publication.Action.profile
+            )
+          )
+        },
+        label: {
+          if let image = viewStore.profilePicture {
+            image
+              .resizable()
+              .frame(width: 40, height: 40)
+              .clipShape(Circle())
+          }
+          else {
+            profileGradient(from: viewStore.publication.profile.handle)
+              .frame(width: 40, height: 40)
+          }
+        }
+      )
+    }
+  }
+}
+
 
 #if DEBUG
 struct PostHeaderView_Previews: PreviewProvider {

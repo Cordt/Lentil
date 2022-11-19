@@ -692,6 +692,37 @@ public struct DefaultProfileRequest: GraphQLMapConvertible {
   }
 }
 
+public struct SingleProfileQueryRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: The profile id
+  ///   - handle: The handle for the profile
+  public init(profileId: Swift.Optional<String?> = nil, handle: Swift.Optional<String?> = nil) {
+    graphQLMap = ["profileId": profileId, "handle": handle]
+  }
+
+  /// The profile id
+  public var profileId: Swift.Optional<String?> {
+    get {
+      return graphQLMap["profileId"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// The handle for the profile
+  public var handle: Swift.Optional<String?> {
+    get {
+      return graphQLMap["handle"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "handle")
+    }
+  }
+}
+
 public struct ProfileQueryRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -2603,6 +2634,119 @@ public final class DefaultProfileQuery: GraphQLQuery {
     }
 
     public struct DefaultProfile: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["Profile"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLFragmentSpread(ProfileFields.self),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var fragments: Fragments {
+        get {
+          return Fragments(unsafeResultMap: resultMap)
+        }
+        set {
+          resultMap += newValue.resultMap
+        }
+      }
+
+      public struct Fragments {
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public var profileFields: ProfileFields {
+          get {
+            return ProfileFields(unsafeResultMap: resultMap)
+          }
+          set {
+            resultMap += newValue.resultMap
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class ProfileQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query Profile($request: SingleProfileQueryRequest!) {
+      profile(request: $request) {
+        __typename
+        ...ProfileFields
+      }
+    }
+    """
+
+  public let operationName: String = "Profile"
+
+  public var queryDocument: String {
+    var document: String = operationDefinition
+    document.append("\n" + ProfileFields.fragmentDefinition)
+    document.append("\n" + MediaFields.fragmentDefinition)
+    return document
+  }
+
+  public var request: SingleProfileQueryRequest
+
+  public init(request: SingleProfileQueryRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("profile", arguments: ["request": GraphQLVariable("request")], type: .object(Profile.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(profile: Profile? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "profile": profile.flatMap { (value: Profile) -> ResultMap in value.resultMap }])
+    }
+
+    public var profile: Profile? {
+      get {
+        return (resultMap["profile"] as? ResultMap).flatMap { Profile(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "profile")
+      }
+    }
+
+    public struct Profile: GraphQLSelectionSet {
       public static let possibleTypes: [String] = ["Profile"]
 
       public static var selections: [GraphQLSelection] {

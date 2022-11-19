@@ -84,6 +84,12 @@ query DefaultProfile($request: DefaultProfileRequest!) {
 	}
 }
 
+query Profile($request: SingleProfileQueryRequest!) {
+  profile(request: $request) {
+    ...ProfileFields
+  }
+}
+
 query Profiles($request: ProfileQueryRequest!) {
 	profiles(request: $request) {
 		items {
