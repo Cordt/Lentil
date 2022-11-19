@@ -38,8 +38,17 @@ struct TimelineView: View {
                 }
               )
             } label: {
-              profileGradient(from: userProfile.handle)
-                .frame(width: 32, height: 32)
+              if let profilePicture = viewStore.profile?.profilePicture {
+                profilePicture
+                  .resizable()
+                  .aspectRatio(contentMode: .fill)
+                  .frame(width: 32, height: 32)
+                  .clipShape(Circle())
+              }
+              else {
+                profileGradient(from: userProfile.handle)
+                  .frame(width: 32, height: 32)
+              }
             }
           }
           else {

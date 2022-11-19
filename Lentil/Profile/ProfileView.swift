@@ -27,8 +27,8 @@ struct ProfileView: View {
           if let coverPicture = viewStore.coverPicture {
             coverPicture
               .resizable()
-              .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
               .aspectRatio(contentMode: .fill)
+              .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
           } else {
             lentilGradient()
               .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
@@ -53,8 +53,8 @@ struct ProfileView: View {
               if let profilePicture = viewStore.profilePicture {
                 profilePicture
                   .resizable()
-                  .frame(width: 112, height: 112)
                   .aspectRatio(contentMode: .fill)
+                  .frame(width: 112, height: 112)
                   .clipShape(Circle())
                   .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
               } else {

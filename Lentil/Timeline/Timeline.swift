@@ -21,6 +21,8 @@ struct Timeline: ReducerProtocol {
     }
     case timelineAppeared
     case refreshFeed
+    case fetchDefaultProfile
+    case defaultProfileResponse(TaskResult<Model.Profile>)
     case fetchPublications
     case publicationsResponse(QueryResult<[Model.Publication]>, ResponseType)
     case loadMore
@@ -35,8 +37,8 @@ struct Timeline: ReducerProtocol {
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.walletConnect, action: /Action.walletConnect) {
-        Wallet()
-      }
+      Wallet()
+    }
     
     Reduce { state, action in
       enum CancelFetchPublicationsID {}
@@ -44,7 +46,15 @@ struct Timeline: ReducerProtocol {
       switch action {
         case .timelineAppeared:
           state.userProfile = profileStorageApi.load()
-          return Effect(value: .refreshFeed)
+          if state.userProfile != nil {
+            return .merge(
+              Effect(value: .refreshFeed),
+              Effect(value: .fetchDefaultProfile)
+            )
+          }
+          else {
+            return Effect(value: .refreshFeed)
+          }
           
         case .refreshFeed:
           state.cursorPublications = nil
@@ -52,6 +62,26 @@ struct Timeline: ReducerProtocol {
             .cancel(id: CancelFetchPublicationsID.self),
             .init(value: .fetchPublications)
           )
+          
+        case .fetchDefaultProfile:
+          guard let userProfile = state.userProfile
+          else { return .none }
+          
+          return .task {
+            await .defaultProfileResponse(
+              TaskResult {
+                try await lensApi.defaultProfile(userProfile.address).data
+              }
+            )
+          }
+          
+        case .defaultProfileResponse(let .success(defaultProfile)):
+          state.profile = Profile.State(profile: defaultProfile)
+          return Effect(value: .profile(.remoteProfilePicture(.fetchImage)))
+          
+        case .defaultProfileResponse(let .failure(error)):
+          log("Failed to load default profile for authenticated user", level: .error, error: error)
+          return .none
           
         case .fetchPublications:
           return .run { [cursorPublications = state.cursorPublications, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
@@ -97,7 +127,7 @@ struct Timeline: ReducerProtocol {
           switch walletConnectAction {
             case .defaultProfileResponse(let defaultProfile):
               state.profile = Profile.State(profile: defaultProfile)
-              return .none
+              return Effect(value: .profile(.remoteProfilePicture(.fetchImage)))
               
             default:
               return .none
