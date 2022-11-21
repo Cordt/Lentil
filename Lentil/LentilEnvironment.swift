@@ -19,20 +19,21 @@ class LentilEnvironment {
   static let shared: LentilEnvironment = LentilEnvironment()
   
   private init() {
+    func value(for key: String, addingHttps: Bool = false) -> String {
+      let valueString = (Bundle.main.object(forInfoDictionaryKey: key) as? String)!
+      return addingHttps ? "https://" + valueString : valueString
+    }
+    
+    self.logLevel = LogLevel(rawValue: value(for: "LOG_LEVEL").lowercased())!
+    self.baseUrl = value(for: "BASE_URL", addingHttps: true)
+    self.origin = value(for: "ORIGIN", addingHttps: true)
+    
+    self.infuraUrl = value(for: "INFURA_URL", addingHttps: true)
+    self.infuraProjectId = value(for: "INFURA_PROJECT_ID")
+    self.infuraApiSecretKey = value(for: "INFURA_API_SECRET_KEY")
+    
     #if DEBUG
-    self.logLevel = LogLevel(rawValue: ProcessInfo.processInfo.environment["LOG_LEVEL"]!.lowercased())!
-    self.baseUrl = ProcessInfo.processInfo.environment["BASE_URL"]!
-    self.origin = ProcessInfo.processInfo.environment["ORIGIN"]!
-    self.testWalletAddress = ProcessInfo.processInfo.environment["TEST_WALLET_ADDRESS"]!
-    #else
-    self.logLevel = .error
-    self.baseUrl = "https://api.lens.dev"
-    self.origin = "https://lentilapp.xyz"
+    self.testWalletAddress = value(for: "TEST_WALLET_ADDRESS")
     #endif
-    
-    self.infuraUrl = "https://ipfs.infura.io:5001/api/v0/add"
-    self.infuraProjectId = (Bundle.main.object(forInfoDictionaryKey: "INFURA_PROJECT_ID") as? String)!
-    self.infuraApiSecretKey = (Bundle.main.object(forInfoDictionaryKey: "INFURA_API_SECRET_KEY") as? String)!
-    
   }
 }

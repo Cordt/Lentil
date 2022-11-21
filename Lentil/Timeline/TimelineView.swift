@@ -60,14 +60,31 @@ struct TimelineView: View {
                 )
               )
             } label: {
-              Image(systemName: "link")
+              Icon.link.view(.xlarge)
                 .foregroundColor(Theme.Color.white)
             }
           }
         }
+        
         ToolbarItem(placement: .principal) {
           Text("lentil")
             .font(highlight: .largeHeadline, color: Theme.Color.white)
+        }
+        
+        if viewStore.userProfile != nil {
+          ToolbarItem(placement: .navigationBarTrailing) {
+            NavigationLink {
+              CreatePublicationView(
+                store: self.store.scope(
+                  state: \.createPublication,
+                  action: Timeline.Action.createPublication
+                )
+              )
+            } label: {
+              Icon.add.view(.xlarge)
+                .foregroundColor(Theme.Color.white)
+            }
+          }
         }
       }
       .navigationBarTitleDisplayMode(.inline)

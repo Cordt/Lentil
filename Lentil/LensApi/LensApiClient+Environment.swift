@@ -151,7 +151,7 @@ extension LensApi: DependencyKey {
         ),
         mapResult: { data in
           if let result = data.broadcast.asRelayerResult {
-            return MutationResult(data: .success(Broadcast(txnHash: result.txHash, txnId: result.txId)))
+            return MutationResult(data: .success(RelayerResult(txnHash: result.txHash, txnId: result.txId)))
           }
           else if let error = data.broadcast.asRelayError {
             return MutationResult(data: .failure(error.reason))
@@ -187,6 +187,31 @@ extension LensApi: DependencyKey {
               refreshToken: data.refresh.refreshToken
             )
           )
+        }
+      )
+    },
+    
+    createPost: { profileId, contentUri in
+      try await run(
+        networkClient: .authenticated,
+        mutation: CreatePostViaDispatcherMutation(
+          request: CreatePublicPostRequest(
+            profileId: profileId,
+            contentUri: contentUri,
+            collectModule: CollectModuleParams(freeCollectModule: FreeCollectModuleParams(followerOnly: false)),
+            referenceModule: ReferenceModuleParams(followerOnlyReferenceModule: false)
+          )
+        ),
+        mapResult: { data in
+          if let result = data.createPostViaDispatcher.asRelayerResult {
+            return MutationResult(data: .success(RelayerResult(txnHash: result.txHash, txnId: result.txId)))
+          }
+          else if let error = data.createPostViaDispatcher.asRelayError {
+            return MutationResult(data: .failure(error.reason))
+          }
+          else {
+            return MutationResult(data: .failure(.__unknown("[ERROR] Received unexpected failure from CreatePostViaDispatcher")))
+          }
         }
       )
     },
@@ -251,6 +276,7 @@ extension LensApi: DependencyKey {
     broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
     authenticate: { _, _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
     refreshAuthentication: { _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
+    createPost: { _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
     addReaction: { _, _, _ in },
     removeReaction: { _, _, _ in },
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }

@@ -1,0 +1,13 @@
+// Lentil
+// Created by Laura and Cordt Zermin
+
+
+// Needs to be created on your local machine and contains API secrets
+#include "Secrets-Development.xcconfig"
+
+BASE_URL = api-mumbai.lens.dev
+ORIGIN = lentilapp.xyz
+
+INFURA_URL = ipfs.infura.io:5001/api/v0/add
+
+LOG_LEVEL = INFO

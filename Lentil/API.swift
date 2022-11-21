@@ -1877,12 +1877,12 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
           ... on Comment {
             __typename
             ...CommentFields
-            postReaction: reaction(request: $reactionRequest)
+            commentReaction: reaction(request: $reactionRequest)
           }
           ... on Mirror {
             __typename
             ...MirrorFields
-            postReaction: reaction(request: $reactionRequest)
+            mirrorReaction: reaction(request: $reactionRequest)
           }
         }
         pageInfo {
@@ -2124,7 +2124,7 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLFragmentSpread(CommentFields.self),
-              GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
+              GraphQLField("reaction", alias: "commentReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
             ]
           }
 
@@ -2143,12 +2143,12 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
             }
           }
 
-          public var postReaction: ReactionTypes? {
+          public var commentReaction: ReactionTypes? {
             get {
-              return resultMap["postReaction"] as? ReactionTypes
+              return resultMap["commentReaction"] as? ReactionTypes
             }
             set {
-              resultMap.updateValue(newValue, forKey: "postReaction")
+              resultMap.updateValue(newValue, forKey: "commentReaction")
             }
           }
 
@@ -2198,7 +2198,7 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLFragmentSpread(MirrorFields.self),
-              GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
+              GraphQLField("reaction", alias: "mirrorReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
             ]
           }
 
@@ -2217,12 +2217,12 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
             }
           }
 
-          public var postReaction: ReactionTypes? {
+          public var mirrorReaction: ReactionTypes? {
             get {
-              return resultMap["postReaction"] as? ReactionTypes
+              return resultMap["mirrorReaction"] as? ReactionTypes
             }
             set {
-              resultMap.updateValue(newValue, forKey: "postReaction")
+              resultMap.updateValue(newValue, forKey: "mirrorReaction")
             }
           }
 

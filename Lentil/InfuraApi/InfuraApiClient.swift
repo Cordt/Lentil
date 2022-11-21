@@ -75,7 +75,7 @@ struct ImageFile: FormDataAppendable {
 }
 
 struct InfuraApi {
-  struct InfuraIPFSResponse: Codable {
+  struct InfuraIPFSResponse: Codable, Equatable {
     let Name: String
     let Hash: String
     let Size: String

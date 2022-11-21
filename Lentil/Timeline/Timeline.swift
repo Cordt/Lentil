@@ -13,6 +13,7 @@ struct Timeline: ReducerProtocol {
     
     var walletConnect: Wallet.State = .init()
     var profile: Profile.State? = nil
+    var createPublication: CreatePublication.State = .init()
   }
   
   enum Action: Equatable {
@@ -29,6 +30,7 @@ struct Timeline: ReducerProtocol {
     
     case walletConnect(Wallet.Action)
     case profile(Profile.Action)
+    case createPublication(CreatePublication.Action)
     case post(id: Post.State.ID, action: Post.Action)
   }
   
@@ -38,6 +40,10 @@ struct Timeline: ReducerProtocol {
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.walletConnect, action: /Action.walletConnect) {
       Wallet()
+    }
+    
+    Scope(state: \.createPublication, action: /Action.createPublication) {
+      CreatePublication()
     }
     
     Reduce { state, action in
@@ -134,6 +140,9 @@ struct Timeline: ReducerProtocol {
           }
           
         case .profile:
+          return .none
+          
+        case .createPublication:
           return .none
           
         case .post:

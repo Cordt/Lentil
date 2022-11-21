@@ -40,11 +40,12 @@ struct QueryResult<Result: Equatable>: Equatable {
 }
 
 struct MutationResult<Result: Equatable>: Equatable {
+  
   var data: Result
 }
 
 extension RelayErrorReasons: Error {}
-struct Broadcast: Equatable {
+struct RelayerResult: Equatable {
   var txnHash: String
   var txnId: String
 }
@@ -125,7 +126,7 @@ struct LensApi {
   var broadcast: @Sendable (
     _ broadcastId: String,
     _ signature: String
-  ) async throws -> MutationResult<Result<Broadcast, RelayErrorReasons>>
+  ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
   
   var authenticate: @Sendable (
     _ address: String,
@@ -135,6 +136,11 @@ struct LensApi {
   var refreshAuthentication: @Sendable (
     _ refreshToken: String
   ) async throws -> MutationResult<AuthenticationTokens>
+  
+  var createPost: @Sendable (
+    _ profileId: String,
+    _ contentUri: String
+  ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
   
   var addReaction: @Sendable (
     _ profileId: String,

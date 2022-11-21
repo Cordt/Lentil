@@ -140,7 +140,7 @@ extension Model.Publication {
         content: content,
         createdDate: createdDate,
         profilePictureUrl: profilePictureUrl,
-        upvotedByUser: item.asComment?.postReaction == .upvote,
+        upvotedByUser: item.asComment?.commentReaction == .upvote,
         collectdByUser: commentFields.hasCollectedByMe,
         commentdByUser: false,
         mirrordByUser: false

@@ -20,11 +20,11 @@ query ExplorePublications($request: ExplorePublicationRequest!, $reactionRequest
       }
       ... on Comment {
         ...CommentFields
-        postReaction: reaction(request: $reactionRequest)
+        commentReaction: reaction(request: $reactionRequest)
       }
       ... on Mirror {
         ...MirrorFields
-        postReaction: reaction(request: $reactionRequest)
+        mirrorReaction: reaction(request: $reactionRequest)
       }
     }
     pageInfo {
