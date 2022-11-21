@@ -1,5 +1,8 @@
 # Xcode
 
+## Secrets
+Secrets.xcconfig
+
 ## User settings
 xcuserdata/
 *.xcuserdatad

@@ -10,8 +10,8 @@ extension Model.Profile {
     let coverPictureURL = profile.coverPicture?.asMediaSet?.original.fragments.mediaFields.url
     var profileUrl: URL? = nil
     var coverUrl: URL? = nil
-    if let urlString = profilePictureURL { profileUrl = URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/")) }
-    if let urlString = coverPictureURL { coverUrl = URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/")) }
+    if let urlString = profilePictureURL { profileUrl = URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/")) }
+    if let urlString = coverPictureURL { coverUrl = URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/")) }
     
     return Model.Profile(
       id: profile.id,

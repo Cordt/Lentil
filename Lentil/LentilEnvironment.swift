@@ -8,6 +8,10 @@ class LentilEnvironment {
   let baseUrl: String
   let origin: String
   
+  let infuraUrl: String
+  let infuraProjectId: String
+  let infuraApiSecretKey: String
+  
   #if DEBUG
   let testWalletAddress: String
   #endif
@@ -25,5 +29,10 @@ class LentilEnvironment {
     self.baseUrl = "https://api.lens.dev"
     self.origin = "https://lentilapp.xyz"
     #endif
+    
+    self.infuraUrl = "https://ipfs.infura.io:5001/api/v0/add"
+    self.infuraProjectId = (Bundle.main.object(forInfoDictionaryKey: "INFURA_PROJECT_ID") as? String)!
+    self.infuraApiSecretKey = (Bundle.main.object(forInfoDictionaryKey: "INFURA_API_SECRET_KEY") as? String)!
+    
   }
 }

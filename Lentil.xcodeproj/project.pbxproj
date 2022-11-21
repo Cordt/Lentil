@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		3704F6B329220FDD00AAF569 /* WalletConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3704F6B229220FDD00AAF569 /* WalletConnector.swift */; };
 		3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3704F6B5292288E900AAF569 /* WalletConnectSwift */; };
+		370ABEFE292A83C8005B8E11 /* InfuraApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ABEFD292A83C8005B8E11 /* InfuraApiClient.swift */; };
+		370ABF01292A847F005B8E11 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 370ABF00292A847F005B8E11 /* Alamofire */; };
 		370D8E8E291F8C3B004A091F /* DMSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E88291F8C3B004A091F /* DMSans-Medium.ttf */; };
 		370D8E8F291F8C3B004A091F /* DMSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E89291F8C3B004A091F /* DMSans-Bold.ttf */; };
 		370D8E90291F8C3B004A091F /* DMSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E8A291F8C3B004A091F /* DMSans-Italic.ttf */; };
@@ -93,6 +95,7 @@
 
 /* Begin PBXFileReference section */
 		3704F6B229220FDD00AAF569 /* WalletConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnector.swift; sourceTree = "<group>"; };
+		370ABEFD292A83C8005B8E11 /* InfuraApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfuraApiClient.swift; sourceTree = "<group>"; };
 		370D8E88291F8C3B004A091F /* DMSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-Medium.ttf"; sourceTree = "<group>"; };
 		370D8E89291F8C3B004A091F /* DMSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-Bold.ttf"; sourceTree = "<group>"; };
 		370D8E8A291F8C3B004A091F /* DMSans-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-Italic.ttf"; sourceTree = "<group>"; };
@@ -140,6 +143,7 @@
 		37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithLens.swift; sourceTree = "<group>"; };
 		37C5178D291EA986002D2B6D /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		37C51792291F518C002D2B6D /* RemoteImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImage.swift; sourceTree = "<group>"; };
+		37C54C57292B0E46006E8DBA /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Secrets.xcconfig; path = Lentil/Secrets.xcconfig; sourceTree = SOURCE_ROOT; };
 		37C89B6329278535003583E8 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		37CC0CFD292793930036C6E9 /* MediaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaModel.swift; sourceTree = "<group>"; };
 		37CC0CFF292796780036C6E9 /* LensApiClient+MediaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+MediaModel.swift"; sourceTree = "<group>"; };
@@ -165,6 +169,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
+				370ABF01292A847F005B8E11 /* Alamofire in Frameworks */,
 				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
 				3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
@@ -190,6 +195,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		370ABEFC292A83AE005B8E11 /* InfuraApi */ = {
+			isa = PBXGroup;
+			children = (
+				370ABEFD292A83C8005B8E11 /* InfuraApiClient.swift */,
+			);
+			path = InfuraApi;
+			sourceTree = "<group>";
+		};
 		370D8E86291F8C1B004A091F /* LineAwesome */ = {
 			isa = PBXGroup;
 			children = (
@@ -300,10 +313,12 @@
 			isa = PBXGroup;
 			children = (
 				372248D628DAF4EC0066BCE5 /* Info.plist */,
+				37C54C57292B0E46006E8DBA /* Secrets.xcconfig */,
 				372248CF28DAF4B80066BCE5 /* Assets */,
 				37CF6E1728FA620D0035A7CF /* AuthToken */,
 				37C5178F291F5142002D2B6D /* Components */,
 				37557A2429274510005524C5 /* Helper */,
+				370ABEFC292A83AE005B8E11 /* InfuraApi */,
 				37BBB12D28F2737600A6D202 /* LensApi */,
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
@@ -461,6 +476,7 @@
 				37D1237028F70EE90037A4A7 /* ApolloWebSocket */,
 				3704F6B5292288E900AAF569 /* WalletConnectSwift */,
 				37557A22292744FB005524C5 /* Sentry */,
+				370ABF00292A847F005B8E11 /* Alamofire */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -541,6 +557,7 @@
 				37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */,
 				37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -619,6 +636,7 @@
 				37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* Post.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */,
+				370ABEFE292A83C8005B8E11 /* InfuraApiClient.swift in Sources */,
 				373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */,
 				372248D828DB46890066BCE5 /* Root.swift in Sources */,
 				372248CE28DAF38D0066BCE5 /* PostDetailView.swift in Sources */,
@@ -815,7 +833,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
@@ -852,7 +870,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
@@ -1011,6 +1029,14 @@
 				kind = branch;
 			};
 		};
+		370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.2;
+			};
+		};
 		37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
@@ -1042,6 +1068,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */;
 			productName = WalletConnectSwift;
+		};
+		370ABF00292A847F005B8E11 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
 		};
 		37557A22292744FB005524C5 /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;

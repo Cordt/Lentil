@@ -67,7 +67,7 @@ extension Model.Publication {
         let content = postFields.metadata.fragments.metadataOutputFields.content,
         let createdDate = date(from: postFields.createdAt),
         let profilePictureUrlString = postFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
+        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
       else { return nil }
       
       return postFrom(
@@ -86,7 +86,7 @@ extension Model.Publication {
         let content = commentFields.metadata.fragments.metadataOutputFields.content,
         let createdDate = date(from: commentFields.createdAt),
         let profilePictureUrlString = commentFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
+        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
       else { return nil }
       
       return commentFrom(
@@ -112,7 +112,7 @@ extension Model.Publication {
         let content = postFields.metadata.fragments.metadataOutputFields.content,
         let createdDate = date(from: postFields.createdAt),
         let profilePictureUrlString = postFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
+        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
       else { return nil }
       
       return postFrom(
@@ -131,7 +131,7 @@ extension Model.Publication {
         let content = commentFields.metadata.fragments.metadataOutputFields.content,
         let createdDate = date(from: commentFields.createdAt),
         let profilePictureUrlString = commentFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://ipfs.io/ipfs/"))
+        let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
       else { return nil }
       
       return commentFrom(

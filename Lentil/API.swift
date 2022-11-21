@@ -934,6 +934,521 @@ public struct RefreshRequest: GraphQLMapConvertible {
   }
 }
 
+public struct CreatePublicPostRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: Profile id
+  ///   - contentUri: The metadata uploaded somewhere passing in the url to reach it
+  ///   - collectModule: The collect module
+  ///   - referenceModule: The reference module
+  public init(profileId: String, contentUri: String, collectModule: CollectModuleParams, referenceModule: Swift.Optional<ReferenceModuleParams?> = nil) {
+    graphQLMap = ["profileId": profileId, "contentURI": contentUri, "collectModule": collectModule, "referenceModule": referenceModule]
+  }
+
+  /// Profile id
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// The metadata uploaded somewhere passing in the url to reach it
+  public var contentUri: String {
+    get {
+      return graphQLMap["contentURI"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "contentURI")
+    }
+  }
+
+  /// The collect module
+  public var collectModule: CollectModuleParams {
+    get {
+      return graphQLMap["collectModule"] as! CollectModuleParams
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "collectModule")
+    }
+  }
+
+  /// The reference module
+  public var referenceModule: Swift.Optional<ReferenceModuleParams?> {
+    get {
+      return graphQLMap["referenceModule"] as? Swift.Optional<ReferenceModuleParams?> ?? Swift.Optional<ReferenceModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "referenceModule")
+    }
+  }
+}
+
+public struct CollectModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - freeCollectModule: The collect empty collect module
+  ///   - revertCollectModule: The collect revert collect module
+  ///   - feeCollectModule: The collect fee collect module
+  ///   - limitedFeeCollectModule: The collect limited fee collect module
+  ///   - limitedTimedFeeCollectModule: The collect limited timed fee collect module
+  ///   - timedFeeCollectModule: The collect timed fee collect module
+  ///   - unknownCollectModule: A unknown collect module
+  public init(freeCollectModule: Swift.Optional<FreeCollectModuleParams?> = nil, revertCollectModule: Swift.Optional<Bool?> = nil, feeCollectModule: Swift.Optional<FeeCollectModuleParams?> = nil, limitedFeeCollectModule: Swift.Optional<LimitedFeeCollectModuleParams?> = nil, limitedTimedFeeCollectModule: Swift.Optional<LimitedTimedFeeCollectModuleParams?> = nil, timedFeeCollectModule: Swift.Optional<TimedFeeCollectModuleParams?> = nil, unknownCollectModule: Swift.Optional<UnknownCollectModuleParams?> = nil) {
+    graphQLMap = ["freeCollectModule": freeCollectModule, "revertCollectModule": revertCollectModule, "feeCollectModule": feeCollectModule, "limitedFeeCollectModule": limitedFeeCollectModule, "limitedTimedFeeCollectModule": limitedTimedFeeCollectModule, "timedFeeCollectModule": timedFeeCollectModule, "unknownCollectModule": unknownCollectModule]
+  }
+
+  /// The collect empty collect module
+  public var freeCollectModule: Swift.Optional<FreeCollectModuleParams?> {
+    get {
+      return graphQLMap["freeCollectModule"] as? Swift.Optional<FreeCollectModuleParams?> ?? Swift.Optional<FreeCollectModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "freeCollectModule")
+    }
+  }
+
+  /// The collect revert collect module
+  public var revertCollectModule: Swift.Optional<Bool?> {
+    get {
+      return graphQLMap["revertCollectModule"] as? Swift.Optional<Bool?> ?? Swift.Optional<Bool?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "revertCollectModule")
+    }
+  }
+
+  /// The collect fee collect module
+  public var feeCollectModule: Swift.Optional<FeeCollectModuleParams?> {
+    get {
+      return graphQLMap["feeCollectModule"] as? Swift.Optional<FeeCollectModuleParams?> ?? Swift.Optional<FeeCollectModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "feeCollectModule")
+    }
+  }
+
+  /// The collect limited fee collect module
+  public var limitedFeeCollectModule: Swift.Optional<LimitedFeeCollectModuleParams?> {
+    get {
+      return graphQLMap["limitedFeeCollectModule"] as? Swift.Optional<LimitedFeeCollectModuleParams?> ?? Swift.Optional<LimitedFeeCollectModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "limitedFeeCollectModule")
+    }
+  }
+
+  /// The collect limited timed fee collect module
+  public var limitedTimedFeeCollectModule: Swift.Optional<LimitedTimedFeeCollectModuleParams?> {
+    get {
+      return graphQLMap["limitedTimedFeeCollectModule"] as? Swift.Optional<LimitedTimedFeeCollectModuleParams?> ?? Swift.Optional<LimitedTimedFeeCollectModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "limitedTimedFeeCollectModule")
+    }
+  }
+
+  /// The collect timed fee collect module
+  public var timedFeeCollectModule: Swift.Optional<TimedFeeCollectModuleParams?> {
+    get {
+      return graphQLMap["timedFeeCollectModule"] as? Swift.Optional<TimedFeeCollectModuleParams?> ?? Swift.Optional<TimedFeeCollectModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "timedFeeCollectModule")
+    }
+  }
+
+  /// A unknown collect module
+  public var unknownCollectModule: Swift.Optional<UnknownCollectModuleParams?> {
+    get {
+      return graphQLMap["unknownCollectModule"] as? Swift.Optional<UnknownCollectModuleParams?> ?? Swift.Optional<UnknownCollectModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "unknownCollectModule")
+    }
+  }
+}
+
+public struct FreeCollectModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - followerOnly: Follower only
+  public init(followerOnly: Bool) {
+    graphQLMap = ["followerOnly": followerOnly]
+  }
+
+  /// Follower only
+  public var followerOnly: Bool {
+    get {
+      return graphQLMap["followerOnly"] as! Bool
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "followerOnly")
+    }
+  }
+}
+
+public struct FeeCollectModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - amount: The collect module amount info
+  ///   - recipient: The collect module recipient address
+  ///   - referralFee: The collect module referral fee
+  ///   - followerOnly: Follower only
+  public init(amount: ModuleFeeAmountParams, recipient: String, referralFee: Double, followerOnly: Bool) {
+    graphQLMap = ["amount": amount, "recipient": recipient, "referralFee": referralFee, "followerOnly": followerOnly]
+  }
+
+  /// The collect module amount info
+  public var amount: ModuleFeeAmountParams {
+    get {
+      return graphQLMap["amount"] as! ModuleFeeAmountParams
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "amount")
+    }
+  }
+
+  /// The collect module recipient address
+  public var recipient: String {
+    get {
+      return graphQLMap["recipient"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "recipient")
+    }
+  }
+
+  /// The collect module referral fee
+  public var referralFee: Double {
+    get {
+      return graphQLMap["referralFee"] as! Double
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "referralFee")
+    }
+  }
+
+  /// Follower only
+  public var followerOnly: Bool {
+    get {
+      return graphQLMap["followerOnly"] as! Bool
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "followerOnly")
+    }
+  }
+}
+
+public struct ModuleFeeAmountParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - currency: The currency address
+  ///   - value: Floating point number as string (e.g. 42.009837). It could have the entire precision of the Asset or be truncated to the last significant decimal.
+  public init(currency: String, value: String) {
+    graphQLMap = ["currency": currency, "value": value]
+  }
+
+  /// The currency address
+  public var currency: String {
+    get {
+      return graphQLMap["currency"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "currency")
+    }
+  }
+
+  /// Floating point number as string (e.g. 42.009837). It could have the entire precision of the Asset or be truncated to the last significant decimal.
+  public var value: String {
+    get {
+      return graphQLMap["value"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "value")
+    }
+  }
+}
+
+public struct LimitedFeeCollectModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - collectLimit: The collect module limit
+  ///   - amount: The collect module amount info
+  ///   - recipient: The collect module recipient address
+  ///   - referralFee: The collect module referral fee
+  ///   - followerOnly: Follower only
+  public init(collectLimit: String, amount: ModuleFeeAmountParams, recipient: String, referralFee: Double, followerOnly: Bool) {
+    graphQLMap = ["collectLimit": collectLimit, "amount": amount, "recipient": recipient, "referralFee": referralFee, "followerOnly": followerOnly]
+  }
+
+  /// The collect module limit
+  public var collectLimit: String {
+    get {
+      return graphQLMap["collectLimit"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "collectLimit")
+    }
+  }
+
+  /// The collect module amount info
+  public var amount: ModuleFeeAmountParams {
+    get {
+      return graphQLMap["amount"] as! ModuleFeeAmountParams
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "amount")
+    }
+  }
+
+  /// The collect module recipient address
+  public var recipient: String {
+    get {
+      return graphQLMap["recipient"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "recipient")
+    }
+  }
+
+  /// The collect module referral fee
+  public var referralFee: Double {
+    get {
+      return graphQLMap["referralFee"] as! Double
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "referralFee")
+    }
+  }
+
+  /// Follower only
+  public var followerOnly: Bool {
+    get {
+      return graphQLMap["followerOnly"] as! Bool
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "followerOnly")
+    }
+  }
+}
+
+public struct LimitedTimedFeeCollectModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - collectLimit: The collect module limit
+  ///   - amount: The collect module amount info
+  ///   - recipient: The collect module recipient address
+  ///   - referralFee: The collect module referral fee
+  ///   - followerOnly: Follower only
+  public init(collectLimit: String, amount: ModuleFeeAmountParams, recipient: String, referralFee: Double, followerOnly: Bool) {
+    graphQLMap = ["collectLimit": collectLimit, "amount": amount, "recipient": recipient, "referralFee": referralFee, "followerOnly": followerOnly]
+  }
+
+  /// The collect module limit
+  public var collectLimit: String {
+    get {
+      return graphQLMap["collectLimit"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "collectLimit")
+    }
+  }
+
+  /// The collect module amount info
+  public var amount: ModuleFeeAmountParams {
+    get {
+      return graphQLMap["amount"] as! ModuleFeeAmountParams
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "amount")
+    }
+  }
+
+  /// The collect module recipient address
+  public var recipient: String {
+    get {
+      return graphQLMap["recipient"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "recipient")
+    }
+  }
+
+  /// The collect module referral fee
+  public var referralFee: Double {
+    get {
+      return graphQLMap["referralFee"] as! Double
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "referralFee")
+    }
+  }
+
+  /// Follower only
+  public var followerOnly: Bool {
+    get {
+      return graphQLMap["followerOnly"] as! Bool
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "followerOnly")
+    }
+  }
+}
+
+public struct TimedFeeCollectModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - amount: The collect module amount info
+  ///   - recipient: The collect module recipient address
+  ///   - referralFee: The collect module referral fee
+  ///   - followerOnly: Follower only
+  public init(amount: ModuleFeeAmountParams, recipient: String, referralFee: Double, followerOnly: Bool) {
+    graphQLMap = ["amount": amount, "recipient": recipient, "referralFee": referralFee, "followerOnly": followerOnly]
+  }
+
+  /// The collect module amount info
+  public var amount: ModuleFeeAmountParams {
+    get {
+      return graphQLMap["amount"] as! ModuleFeeAmountParams
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "amount")
+    }
+  }
+
+  /// The collect module recipient address
+  public var recipient: String {
+    get {
+      return graphQLMap["recipient"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "recipient")
+    }
+  }
+
+  /// The collect module referral fee
+  public var referralFee: Double {
+    get {
+      return graphQLMap["referralFee"] as! Double
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "referralFee")
+    }
+  }
+
+  /// Follower only
+  public var followerOnly: Bool {
+    get {
+      return graphQLMap["followerOnly"] as! Bool
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "followerOnly")
+    }
+  }
+}
+
+public struct UnknownCollectModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - contractAddress
+  ///   - data: The encoded data to submit with the module
+  public init(contractAddress: String, data: String) {
+    graphQLMap = ["contractAddress": contractAddress, "data": data]
+  }
+
+  public var contractAddress: String {
+    get {
+      return graphQLMap["contractAddress"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "contractAddress")
+    }
+  }
+
+  /// The encoded data to submit with the module
+  public var data: String {
+    get {
+      return graphQLMap["data"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "data")
+    }
+  }
+}
+
+public struct ReferenceModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - followerOnlyReferenceModule: The follower only reference module
+  ///   - unknownReferenceModule: A unknown reference module
+  public init(followerOnlyReferenceModule: Swift.Optional<Bool?> = nil, unknownReferenceModule: Swift.Optional<UnknownReferenceModuleParams?> = nil) {
+    graphQLMap = ["followerOnlyReferenceModule": followerOnlyReferenceModule, "unknownReferenceModule": unknownReferenceModule]
+  }
+
+  /// The follower only reference module
+  public var followerOnlyReferenceModule: Swift.Optional<Bool?> {
+    get {
+      return graphQLMap["followerOnlyReferenceModule"] as? Swift.Optional<Bool?> ?? Swift.Optional<Bool?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "followerOnlyReferenceModule")
+    }
+  }
+
+  /// A unknown reference module
+  public var unknownReferenceModule: Swift.Optional<UnknownReferenceModuleParams?> {
+    get {
+      return graphQLMap["unknownReferenceModule"] as? Swift.Optional<UnknownReferenceModuleParams?> ?? Swift.Optional<UnknownReferenceModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "unknownReferenceModule")
+    }
+  }
+}
+
+public struct UnknownReferenceModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - contractAddress
+  ///   - data: The encoded data to submit with the module
+  public init(contractAddress: String, data: String) {
+    graphQLMap = ["contractAddress": contractAddress, "data": data]
+  }
+
+  public var contractAddress: String {
+    get {
+      return graphQLMap["contractAddress"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "contractAddress")
+    }
+  }
+
+  /// The encoded data to submit with the module
+  public var data: String {
+    get {
+      return graphQLMap["data"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "data")
+    }
+  }
+}
+
 public struct ReactionRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -3375,6 +3890,220 @@ public final class RefreshMutation: GraphQLMutation {
         }
         set {
           resultMap.updateValue(newValue, forKey: "refreshToken")
+        }
+      }
+    }
+  }
+}
+
+public final class CreatePostViaDispatcherMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation CreatePostViaDispatcher($request: CreatePublicPostRequest!) {
+      createPostViaDispatcher(request: $request) {
+        __typename
+        ... on RelayerResult {
+          __typename
+          txHash
+          txId
+        }
+        ... on RelayError {
+          __typename
+          reason
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "CreatePostViaDispatcher"
+
+  public var request: CreatePublicPostRequest
+
+  public init(request: CreatePublicPostRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("createPostViaDispatcher", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(CreatePostViaDispatcher.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(createPostViaDispatcher: CreatePostViaDispatcher) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "createPostViaDispatcher": createPostViaDispatcher.resultMap])
+    }
+
+    public var createPostViaDispatcher: CreatePostViaDispatcher {
+      get {
+        return CreatePostViaDispatcher(unsafeResultMap: resultMap["createPostViaDispatcher"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "createPostViaDispatcher")
+      }
+    }
+
+    public struct CreatePostViaDispatcher: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["RelayerResult", "RelayError"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLTypeCase(
+            variants: ["RelayerResult": AsRelayerResult.selections, "RelayError": AsRelayError.selections],
+            default: [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            ]
+          )
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public static func makeRelayerResult(txHash: String, txId: String) -> CreatePostViaDispatcher {
+        return CreatePostViaDispatcher(unsafeResultMap: ["__typename": "RelayerResult", "txHash": txHash, "txId": txId])
+      }
+
+      public static func makeRelayError(reason: RelayErrorReasons) -> CreatePostViaDispatcher {
+        return CreatePostViaDispatcher(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var asRelayerResult: AsRelayerResult? {
+        get {
+          if !AsRelayerResult.possibleTypes.contains(__typename) { return nil }
+          return AsRelayerResult(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsRelayerResult: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["RelayerResult"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("txHash", type: .nonNull(.scalar(String.self))),
+            GraphQLField("txId", type: .nonNull(.scalar(String.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(txHash: String, txId: String) {
+          self.init(unsafeResultMap: ["__typename": "RelayerResult", "txHash": txHash, "txId": txId])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The tx hash - you should use the `txId` as your identifier as gas prices can be upgraded meaning txHash will change
+        public var txHash: String {
+          get {
+            return resultMap["txHash"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "txHash")
+          }
+        }
+
+        /// The tx id
+        public var txId: String {
+          get {
+            return resultMap["txId"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "txId")
+          }
+        }
+      }
+
+      public var asRelayError: AsRelayError? {
+        get {
+          if !AsRelayError.possibleTypes.contains(__typename) { return nil }
+          return AsRelayError(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsRelayError: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["RelayError"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("reason", type: .nonNull(.scalar(RelayErrorReasons.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(reason: RelayErrorReasons) {
+          self.init(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var reason: RelayErrorReasons {
+          get {
+            return resultMap["reason"]! as! RelayErrorReasons
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "reason")
+          }
         }
       }
     }
