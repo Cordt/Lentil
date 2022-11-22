@@ -12,6 +12,9 @@ class LentilEnvironment {
   let infuraProjectId: String
   let infuraApiSecretKey: String
   
+  let lentilAppId: String
+  let lentilIconIPFSUrl: String
+  
   #if DEBUG
   let testWalletAddress: String
   #endif
@@ -31,6 +34,9 @@ class LentilEnvironment {
     self.infuraUrl = value(for: "INFURA_URL", addingHttps: true)
     self.infuraProjectId = value(for: "INFURA_PROJECT_ID")
     self.infuraApiSecretKey = value(for: "INFURA_API_SECRET_KEY")
+    
+    self.lentilAppId = "lentil"
+    self.lentilIconIPFSUrl = "ipfs://" + value(for: "LENTIL_CID")
     
     #if DEBUG
     self.testWalletAddress = value(for: "TEST_WALLET_ADDRESS")

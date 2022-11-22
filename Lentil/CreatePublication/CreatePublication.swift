@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import Foundation
 
 
 struct CreatePublication: ReducerProtocol {
@@ -27,16 +28,37 @@ struct CreatePublication: ReducerProtocol {
         return .none
         
       case .createPublication:
+        let name = "lentil-" + UUID().uuidString
+        let publicationUrl = URL(string: "https://lentilapp.xyz/publication/\(name)")
+        
         guard
           state.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) != "",
-          let textFile = TextFile(text: state.publicationText),
-          let userProfile = self.profileStorageApi.load()
+          let userProfile = self.profileStorageApi.load(),
+          let publicationFile = PublicationFile(
+            metadata: Metadata(
+              version: .two,
+              metadata_id: name,
+              description: "Post by \(userProfile.handle) via lentil",
+              content: state.publicationText,
+              locale: .english,
+              tags: [],
+              contentWarning: nil,
+              mainContentFocus: .text_only,
+              external_url: publicationUrl,
+              name: name,
+              attributes: [],
+              image: LentilEnvironment.shared.lentilIconIPFSUrl,
+              imageMimeType: .jpeg,
+              appId: LentilEnvironment.shared.lentilAppId
+            ),
+            name: name
+          )
         else { return .none }
         
         state.isPosting = true
         
         return .task {
-          let infuraResult = try await self.infuraApi.uploadText(textFile)
+          let infuraResult = try await self.infuraApi.uploadPublication(publicationFile)
           
           return await .createPublicationResponse(
             TaskResult {

@@ -6,8 +6,8 @@ import Dependencies
 
 extension InfuraApi: DependencyKey {
   static let liveValue = InfuraApi(
-    uploadText: { textFile in
-      try await InfuraApi.upload(file: textFile)
+    uploadPublication: { publicationFile in
+      try await InfuraApi.upload(file: publicationFile)
     },
     uploadImage: { imageFile in
       try await InfuraApi.upload(file: imageFile)
@@ -16,9 +16,9 @@ extension InfuraApi: DependencyKey {
   
 #if DEBUG
   static let previewValue = InfuraApi(
-    uploadText: { _ in InfuraApi.InfuraIPFSResponse(Name: "Lentil", Hash: "abc123", Size: "123456") },
+    uploadPublication: { _ in InfuraApi.InfuraIPFSResponse(Name: "Lentil", Hash: "abc123", Size: "123456") },
     uploadImage: { _ in InfuraApi.InfuraIPFSResponse(Name: "Lentil", Hash: "abc123", Size: "123456") }
-  ) 
+  )
 #endif
 }
 

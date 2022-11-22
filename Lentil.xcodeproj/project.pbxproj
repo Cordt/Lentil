@@ -56,6 +56,10 @@
 		37C54C59292B12A0006E8DBA /* InfuraApiClient+Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C58292B12A0006E8DBA /* InfuraApiClient+Environment.swift */; };
 		37C54C5C292B1ECC006E8DBA /* CreatePublicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C5B292B1ECC006E8DBA /* CreatePublicationView.swift */; };
 		37C54C5E292B20B4006E8DBA /* CreatePublication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C5D292B20B4006E8DBA /* CreatePublication.swift */; };
+		37C54C65292C7EE6006E8DBA /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C64292C7EE6006E8DBA /* Metadata.swift */; };
+		37C54C67292C8932006E8DBA /* File+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C66292C8932006E8DBA /* File+Image.swift */; };
+		37C54C69292C895B006E8DBA /* File+FormDataAppendable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C68292C895B006E8DBA /* File+FormDataAppendable.swift */; };
+		37C54C6B292C897C006E8DBA /* File+Publication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C6A292C897C006E8DBA /* File+Publication.swift */; };
 		37C89B6429278535003583E8 /* LentilEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C89B6329278535003583E8 /* LentilEnvironment.swift */; };
 		37CC0CFE292793930036C6E9 /* MediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CC0CFD292793930036C6E9 /* MediaModel.swift */; };
 		37CC0D00292796780036C6E9 /* LensApiClient+MediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CC0CFF292796780036C6E9 /* LensApiClient+MediaModel.swift */; };
@@ -153,6 +157,10 @@
 		37C54C5F292B4103006E8DBA /* Mumbai-Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Mumbai-Development.xcconfig"; sourceTree = "<group>"; };
 		37C54C60292B4113006E8DBA /* Polygon-Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Polygon-Production.xcconfig"; sourceTree = "<group>"; };
 		37C54C61292B423E006E8DBA /* Secrets-Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Secrets-Production.xcconfig"; sourceTree = "<group>"; };
+		37C54C64292C7EE6006E8DBA /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
+		37C54C66292C8932006E8DBA /* File+Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+Image.swift"; sourceTree = "<group>"; };
+		37C54C68292C895B006E8DBA /* File+FormDataAppendable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+FormDataAppendable.swift"; sourceTree = "<group>"; };
+		37C54C6A292C897C006E8DBA /* File+Publication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+Publication.swift"; sourceTree = "<group>"; };
 		37C89B6329278535003583E8 /* LentilEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilEnvironment.swift; sourceTree = "<group>"; };
 		37CC0CFD292793930036C6E9 /* MediaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaModel.swift; sourceTree = "<group>"; };
 		37CC0CFF292796780036C6E9 /* LensApiClient+MediaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+MediaModel.swift"; sourceTree = "<group>"; };
@@ -334,6 +342,7 @@
 				37557A2429274510005524C5 /* Helper */,
 				370ABEFC292A83AE005B8E11 /* InfuraApi */,
 				37BBB12D28F2737600A6D202 /* LensApi */,
+				37C54C63292C7EBD006E8DBA /* LensMetadata */,
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
@@ -435,6 +444,17 @@
 				37C54C5D292B20B4006E8DBA /* CreatePublication.swift */,
 			);
 			path = CreatePublication;
+			sourceTree = "<group>";
+		};
+		37C54C63292C7EBD006E8DBA /* LensMetadata */ = {
+			isa = PBXGroup;
+			children = (
+				37C54C68292C895B006E8DBA /* File+FormDataAppendable.swift */,
+				37C54C66292C8932006E8DBA /* File+Image.swift */,
+				37C54C6A292C897C006E8DBA /* File+Publication.swift */,
+				37C54C64292C7EE6006E8DBA /* Metadata.swift */,
+			);
+			path = LensMetadata;
 			sourceTree = "<group>";
 		};
 		37CF6E1728FA620D0035A7CF /* AuthToken */ = {
@@ -681,14 +701,17 @@
 				37C54C59292B12A0006E8DBA /* InfuraApiClient+Environment.swift in Sources */,
 				37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */,
 				37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */,
+				37C54C6B292C897C006E8DBA /* File+Publication.swift in Sources */,
 				37F71B5228DF487000F6D9B1 /* Comment.swift in Sources */,
 				37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */,
 				376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
 				37F71B5628DF4D6400F6D9B1 /* Publication.swift in Sources */,
 				37CC0CFE292793930036C6E9 /* MediaModel.swift in Sources */,
+				37C54C65292C7EE6006E8DBA /* Metadata.swift in Sources */,
 				37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */,
 				37D680912924AB3200F31669 /* Profile.swift in Sources */,
+				37C54C69292C895B006E8DBA /* File+FormDataAppendable.swift in Sources */,
 				37933DB128EA978400C11792 /* Binding.swift in Sources */,
 				37C5178E291EA986002D2B6D /* ProfileView.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
@@ -699,6 +722,7 @@
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
 				37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */,
 				37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */,
+				37C54C67292C8932006E8DBA /* File+Image.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
 				37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */,
 			);

@@ -6,74 +6,6 @@ import Foundation
 import UIKit
 
 
-protocol FormDataAppendable {
-  var data: Data { get }
-  var name: String { get }
-  var fileName: String { get }
-  var fileMimeType: String? { get }
-}
-
-struct TextFile: FormDataAppendable {
-  var data: Data { self.text }
-  var fileMimeType: String? { nil }
-  
-  let text: Data
-  let name: String
-  let fileName: String
-  
-  init?(text: String) {
-    guard let textData = text.data(using: .utf8)
-    else { return nil }
-    let name = "lentil-" + UUID().uuidString
-    
-    self.text = textData
-    self.name = name
-    self.fileName = name + ".txt"
-  }
-}
-
-struct ImageFile: FormDataAppendable {
-  enum ImageMimeType: String {
-    case gif = "image/gif"
-    case jpeg = "image/jpeg"
-    case png = "image/png"
-    case tiff = "image/tiff"
-    case xMsBmp = "image/x-ms-bmp"
-    case svgXml = "image/svg+xml"
-    case webp = "image/webp"
-  }
-  
-  var data: Data { self.image }
-  var fileMimeType: String? { self.mimeType.rawValue }
-  
-  let image: Data
-  let mimeType: ImageMimeType
-  let name: String
-  let fileName: String
-  
-  init(image: UIImage, mimeType: ImageMimeType) {
-    let imageData = image.jpegData(compressionQuality: 0.75)!
-    let name = "lentil-" + UUID().uuidString
-    
-    self.image = imageData
-    self.mimeType = mimeType
-    self.name = name
-    self.fileName = name + ImageFile.fileExtension(for: mimeType)
-  }
-  
-  private static func fileExtension(for mimeType: ImageMimeType) -> String {
-    switch mimeType {
-      case .gif:    return ".gif"
-      case .jpeg:   return ".jpeg"
-      case .png:    return ".png"
-      case .tiff:   return ".tiff"
-      case .xMsBmp: return ".xMsBmp"
-      case .svgXml: return ".svgXml"
-      case .webp:   return ".webp"
-    }
-  }
-}
-
 struct InfuraApi {
   struct InfuraIPFSResponse: Codable, Equatable {
     let Name: String
@@ -117,6 +49,6 @@ struct InfuraApi {
     }
   }
   
-  var uploadText: @Sendable (_ textFile: TextFile) async throws -> InfuraIPFSResponse
+  var uploadPublication: @Sendable (_ publicationFile: PublicationFile) async throws -> InfuraIPFSResponse
   var uploadImage: @Sendable (_ imageFile: ImageFile) async throws -> InfuraIPFSResponse
 }
