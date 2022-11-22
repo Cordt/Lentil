@@ -8,6 +8,8 @@ import SwiftUI
 struct Profile: ReducerProtocol {
   struct State: Equatable {
     var profile: Model.Profile
+    var posts: IdentifiedArrayOf<Post.State> = []
+    var cursorPublications: String?
     
     var coverPicture: Image?
     var remoteCoverPicture: RemoteImage.State {
@@ -35,10 +37,14 @@ struct Profile: ReducerProtocol {
     }
   }
   
-  enum Action: Equatable {
+  indirect enum Action: Equatable {
     case loadProfile
     case remoteCoverPicture(RemoteImage.Action)
     case remoteProfilePicture(RemoteImage.Action)
+    case fetchPublications
+    case publicationsResponse(TaskResult<[Model.Publication]>)
+    
+    case post(id: Post.State.ID, action: Post.Action)
   }
   
   @Dependency(\.lensApi) var lensApi
@@ -55,13 +61,42 @@ struct Profile: ReducerProtocol {
       switch action {
         case .loadProfile:
           return .merge(
+            Effect(value: .remoteProfilePicture(.fetchImage)),
             Effect(value: .remoteCoverPicture(.fetchImage)),
-            Effect(value: .remoteProfilePicture(.fetchImage))
+            Effect(value: .fetchPublications)
           )
+          
+        case .fetchPublications:
+          return .task { [cursorPublications = state.cursorPublications, id = state.profile.id] in
+            await .publicationsResponse(
+              TaskResult {
+                try await lensApi.publications(40, cursorPublications, id, [.post], id).data
+              }
+            )
+          }
+          
+        case .publicationsResponse(.success(let publications)):
+          publications
+            .filter { $0.typename == .post }
+            .map { Post.State(post: .init(publication: $0)) }
+            .forEach { state.posts.updateOrAppend($0) }
+          
+          state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
+          return .none
+          
+        case .publicationsResponse(.failure(let error)):
+          log("Failed to load publications for profile", level: .error, error: error)
+          return .none
           
         case .remoteCoverPicture, .remoteProfilePicture:
           return .none
+          
+        case .post:
+          return .none
       }
+    }
+    .forEach(\.posts, action: /Action.post) {
+      Post()
     }
   }
 }

@@ -105,6 +105,20 @@ struct ProfileView: View {
                 }
               }
             }
+            
+            ScrollView(.vertical, showsIndicators: false) {
+              LazyVStack(alignment: .leading) {
+                ForEachStore(
+                  self.store.scope(
+                    state: \.posts,
+                    action: Profile.Action.post)
+                ) { store in
+                  VStack(spacing: 0) {
+                    PostView(store: store)
+                  }
+                }
+              }
+            }
           }
           .offset(y: -48)
           .padding([.leading, .trailing])

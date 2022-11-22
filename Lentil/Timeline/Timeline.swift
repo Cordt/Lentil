@@ -93,7 +93,7 @@ struct Timeline: ReducerProtocol {
           return .run { [cursorPublications = state.cursorPublications, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
             do {
               if let id {
-                await send(.publicationsResponse(try await lensApi.publications(40, cursorPublications, id, [.post], id), .personal))
+                // TODO: Handle feed endpoint here
               }
               await send(.publicationsResponse(try await lensApi.trendingPublications(40, cursorExplore, .topCommented, [.post], id), .explore))
             } catch let error {
