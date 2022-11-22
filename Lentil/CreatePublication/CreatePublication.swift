@@ -7,12 +7,15 @@ import Foundation
 
 struct CreatePublication: ReducerProtocol {
   struct State: Equatable {
-    var publicationText: String = "This is a test text"
+    var isActive: Bool = false
+    var publicationText: String = ""
     var isPosting: Bool = false
   }
   
   enum Action: Equatable {
+    case toggleView(_ active: Bool)
     case publicationTextChanged(String)
+    case didTapCancel
     case createPublication
     case createPublicationResponse(TaskResult<MutationResult<Result<RelayerResult, RelayErrorReasons>>>)
   }
@@ -23,9 +26,17 @@ struct CreatePublication: ReducerProtocol {
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
     switch action {
+      case .toggleView(let active):
+        state.isActive = active
+        return .none
+      
       case .publicationTextChanged(let text):
         state.publicationText = text
         return .none
+        
+      case .didTapCancel:
+        state.publicationText = ""
+        return Effect(value: .toggleView(false))
         
       case .createPublication:
         let name = "lentil-" + UUID().uuidString
@@ -73,13 +84,14 @@ struct CreatePublication: ReducerProtocol {
           case .success(let relayerResult):
             state.publicationText = ""
             state.isPosting = false
-            debugPrint(relayerResult)
+            log("Successfully created publication: Hash: \(relayerResult.txnHash), Id: \(relayerResult.txnId)", level: .info)
+            return Effect(value: .toggleView(false))
             
           case .failure(let error):
             state.isPosting = false
             log("Failed to create publication", level: .error, error: error)
+            return .none
         }
-        return .none
         
       case .createPublicationResponse(.failure(let error)):
         state.isPosting = false

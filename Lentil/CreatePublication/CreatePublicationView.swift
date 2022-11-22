@@ -6,7 +6,6 @@ import SwiftUI
 
 
 struct CreatePublicationView: View {
-  @Environment(\.dismiss) var dismiss
   let store: Store<CreatePublication.State, CreatePublication.Action>
   
   var body: some View {
@@ -42,7 +41,7 @@ struct CreatePublicationView: View {
       .padding()
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
-          Button("Cancel") { dismiss() }
+          Button("Cancel") { viewStore.send(.didTapCancel) }
             .disabled(viewStore.isPosting)
         }
         ToolbarItem(placement: .navigationBarTrailing) {

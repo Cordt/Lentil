@@ -73,17 +73,22 @@ struct TimelineView: View {
         
         if viewStore.userProfile != nil {
           ToolbarItem(placement: .navigationBarTrailing) {
-            NavigationLink {
-              CreatePublicationView(
+            NavigationLink(
+              destination: CreatePublicationView(
                 store: self.store.scope(
                   state: \.createPublication,
                   action: Timeline.Action.createPublication
                 )
-              )
-            } label: {
-              Icon.add.view(.xlarge)
-                .foregroundColor(Theme.Color.white)
-            }
+              ),
+              isActive: viewStore.binding(
+                get: \.createPublication.isActive,
+                send: { Timeline.Action.createPublication(.toggleView($0)) }
+              ),
+              label: {
+                Icon.add.view(.xlarge)
+                  .foregroundColor(Theme.Color.white)
+              }
+            )
           }
         }
       }
