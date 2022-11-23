@@ -169,6 +169,99 @@
             "deprecationReason": null
           },
           {
+            "name": "feed",
+            "description": null,
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FeedRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PaginatedFeedResult",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "feedHighlights",
+            "description": null,
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FeedHighlightsRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PaginatedTimelineResult",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "timeline",
+            "description": null,
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "TimelineRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PaginatedTimelineResult",
+                "ofType": null
+              }
+            },
+            "isDeprecated": true,
+            "deprecationReason": "You should be using feed, this will not be supported after 15th November 2021, please migrate."
+          },
+          {
             "name": "pendingApprovalFollows",
             "description": null,
             "args": [
@@ -985,37 +1078,6 @@
             "deprecationReason": null
           },
           {
-            "name": "trending",
-            "description": null,
-            "args": [
-              {
-                "name": "request",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "TrendingRequest",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null
-              }
-            ],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "PaginatedTrendingResult",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "userSigNonces",
             "description": null,
             "args": [],
@@ -1125,6 +1187,30 @@
                   "ofType": {
                     "kind": "OBJECT",
                     "name": "OnChainIdentity",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "profileInterests",
+            "description": "Get the list of profile interests",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ProfileInterest",
                     "ofType": null
                   }
                 }
@@ -1763,16 +1849,32 @@
             "deprecationReason": null
           },
           {
+            "name": "isGated",
+            "description": "Indicates if the publication is gated behind some access criteria",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "collectedBy",
-            "description": "Who collected it, this is used for trending results and like this for better caching for the client",
+            "description": "Who collected it, this is used for timeline results and like this for better caching for the client",
             "args": [],
             "type": {
               "kind": "OBJECT",
               "name": "Wallet",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "use `feed` query, timeline query will be killed on the 15th November. This includes this field."
           },
           {
             "name": "reaction",
@@ -1800,13 +1902,115 @@
           {
             "name": "hasCollectedByMe",
             "description": null,
-            "args": [],
+            "args": [
+              {
+                "name": "isFinalisedOnChain",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
                 "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canComment",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanCommentResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canMirror",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanMirrorResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canDecrypt",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "address",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "EthereumAddress",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanDecryptResponse",
                 "ofType": null
               }
             },
@@ -2082,9 +2286,40 @@
             "deprecationReason": null
           },
           {
+            "name": "interests",
+            "description": "The profile interests",
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ProfileInterest",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "isFollowedByMe",
             "description": null,
-            "args": [],
+            "args": [
+              {
+                "name": "isFinalisedOnChain",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -2430,7 +2665,7 @@
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Url",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3506,6 +3741,16 @@
         "possibleTypes": null
       },
       {
+        "kind": "SCALAR",
+        "name": "ProfileInterest",
+        "description": "ProfileInterest custom scalar type",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "PublicationStats",
         "description": "The publication stats",
@@ -3827,6 +4072,30 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "animatedUrl",
+            "description": "The main focus of the publication",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Url",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "encryptionParams",
+            "description": "The publication's encryption params in case it's encrypted",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "EncryptionParamsOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -4010,6 +4279,935 @@
             "deprecationReason": null
           }
         ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "EncryptionParamsOutput",
+        "description": "The metadata encryption params",
+        "fields": [
+          {
+            "name": "providerSpecificParams",
+            "description": "The provider-specific encryption params",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ProviderSpecificParamsOutput",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "encryptionProvider",
+            "description": "The encryption provider",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "EncryptionProvider",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "accessCondition",
+            "description": "The access conditions",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "AccessConditionOutput",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "encryptedFields",
+            "description": "The encrypted fields",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "EncryptedFieldsOutput",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ProviderSpecificParamsOutput",
+        "description": "The provider-specific encryption params",
+        "fields": [
+          {
+            "name": "encryptionKey",
+            "description": "The encryption key",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ContentEncryptionKey",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
+        "name": "ContentEncryptionKey",
+        "description": "ContentEncryptionKey scalar type",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "EncryptionProvider",
+        "description": "The gated publication encryption provider",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "LIT_PROTOCOL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "AccessConditionOutput",
+        "description": "The access conditions for the publication",
+        "fields": [
+          {
+            "name": "nft",
+            "description": "NFT ownership condition",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "NftOwnershipOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "token",
+            "description": "ERC20 token ownership condition",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Erc20OwnershipOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "eoa",
+            "description": "EOA ownership condition",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "EoaOwnershipOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "profile",
+            "description": "Profile ownership condition",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ProfileOwnershipOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "follow",
+            "description": "Profile follow condition",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "FollowConditionOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "collect",
+            "description": "Profile follow condition",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "CollectConditionOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "and",
+            "description": "AND condition",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "AndConditionOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "or",
+            "description": "OR condition",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "OrConditionOutput",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "NftOwnershipOutput",
+        "description": null,
+        "fields": [
+          {
+            "name": "contractAddress",
+            "description": "The NFT collection's ethereum address",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ContractAddress",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "chainID",
+            "description": "The NFT chain id",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ChainId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "contractType",
+            "description": "The unlocker contract type",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ContractType",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "tokenIds",
+            "description": "The optional token ID(s) to check for ownership",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "TokenId",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
+        "name": "ChainId",
+        "description": "ChainId custom scalar type",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "ContractType",
+        "description": "The gated publication access criteria contract types",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "ERC721",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ERC1155",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ERC20",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
+        "name": "TokenId",
+        "description": "The NFT token id",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "Erc20OwnershipOutput",
+        "description": null,
+        "fields": [
+          {
+            "name": "contractAddress",
+            "description": "The ERC20 token's ethereum address",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ContractAddress",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "chainID",
+            "description": "The amount of tokens required to access the content",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ChainId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "amount",
+            "description": "The amount of tokens required to access the content",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "decimals",
+            "description": "The amount of decimals of the ERC20 contract",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "condition",
+            "description": "The operator to use when comparing the amount of tokens",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ScalarOperator",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
+        "name": "Float",
+        "description": "The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "ScalarOperator",
+        "description": "The gated publication access criteria scalar operators",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "EQUAL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "NOT_EQUAL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "GREATER_THAN",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "GREATER_THAN_OR_EQUAL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "LESS_THAN",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "LESS_THAN_OR_EQUAL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "EoaOwnershipOutput",
+        "description": null,
+        "fields": [
+          {
+            "name": "address",
+            "description": "The address that will have access to the content",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "EthereumAddress",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ProfileOwnershipOutput",
+        "description": "Condition that signifies if address has access to profile",
+        "fields": [
+          {
+            "name": "profileId",
+            "description": "The profile id",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "FollowConditionOutput",
+        "description": null,
+        "fields": [
+          {
+            "name": "profileId",
+            "description": "The profile id of the gated profile",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CollectConditionOutput",
+        "description": "Condition that signifies if address or profile has collected a publication",
+        "fields": [
+          {
+            "name": "publicationId",
+            "description": "The publication id that has to be collected to unlock content",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "ProfileId",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "thisPublication",
+            "description": "True if the content will be unlocked for this specific publication",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "AndConditionOutput",
+        "description": null,
+        "fields": [
+          {
+            "name": "criteria",
+            "description": "The list of conditions to apply AND to. You can only use nested boolean conditions at the root level.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "AccessConditionOutput",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "OrConditionOutput",
+        "description": null,
+        "fields": [
+          {
+            "name": "criteria",
+            "description": "The list of conditions to apply OR to. You can only use nested boolean conditions at the root level.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "AccessConditionOutput",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "EncryptedFieldsOutput",
+        "description": "The encrypted fields",
+        "fields": [
+          {
+            "name": "content",
+            "description": "The encrypted content field",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "EncryptedValueScalar",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "image",
+            "description": "The encrypted image field",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "EncryptedValueScalar",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "media",
+            "description": "The encrypted media field",
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "EncryptedMediaSet",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "animation_url",
+            "description": "The encrypted animation_url field",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "EncryptedValueScalar",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "external_url",
+            "description": "The encrypted external_url field",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "EncryptedValueScalar",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
+        "name": "EncryptedValueScalar",
+        "description": "EncryptedValue custom scalar type",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "EncryptedMediaSet",
+        "description": "The encrypted media set",
+        "fields": [
+          {
+            "name": "original",
+            "description": "Original media",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "EncryptedMedia",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "small",
+            "description": "Small media - will always be null on the public API",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "EncryptedMedia",
+              "ofType": null
+            },
+            "isDeprecated": true,
+            "deprecationReason": "should not be used will always be null"
+          },
+          {
+            "name": "medium",
+            "description": "Medium media - will always be null on the public API",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "EncryptedMedia",
+              "ofType": null
+            },
+            "isDeprecated": true,
+            "deprecationReason": "should not be used will always be null"
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "EncryptedMedia",
+        "description": "The Encrypted Media url and metadata",
+        "fields": [
+          {
+            "name": "url",
+            "description": "The encrypted value for the URL",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Url",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "width",
+            "description": "Width - will always be null on the public API",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "height",
+            "description": "Height - will always be null on the public API",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "size",
+            "description": "Size - will always be null on the public API",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "mimeType",
+            "description": "The image/audio/video mime type for the publication",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "MimeType",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "altTag",
+            "description": "The encrypted alt tags for accessibility",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "EncryptedValueScalar",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cover",
+            "description": "The encrypted cover for any video or audio you attached",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "EncryptedValueScalar",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
         "possibleTypes": null
       },
       {
@@ -4284,16 +5482,6 @@
         ],
         "inputFields": null,
         "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "SCALAR",
-        "name": "Float",
-        "description": "The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
         "enumValues": null,
         "possibleTypes": null
       },
@@ -4812,6 +6000,11 @@
             "kind": "OBJECT",
             "name": "UnknownReferenceModuleSettings",
             "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "DegreesOfSeparationReferenceModuleSettings",
+            "ofType": null
           }
         ]
       },
@@ -4868,6 +6061,12 @@
         "enumValues": [
           {
             "name": "FollowerOnlyReferenceModule",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DegreesOfSeparationReferenceModule",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -4952,6 +6151,97 @@
       },
       {
         "kind": "OBJECT",
+        "name": "DegreesOfSeparationReferenceModuleSettings",
+        "description": null,
+        "fields": [
+          {
+            "name": "type",
+            "description": "The reference modules enum",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ReferenceModules",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "contractAddress",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ContractAddress",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "commentsRestricted",
+            "description": "Applied to comments",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "mirrorsRestricted",
+            "description": "Applied to mirrors",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "degreesOfSeparation",
+            "description": "Degrees of separation",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "Wallet",
         "description": null,
         "fields": [
@@ -5031,6 +6321,170 @@
         ],
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CanCommentResponse",
+        "description": null,
+        "fields": [
+          {
+            "name": "result",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CanMirrorResponse",
+        "description": null,
+        "fields": [
+          {
+            "name": "result",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CanDecryptResponse",
+        "description": null,
+        "fields": [
+          {
+            "name": "result",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "reasons",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "DecryptFailReason",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "DecryptFailReason",
+        "description": "The reason why a profile cannot decrypt a publication",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "UNAUTHORIZED_ADDRESS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DOES_NOT_OWN_NFT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DOES_NOT_OWN_PROFILE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DOES_NOT_FOLLOW_PROFILE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "HAS_NOT_COLLECTED_PUBLICATION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "UNAUTHORIZED_BALANCE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "PROFILE_DOES_NOT_EXIST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MISSING_ENCRYPTION_PARAMS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "FOLLOW_NOT_FINALISED_ON_CHAIN",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COLLECT_NOT_FINALISED_ON_CHAIN",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -5203,6 +6657,22 @@
             "deprecationReason": null
           },
           {
+            "name": "isGated",
+            "description": "Indicates if the publication is gated behind some access criteria",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "mainPost",
             "description": "The top level post/mirror this comment lives on",
             "args": [],
@@ -5244,7 +6714,7 @@
           },
           {
             "name": "collectedBy",
-            "description": "Who collected it, this is used for trending results and like this for better caching for the client",
+            "description": "Who collected it, this is used for timeline results and like this for better caching for the client",
             "args": [],
             "type": {
               "kind": "OBJECT",
@@ -5280,13 +6750,115 @@
           {
             "name": "hasCollectedByMe",
             "description": null,
-            "args": [],
+            "args": [
+              {
+                "name": "isFinalisedOnChain",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
                 "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canComment",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanCommentResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canMirror",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanMirrorResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canDecrypt",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "address",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "EthereumAddress",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanDecryptResponse",
                 "ofType": null
               }
             },
@@ -5525,6 +7097,22 @@
             "deprecationReason": null
           },
           {
+            "name": "isGated",
+            "description": "Indicates if the publication is gated behind some access criteria",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "mirrorOf",
             "description": "The mirror publication",
             "args": [],
@@ -5566,13 +7154,115 @@
           {
             "name": "hasCollectedByMe",
             "description": null,
-            "args": [],
+            "args": [
+              {
+                "name": "isFinalisedOnChain",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
                 "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canComment",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanCommentResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canMirror",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanMirrorResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "canDecrypt",
+            "description": null,
+            "args": [
+              {
+                "name": "profileId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "address",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "EthereumAddress",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CanDecryptResponse",
                 "ofType": null
               }
             },
@@ -5637,16 +7327,12 @@
           },
           {
             "name": "totalCount",
-            "description": "The total number of entities the pagination iterates over. e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts",
+            "description": "The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts",
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -5790,6 +7476,24 @@
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "customFilters",
+            "description": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CustomFiltersTypes",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[]"
           }
         ],
         "interfaces": null,
@@ -6022,6 +7726,23 @@
         "possibleTypes": null
       },
       {
+        "kind": "ENUM",
+        "name": "CustomFiltersTypes",
+        "description": "The custom filters types",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "GARDENERS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "ExploreProfileResult",
         "description": "The paginated publication result",
@@ -6121,6 +7842,24 @@
               }
             },
             "defaultValue": null
+          },
+          {
+            "name": "customFilters",
+            "description": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CustomFiltersTypes",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[]"
           }
         ],
         "interfaces": null,
@@ -6179,6 +7918,813 @@
           },
           {
             "name": "MOST_COLLECTS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "PaginatedFeedResult",
+        "description": "The paginated feed result",
+        "fields": [
+          {
+            "name": "items",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "FeedItem",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "pageInfo",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PaginatedResultInfo",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "FeedItem",
+        "description": null,
+        "fields": [
+          {
+            "name": "root",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "UNION",
+                "name": "FeedItemRoot",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "electedMirror",
+            "description": "The elected mirror will be the first Mirror publication within the page results set",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ElectedMirror",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "mirrors",
+            "description": "Sorted by most recent first. Up to page size - 1 mirrors",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "MirrorEvent",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "collects",
+            "description": "Sorted by most recent first. Resolves defaultProfile and if null omits the wallet collect event from the list.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "CollectedEvent",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "reactions",
+            "description": "Sorted by most recent first. Up to page size - 1 reactions",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "ReactionEvent",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "comments",
+            "description": "Sorted by most recent first. Up to page size - 1 comments.",
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Comment",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "UNION",
+        "name": "FeedItemRoot",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "Post",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "Comment",
+            "ofType": null
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ElectedMirror",
+        "description": null,
+        "fields": [
+          {
+            "name": "mirrorId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "InternalPublicationId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "profile",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Profile",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "timestamp",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "MirrorEvent",
+        "description": null,
+        "fields": [
+          {
+            "name": "profile",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Profile",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "timestamp",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CollectedEvent",
+        "description": null,
+        "fields": [
+          {
+            "name": "profile",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Profile",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "timestamp",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ReactionEvent",
+        "description": null,
+        "fields": [
+          {
+            "name": "profile",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Profile",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "reaction",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ReactionTypes",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "timestamp",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "FeedRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "limit",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "LimitScalar",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "cursor",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Cursor",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "profileId",
+            "description": "The profile id",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "feedEventItemTypes",
+            "description": "Filter your feed to whatever you wish",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "FeedEventItemType",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[POST, COMMENT, MIRROR, COLLECT_POST, COLLECT_COMMENT, REACTION_POST, REACTION_COMMENT]"
+          },
+          {
+            "name": "sources",
+            "description": "The App Id",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Sources",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[]"
+          },
+          {
+            "name": "metadata",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "PublicationMetadataFilters",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "FeedEventItemType",
+        "description": "The feed event item filter types",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MIRROR",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COLLECT_POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COLLECT_COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "REACTION_POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "REACTION_COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "PaginatedTimelineResult",
+        "description": "The paginated timeline result",
+        "fields": [
+          {
+            "name": "items",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "UNION",
+                    "name": "Publication",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "pageInfo",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PaginatedResultInfo",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "FeedHighlightsRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "limit",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "LimitScalar",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "cursor",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Cursor",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "profileId",
+            "description": "The profile id",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "sources",
+            "description": "The App Id",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Sources",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[]"
+          },
+          {
+            "name": "metadata",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "PublicationMetadataFilters",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "TimelineRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "limit",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "LimitScalar",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "cursor",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Cursor",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "profileId",
+            "description": "The profile id",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "sources",
+            "description": "The App Id",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Sources",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[]"
+          },
+          {
+            "name": "timelineTypes",
+            "description": "The timeline types you wish to include, if nothing passed in will bring back all",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "TimelineType",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[COLLECT_COMMENT, COLLECT_POST, COMMENT, POST, MIRROR]"
+          },
+          {
+            "name": "metadata",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "PublicationMetadataFilters",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "TimelineType",
+        "description": "Timeline types",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MIRROR",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COLLECT_POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COLLECT_COMMENT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -6308,6 +8854,22 @@
           {
             "name": "follows",
             "description": "If the user does follow",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isFinalisedOnChain",
+            "description": "Is finalised on-chain",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -8589,16 +11151,6 @@
         "possibleTypes": null
       },
       {
-        "kind": "SCALAR",
-        "name": "ChainId",
-        "description": "ChainId custom scalar type",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "NFTsRequest",
         "description": null,
@@ -8927,6 +11479,11 @@
           {
             "kind": "OBJECT",
             "name": "NewMentionNotification",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "NewReactionNotification",
             "ofType": null
           }
         ]
@@ -9322,6 +11879,97 @@
         ]
       },
       {
+        "kind": "OBJECT",
+        "name": "NewReactionNotification",
+        "description": null,
+        "fields": [
+          {
+            "name": "notificationId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "NotificationId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "profile",
+            "description": "The profile",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Profile",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "reaction",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ReactionTypes",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "publication",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "UNION",
+                "name": "Publication",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "NotificationRequest",
         "description": null,
@@ -9362,6 +12010,24 @@
             "defaultValue": null
           },
           {
+            "name": "notificationTypes",
+            "description": "The profile id",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "NotificationTypes",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[MIRRORED_POST, MIRRORED_COMMENT, MENTION_POST, MENTION_COMMENT, COMMENTED_COMMENT, COMMENTED_POST, COLLECTED_POST, COLLECTED_COMMENT, FOLLOWED, REACTION_POST, REACTION_COMMENT]"
+          },
+          {
             "name": "sources",
             "description": "The App Id",
             "type": {
@@ -9388,10 +12054,105 @@
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "customFilters",
+            "description": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CustomFiltersTypes",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[]"
           }
         ],
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "NotificationTypes",
+        "description": "The notification filter types",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "MIRRORED_POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MIRRORED_COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MENTION_POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MENTION_COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COMMENTED_COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COMMENTED_POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COLLECTED_POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "COLLECTED_COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "FOLLOWED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "REACTION_POST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "REACTION_COMMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -9529,6 +12290,16 @@
           {
             "name": "disableML",
             "description": "If you wish to turn ML off",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": "false"
+          },
+          {
+            "name": "shuffle",
+            "description": "If you wish to shuffle the results",
             "type": {
               "kind": "SCALAR",
               "name": "Boolean",
@@ -9903,6 +12674,24 @@
             "defaultValue": null
           },
           {
+            "name": "profileIds",
+            "description": "Profile ids",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ProfileId",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": null
+          },
+          {
             "name": "publicationTypes",
             "description": "The publication types you want to query",
             "type": {
@@ -9985,6 +12774,24 @@
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "customFilters",
+            "description": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CustomFiltersTypes",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[]"
           }
         ],
         "interfaces": null,
@@ -10699,6 +13506,24 @@
             "defaultValue": null
           },
           {
+            "name": "customFilters",
+            "description": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CustomFiltersTypes",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": "[]"
+          },
+          {
             "name": "sources",
             "description": "The App Id",
             "type": {
@@ -10729,189 +13554,6 @@
         "inputFields": null,
         "interfaces": null,
         "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "PaginatedTrendingResult",
-        "description": "The paginated trending result",
-        "fields": [
-          {
-            "name": "items",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "UNION",
-                    "name": "Publication",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "pageInfo",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "PaginatedResultInfo",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "INPUT_OBJECT",
-        "name": "TrendingRequest",
-        "description": null,
-        "fields": null,
-        "inputFields": [
-          {
-            "name": "limit",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "LimitScalar",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "cursor",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Cursor",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "profileId",
-            "description": "The profile id",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "ProfileId",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "sources",
-            "description": "The App Id",
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Sources",
-                  "ofType": null
-                }
-              }
-            },
-            "defaultValue": "[]"
-          },
-          {
-            "name": "trendingTypes",
-            "description": "The trending types you wish to include, if nothing passed in will bring back all",
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "ENUM",
-                  "name": "TrendingType",
-                  "ofType": null
-                }
-              }
-            },
-            "defaultValue": "[COLLECT_COMMENT, COLLECT_POST, COMMENT, POST, MIRROR]"
-          },
-          {
-            "name": "metadata",
-            "description": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "PublicationMetadataFilters",
-              "ofType": null
-            },
-            "defaultValue": null
-          }
-        ],
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "ENUM",
-        "name": "TrendingType",
-        "description": "Trending types",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": [
-          {
-            "name": "POST",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "COMMENT",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "MIRROR",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "COLLECT_POST",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "COLLECT_COMMENT",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
         "possibleTypes": null
       },
       {
@@ -11762,7 +14404,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "PublicationMetadataMediaInput",
-        "description": "The metadata attribute output",
+        "description": "The metadata attribute input",
         "fields": null,
         "inputFields": [
           {
@@ -11804,14 +14446,41 @@
             "description": "The cover for any video or audio you attached",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Url",
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "source",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "PublicationMediaSource",
+              "ofType": null
+            },
+            "defaultValue": "LENS"
           }
         ],
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "PublicationMediaSource",
+        "description": "The source of the media",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "LENS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -13394,6 +16063,37 @@
             "deprecationReason": null
           },
           {
+            "name": "createAttachMediaData",
+            "description": null,
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "PublicMediaRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PublicMediaResults",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "claim",
             "description": null,
             "args": [
@@ -13425,8 +16125,8 @@
             "deprecationReason": null
           },
           {
-            "name": "createProfile",
-            "description": null,
+            "name": "addProfileInterests",
+            "description": "Adds profile interests to the given profile",
             "args": [
               {
                 "name": "request",
@@ -13436,7 +16136,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "CreateProfileRequest",
+                    "name": "AddProfileInterestsRequest",
                     "ofType": null
                   }
                 },
@@ -13444,13 +16144,36 @@
               }
             ],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "UNION",
-                "name": "RelayResult",
-                "ofType": null
+              "kind": "SCALAR",
+              "name": "Void",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "removeProfileInterests",
+            "description": "Removes profile interests from the given profile",
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "RemoveProfileInterestsRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
               }
+            ],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Void",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -17371,6 +20094,16 @@
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "gated",
+            "description": "The criteria to access the publication data",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "GatedPublicationParamsInput",
+              "ofType": null
+            },
+            "defaultValue": null
           }
         ],
         "interfaces": null,
@@ -17843,6 +20576,16 @@
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "degreesOfSeparationReferenceModule",
+            "description": "The degrees of seperation reference module",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "DegreesOfSeparationReferenceModuleParams",
+              "ofType": null
+            },
+            "defaultValue": null
           }
         ],
         "interfaces": null,
@@ -17879,6 +20622,571 @@
                 "kind": "SCALAR",
                 "name": "BlockchainData",
                 "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "DegreesOfSeparationReferenceModuleParams",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "commentsRestricted",
+            "description": "Applied to comments",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "mirrorsRestricted",
+            "description": "Applied to mirrors",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "degreesOfSeparation",
+            "description": "Degrees of separation",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "GatedPublicationParamsInput",
+        "description": "The access conditions for the publication",
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "nft",
+            "description": "NFT ownership condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NftOwnershipInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "token",
+            "description": "ERC20 token ownership condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "Erc20OwnershipInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "eoa",
+            "description": "EOA ownership condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "EoaOwnershipInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "profile",
+            "description": "Profile ownership condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "ProfileOwnershipInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "follow",
+            "description": "Profile follow condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "FollowConditionInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "collect",
+            "description": "Profile follow condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "CollectConditionInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "and",
+            "description": "AND condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "AndConditionInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "or",
+            "description": "OR condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "OrConditionInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "encryptedSymmetricKey",
+            "description": "The LIT Protocol encrypted symmetric key",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ContentEncryptionKey",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "NftOwnershipInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "contractAddress",
+            "description": "The NFT collection's ethereum address",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ContractAddress",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "chainID",
+            "description": "The NFT chain id",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ChainId",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "contractType",
+            "description": "The unlocker contract type",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ContractType",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "tokenIds",
+            "description": "The optional token ID(s) to check for ownership",
+            "type": {
+              "kind": "SCALAR",
+              "name": "TokenId",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "Erc20OwnershipInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "contractAddress",
+            "description": "The ERC20 token's ethereum address",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ContractAddress",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "chainID",
+            "description": "The amount of tokens required to access the content",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ChainId",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "amount",
+            "description": "The amount of tokens required to access the content",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "decimals",
+            "description": "The amount of decimals of the ERC20 contract",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "condition",
+            "description": "The operator to use when comparing the amount of tokens",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ScalarOperator",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "EoaOwnershipInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "address",
+            "description": "The address that will have access to the content",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "EthereumAddress",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "ProfileOwnershipInput",
+        "description": "Condition that signifies if address has access to profile",
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "profileId",
+            "description": "The profile id",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "FollowConditionInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "profileId",
+            "description": "The profile id of the gated profile",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "CollectConditionInput",
+        "description": "Condition that signifies if address or profile has collected a publication",
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "publicationId",
+            "description": "The publication id that has to be collected to unlock content",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ProfileId",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "thisPublication",
+            "description": "True if the content will be unlocked for this specific publication",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "AndConditionInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "criteria",
+            "description": "The list of conditions to apply AND to. You can only use nested boolean conditions at the root level.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "AccessConditionInput",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "AccessConditionInput",
+        "description": "The access conditions for the publication",
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "nft",
+            "description": "NFT ownership condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NftOwnershipInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "token",
+            "description": "ERC20 token ownership condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "Erc20OwnershipInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "eoa",
+            "description": "EOA ownership condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "EoaOwnershipInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "profile",
+            "description": "Profile ownership condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "ProfileOwnershipInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "follow",
+            "description": "Profile follow condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "FollowConditionInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "collect",
+            "description": "Profile follow condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "CollectConditionInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "and",
+            "description": "AND condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "AndConditionInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "or",
+            "description": "OR condition",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "OrConditionInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "OrConditionInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "criteria",
+            "description": "The list of conditions to apply OR to. You can only use nested boolean conditions at the root level.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "AccessConditionInput",
+                    "ofType": null
+                  }
+                }
               }
             },
             "defaultValue": null
@@ -18299,6 +21607,16 @@
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "gated",
+            "description": "The criteria to access the publication data",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "GatedPublicationParamsInput",
+              "ofType": null
+            },
+            "defaultValue": null
           }
         ],
         "interfaces": null,
@@ -18672,6 +21990,189 @@
         "possibleTypes": null
       },
       {
+        "kind": "OBJECT",
+        "name": "PublicMediaResults",
+        "description": "The response to upload the attached file",
+        "fields": [
+          {
+            "name": "signedUrl",
+            "description": "Signed url to push the file",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "media",
+            "description": "ipfs uri to add on the metadata",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "MediaOutput",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "MediaOutput",
+        "description": "Media object output",
+        "fields": [
+          {
+            "name": "item",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Url",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "type",
+            "description": "This is the mime type of media",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "MimeType",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "altTag",
+            "description": "The alt tags for accessibility",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cover",
+            "description": "The cover for any video or audio you attached",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Url",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "source",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "PublicationMediaSource",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "PublicMediaRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "itemCid",
+            "description": "Pre calculated cid of the file to push",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "IfpsCid",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "type",
+            "description": "This is the mime type of media",
+            "type": {
+              "kind": "SCALAR",
+              "name": "MimeType",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "altTag",
+            "description": "The alt tags for accessibility",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "cover",
+            "description": "The cover for any video or audio you attached",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Url",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
+        "name": "IfpsCid",
+        "description": "IfpsCid scalar type",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "ClaimHandleRequest",
         "description": null,
@@ -18724,51 +22225,90 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "CreateProfileRequest",
-        "description": null,
+        "name": "AddProfileInterestsRequest",
+        "description": "The request object to add interests to a profile",
         "fields": null,
         "inputFields": [
           {
-            "name": "handle",
-            "description": null,
+            "name": "interests",
+            "description": "The profile interest to add",
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "SCALAR",
-                "name": "CreateHandle",
-                "ofType": null
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ProfileInterest",
+                    "ofType": null
+                  }
+                }
               }
             },
             "defaultValue": null
           },
           {
-            "name": "profilePictureUri",
-            "description": "The profile picture uri",
+            "name": "profileId",
+            "description": "The profileId to add interests to",
             "type": {
-              "kind": "SCALAR",
-              "name": "Url",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "RemoveProfileInterestsRequest",
+        "description": "The request object to remove interests from a profile",
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "interests",
+            "description": "The profile interest to add",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ProfileInterest",
+                    "ofType": null
+                  }
+                }
+              }
             },
             "defaultValue": null
           },
           {
-            "name": "followModule",
-            "description": "The follow module",
+            "name": "profileId",
+            "description": "The profileId to add interests to",
             "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "FollowModuleParams",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "followNFTURI",
-            "description": "The follow NFT URI is the NFT metadata your followers will mint when they follow you. This can be updated at all times. If you do not pass in anything it will create a super cool changing NFT which will show the last publication of your profile as the NFT which looks awesome! This means people do not have to worry about writing this logic but still have the ability to customise it for their followers",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Url",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ProfileId",
+                "ofType": null
+              }
             },
             "defaultValue": null
           }

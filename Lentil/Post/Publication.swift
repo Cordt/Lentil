@@ -8,10 +8,12 @@ import SwiftUI
 struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var publication: Model.Publication
+    var profilePublications: IdentifiedArrayOf<Post.State> = []
     var profile: Profile.State {
-      get { Profile.State(profile: self.publication.profile, coverPicture: self.coverPicture, profilePicture: self.profilePicture) }
+      get { Profile.State(profile: self.publication.profile, posts: self.profilePublications, coverPicture: self.coverPicture, profilePicture: self.profilePicture) }
       set {
         self.publication.profile = newValue.profile
+        self.profilePublications = newValue.posts
         self.profilePicture = newValue.profilePicture
         self.coverPicture = newValue.coverPicture
       }

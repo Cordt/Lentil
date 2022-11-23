@@ -82,6 +82,7 @@ struct Profile: ReducerProtocol {
             .forEach { state.posts.updateOrAppend($0) }
           
           state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
+          
           return .none
           
         case .publicationsResponse(.failure(let error)):

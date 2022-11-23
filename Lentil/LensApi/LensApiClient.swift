@@ -100,6 +100,13 @@ struct LensApi {
     _ reactionsForProfile: String?
   ) async throws -> QueryResult<[Model.Publication]>
   
+  var feed: @Sendable (
+    _ limit: Int,
+    _ cursor: String?,
+    _ profileId: String,
+    _ reactionsForProfile: String?
+  ) async throws -> QueryResult<[Model.Publication]>
+  
   var commentsOfPublication: @Sendable (
     _ publication: Model.Publication,
     _ reactionsForProfile: String?

@@ -35,6 +35,35 @@ query ExplorePublications($request: ExplorePublicationRequest!, $reactionRequest
   }
 }
 
+query Feed($request: FeedRequest!, $reactionRequest: ReactionFieldResolverRequest) {
+  feed(request:$request) {
+    items {
+      root {
+        ... on Post {
+          ...PostFields
+          postReaction: reaction(request: $reactionRequest)
+        }
+        ... on Comment {
+          ...CommentFields
+          commentReaction: reaction(request: $reactionRequest)
+        }
+      }
+      mirrors {
+        profile {
+          id
+          handle
+        }
+        timestamp
+      }
+    }
+    pageInfo {
+      prev
+      next
+      totalCount
+    }
+  }
+}
+
 query Publications($request: PublicationsQueryRequest!, $reactionRequest: ReactionFieldResolverRequest) {
 	publications(request: $request) {
 		items {

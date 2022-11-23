@@ -59,8 +59,9 @@ public struct ExplorePublicationRequest: GraphQLMapConvertible {
   ///   - noRandomize: If you want the randomizer off (default on)
   ///   - excludeProfileIds: If you wish to exclude any results for profile ids
   ///   - metadata
-  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, timestamp: Swift.Optional<String?> = nil, sortCriteria: PublicationSortCriteria, sources: Swift.Optional<[String]?> = nil, publicationTypes: Swift.Optional<[PublicationTypes]?> = nil, noRandomize: Swift.Optional<Bool?> = nil, excludeProfileIds: Swift.Optional<[String]?> = nil, metadata: Swift.Optional<PublicationMetadataFilters?> = nil) {
-    graphQLMap = ["limit": limit, "cursor": cursor, "timestamp": timestamp, "sortCriteria": sortCriteria, "sources": sources, "publicationTypes": publicationTypes, "noRandomize": noRandomize, "excludeProfileIds": excludeProfileIds, "metadata": metadata]
+  ///   - customFilters
+  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, timestamp: Swift.Optional<String?> = nil, sortCriteria: PublicationSortCriteria, sources: Swift.Optional<[String]?> = nil, publicationTypes: Swift.Optional<[PublicationTypes]?> = nil, noRandomize: Swift.Optional<Bool?> = nil, excludeProfileIds: Swift.Optional<[String]?> = nil, metadata: Swift.Optional<PublicationMetadataFilters?> = nil, customFilters: Swift.Optional<[CustomFiltersTypes]?> = nil) {
+    graphQLMap = ["limit": limit, "cursor": cursor, "timestamp": timestamp, "sortCriteria": sortCriteria, "sources": sources, "publicationTypes": publicationTypes, "noRandomize": noRandomize, "excludeProfileIds": excludeProfileIds, "metadata": metadata, "customFilters": customFilters]
   }
 
   public var limit: Swift.Optional<String?> {
@@ -145,6 +146,15 @@ public struct ExplorePublicationRequest: GraphQLMapConvertible {
     }
     set {
       graphQLMap.updateValue(newValue, forKey: "metadata")
+    }
+  }
+
+  public var customFilters: Swift.Optional<[CustomFiltersTypes]?> {
+    get {
+      return graphQLMap["customFilters"] as? Swift.Optional<[CustomFiltersTypes]?> ?? Swift.Optional<[CustomFiltersTypes]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "customFilters")
     }
   }
 }
@@ -467,6 +477,42 @@ public struct PublicationMetadataTagsFilter: GraphQLMapConvertible {
   }
 }
 
+/// The custom filters types
+public enum CustomFiltersTypes: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case gardeners
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "GARDENERS": self = .gardeners
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .gardeners: return "GARDENERS"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: CustomFiltersTypes, rhs: CustomFiltersTypes) -> Bool {
+    switch (lhs, rhs) {
+      case (.gardeners, .gardeners): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [CustomFiltersTypes] {
+    return [
+      .gardeners,
+    ]
+  }
+}
+
 public struct ReactionFieldResolverRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -528,6 +574,144 @@ public enum ReactionTypes: RawRepresentable, Equatable, Hashable, CaseIterable, 
   }
 }
 
+public struct FeedRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - limit
+  ///   - cursor
+  ///   - profileId: The profile id
+  ///   - feedEventItemTypes: Filter your feed to whatever you wish
+  ///   - sources: The App Id
+  ///   - metadata
+  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, profileId: String, feedEventItemTypes: Swift.Optional<[FeedEventItemType]?> = nil, sources: Swift.Optional<[String]?> = nil, metadata: Swift.Optional<PublicationMetadataFilters?> = nil) {
+    graphQLMap = ["limit": limit, "cursor": cursor, "profileId": profileId, "feedEventItemTypes": feedEventItemTypes, "sources": sources, "metadata": metadata]
+  }
+
+  public var limit: Swift.Optional<String?> {
+    get {
+      return graphQLMap["limit"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "limit")
+    }
+  }
+
+  public var cursor: Swift.Optional<String?> {
+    get {
+      return graphQLMap["cursor"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "cursor")
+    }
+  }
+
+  /// The profile id
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// Filter your feed to whatever you wish
+  public var feedEventItemTypes: Swift.Optional<[FeedEventItemType]?> {
+    get {
+      return graphQLMap["feedEventItemTypes"] as? Swift.Optional<[FeedEventItemType]?> ?? Swift.Optional<[FeedEventItemType]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "feedEventItemTypes")
+    }
+  }
+
+  /// The App Id
+  public var sources: Swift.Optional<[String]?> {
+    get {
+      return graphQLMap["sources"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "sources")
+    }
+  }
+
+  public var metadata: Swift.Optional<PublicationMetadataFilters?> {
+    get {
+      return graphQLMap["metadata"] as? Swift.Optional<PublicationMetadataFilters?> ?? Swift.Optional<PublicationMetadataFilters?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "metadata")
+    }
+  }
+}
+
+/// The feed event item filter types
+public enum FeedEventItemType: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case post
+  case comment
+  case mirror
+  case collectPost
+  case collectComment
+  case reactionPost
+  case reactionComment
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "POST": self = .post
+      case "COMMENT": self = .comment
+      case "MIRROR": self = .mirror
+      case "COLLECT_POST": self = .collectPost
+      case "COLLECT_COMMENT": self = .collectComment
+      case "REACTION_POST": self = .reactionPost
+      case "REACTION_COMMENT": self = .reactionComment
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .post: return "POST"
+      case .comment: return "COMMENT"
+      case .mirror: return "MIRROR"
+      case .collectPost: return "COLLECT_POST"
+      case .collectComment: return "COLLECT_COMMENT"
+      case .reactionPost: return "REACTION_POST"
+      case .reactionComment: return "REACTION_COMMENT"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: FeedEventItemType, rhs: FeedEventItemType) -> Bool {
+    switch (lhs, rhs) {
+      case (.post, .post): return true
+      case (.comment, .comment): return true
+      case (.mirror, .mirror): return true
+      case (.collectPost, .collectPost): return true
+      case (.collectComment, .collectComment): return true
+      case (.reactionPost, .reactionPost): return true
+      case (.reactionComment, .reactionComment): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [FeedEventItemType] {
+    return [
+      .post,
+      .comment,
+      .mirror,
+      .collectPost,
+      .collectComment,
+      .reactionPost,
+      .reactionComment,
+    ]
+  }
+}
+
 public struct PublicationsQueryRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -535,14 +719,16 @@ public struct PublicationsQueryRequest: GraphQLMapConvertible {
   ///   - limit
   ///   - cursor
   ///   - profileId: Profile id
+  ///   - profileIds: Profile ids
   ///   - publicationTypes: The publication types you want to query
   ///   - commentsOf: The publication id you wish to get comments for
   ///   - sources: The App Id
   ///   - collectedBy: The ethereum address
   ///   - publicationIds: The publication id
   ///   - metadata
-  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, profileId: Swift.Optional<String?> = nil, publicationTypes: Swift.Optional<[PublicationTypes]?> = nil, commentsOf: Swift.Optional<String?> = nil, sources: Swift.Optional<[String]?> = nil, collectedBy: Swift.Optional<String?> = nil, publicationIds: Swift.Optional<[String]?> = nil, metadata: Swift.Optional<PublicationMetadataFilters?> = nil) {
-    graphQLMap = ["limit": limit, "cursor": cursor, "profileId": profileId, "publicationTypes": publicationTypes, "commentsOf": commentsOf, "sources": sources, "collectedBy": collectedBy, "publicationIds": publicationIds, "metadata": metadata]
+  ///   - customFilters
+  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, profileId: Swift.Optional<String?> = nil, profileIds: Swift.Optional<[String]?> = nil, publicationTypes: Swift.Optional<[PublicationTypes]?> = nil, commentsOf: Swift.Optional<String?> = nil, sources: Swift.Optional<[String]?> = nil, collectedBy: Swift.Optional<String?> = nil, publicationIds: Swift.Optional<[String]?> = nil, metadata: Swift.Optional<PublicationMetadataFilters?> = nil, customFilters: Swift.Optional<[CustomFiltersTypes]?> = nil) {
+    graphQLMap = ["limit": limit, "cursor": cursor, "profileId": profileId, "profileIds": profileIds, "publicationTypes": publicationTypes, "commentsOf": commentsOf, "sources": sources, "collectedBy": collectedBy, "publicationIds": publicationIds, "metadata": metadata, "customFilters": customFilters]
   }
 
   public var limit: Swift.Optional<String?> {
@@ -570,6 +756,16 @@ public struct PublicationsQueryRequest: GraphQLMapConvertible {
     }
     set {
       graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// Profile ids
+  public var profileIds: Swift.Optional<[String]?> {
+    get {
+      return graphQLMap["profileIds"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileIds")
     }
   }
 
@@ -629,6 +825,15 @@ public struct PublicationsQueryRequest: GraphQLMapConvertible {
     }
     set {
       graphQLMap.updateValue(newValue, forKey: "metadata")
+    }
+  }
+
+  public var customFilters: Swift.Optional<[CustomFiltersTypes]?> {
+    get {
+      return graphQLMap["customFilters"] as? Swift.Optional<[CustomFiltersTypes]?> ?? Swift.Optional<[CustomFiltersTypes]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "customFilters")
     }
   }
 }
@@ -942,8 +1147,9 @@ public struct CreatePublicPostRequest: GraphQLMapConvertible {
   ///   - contentUri: The metadata uploaded somewhere passing in the url to reach it
   ///   - collectModule: The collect module
   ///   - referenceModule: The reference module
-  public init(profileId: String, contentUri: String, collectModule: CollectModuleParams, referenceModule: Swift.Optional<ReferenceModuleParams?> = nil) {
-    graphQLMap = ["profileId": profileId, "contentURI": contentUri, "collectModule": collectModule, "referenceModule": referenceModule]
+  ///   - gated: The criteria to access the publication data
+  public init(profileId: String, contentUri: String, collectModule: CollectModuleParams, referenceModule: Swift.Optional<ReferenceModuleParams?> = nil, gated: Swift.Optional<GatedPublicationParamsInput?> = nil) {
+    graphQLMap = ["profileId": profileId, "contentURI": contentUri, "collectModule": collectModule, "referenceModule": referenceModule, "gated": gated]
   }
 
   /// Profile id
@@ -983,6 +1189,16 @@ public struct CreatePublicPostRequest: GraphQLMapConvertible {
     }
     set {
       graphQLMap.updateValue(newValue, forKey: "referenceModule")
+    }
+  }
+
+  /// The criteria to access the publication data
+  public var gated: Swift.Optional<GatedPublicationParamsInput?> {
+    get {
+      return graphQLMap["gated"] as? Swift.Optional<GatedPublicationParamsInput?> ?? Swift.Optional<GatedPublicationParamsInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "gated")
     }
   }
 }
@@ -1394,8 +1610,9 @@ public struct ReferenceModuleParams: GraphQLMapConvertible {
   /// - Parameters:
   ///   - followerOnlyReferenceModule: The follower only reference module
   ///   - unknownReferenceModule: A unknown reference module
-  public init(followerOnlyReferenceModule: Swift.Optional<Bool?> = nil, unknownReferenceModule: Swift.Optional<UnknownReferenceModuleParams?> = nil) {
-    graphQLMap = ["followerOnlyReferenceModule": followerOnlyReferenceModule, "unknownReferenceModule": unknownReferenceModule]
+  ///   - degreesOfSeparationReferenceModule: The degrees of seperation reference module
+  public init(followerOnlyReferenceModule: Swift.Optional<Bool?> = nil, unknownReferenceModule: Swift.Optional<UnknownReferenceModuleParams?> = nil, degreesOfSeparationReferenceModule: Swift.Optional<DegreesOfSeparationReferenceModuleParams?> = nil) {
+    graphQLMap = ["followerOnlyReferenceModule": followerOnlyReferenceModule, "unknownReferenceModule": unknownReferenceModule, "degreesOfSeparationReferenceModule": degreesOfSeparationReferenceModule]
   }
 
   /// The follower only reference module
@@ -1415,6 +1632,16 @@ public struct ReferenceModuleParams: GraphQLMapConvertible {
     }
     set {
       graphQLMap.updateValue(newValue, forKey: "unknownReferenceModule")
+    }
+  }
+
+  /// The degrees of seperation reference module
+  public var degreesOfSeparationReferenceModule: Swift.Optional<DegreesOfSeparationReferenceModuleParams?> {
+    get {
+      return graphQLMap["degreesOfSeparationReferenceModule"] as? Swift.Optional<DegreesOfSeparationReferenceModuleParams?> ?? Swift.Optional<DegreesOfSeparationReferenceModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "degreesOfSeparationReferenceModule")
     }
   }
 }
@@ -1445,6 +1672,612 @@ public struct UnknownReferenceModuleParams: GraphQLMapConvertible {
     }
     set {
       graphQLMap.updateValue(newValue, forKey: "data")
+    }
+  }
+}
+
+public struct DegreesOfSeparationReferenceModuleParams: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - commentsRestricted: Applied to comments
+  ///   - mirrorsRestricted: Applied to mirrors
+  ///   - degreesOfSeparation: Degrees of separation
+  public init(commentsRestricted: Bool, mirrorsRestricted: Bool, degreesOfSeparation: Int) {
+    graphQLMap = ["commentsRestricted": commentsRestricted, "mirrorsRestricted": mirrorsRestricted, "degreesOfSeparation": degreesOfSeparation]
+  }
+
+  /// Applied to comments
+  public var commentsRestricted: Bool {
+    get {
+      return graphQLMap["commentsRestricted"] as! Bool
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "commentsRestricted")
+    }
+  }
+
+  /// Applied to mirrors
+  public var mirrorsRestricted: Bool {
+    get {
+      return graphQLMap["mirrorsRestricted"] as! Bool
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "mirrorsRestricted")
+    }
+  }
+
+  /// Degrees of separation
+  public var degreesOfSeparation: Int {
+    get {
+      return graphQLMap["degreesOfSeparation"] as! Int
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "degreesOfSeparation")
+    }
+  }
+}
+
+/// The access conditions for the publication
+public struct GatedPublicationParamsInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - nft: NFT ownership condition
+  ///   - token: ERC20 token ownership condition
+  ///   - eoa: EOA ownership condition
+  ///   - profile: Profile ownership condition
+  ///   - follow: Profile follow condition
+  ///   - collect: Profile follow condition
+  ///   - and: AND condition
+  ///   - or: OR condition
+  ///   - encryptedSymmetricKey: The LIT Protocol encrypted symmetric key
+  public init(nft: Swift.Optional<NftOwnershipInput?> = nil, token: Swift.Optional<Erc20OwnershipInput?> = nil, eoa: Swift.Optional<EoaOwnershipInput?> = nil, profile: Swift.Optional<ProfileOwnershipInput?> = nil, follow: Swift.Optional<FollowConditionInput?> = nil, collect: Swift.Optional<CollectConditionInput?> = nil, and: Swift.Optional<AndConditionInput?> = nil, or: Swift.Optional<OrConditionInput?> = nil, encryptedSymmetricKey: String) {
+    graphQLMap = ["nft": nft, "token": token, "eoa": eoa, "profile": profile, "follow": follow, "collect": collect, "and": and, "or": or, "encryptedSymmetricKey": encryptedSymmetricKey]
+  }
+
+  /// NFT ownership condition
+  public var nft: Swift.Optional<NftOwnershipInput?> {
+    get {
+      return graphQLMap["nft"] as? Swift.Optional<NftOwnershipInput?> ?? Swift.Optional<NftOwnershipInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "nft")
+    }
+  }
+
+  /// ERC20 token ownership condition
+  public var token: Swift.Optional<Erc20OwnershipInput?> {
+    get {
+      return graphQLMap["token"] as? Swift.Optional<Erc20OwnershipInput?> ?? Swift.Optional<Erc20OwnershipInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "token")
+    }
+  }
+
+  /// EOA ownership condition
+  public var eoa: Swift.Optional<EoaOwnershipInput?> {
+    get {
+      return graphQLMap["eoa"] as? Swift.Optional<EoaOwnershipInput?> ?? Swift.Optional<EoaOwnershipInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "eoa")
+    }
+  }
+
+  /// Profile ownership condition
+  public var profile: Swift.Optional<ProfileOwnershipInput?> {
+    get {
+      return graphQLMap["profile"] as? Swift.Optional<ProfileOwnershipInput?> ?? Swift.Optional<ProfileOwnershipInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profile")
+    }
+  }
+
+  /// Profile follow condition
+  public var follow: Swift.Optional<FollowConditionInput?> {
+    get {
+      return graphQLMap["follow"] as? Swift.Optional<FollowConditionInput?> ?? Swift.Optional<FollowConditionInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "follow")
+    }
+  }
+
+  /// Profile follow condition
+  public var collect: Swift.Optional<CollectConditionInput?> {
+    get {
+      return graphQLMap["collect"] as? Swift.Optional<CollectConditionInput?> ?? Swift.Optional<CollectConditionInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "collect")
+    }
+  }
+
+  /// AND condition
+  public var and: Swift.Optional<AndConditionInput?> {
+    get {
+      return graphQLMap["and"] as? Swift.Optional<AndConditionInput?> ?? Swift.Optional<AndConditionInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "and")
+    }
+  }
+
+  /// OR condition
+  public var or: Swift.Optional<OrConditionInput?> {
+    get {
+      return graphQLMap["or"] as? Swift.Optional<OrConditionInput?> ?? Swift.Optional<OrConditionInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "or")
+    }
+  }
+
+  /// The LIT Protocol encrypted symmetric key
+  public var encryptedSymmetricKey: String {
+    get {
+      return graphQLMap["encryptedSymmetricKey"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "encryptedSymmetricKey")
+    }
+  }
+}
+
+public struct NftOwnershipInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - contractAddress: The NFT collection's ethereum address
+  ///   - chainId: The NFT chain id
+  ///   - contractType: The unlocker contract type
+  ///   - tokenIds: The optional token ID(s) to check for ownership
+  public init(contractAddress: String, chainId: String, contractType: ContractType, tokenIds: Swift.Optional<String?> = nil) {
+    graphQLMap = ["contractAddress": contractAddress, "chainID": chainId, "contractType": contractType, "tokenIds": tokenIds]
+  }
+
+  /// The NFT collection's ethereum address
+  public var contractAddress: String {
+    get {
+      return graphQLMap["contractAddress"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "contractAddress")
+    }
+  }
+
+  /// The NFT chain id
+  public var chainId: String {
+    get {
+      return graphQLMap["chainID"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "chainID")
+    }
+  }
+
+  /// The unlocker contract type
+  public var contractType: ContractType {
+    get {
+      return graphQLMap["contractType"] as! ContractType
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "contractType")
+    }
+  }
+
+  /// The optional token ID(s) to check for ownership
+  public var tokenIds: Swift.Optional<String?> {
+    get {
+      return graphQLMap["tokenIds"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "tokenIds")
+    }
+  }
+}
+
+/// The gated publication access criteria contract types
+public enum ContractType: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case erc721
+  case erc1155
+  case erc20
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "ERC721": self = .erc721
+      case "ERC1155": self = .erc1155
+      case "ERC20": self = .erc20
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .erc721: return "ERC721"
+      case .erc1155: return "ERC1155"
+      case .erc20: return "ERC20"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: ContractType, rhs: ContractType) -> Bool {
+    switch (lhs, rhs) {
+      case (.erc721, .erc721): return true
+      case (.erc1155, .erc1155): return true
+      case (.erc20, .erc20): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [ContractType] {
+    return [
+      .erc721,
+      .erc1155,
+      .erc20,
+    ]
+  }
+}
+
+public struct Erc20OwnershipInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - contractAddress: The ERC20 token's ethereum address
+  ///   - chainId: The amount of tokens required to access the content
+  ///   - amount: The amount of tokens required to access the content
+  ///   - decimals: The amount of decimals of the ERC20 contract
+  ///   - condition: The operator to use when comparing the amount of tokens
+  public init(contractAddress: String, chainId: String, amount: String, decimals: Double, condition: ScalarOperator) {
+    graphQLMap = ["contractAddress": contractAddress, "chainID": chainId, "amount": amount, "decimals": decimals, "condition": condition]
+  }
+
+  /// The ERC20 token's ethereum address
+  public var contractAddress: String {
+    get {
+      return graphQLMap["contractAddress"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "contractAddress")
+    }
+  }
+
+  /// The amount of tokens required to access the content
+  public var chainId: String {
+    get {
+      return graphQLMap["chainID"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "chainID")
+    }
+  }
+
+  /// The amount of tokens required to access the content
+  public var amount: String {
+    get {
+      return graphQLMap["amount"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "amount")
+    }
+  }
+
+  /// The amount of decimals of the ERC20 contract
+  public var decimals: Double {
+    get {
+      return graphQLMap["decimals"] as! Double
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "decimals")
+    }
+  }
+
+  /// The operator to use when comparing the amount of tokens
+  public var condition: ScalarOperator {
+    get {
+      return graphQLMap["condition"] as! ScalarOperator
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "condition")
+    }
+  }
+}
+
+/// The gated publication access criteria scalar operators
+public enum ScalarOperator: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case equal
+  case notEqual
+  case greaterThan
+  case greaterThanOrEqual
+  case lessThan
+  case lessThanOrEqual
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "EQUAL": self = .equal
+      case "NOT_EQUAL": self = .notEqual
+      case "GREATER_THAN": self = .greaterThan
+      case "GREATER_THAN_OR_EQUAL": self = .greaterThanOrEqual
+      case "LESS_THAN": self = .lessThan
+      case "LESS_THAN_OR_EQUAL": self = .lessThanOrEqual
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .equal: return "EQUAL"
+      case .notEqual: return "NOT_EQUAL"
+      case .greaterThan: return "GREATER_THAN"
+      case .greaterThanOrEqual: return "GREATER_THAN_OR_EQUAL"
+      case .lessThan: return "LESS_THAN"
+      case .lessThanOrEqual: return "LESS_THAN_OR_EQUAL"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: ScalarOperator, rhs: ScalarOperator) -> Bool {
+    switch (lhs, rhs) {
+      case (.equal, .equal): return true
+      case (.notEqual, .notEqual): return true
+      case (.greaterThan, .greaterThan): return true
+      case (.greaterThanOrEqual, .greaterThanOrEqual): return true
+      case (.lessThan, .lessThan): return true
+      case (.lessThanOrEqual, .lessThanOrEqual): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [ScalarOperator] {
+    return [
+      .equal,
+      .notEqual,
+      .greaterThan,
+      .greaterThanOrEqual,
+      .lessThan,
+      .lessThanOrEqual,
+    ]
+  }
+}
+
+public struct EoaOwnershipInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - address: The address that will have access to the content
+  public init(address: String) {
+    graphQLMap = ["address": address]
+  }
+
+  /// The address that will have access to the content
+  public var address: String {
+    get {
+      return graphQLMap["address"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "address")
+    }
+  }
+}
+
+/// Condition that signifies if address has access to profile
+public struct ProfileOwnershipInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: The profile id
+  public init(profileId: String) {
+    graphQLMap = ["profileId": profileId]
+  }
+
+  /// The profile id
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+}
+
+public struct FollowConditionInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: The profile id of the gated profile
+  public init(profileId: String) {
+    graphQLMap = ["profileId": profileId]
+  }
+
+  /// The profile id of the gated profile
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+}
+
+/// Condition that signifies if address or profile has collected a publication
+public struct CollectConditionInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - publicationId: The publication id that has to be collected to unlock content
+  ///   - thisPublication: True if the content will be unlocked for this specific publication
+  public init(publicationId: Swift.Optional<String?> = nil, thisPublication: Swift.Optional<Bool?> = nil) {
+    graphQLMap = ["publicationId": publicationId, "thisPublication": thisPublication]
+  }
+
+  /// The publication id that has to be collected to unlock content
+  public var publicationId: Swift.Optional<String?> {
+    get {
+      return graphQLMap["publicationId"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "publicationId")
+    }
+  }
+
+  /// True if the content will be unlocked for this specific publication
+  public var thisPublication: Swift.Optional<Bool?> {
+    get {
+      return graphQLMap["thisPublication"] as? Swift.Optional<Bool?> ?? Swift.Optional<Bool?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "thisPublication")
+    }
+  }
+}
+
+public struct AndConditionInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - criteria: The list of conditions to apply AND to. You can only use nested boolean conditions at the root level.
+  public init(criteria: [AccessConditionInput]) {
+    graphQLMap = ["criteria": criteria]
+  }
+
+  /// The list of conditions to apply AND to. You can only use nested boolean conditions at the root level.
+  public var criteria: [AccessConditionInput] {
+    get {
+      return graphQLMap["criteria"] as! [AccessConditionInput]
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "criteria")
+    }
+  }
+}
+
+/// The access conditions for the publication
+public struct AccessConditionInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - nft: NFT ownership condition
+  ///   - token: ERC20 token ownership condition
+  ///   - eoa: EOA ownership condition
+  ///   - profile: Profile ownership condition
+  ///   - follow: Profile follow condition
+  ///   - collect: Profile follow condition
+  ///   - and: AND condition
+  ///   - or: OR condition
+  public init(nft: Swift.Optional<NftOwnershipInput?> = nil, token: Swift.Optional<Erc20OwnershipInput?> = nil, eoa: Swift.Optional<EoaOwnershipInput?> = nil, profile: Swift.Optional<ProfileOwnershipInput?> = nil, follow: Swift.Optional<FollowConditionInput?> = nil, collect: Swift.Optional<CollectConditionInput?> = nil, and: Swift.Optional<AndConditionInput?> = nil, or: Swift.Optional<OrConditionInput?> = nil) {
+    graphQLMap = ["nft": nft, "token": token, "eoa": eoa, "profile": profile, "follow": follow, "collect": collect, "and": and, "or": or]
+  }
+
+  /// NFT ownership condition
+  public var nft: Swift.Optional<NftOwnershipInput?> {
+    get {
+      return graphQLMap["nft"] as? Swift.Optional<NftOwnershipInput?> ?? Swift.Optional<NftOwnershipInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "nft")
+    }
+  }
+
+  /// ERC20 token ownership condition
+  public var token: Swift.Optional<Erc20OwnershipInput?> {
+    get {
+      return graphQLMap["token"] as? Swift.Optional<Erc20OwnershipInput?> ?? Swift.Optional<Erc20OwnershipInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "token")
+    }
+  }
+
+  /// EOA ownership condition
+  public var eoa: Swift.Optional<EoaOwnershipInput?> {
+    get {
+      return graphQLMap["eoa"] as? Swift.Optional<EoaOwnershipInput?> ?? Swift.Optional<EoaOwnershipInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "eoa")
+    }
+  }
+
+  /// Profile ownership condition
+  public var profile: Swift.Optional<ProfileOwnershipInput?> {
+    get {
+      return graphQLMap["profile"] as? Swift.Optional<ProfileOwnershipInput?> ?? Swift.Optional<ProfileOwnershipInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profile")
+    }
+  }
+
+  /// Profile follow condition
+  public var follow: Swift.Optional<FollowConditionInput?> {
+    get {
+      return graphQLMap["follow"] as? Swift.Optional<FollowConditionInput?> ?? Swift.Optional<FollowConditionInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "follow")
+    }
+  }
+
+  /// Profile follow condition
+  public var collect: Swift.Optional<CollectConditionInput?> {
+    get {
+      return graphQLMap["collect"] as? Swift.Optional<CollectConditionInput?> ?? Swift.Optional<CollectConditionInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "collect")
+    }
+  }
+
+  /// AND condition
+  public var and: Swift.Optional<AndConditionInput?> {
+    get {
+      return graphQLMap["and"] as? Swift.Optional<AndConditionInput?> ?? Swift.Optional<AndConditionInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "and")
+    }
+  }
+
+  /// OR condition
+  public var or: Swift.Optional<OrConditionInput?> {
+    get {
+      return graphQLMap["or"] as? Swift.Optional<OrConditionInput?> ?? Swift.Optional<OrConditionInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "or")
+    }
+  }
+}
+
+public struct OrConditionInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - criteria: The list of conditions to apply OR to. You can only use nested boolean conditions at the root level.
+  public init(criteria: [AccessConditionInput]) {
+    graphQLMap = ["criteria": criteria]
+  }
+
+  /// The list of conditions to apply OR to. You can only use nested boolean conditions at the root level.
+  public var criteria: [AccessConditionInput] {
+    get {
+      return graphQLMap["criteria"] as! [AccessConditionInput]
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "criteria")
     }
   }
 }
@@ -1678,6 +2511,7 @@ public enum CollectModules: RawRepresentable, Equatable, Hashable, CaseIterable,
 public enum ReferenceModules: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
   public typealias RawValue = String
   case followerOnlyReferenceModule
+  case degreesOfSeparationReferenceModule
   case unknownReferenceModule
   /// Auto generated constant for unknown enum values
   case __unknown(RawValue)
@@ -1685,6 +2519,7 @@ public enum ReferenceModules: RawRepresentable, Equatable, Hashable, CaseIterabl
   public init?(rawValue: RawValue) {
     switch rawValue {
       case "FollowerOnlyReferenceModule": self = .followerOnlyReferenceModule
+      case "DegreesOfSeparationReferenceModule": self = .degreesOfSeparationReferenceModule
       case "UnknownReferenceModule": self = .unknownReferenceModule
       default: self = .__unknown(rawValue)
     }
@@ -1693,6 +2528,7 @@ public enum ReferenceModules: RawRepresentable, Equatable, Hashable, CaseIterabl
   public var rawValue: RawValue {
     switch self {
       case .followerOnlyReferenceModule: return "FollowerOnlyReferenceModule"
+      case .degreesOfSeparationReferenceModule: return "DegreesOfSeparationReferenceModule"
       case .unknownReferenceModule: return "UnknownReferenceModule"
       case .__unknown(let value): return value
     }
@@ -1701,6 +2537,7 @@ public enum ReferenceModules: RawRepresentable, Equatable, Hashable, CaseIterabl
   public static func == (lhs: ReferenceModules, rhs: ReferenceModules) -> Bool {
     switch (lhs, rhs) {
       case (.followerOnlyReferenceModule, .followerOnlyReferenceModule): return true
+      case (.degreesOfSeparationReferenceModule, .degreesOfSeparationReferenceModule): return true
       case (.unknownReferenceModule, .unknownReferenceModule): return true
       case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
       default: return false
@@ -1710,6 +2547,7 @@ public enum ReferenceModules: RawRepresentable, Equatable, Hashable, CaseIterabl
   public static var allCases: [ReferenceModules] {
     return [
       .followerOnlyReferenceModule,
+      .degreesOfSeparationReferenceModule,
       .unknownReferenceModule,
     ]
   }
@@ -2262,7 +3100,7 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("prev", type: .scalar(String.self)),
             GraphQLField("next", type: .scalar(String.self)),
-            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            GraphQLField("totalCount", type: .scalar(Int.self)),
           ]
         }
 
@@ -2272,7 +3110,7 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public init(prev: String? = nil, next: String? = nil, totalCount: Int) {
+        public init(prev: String? = nil, next: String? = nil, totalCount: Int? = nil) {
           self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
         }
 
@@ -2305,10 +3143,551 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
           }
         }
 
-        /// The total number of entities the pagination iterates over. e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
-        public var totalCount: Int {
+        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        public var totalCount: Int? {
           get {
-            return resultMap["totalCount"]! as! Int
+            return resultMap["totalCount"] as? Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class FeedQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query Feed($request: FeedRequest!, $reactionRequest: ReactionFieldResolverRequest) {
+      feed(request: $request) {
+        __typename
+        items {
+          __typename
+          root {
+            __typename
+            ... on Post {
+              __typename
+              ...PostFields
+              postReaction: reaction(request: $reactionRequest)
+            }
+            ... on Comment {
+              __typename
+              ...CommentFields
+              commentReaction: reaction(request: $reactionRequest)
+            }
+          }
+          mirrors {
+            __typename
+            profile {
+              __typename
+              id
+              handle
+            }
+            timestamp
+          }
+        }
+        pageInfo {
+          __typename
+          prev
+          next
+          totalCount
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "Feed"
+
+  public var queryDocument: String {
+    var document: String = operationDefinition
+    document.append("\n" + PostFields.fragmentDefinition)
+    document.append("\n" + ProfileFields.fragmentDefinition)
+    document.append("\n" + MediaFields.fragmentDefinition)
+    document.append("\n" + PublicationStatsFields.fragmentDefinition)
+    document.append("\n" + MetadataOutputFields.fragmentDefinition)
+    document.append("\n" + CollectModuleFields.fragmentDefinition)
+    document.append("\n" + Erc20Fields.fragmentDefinition)
+    document.append("\n" + CommentFields.fragmentDefinition)
+    document.append("\n" + CommentBaseFields.fragmentDefinition)
+    document.append("\n" + MirrorBaseFields.fragmentDefinition)
+    document.append("\n" + CommentMirrorOfFields.fragmentDefinition)
+    return document
+  }
+
+  public var request: FeedRequest
+  public var reactionRequest: ReactionFieldResolverRequest?
+
+  public init(request: FeedRequest, reactionRequest: ReactionFieldResolverRequest? = nil) {
+    self.request = request
+    self.reactionRequest = reactionRequest
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request, "reactionRequest": reactionRequest]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("feed", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(Feed.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(feed: Feed) {
+      self.init(unsafeResultMap: ["__typename": "Query", "feed": feed.resultMap])
+    }
+
+    public var feed: Feed {
+      get {
+        return Feed(unsafeResultMap: resultMap["feed"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "feed")
+      }
+    }
+
+    public struct Feed: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["PaginatedFeedResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("items", type: .nonNull(.list(.nonNull(.object(Item.selections))))),
+          GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(items: [Item], pageInfo: PageInfo) {
+        self.init(unsafeResultMap: ["__typename": "PaginatedFeedResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var items: [Item] {
+        get {
+          return (resultMap["items"] as! [ResultMap]).map { (value: ResultMap) -> Item in Item(unsafeResultMap: value) }
+        }
+        set {
+          resultMap.updateValue(newValue.map { (value: Item) -> ResultMap in value.resultMap }, forKey: "items")
+        }
+      }
+
+      public var pageInfo: PageInfo {
+        get {
+          return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+        }
+      }
+
+      public struct Item: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["FeedItem"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("root", type: .nonNull(.object(Root.selections))),
+            GraphQLField("mirrors", type: .nonNull(.list(.nonNull(.object(Mirror.selections))))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(root: Root, mirrors: [Mirror]) {
+          self.init(unsafeResultMap: ["__typename": "FeedItem", "root": root.resultMap, "mirrors": mirrors.map { (value: Mirror) -> ResultMap in value.resultMap }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var root: Root {
+          get {
+            return Root(unsafeResultMap: resultMap["root"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "root")
+          }
+        }
+
+        /// Sorted by most recent first. Up to page size - 1 mirrors
+        public var mirrors: [Mirror] {
+          get {
+            return (resultMap["mirrors"] as! [ResultMap]).map { (value: ResultMap) -> Mirror in Mirror(unsafeResultMap: value) }
+          }
+          set {
+            resultMap.updateValue(newValue.map { (value: Mirror) -> ResultMap in value.resultMap }, forKey: "mirrors")
+          }
+        }
+
+        public struct Root: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Post", "Comment"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLTypeCase(
+                variants: ["Post": AsPost.selections, "Comment": AsComment.selections],
+                default: [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                ]
+              )
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var asPost: AsPost? {
+            get {
+              if !AsPost.possibleTypes.contains(__typename) { return nil }
+              return AsPost(unsafeResultMap: resultMap)
+            }
+            set {
+              guard let newValue = newValue else { return }
+              resultMap = newValue.resultMap
+            }
+          }
+
+          public struct AsPost: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Post"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLFragmentSpread(PostFields.self),
+                GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var postReaction: ReactionTypes? {
+              get {
+                return resultMap["postReaction"] as? ReactionTypes
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "postReaction")
+              }
+            }
+
+            public var fragments: Fragments {
+              get {
+                return Fragments(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+
+            public struct Fragments {
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public var postFields: PostFields {
+                get {
+                  return PostFields(unsafeResultMap: resultMap)
+                }
+                set {
+                  resultMap += newValue.resultMap
+                }
+              }
+            }
+          }
+
+          public var asComment: AsComment? {
+            get {
+              if !AsComment.possibleTypes.contains(__typename) { return nil }
+              return AsComment(unsafeResultMap: resultMap)
+            }
+            set {
+              guard let newValue = newValue else { return }
+              resultMap = newValue.resultMap
+            }
+          }
+
+          public struct AsComment: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Comment"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLFragmentSpread(CommentFields.self),
+                GraphQLField("reaction", alias: "commentReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var commentReaction: ReactionTypes? {
+              get {
+                return resultMap["commentReaction"] as? ReactionTypes
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "commentReaction")
+              }
+            }
+
+            public var fragments: Fragments {
+              get {
+                return Fragments(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+
+            public struct Fragments {
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public var commentFields: CommentFields {
+                get {
+                  return CommentFields(unsafeResultMap: resultMap)
+                }
+                set {
+                  resultMap += newValue.resultMap
+                }
+              }
+            }
+          }
+        }
+
+        public struct Mirror: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["MirrorEvent"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("profile", type: .nonNull(.object(Profile.selections))),
+              GraphQLField("timestamp", type: .nonNull(.scalar(String.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(profile: Profile, timestamp: String) {
+            self.init(unsafeResultMap: ["__typename": "MirrorEvent", "profile": profile.resultMap, "timestamp": timestamp])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var profile: Profile {
+            get {
+              return Profile(unsafeResultMap: resultMap["profile"]! as! ResultMap)
+            }
+            set {
+              resultMap.updateValue(newValue.resultMap, forKey: "profile")
+            }
+          }
+
+          public var timestamp: String {
+            get {
+              return resultMap["timestamp"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "timestamp")
+            }
+          }
+
+          public struct Profile: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Profile"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("id", type: .nonNull(.scalar(String.self))),
+                GraphQLField("handle", type: .nonNull(.scalar(String.self))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(id: String, handle: String) {
+              self.init(unsafeResultMap: ["__typename": "Profile", "id": id, "handle": handle])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The profile id
+            public var id: String {
+              get {
+                return resultMap["id"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "id")
+              }
+            }
+
+            /// The profile handle
+            public var handle: String {
+              get {
+                return resultMap["handle"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "handle")
+              }
+            }
+          }
+        }
+      }
+
+      public struct PageInfo: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PaginatedResultInfo"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("prev", type: .scalar(String.self)),
+            GraphQLField("next", type: .scalar(String.self)),
+            GraphQLField("totalCount", type: .scalar(Int.self)),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(prev: String? = nil, next: String? = nil, totalCount: Int? = nil) {
+          self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Cursor to query the actual results
+        public var prev: String? {
+          get {
+            return resultMap["prev"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "prev")
+          }
+        }
+
+        /// Cursor to query next results
+        public var next: String? {
+          get {
+            return resultMap["next"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "next")
+          }
+        }
+
+        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        public var totalCount: Int? {
+          get {
+            return resultMap["totalCount"] as? Int
           }
           set {
             resultMap.updateValue(newValue, forKey: "totalCount")
@@ -2721,7 +4100,7 @@ public final class PublicationsQuery: GraphQLQuery {
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("prev", type: .scalar(String.self)),
             GraphQLField("next", type: .scalar(String.self)),
-            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            GraphQLField("totalCount", type: .scalar(Int.self)),
           ]
         }
 
@@ -2731,7 +4110,7 @@ public final class PublicationsQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public init(prev: String? = nil, next: String? = nil, totalCount: Int) {
+        public init(prev: String? = nil, next: String? = nil, totalCount: Int? = nil) {
           self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
         }
 
@@ -2764,10 +4143,10 @@ public final class PublicationsQuery: GraphQLQuery {
           }
         }
 
-        /// The total number of entities the pagination iterates over. e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
-        public var totalCount: Int {
+        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        public var totalCount: Int? {
           get {
-            return resultMap["totalCount"]! as! Int
+            return resultMap["totalCount"] as? Int
           }
           set {
             resultMap.updateValue(newValue, forKey: "totalCount")
@@ -3032,7 +4411,7 @@ public final class WhoReactedPublicationQuery: GraphQLQuery {
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("prev", type: .scalar(String.self)),
             GraphQLField("next", type: .scalar(String.self)),
-            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            GraphQLField("totalCount", type: .scalar(Int.self)),
           ]
         }
 
@@ -3042,7 +4421,7 @@ public final class WhoReactedPublicationQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public init(prev: String? = nil, next: String? = nil, totalCount: Int) {
+        public init(prev: String? = nil, next: String? = nil, totalCount: Int? = nil) {
           self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
         }
 
@@ -3075,10 +4454,10 @@ public final class WhoReactedPublicationQuery: GraphQLQuery {
           }
         }
 
-        /// The total number of entities the pagination iterates over. e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
-        public var totalCount: Int {
+        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        public var totalCount: Int? {
           get {
-            return resultMap["totalCount"]! as! Int
+            return resultMap["totalCount"] as? Int
           }
           set {
             resultMap.updateValue(newValue, forKey: "totalCount")
@@ -8415,7 +9794,7 @@ public struct PostFields: GraphQLFragment {
   }
 
   public struct ReferenceModule: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["FollowOnlyReferenceModuleSettings", "UnknownReferenceModuleSettings"]
+    public static let possibleTypes: [String] = ["FollowOnlyReferenceModuleSettings", "UnknownReferenceModuleSettings", "DegreesOfSeparationReferenceModuleSettings"]
 
     public static var selections: [GraphQLSelection] {
       return [
@@ -8436,6 +9815,10 @@ public struct PostFields: GraphQLFragment {
 
     public static func makeUnknownReferenceModuleSettings() -> ReferenceModule {
       return ReferenceModule(unsafeResultMap: ["__typename": "UnknownReferenceModuleSettings"])
+    }
+
+    public static func makeDegreesOfSeparationReferenceModuleSettings() -> ReferenceModule {
+      return ReferenceModule(unsafeResultMap: ["__typename": "DegreesOfSeparationReferenceModuleSettings"])
     }
 
     public static func makeFollowOnlyReferenceModuleSettings(type: ReferenceModules) -> ReferenceModule {
@@ -8914,7 +10297,7 @@ public struct MirrorBaseFields: GraphQLFragment {
   }
 
   public struct ReferenceModule: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["FollowOnlyReferenceModuleSettings", "UnknownReferenceModuleSettings"]
+    public static let possibleTypes: [String] = ["FollowOnlyReferenceModuleSettings", "UnknownReferenceModuleSettings", "DegreesOfSeparationReferenceModuleSettings"]
 
     public static var selections: [GraphQLSelection] {
       return [
@@ -8935,6 +10318,10 @@ public struct MirrorBaseFields: GraphQLFragment {
 
     public static func makeUnknownReferenceModuleSettings() -> ReferenceModule {
       return ReferenceModule(unsafeResultMap: ["__typename": "UnknownReferenceModuleSettings"])
+    }
+
+    public static func makeDegreesOfSeparationReferenceModuleSettings() -> ReferenceModule {
+      return ReferenceModule(unsafeResultMap: ["__typename": "DegreesOfSeparationReferenceModuleSettings"])
     }
 
     public static func makeFollowOnlyReferenceModuleSettings(type: ReferenceModules) -> ReferenceModule {
@@ -9665,7 +11052,7 @@ public struct CommentBaseFields: GraphQLFragment {
   }
 
   public struct ReferenceModule: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["FollowOnlyReferenceModuleSettings", "UnknownReferenceModuleSettings"]
+    public static let possibleTypes: [String] = ["FollowOnlyReferenceModuleSettings", "UnknownReferenceModuleSettings", "DegreesOfSeparationReferenceModuleSettings"]
 
     public static var selections: [GraphQLSelection] {
       return [
@@ -9686,6 +11073,10 @@ public struct CommentBaseFields: GraphQLFragment {
 
     public static func makeUnknownReferenceModuleSettings() -> ReferenceModule {
       return ReferenceModule(unsafeResultMap: ["__typename": "UnknownReferenceModuleSettings"])
+    }
+
+    public static func makeDegreesOfSeparationReferenceModuleSettings() -> ReferenceModule {
+      return ReferenceModule(unsafeResultMap: ["__typename": "DegreesOfSeparationReferenceModuleSettings"])
     }
 
     public static func makeFollowOnlyReferenceModuleSettings(type: ReferenceModules) -> ReferenceModule {

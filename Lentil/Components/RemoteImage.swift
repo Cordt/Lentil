@@ -34,7 +34,6 @@ struct RemoteImage: ReducerProtocol {
         }
         
       case .updateImage(let .success(image)):
-        log("Successfully loaded remote image for \(String(describing: state.imageUrl?.absoluteString))", level: .info)
         state.image = image
         return .none
         

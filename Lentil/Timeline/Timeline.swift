@@ -8,7 +8,7 @@ struct Timeline: ReducerProtocol {
   struct State: Equatable {
     var userProfile: UserProfile? = nil
     var posts: IdentifiedArrayOf<Post.State> = []
-    var cursorPublications: String?
+    var cursorFeed: String?
     var cursorExplore: String?
     
     var walletConnect: Wallet.State = .init()
@@ -18,7 +18,7 @@ struct Timeline: ReducerProtocol {
   
   enum Action: Equatable {
     enum ResponseType: Equatable {
-      case explore, personal
+      case explore, feed
     }
     case timelineAppeared
     case refreshFeed
@@ -63,7 +63,7 @@ struct Timeline: ReducerProtocol {
           }
           
         case .refreshFeed:
-          state.cursorPublications = nil
+          state.cursorFeed = nil
           return .concatenate(
             .cancel(id: CancelFetchPublicationsID.self),
             .init(value: .fetchPublications)
@@ -90,12 +90,15 @@ struct Timeline: ReducerProtocol {
           return .none
           
         case .fetchPublications:
-          return .run { [cursorPublications = state.cursorPublications, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
+          return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
             do {
               if let id {
-                // TODO: Handle feed endpoint here
+                await send(.publicationsResponse(try await lensApi.feed(40, cursorFeed, id, id), .feed))
+                await send(.publicationsResponse(try await lensApi.trendingPublications(10, cursorExplore, .topCommented, [.post], id), .explore))
               }
-              await send(.publicationsResponse(try await lensApi.trendingPublications(40, cursorExplore, .topCommented, [.post], id), .explore))
+              else {
+                await send(.publicationsResponse(try await lensApi.trendingPublications(50, cursorExplore, .topCommented, [.post], id), .explore))
+              }
             } catch let error {
               log("Failed to load timeline", level: .error, error: error)
             }
@@ -112,20 +115,15 @@ struct Timeline: ReducerProtocol {
           response.data
             .filter { $0.typename == .post }
             .map { Post.State(post: .init(publication: $0)) }
-            .forEach { postState in
-              if let index = state.posts.firstIndex(where: { $0.post.publication.createdAt < postState.post.publication.createdAt }) {
-                state.posts.updateOrInsert(postState, at: index)
-              }
-              else {
-                state.posts.updateOrAppend(postState)
-              }
-            }
+            .forEach { state.posts.updateOrAppend($0) }
+          
+          state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt } 
           
           switch responseType {
             case .explore:
               state.cursorExplore = response.cursorToNext
-            case .personal:
-              state.cursorPublications = response.cursorToNext
+            case .feed:
+              state.cursorFeed = response.cursorToNext
           }
           return .none
           

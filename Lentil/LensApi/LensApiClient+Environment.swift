@@ -79,6 +79,24 @@ extension LensApi: DependencyKey {
       )
     },
     
+    feed: { limit, cursor, profileId, reactionsForProfile in
+      var reactionFieldRequest: ReactionFieldResolverRequest?
+      if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
+      return try await run(
+        query: FeedQuery(
+          request: FeedRequest(
+            limit: "\(limit)",
+            cursor: cursor,
+            profileId: profileId
+          ),
+          reactionRequest: reactionFieldRequest
+        ),
+        mapResult: { data in
+          QueryResult(data: data.feed.items.compactMap { Model.Publication.publication(from: $0.root) })
+        }
+      )
+    },
+    
     commentsOfPublication: { publication, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
@@ -263,6 +281,7 @@ extension LensApi: DependencyKey {
     verify: { _ in QueryResult(data: true) },
     publications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     trendingPublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    feed: { _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
     defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
     profile: { _ in QueryResult(data: MockData.mockProfiles[0]) },

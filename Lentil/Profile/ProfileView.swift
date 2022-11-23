@@ -89,6 +89,7 @@ struct ProfileView: View {
                 }
               }
               .padding(.trailing, 10)
+              
               VStack(alignment: .leading, spacing: 5) {
                 HStack {
                   Text(simpleCount(from: viewStore.profile.following))
@@ -105,23 +106,24 @@ struct ProfileView: View {
                 }
               }
             }
-            
-            ScrollView(.vertical, showsIndicators: false) {
-              LazyVStack(alignment: .leading) {
-                ForEachStore(
-                  self.store.scope(
-                    state: \.posts,
-                    action: Profile.Action.post)
-                ) { store in
-                  VStack(spacing: 0) {
-                    PostView(store: store)
-                  }
+          }
+          .padding(.top, -48)
+          .padding([.leading, .trailing])
+          
+          ScrollView(.vertical, showsIndicators: false) {
+            LazyVStack(alignment: .leading) {
+              ForEachStore(
+                self.store.scope(
+                  state: \.posts,
+                  action: Profile.Action.post)
+              ) { store in
+                VStack(spacing: 0) {
+                  PostView(store: store)
                 }
               }
             }
           }
-          .offset(y: -48)
-          .padding([.leading, .trailing])
+          .padding(.trailing)
         }
         .ignoresSafeArea()
         .toolbar {
