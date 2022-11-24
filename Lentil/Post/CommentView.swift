@@ -20,7 +20,8 @@ struct CommentView: View {
         
         VStack(alignment: .leading, spacing: 10) {
           Text(viewStore.comment.shortenedContent)
-            .font(.subheadline)
+            .font(style: .body)
+            .multilineTextAlignment(.leading)
           
           PostStatsView(
             store: self.store.scope(

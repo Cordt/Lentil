@@ -8,6 +8,7 @@ import SwiftUI
 struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var publication: Model.Publication
+    // TODO: Creates circular references - State shouldn't be derived but instantiated + load posts (check for the 'indirect' in codebase)
     var profilePublications: IdentifiedArrayOf<Post.State> = []
     var profile: Profile.State {
       get { Profile.State(profile: self.publication.profile, posts: self.profilePublications, coverPicture: self.coverPicture, profilePicture: self.profilePicture) }

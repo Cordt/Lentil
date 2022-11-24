@@ -92,7 +92,7 @@ struct LensApi {
     _ reactionsForProfile: String?
   ) async throws -> QueryResult<[Model.Publication]>
   
-  var trendingPublications: @Sendable (
+  var explorePublications: @Sendable (
     _ limit: Int,
     _ cursor: String?,
     _ sortCriteria: PublicationSortCriteria,

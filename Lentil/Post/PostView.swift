@@ -11,6 +11,9 @@ struct PostView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       VStack(alignment: .leading) {
+        if viewStore.comments.count > 0, let commenter = viewStore.commenter {
+          PostInfoView(infoType: .commented, name: commenter)
+        }
         PostHeaderView(
           store: self.store.scope(
             state: \.post,
@@ -39,17 +42,68 @@ struct PostView: View {
                 )
               )
             }
+            .background {
+              if viewStore.comments.count > 0 {
+                HStack {
+                  Rectangle()
+                    .fill(Theme.Color.greyShade3)
+                    .frame(width: 1)
+                  Spacer()
+                }
+                .padding(.top, 28)
+                .padding(.leading, -28)
+              }
+            }
           }
         )
         .offset(y: -25)
         .padding(.bottom, -20)
         .padding(.leading, 48)
         
+        ForEachStore(self.store.scope(
+          state: \.comments,
+          action: Post.Action.comment
+        )) { commentStore in
+          CommentView(store: commentStore)
+        }
+        
         Divider()
       }
       .padding([.leading, .trailing, .top])
       .task {
         viewStore.send(.post(action: .remotePublicationImage(.fetchImage)))
+      }
+    }
+  }
+}
+
+struct PostInfoView: View {
+  enum InfoType {
+    case commented
+    case mirrored
+  }
+  
+  var infoType: InfoType
+  var name: String
+  
+  var body: some View {
+    HStack(spacing: 5) {
+      switch self.infoType {
+        case .commented:
+          Icon.comment.view()
+            .foregroundColor(Theme.Color.text)
+          Text(self.name)
+            .font(style: .annotation, color: Theme.Color.text)
+          Text("commented on this")
+            .font(style: .annotation, color: Theme.Color.greyShade3)
+          
+        case .mirrored:
+          Icon.mirror.view()
+            .foregroundColor(Theme.Color.text)
+          Text(self.name)
+            .font(style: .annotation, color: Theme.Color.text)
+          Text("mirrored this")
+            .font(style: .annotation, color: Theme.Color.greyShade3)
       }
     }
   }
@@ -62,7 +116,10 @@ struct PostView_Previews: PreviewProvider {
     VStack(spacing: 0) {
       PostView(
         store: .init(
-          initialState: .init(post: Publication.State(publication: MockData.mockPublications[0])),
+          initialState: .init(
+            post: Publication.State(publication: MockData.mockPublications[0]),
+            comments: [Comment.State(comment: .init(publication: MockData.mockPublications[2]))]
+          ),
           reducer: Post()
         )
       )

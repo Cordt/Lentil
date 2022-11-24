@@ -100,7 +100,7 @@ struct TimelineView: View {
 }
 
 #if DEBUG
-struct TrendingView_Previews: PreviewProvider {
+struct TimelineView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
       TimelineView(

@@ -81,22 +81,28 @@ extension Model.Publication {
     )
   }
   
-  private static func publication(from comment: CommentBaseFields, reaction: ReactionTypes?, child of: Model.Publication? = nil) -> Self? {
+  private static func publication(from comment: CommentFields, reaction: ReactionTypes?, child of: Model.Publication? = nil) -> Self? {
     guard
-      let content = comment.metadata.fragments.metadataOutputFields.content,
-      let createdDate = date(from: comment.createdAt),
-      let profilePictureUrlString = comment.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
+      let content = comment.fragments.commentBaseFields.metadata.fragments.metadataOutputFields.content,
+      let createdDate = date(from: comment.fragments.commentBaseFields.createdAt),
+      let profilePictureUrlString = comment.fragments.commentBaseFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
       let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
     else { return nil }
     
+    // If no parent is passed explicitly, check whether the query data contains one
+    var parent: Model.Publication? = of
+    if parent == nil, let parentPost = comment.mainPost.asPost {
+      parent = publication(from: parentPost.fragments.postFields, reaction: parentPost.postReaction)
+    }
+    
     return commentFrom(
-      commentFields: comment,
-      child: of,
+      commentFields: comment.fragments.commentBaseFields,
+      child: parent,
       content: content,
       createdDate: createdDate,
       profilePictureUrl: profilePictureUrl,
       upvotedByUser: reaction == .upvote,
-      collectdByUser: comment.hasCollectedByMe,
+      collectdByUser: comment.fragments.commentBaseFields.hasCollectedByMe,
       commentdByUser: false,
       mirrordByUser: false
     )
@@ -106,7 +112,7 @@ extension Model.Publication {
     if let postFields = item.asPost?.fragments.postFields {
       return publication(from: postFields, reaction: item.asPost?.postReaction)
     }
-    else if let commentFields = item.asComment?.fragments.commentFields.fragments.commentBaseFields {
+    else if let commentFields = item.asComment?.fragments.commentFields {
       return publication(from: commentFields, reaction: item.asComment?.commentReaction, child: of)
     }
     else {
@@ -118,7 +124,7 @@ extension Model.Publication {
     if let postFields = item.asPost?.fragments.postFields {
       return publication(from: postFields, reaction: item.asPost?.postReaction)
     }
-    else if let commentFields = item.asComment?.fragments.commentFields.fragments.commentBaseFields {
+    else if let commentFields = item.asComment?.fragments.commentFields {
       return publication(from: commentFields, reaction: item.asComment?.commentReaction, child: of)
     }
     else {
@@ -130,7 +136,7 @@ extension Model.Publication {
     if let postFields = item.asPost?.fragments.postFields {
       return publication(from: postFields, reaction: item.asPost?.postReaction)
     }
-    else if let commentFields = item.asComment?.fragments.commentFields.fragments.commentBaseFields {
+    else if let commentFields = item.asComment?.fragments.commentFields {
       return publication(from: commentFields, reaction: item.asComment?.commentReaction, child: of)
     }
     else {

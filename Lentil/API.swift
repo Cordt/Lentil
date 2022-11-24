@@ -11158,6 +11158,7 @@ public struct CommentFields: GraphQLFragment {
         ... on Post {
           __typename
           ...PostFields
+          postReaction: reaction(request: $reactionRequest)
         }
         ... on Mirror {
           __typename
@@ -11287,6 +11288,7 @@ public struct CommentFields: GraphQLFragment {
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
           GraphQLFragmentSpread(PostFields.self),
+          GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
         ]
       }
 
@@ -11302,6 +11304,15 @@ public struct CommentFields: GraphQLFragment {
         }
         set {
           resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var postReaction: ReactionTypes? {
+        get {
+          return resultMap["postReaction"] as? ReactionTypes
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "postReaction")
         }
       }
 

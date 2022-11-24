@@ -10,6 +10,10 @@ struct Post: ReducerProtocol {
     var post: Publication.State
     var comments: IdentifiedArrayOf<Comment.State> = []
     
+    var commenter: String? {
+      self.comments.first?.comment.publication.profile.name ?? self.comments.first?.comment.publication.profile.handle
+    }
+    
     var id: String { self.post.id }
   }
   
@@ -62,6 +66,9 @@ struct Post: ReducerProtocol {
         case .comment(_, _):
           return .none
       }
+    }
+    .forEach(\.comments, action: /Action.comment) {
+      Comment()
     }
   }
 }

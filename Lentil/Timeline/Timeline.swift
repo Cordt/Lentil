@@ -94,10 +94,10 @@ struct Timeline: ReducerProtocol {
             do {
               if let id {
                 await send(.publicationsResponse(try await lensApi.feed(40, cursorFeed, id, id), .feed))
-                await send(.publicationsResponse(try await lensApi.trendingPublications(10, cursorExplore, .topCommented, [.post], id), .explore))
+                await send(.publicationsResponse(try await lensApi.explorePublications(10, cursorExplore, .topCommented, [.post], id), .explore))
               }
               else {
-                await send(.publicationsResponse(try await lensApi.trendingPublications(50, cursorExplore, .topCommented, [.post], id), .explore))
+                await send(.publicationsResponse(try await lensApi.explorePublications(50, cursorExplore, .topCommented, [.post], id), .explore))
               }
             } catch let error {
               log("Failed to load timeline", level: .error, error: error)
@@ -112,17 +112,48 @@ struct Timeline: ReducerProtocol {
           )
           
         case .publicationsResponse(let response, let responseType):
+          print("Response:\t", response.data.count)
           response.data
             .filter { $0.typename == .post }
             .map { Post.State(post: .init(publication: $0)) }
             .forEach { state.posts.updateOrAppend($0) }
           
-          state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt } 
+          response.data
+            .filter {
+              if case .comment = $0.typename { debugPrint($0);return true }
+              else { return false }
+            }
+            .map { Comment.State(comment: .init(publication: $0)) }
+            .forEach { commentState in
+              if case .comment(let parent) = commentState.comment.publication.typename {
+                guard let parent else { return }
+                state.posts.updateOrAppend(
+                  Post.State(
+                    post: Publication.State(publication: parent),
+                    comments: [commentState]
+                  )
+                )
+              }
+            }
+          
+          state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
+          
+          print("Posts:\t\t", state.posts.count)
+          var tmp = 0
+          for post in state.posts {
+            tmp += post.comments.count
+          }
+          print("Comments:\t", tmp)
+          
           
           switch responseType {
             case .explore:
+              print("Response was Explore")
+              print("--------------------")
               state.cursorExplore = response.cursorToNext
             case .feed:
+              print("Response was Feed")
+              print("-----------------")
               state.cursorFeed = response.cursorToNext
           }
           return .none

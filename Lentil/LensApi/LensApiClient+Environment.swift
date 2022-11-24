@@ -57,7 +57,7 @@ extension LensApi: DependencyKey {
       )
     },
     
-    trendingPublications: { limit, cursor, sortCriteria, publicationTypes, reactionsForProfile in
+    explorePublications: { limit, cursor, sortCriteria, publicationTypes, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
       return try await run(
@@ -280,7 +280,7 @@ extension LensApi: DependencyKey {
     authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
     verify: { _ in QueryResult(data: true) },
     publications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
-    trendingPublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    explorePublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     feed: { _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
     defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
