@@ -96,6 +96,7 @@ struct Profile: ReducerProtocol {
           return .none
       }
     }
+    ._printChanges(.actionLabels)
     .forEach(\.posts, action: /Action.post) {
       Post()
     }

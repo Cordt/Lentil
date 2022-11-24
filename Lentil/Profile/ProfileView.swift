@@ -29,6 +29,7 @@ struct ProfileView: View {
               .resizable()
               .aspectRatio(contentMode: .fill)
               .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
+              .clipped()
           } else {
             lentilGradient()
               .frame(width: geometry.size.width, height: geometry.size.height * 0.35)

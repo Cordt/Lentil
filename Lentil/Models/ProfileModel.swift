@@ -81,7 +81,7 @@ extension MockData {
       handle: "naval.lens",
       ownedBy: "0x9DD183EB4Cc8202239879e163e53578598030c7b",
       profilePictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/QmVBfhfgfhGsRVxTNURVUgceqyzjdVe11ic5rCghmePuKX")!,
-      coverPictureUrl: URL(string: "https://lens.infura-ipfs.io/ipfs/bafkreig3vqmj3nbhoqwtzk25ikpk47yxdcoflax6ks7npzmo5wsbysojhu")!,
+      coverPictureUrl: URL(string: "https://cover-picture-2")!,
       bio: nil,
       isFollowedByMe: false,
       following: 142,

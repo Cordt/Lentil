@@ -56,8 +56,8 @@ struct PostView: View {
             }
           }
         )
-        .offset(y: -25)
-        .padding(.bottom, -20)
+        .padding(.top, -25)
+        .padding(.bottom, 5)
         .padding(.leading, 48)
         
         ForEachStore(self.store.scope(
