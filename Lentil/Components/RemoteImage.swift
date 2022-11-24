@@ -20,6 +20,8 @@ struct RemoteImage: ReducerProtocol {
   func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
     switch action {
       case .fetchImage:
+        guard state.image == nil
+        else { return .none }
         return .task { [url = state.imageUrl] in
           await .updateImage(
             TaskResult {

@@ -51,16 +51,11 @@ struct Timeline: ReducerProtocol {
       
       switch action {
         case .timelineAppeared:
+          var effects: [Effect<Action, Never>] = []
           state.userProfile = profileStorageApi.load()
-          if state.userProfile != nil {
-            return .merge(
-              Effect(value: .refreshFeed),
-              Effect(value: .fetchDefaultProfile)
-            )
-          }
-          else {
-            return Effect(value: .refreshFeed)
-          }
+          if state.userProfile != nil && state.profile == nil { effects.append(Effect(value: .fetchDefaultProfile)) }
+          if state.posts.count == 0 { effects.append(Effect(value: .refreshFeed)) }
+          return .merge(effects)
           
         case .refreshFeed:
           state.cursorFeed = nil
@@ -112,7 +107,6 @@ struct Timeline: ReducerProtocol {
           )
           
         case .publicationsResponse(let response, let responseType):
-          print("Response:\t", response.data.count)
           response.data
             .filter { $0.typename == .post }
             .map { Post.State(post: .init(publication: $0)) }
@@ -120,7 +114,7 @@ struct Timeline: ReducerProtocol {
           
           response.data
             .filter {
-              if case .comment = $0.typename { debugPrint($0);return true }
+              if case .comment = $0.typename { return true }
               else { return false }
             }
             .map { Comment.State(comment: .init(publication: $0)) }
@@ -138,22 +132,10 @@ struct Timeline: ReducerProtocol {
           
           state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
           
-          print("Posts:\t\t", state.posts.count)
-          var tmp = 0
-          for post in state.posts {
-            tmp += post.comments.count
-          }
-          print("Comments:\t", tmp)
-          
-          
           switch responseType {
             case .explore:
-              print("Response was Explore")
-              print("--------------------")
               state.cursorExplore = response.cursorToNext
             case .feed:
-              print("Response was Feed")
-              print("-----------------")
               state.cursorFeed = response.cursorToNext
           }
           return .none
