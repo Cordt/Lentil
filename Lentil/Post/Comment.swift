@@ -16,10 +16,16 @@ struct Comment: ReducerProtocol {
     case comment(Publication.Action)
   }
   
-  func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
-    switch action {
-      case .comment:
-        return .none
+  var body: some ReducerProtocol<State, Action> {
+    Scope(state: \.comment, action: /Action.comment) {
+      Publication()
+    }
+    
+    Reduce { state, action in
+      switch action {
+        case .comment:
+          return .none
+      }
     }
   }
 }
