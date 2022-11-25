@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import SwiftUINavigation
 import SwiftUI
 
 
@@ -26,19 +27,10 @@ struct TimelineView: View {
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           if let userProfile = viewStore.userProfile {
-            NavigationLink {
-              IfLetStore(
-                self.store.scope(
-                  state: \.profile,
-                  action: Timeline.Action.profile
-                ), then: {
-                  ProfileView(
-                    store: $0
-                  )
-                }
-              )
+            Button {
+              viewStore.send(.setDestination(.showProfile))
             } label: {
-              if let profilePicture = viewStore.profile?.profilePicture {
+              if let profilePicture = viewStore.showProfile?.profilePicture {
                 profilePicture
                   .resizable()
                   .aspectRatio(contentMode: .fill)
@@ -52,20 +44,14 @@ struct TimelineView: View {
             }
           }
           else {
-            NavigationLink {
-              WalletView(
-                store: self.store.scope(
-                  state: \.walletConnect,
-                  action: Timeline.Action.walletConnect
-                )
-              )
+            Button {
+              viewStore.send(.setDestination(.connectWallet))
             } label: {
               Icon.link.view(.xlarge)
                 .foregroundColor(Theme.Color.white)
             }
           }
         }
-        
         ToolbarItem(placement: .principal) {
           Text("lentil")
             .font(highlight: .largeHeadline, color: Theme.Color.white)
@@ -73,25 +59,64 @@ struct TimelineView: View {
         
         if viewStore.userProfile != nil {
           ToolbarItem(placement: .navigationBarTrailing) {
-            NavigationLink(
-              destination: CreatePublicationView(
-                store: self.store.scope(
-                  state: \.createPublication,
-                  action: Timeline.Action.createPublication
-                )
-              ),
-              isActive: viewStore.binding(
-                get: \.createPublication.isActive,
-                send: { Timeline.Action.createPublication(.toggleView($0)) }
-              ),
-              label: {
-                Icon.add.view(.xlarge)
-                  .foregroundColor(Theme.Color.white)
-              }
-            )
+            Button {
+              viewStore.send(.setDestination(.createPublication))
+            } label: {
+              Icon.add.view(.xlarge)
+                .foregroundColor(Theme.Color.white)
+            }
           }
         }
       }
+      .navigationDestination(
+        unwrapping: viewStore.binding(
+          get: \.destination,
+          send: Timeline.Action.setDestination
+        ),
+        case: /Timeline.Destination.connectWallet,
+        destination: { _ in
+          WalletView(
+            store: self.store.scope(
+              state: \.connectWallet,
+              action: Timeline.Action.connectWallet
+            )
+          )
+        }
+      )
+      .navigationDestination(
+        unwrapping: viewStore.binding(
+          get: \.destination,
+          send: Timeline.Action.setDestination
+        ),
+        case: /Timeline.Destination.showProfile,
+        destination: { _ in
+          IfLetStore(
+            self.store.scope(
+              state: \.showProfile,
+              action: Timeline.Action.showProfile
+            ), then: {
+              ProfileView(
+                store: $0
+              )
+            }
+          )
+        }
+      )
+      .navigationDestination(
+        unwrapping: viewStore.binding(
+          get: \.destination,
+          send: Timeline.Action.setDestination
+        ),
+        case: /Timeline.Destination.createPublication,
+        destination: { _ in
+          CreatePublicationView(
+            store: self.store.scope(
+              state: \.createPublication,
+              action: Timeline.Action.createPublication
+            )
+          )
+        }
+      )
       .navigationBarTitleDisplayMode(.inline)
       .refreshable { await viewStore.send(.refreshFeed).finish() }
       .task { viewStore.send(.timelineAppeared) }
@@ -102,11 +127,11 @@ struct TimelineView: View {
 #if DEBUG
 struct TimelineView_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationView {
+    NavigationStack {
       TimelineView(
         store: .init(
           initialState: .init(
-            profile: Profile.State(profile: MockData.mockProfiles[2])
+            showProfile: Profile.State(profile: MockData.mockProfiles[2])
           ),
           reducer: Timeline()
         )

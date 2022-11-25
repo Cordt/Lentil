@@ -28,7 +28,8 @@ struct PostView: View {
               if let image = viewStore.post.publicationImage {
                 image
                   .resizable()
-                  .scaledToFit()
+                  .aspectRatio(contentMode: .fill)
+                  .clipped()
               }
               
               Text(viewStore.post.shortenedContent)
@@ -113,22 +114,26 @@ struct PostInfoView: View {
 #if DEBUG
 struct PostView_Previews: PreviewProvider {
   static var previews: some View {
-    VStack(spacing: 0) {
-      PostView(
-        store: .init(
-          initialState: .init(
-            post: Publication.State(publication: MockData.mockPublications[0]),
-            comments: [Comment.State(comment: .init(publication: MockData.mockPublications[2]))]
-          ),
-          reducer: Post()
-        )
-      )
-      PostView(
-        store: .init(
-          initialState: .init(post: Publication.State(publication: MockData.mockPublications[1])),
-          reducer: Post()
-        )
-      )
+    NavigationStack {
+      ScrollView {
+        LazyVStack(spacing: 0) {
+          PostView(
+            store: .init(
+              initialState: .init(
+                post: Publication.State(publication: MockData.mockPublications[0]),
+                comments: [Comment.State(comment: .init(publication: MockData.mockPublications[2]))]
+              ),
+              reducer: Post()
+            )
+          )
+          PostView(
+            store: .init(
+              initialState: .init(post: Publication.State(publication: MockData.mockPublications[1])),
+              reducer: Post()
+            )
+          )
+        }
+      }
     }
   }
 }

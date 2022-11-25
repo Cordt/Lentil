@@ -115,7 +115,7 @@ struct WalletView: View {
 
 struct WalletConnectView_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationView {
+    NavigationStack {
       WalletView(
         store: .init(
           initialState: Wallet.State(connectionStatus: .notConnected),

@@ -75,7 +75,7 @@ struct PostDetailView: View {
 #if DEBUG
 struct PostDetail_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationView {
+    NavigationStack {
       PostDetailView(
         store: .init(
           initialState: .init(post: Publication.State(publication: MockData.mockPublications[1])),

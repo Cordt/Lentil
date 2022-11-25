@@ -76,7 +76,7 @@ struct BackButton: View {
 
 struct LentilButton_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationView {
+    NavigationStack {
       VStack {
         LentilButton(title: "Active button") {}
         LentilButton(title: "Disabled button", disabled: true) {}

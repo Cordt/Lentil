@@ -30,7 +30,7 @@ struct RootView: View {
         .onDisappear { viewStore.send(.loadingScreenDisappeared) }
       }
       else {
-        NavigationView {
+        NavigationStack {
           TimelineView(
             store: self.store.scope(
               state: \.timelineState,

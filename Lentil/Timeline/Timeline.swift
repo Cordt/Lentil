@@ -5,14 +5,21 @@ import ComposableArchitecture
 
 
 struct Timeline: ReducerProtocol {
+  enum Destination: Equatable {
+    case connectWallet
+    case showProfile
+    case createPublication
+  }
+  
   struct State: Equatable {
     var userProfile: UserProfile? = nil
     var posts: IdentifiedArrayOf<Post.State> = []
     var cursorFeed: String?
     var cursorExplore: String?
     
-    var walletConnect: Wallet.State = .init()
-    var profile: Profile.State? = nil
+    var destination: Destination?
+    var connectWallet: Wallet.State = .init()
+    var showProfile: Profile.State? = nil
     var createPublication: CreatePublication.State = .init()
   }
   
@@ -28,17 +35,19 @@ struct Timeline: ReducerProtocol {
     case publicationsResponse(QueryResult<[Model.Publication]>, ResponseType)
     case loadMore
     
-    case walletConnect(Wallet.Action)
-    case profile(Profile.Action)
+    case connectWallet(Wallet.Action)
+    case showProfile(Profile.Action)
     case createPublication(CreatePublication.Action)
     case post(id: Post.State.ID, action: Post.Action)
+    
+    case setDestination(Destination?)
   }
   
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
   
   var body: some ReducerProtocol<State, Action> {
-    Scope(state: \.walletConnect, action: /Action.walletConnect) {
+    Scope(state: \.connectWallet, action: /Action.connectWallet) {
       Wallet()
     }
     
@@ -51,9 +60,9 @@ struct Timeline: ReducerProtocol {
       
       switch action {
         case .timelineAppeared:
-          var effects: [Effect<Action, Never>] = []
+          var effects: [EffectTask<Action>] = []
           state.userProfile = profileStorageApi.load()
-          if state.userProfile != nil && state.profile == nil { effects.append(Effect(value: .fetchDefaultProfile)) }
+          if state.userProfile != nil && state.showProfile == nil { effects.append(Effect(value: .fetchDefaultProfile)) }
           if state.posts.count == 0 { effects.append(Effect(value: .refreshFeed)) }
           return .merge(effects)
           
@@ -77,8 +86,8 @@ struct Timeline: ReducerProtocol {
           }
           
         case .defaultProfileResponse(let .success(defaultProfile)):
-          state.profile = Profile.State(profile: defaultProfile)
-          return Effect(value: .profile(.remoteProfilePicture(.fetchImage)))
+          state.showProfile = Profile.State(profile: defaultProfile)
+          return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
           
         case .defaultProfileResponse(let .failure(error)):
           log("Failed to load default profile for authenticated user", level: .error, error: error)
@@ -140,27 +149,34 @@ struct Timeline: ReducerProtocol {
           }
           return .none
           
-        case .walletConnect(let walletConnectAction):
+        case .connectWallet(let walletConnectAction):
           switch walletConnectAction {
             case .defaultProfileResponse(let defaultProfile):
-              state.profile = Profile.State(profile: defaultProfile)
-              return Effect(value: .profile(.remoteProfilePicture(.fetchImage)))
+              state.showProfile = Profile.State(profile: defaultProfile)
+              return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
               
             default:
               return .none
           }
           
-        case .profile:
+        case .showProfile:
           return .none
           
-        case .createPublication:
+        case .createPublication(let createPublicationAction):
+          if case .toggleView(false) = createPublicationAction {
+            state.destination = nil
+          }
           return .none
           
         case .post:
           return .none
+          
+        case .setDestination(let destination):
+          state.destination = destination
+          return .none
       }
     }
-    .ifLet(\.profile, action: /Action.profile) {
+    .ifLet(\.showProfile, action: /Action.showProfile) {
       Profile()
     }
     .forEach(\.posts, action: /Action.post) {

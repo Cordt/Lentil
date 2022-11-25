@@ -7,7 +7,6 @@ import Foundation
 
 struct CreatePublication: ReducerProtocol {
   struct State: Equatable {
-    var isActive: Bool = false
     var publicationText: String = ""
     var isPosting: Bool = false
   }
@@ -26,8 +25,8 @@ struct CreatePublication: ReducerProtocol {
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
     switch action {
-      case .toggleView(let active):
-        state.isActive = active
+      case .toggleView:
+        // Allows the parent to dismiss this view
         return .none
       
       case .publicationTextChanged(let text):

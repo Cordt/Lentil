@@ -60,7 +60,7 @@ struct CreatePublicationView: View {
 #if DEBUG
 struct CreatePubicationView_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationView {
+    NavigationStack {
       CreatePublicationView(
         store: .init(
           initialState: CreatePublication.State(),
