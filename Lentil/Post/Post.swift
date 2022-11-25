@@ -6,7 +6,12 @@ import SwiftUI
 
 
 struct Post: ReducerProtocol {
+  enum Destination {
+    case postDetail
+  }
+  
   struct State: Equatable, Identifiable {
+    var id: String { self.post.id }
     var post: Publication.State
     var comments: IdentifiedArrayOf<Comment.State> = []
     
@@ -14,7 +19,7 @@ struct Post: ReducerProtocol {
       self.comments.first?.comment.publication.profile.name ?? self.comments.first?.comment.publication.profile.handle
     }
     
-    var id: String { self.post.id }
+    var destination: Destination?
   }
   
   enum Action: Equatable {
@@ -23,6 +28,8 @@ struct Post: ReducerProtocol {
     
     case post(action: Publication.Action)
     case comment(id: Comment.State.ID, action: Comment.Action)
+    
+    case setDestination(Destination?)
   }
   
   @Dependency(\.lensApi) var lensApi
@@ -60,10 +67,11 @@ struct Post: ReducerProtocol {
               return .none
           }
           
-        case .post(_):
+        case .post, .comment:
           return .none
           
-        case .comment(_, _):
+        case .setDestination(let destination):
+          state.destination = destination
           return .none
       }
     }

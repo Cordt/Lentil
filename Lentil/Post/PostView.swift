@@ -21,42 +21,41 @@ struct PostView: View {
           )
         )
         
-        NavigationLink(
-          destination: { PostDetailView(store: self.store) },
-          label: {
-            VStack(alignment: .leading, spacing: 10) {
-              if let image = viewStore.post.publicationImage {
-                image
-                  .resizable()
-                  .aspectRatio(contentMode: .fill)
-                  .clipped()
-              }
-              
-              Text(viewStore.post.shortenedContent)
-                .font(style: .body)
-                .multilineTextAlignment(.leading)
-              
-              PostStatsView(
-                store: self.store.scope(
-                  state: \.post,
-                  action: Post.Action.post
-                )
-              )
+        Button {
+          viewStore.send(.setDestination(.postDetail))
+        } label: {
+          VStack(alignment: .leading, spacing: 10) {
+            if let image = viewStore.post.publicationImage {
+              image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .clipped()
             }
-            .background {
-              if viewStore.comments.count > 0 {
-                HStack {
-                  Rectangle()
-                    .fill(Theme.Color.greyShade3)
-                    .frame(width: 1)
-                  Spacer()
-                }
-                .padding(.top, 28)
-                .padding(.leading, -28)
+            
+            Text(viewStore.post.shortenedContent)
+              .font(style: .body)
+              .multilineTextAlignment(.leading)
+            
+            PostStatsView(
+              store: self.store.scope(
+                state: \.post,
+                action: Post.Action.post
+              )
+            )
+          }
+          .background {
+            if viewStore.comments.count > 0 {
+              HStack {
+                Rectangle()
+                  .fill(Theme.Color.greyShade3)
+                  .frame(width: 1)
+                Spacer()
               }
+              .padding(.top, 28)
+              .padding(.leading, -28)
             }
           }
-        )
+        }
         .padding(.top, -25)
         .padding(.bottom, 5)
         .padding(.leading, 48)
@@ -71,6 +70,16 @@ struct PostView: View {
         Divider()
       }
       .padding([.leading, .trailing, .top])
+      .navigationDestination(
+        unwrapping: viewStore.binding(
+          get: \.destination,
+          send: Post.Action.setDestination
+        ),
+        case: /Post.Destination.postDetail,
+        destination: { _ in
+          PostDetailView(store: self.store)
+        }
+      )
       .task {
         viewStore.send(.post(action: .remotePublicationImage(.fetchImage)))
       }
