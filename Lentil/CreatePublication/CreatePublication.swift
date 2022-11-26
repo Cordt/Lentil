@@ -12,7 +12,7 @@ struct CreatePublication: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    case toggleView(_ active: Bool)
+    case dismissView
     case publicationTextChanged(String)
     case didTapCancel
     case createPublication
@@ -25,7 +25,7 @@ struct CreatePublication: ReducerProtocol {
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
     switch action {
-      case .toggleView:
+      case .dismissView:
         // Allows the parent to dismiss this view
         return .none
       
@@ -35,7 +35,7 @@ struct CreatePublication: ReducerProtocol {
         
       case .didTapCancel:
         state.publicationText = ""
-        return Effect(value: .toggleView(false))
+        return Effect(value: .dismissView)
         
       case .createPublication:
         let name = "lentil-" + UUID().uuidString
@@ -84,7 +84,7 @@ struct CreatePublication: ReducerProtocol {
             state.publicationText = ""
             state.isPosting = false
             log("Successfully created publication: Hash: \(relayerResult.txnHash), Id: \(relayerResult.txnId)", level: .info)
-            return Effect(value: .toggleView(false))
+            return Effect(value: .dismissView)
             
           case .failure(let error):
             state.isPosting = false

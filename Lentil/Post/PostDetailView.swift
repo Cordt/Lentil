@@ -6,7 +6,6 @@ import SwiftUI
 
 
 struct PostDetailView: View {
-  @Environment(\.dismiss) var dismiss
   let store: Store<Post.State, Post.Action>
   
   var body: some View {
@@ -55,7 +54,7 @@ struct PostDetailView: View {
       .padding(.top, 1)
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
-          BackButton { dismiss() }
+          BackButton { viewStore.send(.dismissView) }
         }
         ToolbarItem(placement: .principal) {
           Text("Post")
@@ -78,7 +77,7 @@ struct PostDetail_Previews: PreviewProvider {
     NavigationStack {
       PostDetailView(
         store: .init(
-          initialState: .init(post: Publication.State(publication: MockData.mockPublications[1])),
+          initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[1])),
           reducer: Post()
         )
       )

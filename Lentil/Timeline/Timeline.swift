@@ -45,6 +45,7 @@ struct Timeline: ReducerProtocol {
   
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.connectWallet, action: /Action.connectWallet) {
@@ -86,7 +87,7 @@ struct Timeline: ReducerProtocol {
           }
           
         case .defaultProfileResponse(let .success(defaultProfile)):
-          state.showProfile = Profile.State(profile: defaultProfile)
+          state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
           return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
           
         case .defaultProfileResponse(let .failure(error)):
@@ -118,8 +119,12 @@ struct Timeline: ReducerProtocol {
         case .publicationsResponse(let response, let responseType):
           response.data
             .filter { $0.typename == .post }
-            .map { Post.State(post: .init(publication: $0)) }
+            .map { Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: $0)) }
             .forEach { state.posts.updateOrAppend($0) }
+          
+          response.data
+            .filter { $0.typename == .post }
+            .forEach { publicationsCache.updateOrAppend($0) }
           
           response.data
             .filter {
@@ -132,12 +137,16 @@ struct Timeline: ReducerProtocol {
                 guard let parent else { return }
                 state.posts.updateOrAppend(
                   Post.State(
+                    navigationId: uuid.callAsFunction().uuidString,
                     post: Publication.State(publication: parent),
                     comments: [commentState]
                   )
                 )
               }
             }
+          
+          response.data
+            .forEach { profilesCache.updateOrAppend($0.profile) }
           
           state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
           
@@ -152,7 +161,7 @@ struct Timeline: ReducerProtocol {
         case .connectWallet(let walletConnectAction):
           switch walletConnectAction {
             case .defaultProfileResponse(let defaultProfile):
-              state.showProfile = Profile.State(profile: defaultProfile)
+              state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
               return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
               
             default:
@@ -163,7 +172,7 @@ struct Timeline: ReducerProtocol {
           return .none
           
         case .createPublication(let createPublicationAction):
-          if case .toggleView(false) = createPublicationAction {
+          if case .dismissView = createPublicationAction {
             state.destination = nil
           }
           return .none

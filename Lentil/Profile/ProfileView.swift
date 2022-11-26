@@ -6,7 +6,6 @@ import SwiftUI
 
 
 struct ProfileView: View {
-  @Environment(\.dismiss) var dismiss
   let store: Store<Profile.State, Profile.Action>
   
   @ViewBuilder
@@ -129,7 +128,7 @@ struct ProfileView: View {
         .ignoresSafeArea()
         .toolbar {
           ToolbarItem(placement: .navigationBarLeading) {
-            BackButton { dismiss() }
+            BackButton { viewStore.send(.dismissView) }
           }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
@@ -148,7 +147,7 @@ struct ProfileView_Previews: PreviewProvider {
   static var previews: some View {
     ProfileView(
       store: .init(
-        initialState: .init(profile: MockData.mockProfiles[2]),
+        initialState: .init(navigationId: "abc", profile: MockData.mockProfiles[2]),
         reducer: Profile()
       )
     )

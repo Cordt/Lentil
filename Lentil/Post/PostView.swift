@@ -22,7 +22,7 @@ struct PostView: View {
         )
         
         Button {
-          viewStore.send(.setDestination(.postDetail))
+          viewStore.send(.postTapped)
         } label: {
           VStack(alignment: .leading, spacing: 10) {
             if let image = viewStore.post.publicationImage {
@@ -70,16 +70,6 @@ struct PostView: View {
         Divider()
       }
       .padding([.leading, .trailing, .top])
-      .navigationDestination(
-        unwrapping: viewStore.binding(
-          get: \.destination,
-          send: Post.Action.setDestination
-        ),
-        case: /Post.Destination.postDetail,
-        destination: { _ in
-          PostDetailView(store: self.store)
-        }
-      )
       .task {
         viewStore.send(.post(action: .remotePublicationImage(.fetchImage)))
       }
@@ -129,7 +119,7 @@ struct PostView_Previews: PreviewProvider {
           PostView(
             store: .init(
               initialState: .init(
-                post: Publication.State(publication: MockData.mockPublications[0]),
+                navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]),
                 comments: [Comment.State(comment: .init(publication: MockData.mockPublications[2]))]
               ),
               reducer: Post()
@@ -137,7 +127,7 @@ struct PostView_Previews: PreviewProvider {
           )
           PostView(
             store: .init(
-              initialState: .init(post: Publication.State(publication: MockData.mockPublications[1])),
+              initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[1])),
               reducer: Post()
             )
           )

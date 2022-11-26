@@ -6,34 +6,32 @@ import SwiftUI
 
 
 struct Post: ReducerProtocol {
-  enum Destination {
-    case postDetail
-  }
-  
   struct State: Equatable, Identifiable {
-    var id: String { self.post.id }
+    var navigationId: String
+    var id: String { self.navigationId }
     var post: Publication.State
     var comments: IdentifiedArrayOf<Comment.State> = []
     
     var commenter: String? {
       self.comments.first?.comment.publication.profile.name ?? self.comments.first?.comment.publication.profile.handle
     }
-    
-    var destination: Destination?
   }
   
   enum Action: Equatable {
+    case dismissView
     case fetchComments
     case commentsResponse(TaskResult<QueryResult<[Model.Publication]>>)
     
     case post(action: Publication.Action)
     case comment(id: Comment.State.ID, action: Comment.Action)
     
-    case setDestination(Destination?)
+    case postTapped
   }
   
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.post, action: /Action.post) {
@@ -42,6 +40,10 @@ struct Post: ReducerProtocol {
     
     Reduce { state, action in
       switch action {
+        case .dismissView:
+          self.navigationApi.remove(DestinationPath(navigationId: state.id, elementId: state.post.id))
+          return .none
+          
         case .fetchComments:
           return .task { [publication = state.post.publication] in
             await .commentsResponse(
@@ -69,9 +71,14 @@ struct Post: ReducerProtocol {
           
         case .post, .comment:
           return .none
-          
-        case .setDestination(let destination):
-          state.destination = destination
+         
+        case .postTapped:
+          self.navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              elementId: state.post.id
+            )
+          )
           return .none
       }
     }

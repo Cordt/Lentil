@@ -47,7 +47,7 @@ struct PostDetailHeaderView: View {
   let store: Store<Publication.State, Publication.Action>
   
   var body: some View {
-    WithViewStore(self.store) { viewStore in
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
       HStack(alignment: .top, spacing: 8) {
         PostProfilePicture(store: self.store)
         
@@ -83,29 +83,21 @@ fileprivate struct PostProfilePicture: View {
   let store: Store<Publication.State, Publication.Action>
   
   var body: some View {
-    WithViewStore(self.store) { viewStore in
-      NavigationLink(
-        destination: {
-          ProfileView(
-            store: self.store.scope(
-              state: \.profile,
-              action: Publication.Action.profile
-            )
-          )
-        },
-        label: {
-          if let image = viewStore.profilePicture {
-            image
-              .resizable()
-              .frame(width: 40, height: 40)
-              .clipShape(Circle())
-          }
-          else {
-            profileGradient(from: viewStore.publication.profile.handle)
-              .frame(width: 40, height: 40)
-          }
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      Button {
+        viewStore.send(.userProfileTapped)
+      } label: {
+        if let image = viewStore.profilePicture {
+          image
+            .resizable()
+            .frame(width: 40, height: 40)
+            .clipShape(Circle())
         }
-      )
+        else {
+          profileGradient(from: viewStore.publication.profile.handle)
+            .frame(width: 40, height: 40)
+        }
+      }
     }
   }
 }

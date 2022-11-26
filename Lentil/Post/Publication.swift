@@ -7,20 +7,7 @@ import SwiftUI
 
 struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
-    var publication: Model.Publication
-    // TODO: Creates circular references - State shouldn't be derived but instantiated + load posts (check for the 'indirect' in codebase)
-    var profilePublications: IdentifiedArrayOf<Post.State> = []
-    var profile: Profile.State {
-      get { Profile.State(profile: self.publication.profile, posts: self.profilePublications, coverPicture: self.coverPicture, profilePicture: self.profilePicture) }
-      set {
-        self.publication.profile = newValue.profile
-        self.profilePublications = newValue.posts
-        self.profilePicture = newValue.profilePicture
-        self.coverPicture = newValue.coverPicture
-      }
-    }
     var id: String { self.publication.id }
-    
     var profilePicture: Image?
     var remoteProfilePicture: RemoteImage.State {
       get {
@@ -33,19 +20,8 @@ struct Publication: ReducerProtocol {
         self.profilePicture = newValue.image
       }
     }
-    var coverPicture: Image?
-    var remoteCoverPicture: RemoteImage.State {
-      get {
-        RemoteImage.State(
-          imageUrl: self.publication.profile.coverPictureUrl,
-          image: self.coverPicture
-        )
-      }
-      set {
-        self.coverPicture = newValue.image
-      }
-    }
     
+    var publication: Model.Publication
     var publicationImage: Image?
     var remotePublicationImage: RemoteImage.State {
       get {
@@ -59,11 +35,10 @@ struct Publication: ReducerProtocol {
       }
     }
     
-    private let maxLength: Int = 256
     var publicationContent: String { self.publication.content.trimmingCharacters(in: .whitespacesAndNewlines) }
     var shortenedContent: String {
-      if self.publicationContent.count > self.maxLength {
-        return String(self.publicationContent.prefix(self.maxLength)) + "..."
+      if self.publicationContent.count > Theme.maxPostLength {
+        return String(self.publicationContent.prefix(Theme.maxPostLength)) + "..."
       }
       else {
         return self.publicationContent
@@ -72,26 +47,20 @@ struct Publication: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    case profile(Profile.Action)
-    case remoteProfilePicture(RemoteImage.Action)
-    case remoteCoverPicture(RemoteImage.Action)
+    case userProfileTapped
     case remotePublicationImage(RemoteImage.Action)
     case toggleReaction
+    
+    case remoteProfilePicture(RemoteImage.Action)
   }
   
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
-    Scope(state: \.profile, action: /Action.profile) {
-      Profile()
-    }
-    
     Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
-      RemoteImage()
-    }
-    
-    Scope(state: \.remoteCoverPicture, action: /Action.remoteCoverPicture) {
       RemoteImage()
     }
     
@@ -101,10 +70,16 @@ struct Publication: ReducerProtocol {
     
     Reduce { state, action in
       switch action {
-        case .profile:
+        case .userProfileTapped:
+          self.navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              elementId: state.publication.profile.id
+            )
+          )
           return .none
           
-        case .remoteProfilePicture, .remoteCoverPicture, .remotePublicationImage:
+        case .remotePublicationImage:
           return .none
           
         case .toggleReaction:
@@ -125,6 +100,9 @@ struct Publication: ReducerProtocol {
               try await self.lensApi.addReaction(userProfile.id, .upvote, publicationId)
             }
           }
+       
+        case .remoteProfilePicture:
+          return .none
       }
     }
   }

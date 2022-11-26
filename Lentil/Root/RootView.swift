@@ -10,10 +10,11 @@ import SwiftUI
 
 
 struct RootView: View {
+  @Dependency(\.navigationApi) var navigationApi
   let store: Store<Root.State, Root.Action>
   
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
       if viewStore.isLoading {
         ZStack {
           Theme.Color.primary
@@ -30,7 +31,7 @@ struct RootView: View {
         .onDisappear { viewStore.send(.loadingScreenDisappeared) }
       }
       else {
-        NavigationStack {
+        NavigationStack(path: self.navigationApi.pathBinding()) {
           TimelineView(
             store: self.store.scope(
               state: \.timelineState,
@@ -39,6 +40,30 @@ struct RootView: View {
           )
           .toolbarBackground(Theme.Color.primary, for: .navigationBar)
           .toolbarBackground(.visible, for: .navigationBar)
+          .navigationDestination(for: DestinationPath.self) { destinationPath in
+            if viewStore.posts[id: destinationPath.navigationId] != nil {
+              let store: Store<Post.State?, Post.Action> = self.store.scope(
+                state: {
+                  guard let postState = $0.posts[id: destinationPath.navigationId]
+                  else { return nil }
+                  return postState
+                },
+                action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
+              )
+              IfLetStore(store, then: PostDetailView.init)
+            }
+            else if viewStore.profiles[id: destinationPath.navigationId] != nil {
+              let store: Store<Profile.State?, Profile.Action> = self.store.scope(
+                state: {
+                  guard let profileState = $0.profiles[id: destinationPath.navigationId]
+                  else { return nil }
+                  return profileState
+                },
+                action: { Root.Action.profile(id: destinationPath.navigationId, action: $0) }
+              )
+              IfLetStore(store, then: ProfileView.init)
+            }
+          }
         }
       }
     }

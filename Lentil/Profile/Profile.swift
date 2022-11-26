@@ -6,7 +6,10 @@ import SwiftUI
 
 
 struct Profile: ReducerProtocol {
-  struct State: Equatable {
+  struct State: Equatable, Identifiable {
+    var navigationId: String
+    var id: String { self.navigationId }
+    
     var profile: Model.Profile
     var posts: IdentifiedArrayOf<Post.State> = []
     var cursorPublications: String?
@@ -38,6 +41,7 @@ struct Profile: ReducerProtocol {
   }
   
   indirect enum Action: Equatable {
+    case dismissView
     case loadProfile
     case remoteCoverPicture(RemoteImage.Action)
     case remoteProfilePicture(RemoteImage.Action)
@@ -48,6 +52,8 @@ struct Profile: ReducerProtocol {
   }
   
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.remoteCoverPicture, action: /Action.remoteCoverPicture) {
@@ -59,6 +65,10 @@ struct Profile: ReducerProtocol {
     
     Reduce { state, action in
       switch action {
+        case .dismissView:
+          self.navigationApi.remove(DestinationPath(navigationId: state.id, elementId: state.profile.id))
+          return .none
+          
         case .loadProfile:
           return .merge(
             Effect(value: .remoteProfilePicture(.fetchImage)),
@@ -78,10 +88,17 @@ struct Profile: ReducerProtocol {
         case .publicationsResponse(.success(let publications)):
           publications
             .filter { $0.typename == .post }
-            .map { Post.State(post: .init(publication: $0)) }
+            .map { Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: $0)) }
             .forEach { state.posts.updateOrAppend($0) }
           
           state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
+          
+          publications
+            .filter { $0.typename == .post }
+            .forEach { publicationsCache.updateOrAppend($0) }
+          
+          publications
+            .forEach { profilesCache.updateOrAppend($0.profile) }
           
           return .none
           
@@ -96,7 +113,6 @@ struct Profile: ReducerProtocol {
           return .none
       }
     }
-    ._printChanges(.actionLabels)
     .forEach(\.posts, action: /Action.post) {
       Post()
     }

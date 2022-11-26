@@ -4,11 +4,18 @@
 import SwiftUI
 
 
-// MARK: Colors
-
-let col = Color(red: 0, green: 0, blue: 0)
+// MARK: Defaults
 
 struct Theme {
+  static let maxPostLength: Int = 256
+  static let defaultRadius: CGFloat = 5.0
+  static let defaultBorderWidth: CGFloat = 2.0
+}
+
+
+// MARK: Colors
+
+extension Theme {
   struct Color {
     static let primary: SwiftUI.Color =        SwiftUI.Color(red: 0/255, green: 210/255, blue: 188/255)
     static let secondary: SwiftUI.Color =      SwiftUI.Color(red: 157/255, green: 86/255, blue: 175/255)
@@ -26,9 +33,6 @@ struct Theme {
     static let text: SwiftUI.Color =           SwiftUI.Color(red: 64/255, green: 64/255, blue: 64/255)
     static let shadow: SwiftUI.Color =         Theme.Color.greyShade3.opacity(0.2)
   }
-  
-  static let defaultRadius: CGFloat = 5.0
-  static let defaultBorderWidth: CGFloat = 2.0
 }
 
 struct Constants_Preview: PreviewProvider {

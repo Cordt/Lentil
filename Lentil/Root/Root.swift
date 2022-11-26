@@ -21,6 +21,9 @@ struct Root: ReducerProtocol {
     var currentText: Int = 0
     
     var timelineState: Timeline.State
+    
+    var posts: IdentifiedArrayOf<Post.State> = []
+    var profiles: IdentifiedArrayOf<Profile.State> = []
   }
   
   enum Action: Equatable {
@@ -34,12 +37,18 @@ struct Root: ReducerProtocol {
     case authTokenResponse(TaskResult<MutationResult<AuthenticationTokens>>)
     
     case timelineAction(Timeline.Action)
+    
+    case addPath(DestinationPath)
+    case removePath(DestinationPath)
+    case post(id: Post.State.ID, action: Post.Action)
+    case profile(id: Profile.State.ID, action: Profile.Action)
   }
   
   @Dependency(\.authTokenApi) var authTokenApi
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.navigationApi) var navigationApi
   private enum TimerID {}
 
   var body: some ReducerProtocol<State, Action> {
@@ -54,6 +63,20 @@ struct Root: ReducerProtocol {
       switch action {
         case .loadingScreenAppeared:
           return .merge(
+            .run { send in
+              do {
+                for try await event in self.navigationApi.eventStream {
+                  switch event {
+                    case .append(let destinationPath):
+                      await send(.addPath(destinationPath))
+                    case .remove(let destinationPath):
+                      await send(.removePath(destinationPath))
+                  }
+                }
+              } catch let error {
+                log("Failed to receive navigation events", level: .error, error: error)
+              }
+            },
             Effect(value: .startTimer),
             Effect(value: .checkAuthenticationStatus)
           )
@@ -145,7 +168,33 @@ struct Root: ReducerProtocol {
           
         case .timelineAction:
           return .none
+          
+        case .addPath(let destinationPath):
+          if let publication = publicationsCache[id: destinationPath.elementId] {
+            let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication))
+            state.posts.updateOrAppend(postState)
+          }
+          else if let profile = profilesCache[id: destinationPath.elementId] {
+            let profileState = Profile.State(navigationId: destinationPath.navigationId, profile: profile)
+            state.profiles.updateOrAppend(profileState)
+          }
+          
+          return .none
+          
+        case .removePath(let destinationPath):
+          state.posts.remove(id: destinationPath.navigationId)
+          state.profiles.remove(id: destinationPath.navigationId)
+          return .none
+          
+        case .post, .profile:
+          return .none
       }
+    }
+    .forEach(\.posts, action: /Action.post) {
+      Post()
+    }
+    .forEach(\.profiles, action: /Action.profile) {
+      Profile()
     }
   }
 }
