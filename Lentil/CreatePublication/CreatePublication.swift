@@ -12,7 +12,7 @@ struct CreatePublication: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    case dismissView
+    case dismissView(_ txHash: String?)
     case publicationTextChanged(String)
     case didTapCancel
     case createPublication
@@ -35,7 +35,7 @@ struct CreatePublication: ReducerProtocol {
         
       case .didTapCancel:
         state.publicationText = ""
-        return Effect(value: .dismissView)
+        return Effect(value: .dismissView(nil))
         
       case .createPublication:
         let name = "lentil-" + UUID().uuidString
@@ -84,7 +84,7 @@ struct CreatePublication: ReducerProtocol {
             state.publicationText = ""
             state.isPosting = false
             log("Successfully created publication: Hash: \(relayerResult.txnHash), Id: \(relayerResult.txnId)", level: .info)
-            return Effect(value: .dismissView)
+            return Effect(value: .dismissView(relayerResult.txnHash))
             
           case .failure(let error):
             state.isPosting = false

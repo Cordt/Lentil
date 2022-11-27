@@ -24,12 +24,14 @@ extension LensApi {
   static func run<Query: GraphQLQuery, Output: Equatable>(
     networkClient: NetworkClient = .unauthenticated,
     query: Query,
+    cachePolicy: CachePolicy = .default,
     mapResult: @escaping (Query.Data) throws -> QueryResult<Output>
   ) async throws -> QueryResult<Output> {
     
     try await withCheckedThrowingContinuation { continuation in
       networkClient.client.fetch(
         query: query,
+        cachePolicy: cachePolicy,
         queue: self.queue
       ) { result in
         transform(

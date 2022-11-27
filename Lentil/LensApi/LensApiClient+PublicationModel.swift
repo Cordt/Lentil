@@ -120,6 +120,15 @@ extension Model.Publication {
     }
   }
   
+  static func publication(from item: PublicationQuery.Data.Publication?) -> Self? {
+    if let postFields = item?.asPost?.fragments.postFields {
+      return publication(from: postFields, reaction: nil)
+    }
+    else {
+      return nil
+    }
+  }
+  
   static func publication(from item: PublicationsQuery.Data.Publication.Item, child of: Model.Publication? = nil) -> Self? {
     if let postFields = item.asPost?.fragments.postFields {
       return publication(from: postFields, reaction: item.asPost?.postReaction)

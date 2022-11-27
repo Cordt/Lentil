@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import Foundation
 
 
 struct Timeline: ReducerProtocol {
@@ -16,6 +17,7 @@ struct Timeline: ReducerProtocol {
     var posts: IdentifiedArrayOf<Post.State> = []
     var cursorFeed: String?
     var cursorExplore: String?
+    var indexingPost: Bool = false
     
     var destination: Destination?
     var connectWallet: Wallet.State = .init()
@@ -32,6 +34,7 @@ struct Timeline: ReducerProtocol {
     case fetchDefaultProfile
     case defaultProfileResponse(TaskResult<Model.Profile>)
     case fetchPublications
+    case publicationResponse(Model.Publication?)
     case publicationsResponse(QueryResult<[Model.Publication]>, ResponseType)
     case loadMore
     
@@ -116,6 +119,14 @@ struct Timeline: ReducerProtocol {
             .init(value: .fetchPublications)
           )
           
+        case .publicationResponse(let publication):
+          state.indexingPost = false
+          guard let publication else { return .none }
+          let postState = Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: publication))
+          state.posts.insert(postState, at: 0)
+          publicationsCache.updateOrAppend(publication)
+          return .none
+          
         case .publicationsResponse(let response, let responseType):
           response.data
             .filter { $0.typename == .post }
@@ -172,8 +183,24 @@ struct Timeline: ReducerProtocol {
           return .none
           
         case .createPublication(let createPublicationAction):
-          if case .dismissView = createPublicationAction {
+          if case .dismissView(let txHash) = createPublicationAction {
             state.destination = nil
+            if let txHash {
+              state.indexingPost = true
+              return .task {
+                do {
+                  while true {
+                    if let publication = try await self.lensApi.publication(txHash).data {
+                      return .publicationResponse(publication)
+                    }
+                    try await Task.sleep(nanoseconds: NSEC_PER_SEC * 2)
+                  }
+                } catch let error {
+                  log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
+                  return .publicationResponse(nil)
+                }
+              }
+            }
           }
           return .none
           

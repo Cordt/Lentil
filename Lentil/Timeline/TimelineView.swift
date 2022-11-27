@@ -13,6 +13,16 @@ struct TimelineView: View {
     WithViewStore(self.store) { viewStore in
       ScrollView(.vertical, showsIndicators: false) {
         LazyVStack(alignment: .leading) {
+          if viewStore.indexingPost {
+            HStack {
+              Spacer()
+              Text("Your publication is being indexed")
+                .font(style: .annotation, color: Theme.Color.greyShade3)
+              Spacer()
+            }
+            .padding(.top, 10)
+            .padding(.bottom, -10)
+          }
           ForEachStore(
             self.store.scope(
               state: \.posts,

@@ -89,6 +89,15 @@ query Publications($request: PublicationsQueryRequest!, $reactionRequest: Reacti
 	}
 }
 
+query Publication($request: PublicationQueryRequest!) {
+  publication(request: $request) {
+   __typename
+    ... on Post {
+      ...PostFields
+    }
+  }
+}
+
 query WhoReactedPublication($request: WhoReactedPublicationRequest!) {
 	whoReactedPublication(request: $request) {
 		items {

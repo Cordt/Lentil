@@ -134,7 +134,7 @@ struct ProfileView: View {
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .accentColor(Theme.Color.primary)
-        .task {
+        .onAppear {
           viewStore.send(.loadProfile)
         }
       }

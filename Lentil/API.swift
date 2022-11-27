@@ -838,6 +838,37 @@ public struct PublicationsQueryRequest: GraphQLMapConvertible {
   }
 }
 
+public struct PublicationQueryRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - publicationId: The publication id
+  ///   - txHash: The tx hash
+  public init(publicationId: Swift.Optional<String?> = nil, txHash: Swift.Optional<String?> = nil) {
+    graphQLMap = ["publicationId": publicationId, "txHash": txHash]
+  }
+
+  /// The publication id
+  public var publicationId: Swift.Optional<String?> {
+    get {
+      return graphQLMap["publicationId"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "publicationId")
+    }
+  }
+
+  /// The tx hash
+  public var txHash: Swift.Optional<String?> {
+    get {
+      return graphQLMap["txHash"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "txHash")
+    }
+  }
+}
+
 public struct WhoReactedPublicationRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -4150,6 +4181,177 @@ public final class PublicationsQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class PublicationQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query Publication($request: PublicationQueryRequest!) {
+      publication(request: $request) {
+        __typename
+        ... on Post {
+          __typename
+          ...PostFields
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "Publication"
+
+  public var queryDocument: String {
+    var document: String = operationDefinition
+    document.append("\n" + PostFields.fragmentDefinition)
+    document.append("\n" + ProfileFields.fragmentDefinition)
+    document.append("\n" + MediaFields.fragmentDefinition)
+    document.append("\n" + PublicationStatsFields.fragmentDefinition)
+    document.append("\n" + MetadataOutputFields.fragmentDefinition)
+    document.append("\n" + CollectModuleFields.fragmentDefinition)
+    document.append("\n" + Erc20Fields.fragmentDefinition)
+    return document
+  }
+
+  public var request: PublicationQueryRequest
+
+  public init(request: PublicationQueryRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("publication", arguments: ["request": GraphQLVariable("request")], type: .object(Publication.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(publication: Publication? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "publication": publication.flatMap { (value: Publication) -> ResultMap in value.resultMap }])
+    }
+
+    public var publication: Publication? {
+      get {
+        return (resultMap["publication"] as? ResultMap).flatMap { Publication(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "publication")
+      }
+    }
+
+    public struct Publication: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["Post", "Comment", "Mirror"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLTypeCase(
+            variants: ["Post": AsPost.selections],
+            default: [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            ]
+          )
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public static func makeComment() -> Publication {
+        return Publication(unsafeResultMap: ["__typename": "Comment"])
+      }
+
+      public static func makeMirror() -> Publication {
+        return Publication(unsafeResultMap: ["__typename": "Mirror"])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var asPost: AsPost? {
+        get {
+          if !AsPost.possibleTypes.contains(__typename) { return nil }
+          return AsPost(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsPost: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["Post"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLFragmentSpread(PostFields.self),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var fragments: Fragments {
+          get {
+            return Fragments(unsafeResultMap: resultMap)
+          }
+          set {
+            resultMap += newValue.resultMap
+          }
+        }
+
+        public struct Fragments {
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var postFields: PostFields {
+            get {
+              return PostFields(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
           }
         }
       }

@@ -34,6 +34,22 @@ extension LensApi: DependencyKey {
         }
       )
     },
+    
+    publication: { txHash in
+      try await run(
+        query: PublicationQuery(
+          request: PublicationQueryRequest(
+            txHash: txHash
+          )
+        ),
+        cachePolicy: .fetchIgnoringCacheData,
+        mapResult: { data in
+          QueryResult(
+            data: Model.Publication.publication(from: data.publication)
+          )
+        }
+      )
+    },
   
     publications: { limit, cursor, profileId, publicationTypes, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
@@ -279,6 +295,7 @@ extension LensApi: DependencyKey {
   static let previewValue = LensApi(
     authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
     verify: { _ in QueryResult(data: true) },
+    publication: { _ in QueryResult(data: MockData.mockPublications[0]) },
     publications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     explorePublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     feed: { _, _, _, _ in QueryResult(data: MockData.mockPublications) },

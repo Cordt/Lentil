@@ -84,6 +84,10 @@ struct LensApi {
     _ accessToken: String
   ) async throws -> QueryResult<Bool>
   
+  var publication: @Sendable (
+    _ txHash: String
+  ) async throws -> QueryResult<Model.Publication?>
+  
   var publications: @Sendable (
     _ limit: Int,
     _ cursor: String?,
