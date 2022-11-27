@@ -45,7 +45,6 @@ struct PostDetailView: View {
           ) {
             CommentView(store: $0)
           }
-          .padding(.bottom, 16)
           
           Spacer()
         }
