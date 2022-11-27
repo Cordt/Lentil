@@ -6,6 +6,7 @@ import SwiftUI
 
 
 struct CreatePublicationView: View {
+  @FocusState private var textFieldIsFocused: Bool
   let store: Store<CreatePublication.State, CreatePublication.Action>
   
   var body: some View {
@@ -21,6 +22,7 @@ struct CreatePublicationView: View {
             ),
             axis: .vertical
           )
+          .focused(self.$textFieldIsFocused)
           .lineLimit(100)
           .submitLabel(.return)
           .disabled(viewStore.isPosting)
@@ -47,12 +49,16 @@ struct CreatePublicationView: View {
         }
         ToolbarItem(placement: .navigationBarTrailing) {
           Button("Post") { viewStore.send(.createPublication) }
-            .disabled(viewStore.publicationText == "" || viewStore.isPosting)
+            .disabled(
+              viewStore.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) == ""
+              || viewStore.isPosting
+            )
         }
       }
       .toolbarBackground(.hidden, for: .navigationBar)
       .navigationBarBackButtonHidden(true)
       .accentColor(Theme.Color.primary)
+      .onAppear { self.textFieldIsFocused = true }
     }
   }
 }
