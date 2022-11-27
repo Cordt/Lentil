@@ -108,7 +108,7 @@ extension Model.Publication {
     )
   }
   
-  private static func publication(from comment: CommentBaseFields, of mainPost: PublicationQuery.Data.Publication.AsComment.MainPost?) -> Self? {
+  private static func publication(from comment: CommentBaseFields) -> Self? {
     guard
       let content = comment.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: comment.createdAt),
@@ -116,15 +116,9 @@ extension Model.Publication {
       let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
     else { return nil }
     
-    // If no parent is passed explicitly, check whether the query data contains one
-    var parent: Model.Publication?
-    if let postFields = mainPost?.asPost?.fragments.postFields {
-      parent = publication(from: postFields, reaction: nil)
-    }
-    
     return commentFrom(
       commentFields: comment,
-      child: parent,
+      child: nil,
       content: content,
       createdDate: createdDate,
       profilePictureUrl: profilePictureUrl,
@@ -152,7 +146,7 @@ extension Model.Publication {
       return publication(from: postFields, reaction: nil)
     }
     else if let commentBaseFields = item?.asComment?.fragments.commentBaseFields {
-      return publication(from: commentBaseFields, of: item?.asComment?.mainPost)
+      return publication(from: commentBaseFields)
     }
     else {
       return nil

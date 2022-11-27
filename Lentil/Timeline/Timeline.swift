@@ -120,6 +120,7 @@ struct Timeline: ReducerProtocol {
         case .publicationResponse(let publication):
           state.indexingPost = false
           guard let publication else { return .none }
+          
           let postState = Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: publication))
           state.posts.insert(postState, at: 0)
           publicationsCache.updateOrAppend(publication)

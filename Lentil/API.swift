@@ -4277,13 +4277,6 @@ public final class PublicationQuery: GraphQLQuery {
         ... on Comment {
           __typename
           ...CommentBaseFields
-          mainPost {
-            __typename
-            ... on Post {
-              __typename
-              ...PostFields
-            }
-          }
         }
       }
     }
@@ -4458,7 +4451,6 @@ public final class PublicationQuery: GraphQLQuery {
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLFragmentSpread(CommentBaseFields.self),
-            GraphQLField("mainPost", type: .nonNull(.object(MainPost.selections))),
           ]
         }
 
@@ -4474,16 +4466,6 @@ public final class PublicationQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        /// The top level post/mirror this comment lives on
-        public var mainPost: MainPost {
-          get {
-            return MainPost(unsafeResultMap: resultMap["mainPost"]! as! ResultMap)
-          }
-          set {
-            resultMap.updateValue(newValue.resultMap, forKey: "mainPost")
           }
         }
 
@@ -4509,104 +4491,6 @@ public final class PublicationQuery: GraphQLQuery {
             }
             set {
               resultMap += newValue.resultMap
-            }
-          }
-        }
-
-        public struct MainPost: GraphQLSelectionSet {
-          public static let possibleTypes: [String] = ["Post", "Mirror"]
-
-          public static var selections: [GraphQLSelection] {
-            return [
-              GraphQLTypeCase(
-                variants: ["Post": AsPost.selections],
-                default: [
-                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                ]
-              )
-            ]
-          }
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public static func makeMirror() -> MainPost {
-            return MainPost(unsafeResultMap: ["__typename": "Mirror"])
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          public var asPost: AsPost? {
-            get {
-              if !AsPost.possibleTypes.contains(__typename) { return nil }
-              return AsPost(unsafeResultMap: resultMap)
-            }
-            set {
-              guard let newValue = newValue else { return }
-              resultMap = newValue.resultMap
-            }
-          }
-
-          public struct AsPost: GraphQLSelectionSet {
-            public static let possibleTypes: [String] = ["Post"]
-
-            public static var selections: [GraphQLSelection] {
-              return [
-                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                GraphQLFragmentSpread(PostFields.self),
-              ]
-            }
-
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public var __typename: String {
-              get {
-                return resultMap["__typename"]! as! String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "__typename")
-              }
-            }
-
-            public var fragments: Fragments {
-              get {
-                return Fragments(unsafeResultMap: resultMap)
-              }
-              set {
-                resultMap += newValue.resultMap
-              }
-            }
-
-            public struct Fragments {
-              public private(set) var resultMap: ResultMap
-
-              public init(unsafeResultMap: ResultMap) {
-                self.resultMap = unsafeResultMap
-              }
-
-              public var postFields: PostFields {
-                get {
-                  return PostFields(unsafeResultMap: resultMap)
-                }
-                set {
-                  resultMap += newValue.resultMap
-                }
-              }
             }
           }
         }

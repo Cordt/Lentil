@@ -97,11 +97,6 @@ query Publication($request: PublicationQueryRequest!) {
     }
     ... on Comment {
       ...CommentBaseFields
-      mainPost {
-        ... on Post {
-          ...PostFields
-        }
-      }
     }
   }
 }
