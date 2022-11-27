@@ -70,8 +70,12 @@ struct PostView: View {
         Divider()
       }
       .padding([.leading, .trailing, .top])
+      .onAppear { viewStore.send(.didAppear) }
       .task {
-        viewStore.send(.post(action: .remotePublicationImage(.fetchImage)))
+        await viewStore.send(
+          .post(action: .remotePublicationImage(.fetchImage))
+        )
+        .finish()
       }
     }
   }

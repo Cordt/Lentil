@@ -89,6 +89,7 @@ struct Publication: ReducerProtocol {
           if state.publication.upvotedByUser {
             state.publication.upvotes -= 1
             state.publication.upvotedByUser = false
+            publicationsCache[id: state.publication.id] = state.publication
             return .fireAndForget { [publicationId = state.publication.id] in
               try await self.lensApi.removeReaction(userProfile.id, .upvote, publicationId)
             }
@@ -96,6 +97,7 @@ struct Publication: ReducerProtocol {
           else {
             state.publication.upvotes += 1
             state.publication.upvotedByUser = true
+            publicationsCache[id: state.publication.id] = state.publication
             return .fireAndForget { [publicationId = state.publication.id] in
               try await self.lensApi.addReaction(userProfile.id, .upvote, publicationId)
             }
