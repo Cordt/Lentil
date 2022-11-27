@@ -67,7 +67,12 @@ struct Profile: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .dismissView:
-          self.navigationApi.remove(DestinationPath(navigationId: state.id, elementId: state.profile.id))
+          self.navigationApi.remove(
+            DestinationPath(
+              navigationId: state.id,
+              destination: .profile(state.profile.id)
+            )
+          )
           return .none
           
         case .loadProfile:

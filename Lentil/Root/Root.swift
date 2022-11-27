@@ -24,6 +24,7 @@ struct Root: ReducerProtocol {
     
     var posts: IdentifiedArrayOf<Post.State> = []
     var profiles: IdentifiedArrayOf<Profile.State> = []
+    var createPublication: CreatePublication.State?
   }
   
   enum Action: Equatable {
@@ -42,6 +43,7 @@ struct Root: ReducerProtocol {
     case removePath(DestinationPath)
     case post(id: Post.State.ID, action: Post.Action)
     case profile(id: Profile.State.ID, action: Profile.Action)
+    case createPublication(CreatePublication.Action)
   }
   
   @Dependency(\.authTokenApi) var authTokenApi
@@ -136,9 +138,7 @@ struct Root: ReducerProtocol {
           else {
             return .task {
               await .authTokenResponse(
-                TaskResult {
-                  try await self.lensApi.refreshAuthentication(refreshToken)
-                }
+                TaskResult { try await self.lensApi.refreshAuthentication(refreshToken) }
               )
             }
           }
@@ -170,24 +170,68 @@ struct Root: ReducerProtocol {
           return .none
           
         case .addPath(let destinationPath):
-          if let publication = publicationsCache[id: destinationPath.elementId] {
-            let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication))
-            state.posts.updateOrAppend(postState)
+          switch destinationPath.destination {
+            case .publication(let elementId):
+              guard let publication = publicationsCache[id: elementId]
+              else { return .none }
+              
+              let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication))
+              state.posts.updateOrAppend(postState)
+              
+            case .profile(let elementId):
+              guard let profile = profilesCache[id: elementId]
+              else { return .none }
+              
+              let profileState = Profile.State(navigationId: destinationPath.navigationId, profile: profile)
+              state.profiles.updateOrAppend(profileState)
+              
+            case .createPublication(let reason):
+              state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)
           }
-          else if let profile = profilesCache[id: destinationPath.elementId] {
-            let profileState = Profile.State(navigationId: destinationPath.navigationId, profile: profile)
-            state.profiles.updateOrAppend(profileState)
-          }
-          
           return .none
           
         case .removePath(let destinationPath):
-          state.posts.remove(id: destinationPath.navigationId)
-          state.profiles.remove(id: destinationPath.navigationId)
+          switch destinationPath.destination {
+            case .publication(_):
+              state.posts.remove(id: destinationPath.navigationId)
+              
+            case .profile(_):
+              state.profiles.remove(id: destinationPath.navigationId)
+              
+            case .createPublication(_):
+              state.createPublication = nil
+          }
           return .none
           
         case .post, .profile:
           return .none
+          
+        case .createPublication(let createPublicationAction):
+          if case .dismissView(let txHash) = createPublicationAction {
+            if let txHash {
+              state.timelineState.indexingPost = true
+              return .task {
+                do {
+                  var attempts = 5
+                  while attempts > 0 {
+                    if let publication = try await self.lensApi.publication(txHash).data {
+                      return .timelineAction(.publicationResponse(publication))
+                    }
+                    try await Task.sleep(nanoseconds: NSEC_PER_SEC * 2)
+                    attempts -= 1
+                  }
+                  log("Failed to load recently created publication for TX Hash after 5 retries \(txHash)", level: .warn)
+                  return .timelineAction(.publicationResponse(nil))
+                  
+                } catch let error {
+                  log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
+                  return .timelineAction(.publicationResponse(nil))
+                }
+              }
+            }
+          }
+          return .none
+
       }
     }
     .forEach(\.posts, action: /Action.post) {
@@ -195,6 +239,9 @@ struct Root: ReducerProtocol {
     }
     .forEach(\.profiles, action: /Action.profile) {
       Profile()
+    }
+    .ifLet(\.createPublication, action: /Action.createPublication) {
+      CreatePublication()
     }
   }
 }

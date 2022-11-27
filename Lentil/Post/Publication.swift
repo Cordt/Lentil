@@ -50,6 +50,7 @@ struct Publication: ReducerProtocol {
     case userProfileTapped
     case remotePublicationImage(RemoteImage.Action)
     case toggleReaction
+    case commentTapped
     
     case remoteProfilePicture(RemoteImage.Action)
   }
@@ -74,7 +75,7 @@ struct Publication: ReducerProtocol {
           self.navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,
-              elementId: state.publication.profile.id
+              destination: .profile(state.publication.profile.id)
             )
           )
           return .none
@@ -102,6 +103,15 @@ struct Publication: ReducerProtocol {
               try await self.lensApi.addReaction(userProfile.id, .upvote, publicationId)
             }
           }
+          
+        case .commentTapped:
+          self.navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              destination: .createPublication(.replyingToPost(state.id, state.publication.profile.handle))
+            )
+          )
+          return .none
        
         case .remoteProfilePicture:
           return .none

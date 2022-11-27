@@ -247,7 +247,33 @@ extension LensApi: DependencyKey {
             return MutationResult(data: .failure(error.reason))
           }
           else {
-            return MutationResult(data: .failure(.__unknown("[ERROR] Received unexpected failure from CreatePostViaDispatcher")))
+            return MutationResult(data: .failure(.__unknown("Received unexpected failure from CreatePostViaDispatcher")))
+          }
+        }
+      )
+    },
+    
+    createComment: { profileId, publicationId, contentUri in
+      try await run(
+        networkClient: .authenticated,
+        mutation: CreateCommentViaDispatcherMutation(
+          request: CreatePublicCommentRequest(
+            profileId: profileId,
+            publicationId: publicationId,
+            contentUri: contentUri,
+            collectModule: CollectModuleParams(freeCollectModule: FreeCollectModuleParams(followerOnly: false)),
+            referenceModule: ReferenceModuleParams(followerOnlyReferenceModule: false)
+          )
+        ),
+        mapResult: { data in
+          if let result = data.createCommentViaDispatcher.asRelayerResult {
+            return MutationResult(data: .success(RelayerResult(txnHash: result.txHash, txnId: result.txId)))
+          }
+          else if let error = data.createCommentViaDispatcher.asRelayError {
+            return MutationResult(data: .failure(error.reason))
+          }
+          else {
+            return MutationResult(data: .failure(.__unknown("Received unexpected failure from CreatePostViaDispatcher")))
           }
         }
       )
@@ -317,6 +343,7 @@ extension LensApi: DependencyKey {
     authenticate: { _, _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
     refreshAuthentication: { _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
     createPost: { _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
+    createComment: { _, _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
     addReaction: { _, _, _ in },
     removeReaction: { _, _, _ in },
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }

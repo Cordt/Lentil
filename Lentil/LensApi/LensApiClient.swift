@@ -156,6 +156,12 @@ struct LensApi {
     _ contentUri: String
   ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
   
+  var createComment: @Sendable (
+    _ profileId: String,
+    _ publicationId: String,
+    _ contentUri: String
+  ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
+  
   var addReaction: @Sendable (
     _ profileId: String,
     _ reaction: ReactionTypes,

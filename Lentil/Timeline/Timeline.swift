@@ -10,7 +10,6 @@ struct Timeline: ReducerProtocol {
   enum Destination: Equatable {
     case connectWallet
     case showProfile
-    case createPublication
   }
   
   struct State: Equatable {
@@ -23,7 +22,6 @@ struct Timeline: ReducerProtocol {
     var destination: Destination?
     var connectWallet: Wallet.State = .init()
     var showProfile: Profile.State? = nil
-    var createPublication: CreatePublication.State = .init()
   }
   
   enum Action: Equatable {
@@ -39,25 +37,23 @@ struct Timeline: ReducerProtocol {
     case publicationsResponse(QueryResult<[Model.Publication]>, ResponseType)
     case loadMore
     
+    case createPublicationTapped
+    
     case connectWallet(Wallet.Action)
     case showProfile(Profile.Action)
-    case createPublication(CreatePublication.Action)
     case post(id: Post.State.ID, action: Post.Action)
     
     case setDestination(Destination?)
   }
   
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.profileStorageApi) var profileStorageApi
   @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.connectWallet, action: /Action.connectWallet) {
       Wallet()
-    }
-    
-    Scope(state: \.createPublication, action: /Action.createPublication) {
-      CreatePublication()
     }
     
     Reduce { state, action in
@@ -72,6 +68,7 @@ struct Timeline: ReducerProtocol {
           return .merge(effects)
           
         case .refreshFeed:
+          state.indexingPost = false
           state.cursorFeed = nil
           return .concatenate(
             .cancel(id: CancelFetchPublicationsID.self),
@@ -170,6 +167,15 @@ struct Timeline: ReducerProtocol {
           }
           return .none
           
+        case .createPublicationTapped:
+          self.navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              destination: .createPublication(.creatingPost)
+            )
+          )
+          return .none
+          
         case .connectWallet(let walletConnectAction):
           switch walletConnectAction {
             case .defaultProfileResponse(let defaultProfile):
@@ -181,28 +187,6 @@ struct Timeline: ReducerProtocol {
           }
           
         case .showProfile:
-          return .none
-          
-        case .createPublication(let createPublicationAction):
-          if case .dismissView(let txHash) = createPublicationAction {
-            state.destination = nil
-            if let txHash {
-              state.indexingPost = true
-              return .task {
-                do {
-                  while true {
-                    if let publication = try await self.lensApi.publication(txHash).data {
-                      return .publicationResponse(publication)
-                    }
-                    try await Task.sleep(nanoseconds: NSEC_PER_SEC * 2)
-                  }
-                } catch let error {
-                  log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
-                  return .publicationResponse(nil)
-                }
-              }
-            }
-          }
           return .none
           
         case .post:

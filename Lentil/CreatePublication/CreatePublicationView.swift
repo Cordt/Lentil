@@ -12,8 +12,9 @@ struct CreatePublicationView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       ZStack {
         VStack {
+          CreatePublicationInfoView(store: self.store)
           TextField(
-            "Share your thoughts!",
+            viewStore.placeholder,
             text: viewStore.binding(
               get: \.publicationText,
               send: CreatePublication.Action.publicationTextChanged
@@ -56,6 +57,32 @@ struct CreatePublicationView: View {
   }
 }
 
+private struct CreatePublicationInfoView: View {
+  let store: Store<CreatePublication.State, CreatePublication.Action>
+  
+  @ViewBuilder
+  func label(info: String, infoSuffix: String) -> some View {
+    HStack(spacing: 0) {
+      Text(info)
+        .font(style: .annotation)
+      Text(infoSuffix)
+        .font(style: .annotation, color: Theme.Color.tertiary)
+      Spacer()
+    }
+  }
+  
+  var body: some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      if case .replyingToPost(_, let user) = viewStore.reason {
+        self.label(info: "Replying to ", infoSuffix: "@\(user)'s post")
+      }
+      else if case .replyingToComment(_, let user) = viewStore.reason {
+        self.label(info: "Replying to ", infoSuffix: "@\(user)'s comment")
+      }
+    }
+  }
+}
+
 
 #if DEBUG
 struct CreatePubicationView_Previews: PreviewProvider {
@@ -63,7 +90,7 @@ struct CreatePubicationView_Previews: PreviewProvider {
     NavigationStack {
       CreatePublicationView(
         store: .init(
-          initialState: CreatePublication.State(),
+          initialState: CreatePublication.State(navigationId: "123", reason: .replyingToPost("abc", "Satoshi")),
           reducer: CreatePublication()
         )
       )

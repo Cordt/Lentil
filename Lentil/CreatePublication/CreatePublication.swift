@@ -7,8 +7,23 @@ import Foundation
 
 struct CreatePublication: ReducerProtocol {
   struct State: Equatable {
+    enum Reason: Equatable, Hashable {
+      case creatingPost
+      case replyingToPost(_ postId: String, _ of: String)
+      case replyingToComment(_ commentId: String, _ of: String)
+    }
+    var navigationId: String
+    var reason: Reason
     var publicationText: String = ""
     var isPosting: Bool = false
+    
+    var placeholder: String {
+      switch self.reason {
+        case .creatingPost:       return "Share your thoughts!"
+        case .replyingToPost:     return "Share your reply!"
+        case .replyingToComment:  return "Share your reply!"
+      }
+    }
   }
   
   enum Action: Equatable {
@@ -21,12 +36,19 @@ struct CreatePublication: ReducerProtocol {
   
   @Dependency(\.infuraApi) var infuraApi
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.uuid) var uuid
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
     switch action {
       case .dismissView:
-        // Allows the parent to dismiss this view
+        self.navigationApi.remove(
+          DestinationPath(
+            navigationId: state.navigationId,
+            destination: .createPublication(state.reason)
+          )
+        )
         return .none
       
       case .publicationTextChanged(let text):
@@ -38,17 +60,22 @@ struct CreatePublication: ReducerProtocol {
         return Effect(value: .dismissView(nil))
         
       case .createPublication:
-        let name = "lentil-" + UUID().uuidString
+        guard let userProfile = self.profileStorageApi.load()
+        else { return .none}
+        
+        let name = "lentil-" + uuid.callAsFunction().uuidString
         let publicationUrl = URL(string: "https://lentilapp.xyz/publication/\(name)")
+        var description: String
+        if case .creatingPost = state.reason { description = "Post by \(userProfile.handle) via lentil" }
+        else { description = "Comment by \(userProfile.handle) via lentil" }
         
         guard
           state.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) != "",
-          let userProfile = self.profileStorageApi.load(),
           let publicationFile = PublicationFile(
             metadata: Metadata(
               version: .two,
               metadata_id: name,
-              description: "Post by \(userProfile.handle) via lentil",
+              description: description,
               content: state.publicationText,
               locale: .english,
               tags: [],
@@ -67,13 +94,20 @@ struct CreatePublication: ReducerProtocol {
         
         state.isPosting = true
         
-        return .task {
+        return .task { [state = state] in
           let infuraResult = try await self.infuraApi.uploadPublication(publicationFile)
           
           return await .createPublicationResponse(
             TaskResult {
               let contentUri = "ipfs://\(infuraResult.Hash)"
-              return try await self.lensApi.createPost(userProfile.id, contentUri)
+              switch state.reason {
+                case .creatingPost:
+                  return try await self.lensApi.createPost(userProfile.id, contentUri)
+                case .replyingToPost(let postId, _):
+                  return try await self.lensApi.createComment(userProfile.id, postId, contentUri)
+                case .replyingToComment(let commentId, _):
+                  return try await self.lensApi.createComment(userProfile.id, commentId, contentUri)
+              }
             }
           )
         }

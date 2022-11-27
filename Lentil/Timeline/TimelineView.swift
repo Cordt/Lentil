@@ -26,7 +26,8 @@ struct TimelineView: View {
           ForEachStore(
             self.store.scope(
               state: \.posts,
-              action: Timeline.Action.post)
+              action: Timeline.Action.post
+            )
           ) { store in
             VStack(spacing: 0) {
               PostView(store: store)
@@ -70,7 +71,7 @@ struct TimelineView: View {
         if viewStore.userProfile != nil {
           ToolbarItem(placement: .navigationBarTrailing) {
             Button {
-              viewStore.send(.setDestination(.createPublication))
+              viewStore.send(.createPublicationTapped)
             } label: {
               Icon.add.view(.xlarge)
                 .foregroundColor(Theme.Color.white)
@@ -109,21 +110,6 @@ struct TimelineView: View {
                 store: $0
               )
             }
-          )
-        }
-      )
-      .navigationDestination(
-        unwrapping: viewStore.binding(
-          get: \.destination,
-          send: Timeline.Action.setDestination
-        ),
-        case: /Timeline.Destination.createPublication,
-        destination: { _ in
-          CreatePublicationView(
-            store: self.store.scope(
-              state: \.createPublication,
-              action: Timeline.Action.createPublication
-            )
           )
         }
       )

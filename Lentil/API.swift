@@ -2313,6 +2313,81 @@ public struct OrConditionInput: GraphQLMapConvertible {
   }
 }
 
+public struct CreatePublicCommentRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: Profile id
+  ///   - publicationId: Publication id of what your comments on remember if this is a comment you commented on it will be that as the id
+  ///   - contentUri: The metadata uploaded somewhere passing in the url to reach it
+  ///   - collectModule: The collect module
+  ///   - referenceModule: The reference module
+  ///   - gated: The criteria to access the publication data
+  public init(profileId: String, publicationId: String, contentUri: String, collectModule: CollectModuleParams, referenceModule: Swift.Optional<ReferenceModuleParams?> = nil, gated: Swift.Optional<GatedPublicationParamsInput?> = nil) {
+    graphQLMap = ["profileId": profileId, "publicationId": publicationId, "contentURI": contentUri, "collectModule": collectModule, "referenceModule": referenceModule, "gated": gated]
+  }
+
+  /// Profile id
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// Publication id of what your comments on remember if this is a comment you commented on it will be that as the id
+  public var publicationId: String {
+    get {
+      return graphQLMap["publicationId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "publicationId")
+    }
+  }
+
+  /// The metadata uploaded somewhere passing in the url to reach it
+  public var contentUri: String {
+    get {
+      return graphQLMap["contentURI"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "contentURI")
+    }
+  }
+
+  /// The collect module
+  public var collectModule: CollectModuleParams {
+    get {
+      return graphQLMap["collectModule"] as! CollectModuleParams
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "collectModule")
+    }
+  }
+
+  /// The reference module
+  public var referenceModule: Swift.Optional<ReferenceModuleParams?> {
+    get {
+      return graphQLMap["referenceModule"] as? Swift.Optional<ReferenceModuleParams?> ?? Swift.Optional<ReferenceModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "referenceModule")
+    }
+  }
+
+  /// The criteria to access the publication data
+  public var gated: Swift.Optional<GatedPublicationParamsInput?> {
+    get {
+      return graphQLMap["gated"] as? Swift.Optional<GatedPublicationParamsInput?> ?? Swift.Optional<GatedPublicationParamsInput?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "gated")
+    }
+  }
+}
+
 public struct ReactionRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -4199,6 +4274,17 @@ public final class PublicationQuery: GraphQLQuery {
           __typename
           ...PostFields
         }
+        ... on Comment {
+          __typename
+          ...CommentBaseFields
+          mainPost {
+            __typename
+            ... on Post {
+              __typename
+              ...PostFields
+            }
+          }
+        }
       }
     }
     """
@@ -4214,6 +4300,7 @@ public final class PublicationQuery: GraphQLQuery {
     document.append("\n" + MetadataOutputFields.fragmentDefinition)
     document.append("\n" + CollectModuleFields.fragmentDefinition)
     document.append("\n" + Erc20Fields.fragmentDefinition)
+    document.append("\n" + CommentBaseFields.fragmentDefinition)
     return document
   }
 
@@ -4261,7 +4348,7 @@ public final class PublicationQuery: GraphQLQuery {
       public static var selections: [GraphQLSelection] {
         return [
           GraphQLTypeCase(
-            variants: ["Post": AsPost.selections],
+            variants: ["Post": AsPost.selections, "Comment": AsComment.selections],
             default: [
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             ]
@@ -4273,10 +4360,6 @@ public final class PublicationQuery: GraphQLQuery {
 
       public init(unsafeResultMap: ResultMap) {
         self.resultMap = unsafeResultMap
-      }
-
-      public static func makeComment() -> Publication {
-        return Publication(unsafeResultMap: ["__typename": "Comment"])
       }
 
       public static func makeMirror() -> Publication {
@@ -4351,6 +4434,179 @@ public final class PublicationQuery: GraphQLQuery {
             }
             set {
               resultMap += newValue.resultMap
+            }
+          }
+        }
+      }
+
+      public var asComment: AsComment? {
+        get {
+          if !AsComment.possibleTypes.contains(__typename) { return nil }
+          return AsComment(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsComment: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["Comment"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLFragmentSpread(CommentBaseFields.self),
+            GraphQLField("mainPost", type: .nonNull(.object(MainPost.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The top level post/mirror this comment lives on
+        public var mainPost: MainPost {
+          get {
+            return MainPost(unsafeResultMap: resultMap["mainPost"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "mainPost")
+          }
+        }
+
+        public var fragments: Fragments {
+          get {
+            return Fragments(unsafeResultMap: resultMap)
+          }
+          set {
+            resultMap += newValue.resultMap
+          }
+        }
+
+        public struct Fragments {
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var commentBaseFields: CommentBaseFields {
+            get {
+              return CommentBaseFields(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+        }
+
+        public struct MainPost: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Post", "Mirror"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLTypeCase(
+                variants: ["Post": AsPost.selections],
+                default: [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                ]
+              )
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public static func makeMirror() -> MainPost {
+            return MainPost(unsafeResultMap: ["__typename": "Mirror"])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var asPost: AsPost? {
+            get {
+              if !AsPost.possibleTypes.contains(__typename) { return nil }
+              return AsPost(unsafeResultMap: resultMap)
+            }
+            set {
+              guard let newValue = newValue else { return }
+              resultMap = newValue.resultMap
+            }
+          }
+
+          public struct AsPost: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Post"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLFragmentSpread(PostFields.self),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var fragments: Fragments {
+              get {
+                return Fragments(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+
+            public struct Fragments {
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public var postFields: PostFields {
+                get {
+                  return PostFields(unsafeResultMap: resultMap)
+                }
+                set {
+                  resultMap += newValue.resultMap
+                }
+              }
             }
           }
         }
@@ -5563,6 +5819,220 @@ public final class CreatePostViaDispatcherMutation: GraphQLMutation {
 
       public static func makeRelayError(reason: RelayErrorReasons) -> CreatePostViaDispatcher {
         return CreatePostViaDispatcher(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var asRelayerResult: AsRelayerResult? {
+        get {
+          if !AsRelayerResult.possibleTypes.contains(__typename) { return nil }
+          return AsRelayerResult(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsRelayerResult: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["RelayerResult"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("txHash", type: .nonNull(.scalar(String.self))),
+            GraphQLField("txId", type: .nonNull(.scalar(String.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(txHash: String, txId: String) {
+          self.init(unsafeResultMap: ["__typename": "RelayerResult", "txHash": txHash, "txId": txId])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The tx hash - you should use the `txId` as your identifier as gas prices can be upgraded meaning txHash will change
+        public var txHash: String {
+          get {
+            return resultMap["txHash"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "txHash")
+          }
+        }
+
+        /// The tx id
+        public var txId: String {
+          get {
+            return resultMap["txId"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "txId")
+          }
+        }
+      }
+
+      public var asRelayError: AsRelayError? {
+        get {
+          if !AsRelayError.possibleTypes.contains(__typename) { return nil }
+          return AsRelayError(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsRelayError: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["RelayError"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("reason", type: .nonNull(.scalar(RelayErrorReasons.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(reason: RelayErrorReasons) {
+          self.init(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var reason: RelayErrorReasons {
+          get {
+            return resultMap["reason"]! as! RelayErrorReasons
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "reason")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class CreateCommentViaDispatcherMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation CreateCommentViaDispatcher($request: CreatePublicCommentRequest!) {
+      createCommentViaDispatcher(request: $request) {
+        __typename
+        ... on RelayerResult {
+          __typename
+          txHash
+          txId
+        }
+        ... on RelayError {
+          __typename
+          reason
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "CreateCommentViaDispatcher"
+
+  public var request: CreatePublicCommentRequest
+
+  public init(request: CreatePublicCommentRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("createCommentViaDispatcher", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(CreateCommentViaDispatcher.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(createCommentViaDispatcher: CreateCommentViaDispatcher) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "createCommentViaDispatcher": createCommentViaDispatcher.resultMap])
+    }
+
+    public var createCommentViaDispatcher: CreateCommentViaDispatcher {
+      get {
+        return CreateCommentViaDispatcher(unsafeResultMap: resultMap["createCommentViaDispatcher"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "createCommentViaDispatcher")
+      }
+    }
+
+    public struct CreateCommentViaDispatcher: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["RelayerResult", "RelayError"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLTypeCase(
+            variants: ["RelayerResult": AsRelayerResult.selections, "RelayError": AsRelayError.selections],
+            default: [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            ]
+          )
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public static func makeRelayerResult(txHash: String, txId: String) -> CreateCommentViaDispatcher {
+        return CreateCommentViaDispatcher(unsafeResultMap: ["__typename": "RelayerResult", "txHash": txHash, "txId": txId])
+      }
+
+      public static func makeRelayError(reason: RelayErrorReasons) -> CreateCommentViaDispatcher {
+        return CreateCommentViaDispatcher(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
       }
 
       public var __typename: String {

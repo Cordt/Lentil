@@ -37,8 +37,14 @@ struct NavigationApi {
 }
 
 struct DestinationPath: Identifiable, Equatable, Hashable {
+  // Creates strong coupling between this Dependency and all features that use it - needs improvement
+  enum  Destination: Equatable, Hashable {
+    case publication(_ elementId: String)
+    case profile(_ elementId: String)
+    case createPublication(_ reason: CreatePublication.State.Reason)
+  }
   var navigationId: String
-  var elementId: String
+  var destination: Destination
   var id: String { self.navigationId }
 }
 

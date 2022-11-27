@@ -59,7 +59,7 @@ struct PostStatsView: View {
           for: .comment,
           with: viewStore.publication.comments,
           userInteracted: viewStore.publication.commentdByUser,
-          interaction: { /* TODO: Open detail + comment */ }
+          interaction: { viewStore.send(.commentTapped) }
         )
         
         self.view(

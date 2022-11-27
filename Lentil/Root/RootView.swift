@@ -41,27 +41,37 @@ struct RootView: View {
           .toolbarBackground(Theme.Color.primary, for: .navigationBar)
           .toolbarBackground(.visible, for: .navigationBar)
           .navigationDestination(for: DestinationPath.self) { destinationPath in
-            if viewStore.posts[id: destinationPath.navigationId] != nil {
-              let store: Store<Post.State?, Post.Action> = self.store.scope(
-                state: {
-                  guard let postState = $0.posts[id: destinationPath.navigationId]
-                  else { return nil }
-                  return postState
-                },
-                action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
-              )
-              IfLetStore(store, then: PostDetailView.init)
-            }
-            else if viewStore.profiles[id: destinationPath.navigationId] != nil {
-              let store: Store<Profile.State?, Profile.Action> = self.store.scope(
-                state: {
-                  guard let profileState = $0.profiles[id: destinationPath.navigationId]
-                  else { return nil }
-                  return profileState
-                },
-                action: { Root.Action.profile(id: destinationPath.navigationId, action: $0) }
-              )
-              IfLetStore(store, then: ProfileView.init)
+            switch destinationPath.destination {
+              case .publication:
+                let store: Store<Post.State?, Post.Action> = self.store.scope(
+                  state: {
+                    guard let postState = $0.posts[id: destinationPath.navigationId]
+                    else { return nil }
+                    return postState
+                  },
+                  action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
+                )
+                IfLetStore(store, then: PostDetailView.init)
+                
+              case .profile:
+                let store: Store<Profile.State?, Profile.Action> = self.store.scope(
+                  state: {
+                    guard let profileState = $0.profiles[id: destinationPath.navigationId]
+                    else { return nil }
+                    return profileState
+                  },
+                  action: { Root.Action.profile(id: destinationPath.navigationId, action: $0) }
+                )
+                IfLetStore(store, then: ProfileView.init)
+                
+              case .createPublication:
+                IfLetStore(
+                  self.store.scope(
+                    state: \.createPublication,
+                    action: Root.Action.createPublication
+                  ),
+                  then: CreatePublicationView.init
+                )
             }
           }
         }

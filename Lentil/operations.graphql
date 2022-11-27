@@ -95,6 +95,14 @@ query Publication($request: PublicationQueryRequest!) {
     ... on Post {
       ...PostFields
     }
+    ... on Comment {
+      ...CommentBaseFields
+      mainPost {
+        ... on Post {
+          ...PostFields
+        }
+      }
+    }
   }
 }
 
@@ -167,6 +175,18 @@ mutation Refresh($request: RefreshRequest!) {
 
 mutation CreatePostViaDispatcher($request: CreatePublicPostRequest!) {
   createPostViaDispatcher(request: $request) {
+    ... on RelayerResult {
+      txHash
+      txId
+    }
+    ... on RelayError {
+      reason
+    }
+  }
+}
+
+mutation CreateCommentViaDispatcher($request: CreatePublicCommentRequest!) {
+  createCommentViaDispatcher(request: $request) {
     ... on RelayerResult {
       txHash
       txId

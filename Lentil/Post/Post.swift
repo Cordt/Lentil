@@ -49,7 +49,12 @@ struct Post: ReducerProtocol {
           return .none
           
         case .dismissView:
-          self.navigationApi.remove(DestinationPath(navigationId: state.id, elementId: state.post.id))
+          self.navigationApi.remove(
+            DestinationPath(
+              navigationId: state.id,
+              destination: .publication(state.post.id)
+            )
+          )
           return .none
           
         case .fetchComments:
@@ -84,7 +89,7 @@ struct Post: ReducerProtocol {
           self.navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,
-              elementId: state.post.id
+              destination: .publication(state.post.id)
             )
           )
           return .none
