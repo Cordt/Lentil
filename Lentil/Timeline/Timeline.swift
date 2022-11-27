@@ -1,6 +1,7 @@
 // Lentil
 // Created by Laura and Cordt Zermin
 
+import Apollo
 import ComposableArchitecture
 import Foundation
 
@@ -101,11 +102,11 @@ struct Timeline: ReducerProtocol {
           return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
             do {
               if let id {
-                await send(.publicationsResponse(try await lensApi.feed(40, cursorFeed, id, id), .feed))
-                await send(.publicationsResponse(try await lensApi.explorePublications(10, cursorExplore, .topCommented, [.post], id), .explore))
+                await send(.publicationsResponse(try await lensApi.feed(40, cursorFeed, id, .fetchIgnoringCacheData, id), .feed))
+                await send(.publicationsResponse(try await lensApi.explorePublications(10, cursorExplore, .topCommented, [.post], .fetchIgnoringCacheData, id), .explore))
               }
               else {
-                await send(.publicationsResponse(try await lensApi.explorePublications(50, cursorExplore, .topCommented, [.post], id), .explore))
+                await send(.publicationsResponse(try await lensApi.explorePublications(50, cursorExplore, .topCommented, [.post], .fetchIgnoringCacheData, id), .explore))
               }
             } catch let error {
               log("Failed to load timeline", level: .error, error: error)

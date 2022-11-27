@@ -51,7 +51,7 @@ extension LensApi: DependencyKey {
       )
     },
   
-    publications: { limit, cursor, profileId, publicationTypes, reactionsForProfile in
+    publications: { limit, cursor, profileId, publicationTypes, overridingCachePolicy, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
       return try await run(
@@ -64,6 +64,7 @@ extension LensApi: DependencyKey {
           ),
           reactionRequest: reactionFieldRequest
         ),
+        cachePolicy: overridingCachePolicy ?? .default,
         mapResult: { data in
           QueryResult(
             data: data.publications.items.compactMap { Model.Publication.publication(from: $0) },
@@ -73,7 +74,7 @@ extension LensApi: DependencyKey {
       )
     },
     
-    explorePublications: { limit, cursor, sortCriteria, publicationTypes, reactionsForProfile in
+    explorePublications: { limit, cursor, sortCriteria, publicationTypes, overridingCachePolicy, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
       return try await run(
@@ -86,6 +87,7 @@ extension LensApi: DependencyKey {
           ),
           reactionRequest: reactionFieldRequest
         ),
+        cachePolicy: overridingCachePolicy ?? .default,
         mapResult: { data in
           QueryResult(
             data: data.explorePublications.items.compactMap { Model.Publication.publication(from: $0) },
@@ -95,7 +97,7 @@ extension LensApi: DependencyKey {
       )
     },
     
-    feed: { limit, cursor, profileId, reactionsForProfile in
+    feed: { limit, cursor, profileId, overridingCachePolicy, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
       return try await run(
@@ -107,6 +109,7 @@ extension LensApi: DependencyKey {
           ),
           reactionRequest: reactionFieldRequest
         ),
+        cachePolicy: overridingCachePolicy ?? .default,
         mapResult: { data in
           QueryResult(data: data.feed.items.compactMap { Model.Publication.publication(from: $0.root) })
         }
@@ -296,9 +299,9 @@ extension LensApi: DependencyKey {
     authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
     verify: { _ in QueryResult(data: true) },
     publication: { _ in QueryResult(data: MockData.mockPublications[0]) },
-    publications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
-    explorePublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
-    feed: { _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    publications: { _, _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    explorePublications: { _, _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    feed: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
     defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
     profile: { _ in QueryResult(data: MockData.mockProfiles[0]) },

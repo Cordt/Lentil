@@ -93,6 +93,7 @@ struct LensApi {
     _ cursor: String?,
     _ profileId: String,
     _ publicationTypes: [PublicationTypes],
+    _ overridingCachePolicy: CachePolicy?,
     _ reactionsForProfile: String?
   ) async throws -> QueryResult<[Model.Publication]>
   
@@ -101,6 +102,7 @@ struct LensApi {
     _ cursor: String?,
     _ sortCriteria: PublicationSortCriteria,
     _ publicationTypes: [PublicationTypes],
+    _ overridingCachePolicy: CachePolicy?,
     _ reactionsForProfile: String?
   ) async throws -> QueryResult<[Model.Publication]>
   
@@ -108,6 +110,7 @@ struct LensApi {
     _ limit: Int,
     _ cursor: String?,
     _ profileId: String,
+    _ overridingCachePolicy: CachePolicy?,
     _ reactionsForProfile: String?
   ) async throws -> QueryResult<[Model.Publication]>
   
