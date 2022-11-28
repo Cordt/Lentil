@@ -57,6 +57,10 @@ struct CreatePublicationView: View {
       }
       .toolbarBackground(.hidden, for: .navigationBar)
       .navigationBarBackButtonHidden(true)
+      .alert(
+        self.store.scope(state: \.cancelAlert),
+        dismiss: .cancelAlertDismissed
+      )
       .accentColor(Theme.Color.primary)
       .onAppear { self.textFieldIsFocused = true }
     }

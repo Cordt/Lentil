@@ -16,6 +16,7 @@ struct CreatePublication: ReducerProtocol {
     var reason: Reason
     var publicationText: String = ""
     var isPosting: Bool = false
+    var cancelAlert: AlertState<Action>?
     
     var placeholder: String {
       switch self.reason {
@@ -30,6 +31,8 @@ struct CreatePublication: ReducerProtocol {
     case dismissView(_ txHash: String?)
     case publicationTextChanged(String)
     case didTapCancel
+    case discardAndDismiss
+    case cancelAlertDismissed
     case createPublication
     case createPublicationResponse(TaskResult<MutationResult<Result<RelayerResult, RelayErrorReasons>>>)
   }
@@ -56,8 +59,26 @@ struct CreatePublication: ReducerProtocol {
         return .none
         
       case .didTapCancel:
+        if state.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
+          return Effect(value: .discardAndDismiss)
+        }
+        else {
+          state.cancelAlert = AlertState(
+            title: TextState("Are you sure you want to discard your draft?"),
+            message: TextState("When you discard, the content of your draft publication will be lost."),
+            primaryButton: .cancel(TextState("Continue")),
+            secondaryButton: .destructive(TextState("Discard"), action: .send(.discardAndDismiss))
+          )
+          return .none
+        }
+        
+      case .discardAndDismiss:
         state.publicationText = ""
         return Effect(value: .dismissView(nil))
+        
+      case .cancelAlertDismissed:
+        state.cancelAlert = nil
+        return .none
         
       case .createPublication:
         guard let userProfile = self.profileStorageApi.load()

@@ -234,7 +234,7 @@ struct Root: ReducerProtocol {
                   }
                   log("Failed to load recently created publication for TX Hash after 5 retries \(txHash)", level: .warn)
                   return .timelineAction(.publicationResponse(nil))
-                  
+
                 } catch let error {
                   log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
                   return .timelineAction(.publicationResponse(nil))
