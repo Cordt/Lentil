@@ -18,17 +18,21 @@ struct CommentView: View {
           )
         )
         
-        VStack(alignment: .leading, spacing: 10) {
-          Text(viewStore.comment.shortenedContent)
-            .font(style: .body)
-            .multilineTextAlignment(.leading)
-          
-          PostStatsView(
-            store: self.store.scope(
-              state: \.comment,
-              action: Comment.Action.comment
+        Button {
+          viewStore.send(.commentTapped)
+        } label: {
+          VStack(alignment: .leading, spacing: 10) {
+            Text(viewStore.comment.shortenedContent)
+              .font(style: .body)
+              .multilineTextAlignment(.leading)
+            
+            PostStatsView(
+              store: self.store.scope(
+                state: \.comment,
+                action: Comment.Action.comment
+              )
             )
-          )
+          }
         }
         .offset(y: -25)
         .padding(.leading, 48)
@@ -43,19 +47,19 @@ struct CommentView_Previews: PreviewProvider {
     VStack(spacing: 16) {
       CommentView(
         store: .init(
-          initialState: .init(comment: .init(publication: MockData.mockComments[0])),
+          initialState: .init(navigationId: "123", comment: .init(publication: MockData.mockComments[0])),
           reducer: Comment()
         )
       )
       CommentView(
         store: .init(
-          initialState: .init(comment: .init(publication: MockData.mockComments[0])),
+          initialState: .init(navigationId: "456", comment: .init(publication: MockData.mockComments[0])),
           reducer: Comment()
         )
       )
       CommentView(
         store: .init(
-          initialState: .init(comment: .init(publication: MockData.mockComments[0])),
+          initialState: .init(navigationId: "789", comment: .init(publication: MockData.mockComments[0])),
           reducer: Comment()
         )
       )

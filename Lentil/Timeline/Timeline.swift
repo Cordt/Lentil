@@ -141,7 +141,7 @@ struct Timeline: ReducerProtocol {
               if case .comment = $0.typename { return true }
               else { return false }
             }
-            .map { Comment.State(comment: .init(publication: $0)) }
+            .map { Comment.State(navigationId: uuid.callAsFunction().uuidString, comment: .init(publication: $0)) }
             .forEach { commentState in
               if case .comment(let parent) = commentState.comment.publication.typename {
                 guard let parent else { return }

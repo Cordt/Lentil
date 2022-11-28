@@ -124,7 +124,7 @@ struct PostView_Previews: PreviewProvider {
             store: .init(
               initialState: .init(
                 navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]),
-                comments: [Comment.State(comment: .init(publication: MockData.mockPublications[2]))]
+                comments: [Comment.State(navigationId: "abc", comment: .init(publication: MockData.mockPublications[2]))]
               ),
               reducer: Post()
             )

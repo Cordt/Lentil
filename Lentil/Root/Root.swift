@@ -23,6 +23,7 @@ struct Root: ReducerProtocol {
     var timelineState: Timeline.State
     
     var posts: IdentifiedArrayOf<Post.State> = []
+    var comments: IdentifiedArrayOf<Post.State> = []
     var profiles: IdentifiedArrayOf<Profile.State> = []
     var createPublication: CreatePublication.State?
   }
@@ -42,6 +43,7 @@ struct Root: ReducerProtocol {
     case addPath(DestinationPath)
     case removePath(DestinationPath)
     case post(id: Post.State.ID, action: Post.Action)
+    case comment(id: Post.State.ID, action: Post.Action)
     case profile(id: Profile.State.ID, action: Profile.Action)
     case createPublication(CreatePublication.Action)
   }
@@ -175,8 +177,17 @@ struct Root: ReducerProtocol {
               guard let publication = publicationsCache[id: elementId]
               else { return .none }
               
-              let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication))
-              state.posts.updateOrAppend(postState)
+              switch publication.typename {
+                case .post:
+                  let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication))
+                  state.posts.updateOrAppend(postState)
+                case .comment:
+                  let commentState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication))
+                  state.comments.updateOrAppend(commentState)
+                case .mirror:
+                  // Ignore for now
+                  return .none
+              }
               
             case .profile(let elementId):
               guard let profile = profilesCache[id: elementId]
@@ -192,18 +203,19 @@ struct Root: ReducerProtocol {
           
         case .removePath(let destinationPath):
           switch destinationPath.destination {
-            case .publication(_):
+            case .publication:
               state.posts.remove(id: destinationPath.navigationId)
+              state.comments.remove(id: destinationPath.navigationId)
               
-            case .profile(_):
+            case .profile:
               state.profiles.remove(id: destinationPath.navigationId)
               
-            case .createPublication(_):
+            case .createPublication:
               state.createPublication = nil
           }
           return .none
           
-        case .post, .profile:
+        case .post, .comment, .profile:
           return .none
           
         case .createPublication(let createPublicationAction):
@@ -235,6 +247,9 @@ struct Root: ReducerProtocol {
       }
     }
     .forEach(\.posts, action: /Action.post) {
+      Post()
+    }
+    .forEach(\.comments, action: /Action.comment) {
       Post()
     }
     .forEach(\.profiles, action: /Action.profile) {

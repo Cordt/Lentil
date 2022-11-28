@@ -72,9 +72,13 @@ struct Post: ReducerProtocol {
             case .success(let result):
               state.comments.append(
                 contentsOf: result.data.map {
-                  Comment.State(comment: Publication.State(publication: $0))
+                  Comment.State(navigationId: self.uuid.callAsFunction().uuidString, comment: Publication.State(publication: $0))
                 }
               )
+              
+              result.data
+                .forEach { publicationsCache.updateOrAppend($0) }
+              
               return .none
               
             case .failure(let error):

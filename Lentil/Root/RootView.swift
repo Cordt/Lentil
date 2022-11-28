@@ -43,15 +43,28 @@ struct RootView: View {
           .navigationDestination(for: DestinationPath.self) { destinationPath in
             switch destinationPath.destination {
               case .publication:
-                let store: Store<Post.State?, Post.Action> = self.store.scope(
-                  state: {
-                    guard let postState = $0.posts[id: destinationPath.navigationId]
-                    else { return nil }
-                    return postState
-                  },
-                  action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
-                )
-                IfLetStore(store, then: PostDetailView.init)
+                if viewStore.posts[id: destinationPath.navigationId] != nil {
+                  let store: Store<Post.State?, Post.Action> = self.store.scope(
+                    state: {
+                      guard let postState = $0.posts[id: destinationPath.navigationId]
+                      else { return nil }
+                      return postState
+                    },
+                    action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
+                  )
+                  IfLetStore(store, then: PostDetailView.init)
+                }
+                else if viewStore.comments[id: destinationPath.navigationId] != nil {
+                  let store: Store<Post.State?, Post.Action> = self.store.scope(
+                    state: {
+                      guard let commentState = $0.comments[id: destinationPath.navigationId]
+                      else { return nil }
+                      return commentState
+                    },
+                    action: { Root.Action.comment(id: destinationPath.navigationId, action: $0) }
+                  )
+                  IfLetStore(store, then: PostDetailView.init)
+                }
                 
               case .profile:
                 let store: Store<Profile.State?, Profile.Action> = self.store.scope(
