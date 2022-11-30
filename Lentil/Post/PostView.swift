@@ -64,7 +64,7 @@ struct PostView: View {
           state: \.comments,
           action: Post.Action.comment
         )) { commentStore in
-          CommentView(store: commentStore)
+          PostView(store: commentStore)
         }
         
         Divider()
@@ -77,6 +77,7 @@ struct PostView: View {
         )
         .finish()
       }
+      .id(viewStore.id)
     }
   }
 }
@@ -124,7 +125,7 @@ struct PostView_Previews: PreviewProvider {
             store: .init(
               initialState: .init(
                 navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]),
-                comments: [Comment.State(navigationId: "abc", comment: .init(publication: MockData.mockPublications[2]))]
+                comments: [Post.State(navigationId: "abc", post: .init(publication: MockData.mockPublications[2]))]
               ),
               reducer: Post()
             )

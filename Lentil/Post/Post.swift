@@ -10,21 +10,21 @@ struct Post: ReducerProtocol {
     var navigationId: String
     var id: String { self.navigationId }
     var post: Publication.State
-    var comments: IdentifiedArrayOf<Comment.State> = []
+    var comments: IdentifiedArrayOf<Post.State> = []
     
     var commenter: String? {
-      self.comments.first?.comment.publication.profile.name ?? self.comments.first?.comment.publication.profile.handle
+      self.comments.first?.post.publication.profile.name ?? self.comments.first?.post.publication.profile.handle
     }
   }
   
-  enum Action: Equatable {
+  indirect enum Action: Equatable {
     case didAppear
     case dismissView
     case fetchComments
     case commentsResponse(TaskResult<QueryResult<[Model.Publication]>>)
     
     case post(action: Publication.Action)
-    case comment(id: Comment.State.ID, action: Comment.Action)
+    case comment(id: String, action: Post.Action)
     
     case postTapped
   }
@@ -72,7 +72,7 @@ struct Post: ReducerProtocol {
             case .success(let result):
               state.comments.append(
                 contentsOf: result.data.map {
-                  Comment.State(navigationId: self.uuid.callAsFunction().uuidString, comment: Publication.State(publication: $0))
+                  Post.State(navigationId: self.uuid.callAsFunction().uuidString, post: Publication.State(publication: $0))
                 }
               )
               
@@ -100,7 +100,7 @@ struct Post: ReducerProtocol {
       }
     }
     .forEach(\.comments, action: /Action.comment) {
-      Comment()
+      Post()
     }
   }
 }

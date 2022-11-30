@@ -66,6 +66,7 @@ struct Root: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .loadingScreenAppeared:
+          state.currentText = Int.random(in: 0..<state.loadingText.count)
           return .merge(
             .run { send in
               do {
@@ -120,6 +121,8 @@ struct Root: ReducerProtocol {
             else {
               try self.authTokenApi.delete()
               self.profileStorageApi.remove()
+              publicationsCache.removeAll()
+              profilesCache.removeAll()
               
               // No valid tokens or profile available, open app
               state.isLoading = false
@@ -163,6 +166,8 @@ struct Root: ReducerProtocol {
         case .authTokenResponse(let .failure(error)):
           try? self.authTokenApi.delete()
           self.profileStorageApi.remove()
+          publicationsCache.removeAll()
+          profilesCache.removeAll()
           state.isLoading = false
           
           log("Failed to refresh token, logging user out", level: .debug, error: error)

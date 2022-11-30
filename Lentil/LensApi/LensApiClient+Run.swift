@@ -24,7 +24,7 @@ extension LensApi {
   static func run<Query: GraphQLQuery, Output: Equatable>(
     networkClient: NetworkClient = .unauthenticated,
     query: Query,
-    cachePolicy: CachePolicy = .default,
+    cachePolicy: CachePolicy = .fetchIgnoringCacheData,
     mapResult: @escaping (Query.Data) throws -> QueryResult<Output>
   ) async throws -> QueryResult<Output> {
     

@@ -9,12 +9,15 @@ import Foundation
 struct Timeline: ReducerProtocol {
   enum Destination: Equatable {
     case connectWallet
-    case showProfile
   }
   
   struct State: Equatable {
+    enum ScrollPosition: Equatable {
+      case top(_ navigationID: String)
+    }
     var userProfile: UserProfile? = nil
     var posts: IdentifiedArrayOf<Post.State> = []
+    var scrollPosition: ScrollPosition?
     var cursorFeed: String?
     var cursorExplore: String?
     var indexingPost: Bool = false
@@ -37,7 +40,11 @@ struct Timeline: ReducerProtocol {
     case publicationsResponse(QueryResult<[Model.Publication]>, ResponseType)
     case loadMore
     
+    case ownProfileTapped
+    case lentilButtonTapped
     case createPublicationTapped
+    case scrollAnimationFinished
+    case scrollAnimationFinishedResult
     
     case connectWallet(Wallet.Action)
     case showProfile(Profile.Action)
@@ -89,6 +96,7 @@ struct Timeline: ReducerProtocol {
           
         case .defaultProfileResponse(let .success(defaultProfile)):
           state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
+          profilesCache.updateOrAppend(defaultProfile)
           return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
           
         case .defaultProfileResponse(let .failure(error)):
@@ -141,9 +149,9 @@ struct Timeline: ReducerProtocol {
               if case .comment = $0.typename { return true }
               else { return false }
             }
-            .map { Comment.State(navigationId: uuid.callAsFunction().uuidString, comment: .init(publication: $0)) }
+            .map { Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: $0)) }
             .forEach { commentState in
-              if case .comment(let parent) = commentState.comment.publication.typename {
+              if case .comment(let parent) = commentState.post.publication.typename {
                 guard let parent else { return }
                 state.posts.updateOrAppend(
                   Post.State(
@@ -168,6 +176,24 @@ struct Timeline: ReducerProtocol {
           }
           return .none
           
+        case .ownProfileTapped:
+          guard let userProfile = state.userProfile
+          else { return .none }
+          
+          self.navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              destination: .profile(userProfile.id)
+            )
+          )
+          return .none
+          
+        case .lentilButtonTapped:
+          guard let topPostID = state.posts.first?.id
+          else { return .none }
+          state.scrollPosition = .top(topPostID)
+          return .none
+          
         case .createPublicationTapped:
           self.navigationApi.append(
             DestinationPath(
@@ -177,10 +203,23 @@ struct Timeline: ReducerProtocol {
           )
           return .none
           
+        case .scrollAnimationFinished:
+          return .run { send in
+            try await Task.sleep(nanoseconds: NSEC_PER_SEC * 1)
+            await send(.scrollAnimationFinishedResult)
+          }
+          
+        case .scrollAnimationFinishedResult:
+          state.scrollPosition = nil
+          return .none
+          
         case .connectWallet(let walletConnectAction):
           switch walletConnectAction {
             case .defaultProfileResponse(let defaultProfile):
               state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
+              
+              profilesCache.updateOrAppend(defaultProfile)
+              
               return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
               
             default:
@@ -190,7 +229,15 @@ struct Timeline: ReducerProtocol {
         case .showProfile:
           return .none
           
-        case .post:
+        case .post(let id, let postAction):
+          if case .didAppear = postAction {
+            for (index, currentID) in state.posts.ids.enumerated() {
+              print(Float(index) / Float(state.posts.count))
+              if id == currentID, (Float(index) / Float(state.posts.count) > 0.75) {
+                // Reached more than 3/4 - load more publications
+              }
+            }
+          }
           return .none
           
         case .setDestination(let destination):

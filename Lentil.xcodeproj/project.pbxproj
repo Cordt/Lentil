@@ -79,8 +79,6 @@
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
 		37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */; };
 		37F71B5028DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4F28DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift */; };
-		37F71B5228DF487000F6D9B1 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5128DF487000F6D9B1 /* Comment.swift */; };
-		37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5328DF488400F6D9B1 /* CommentView.swift */; };
 		37F71B5628DF4D6400F6D9B1 /* Publication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B5528DF4D6400F6D9B1 /* Publication.swift */; };
 /* End PBXBuildFile section */
 
@@ -176,8 +174,6 @@
 		37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
 		37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostStatsView.swift; sourceTree = "<group>"; };
 		37F71B4F28DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+PublicationModel.swift"; sourceTree = "<group>"; };
-		37F71B5128DF487000F6D9B1 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
-		37F71B5328DF488400F6D9B1 /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
 		37F71B5528DF4D6400F6D9B1 /* Publication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publication.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -255,8 +251,6 @@
 				37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */,
 				376C5ED728D4266100BA908A /* PostView.swift */,
 				37F71B4D28DE940300F6D9B1 /* PostStatsView.swift */,
-				37F71B5128DF487000F6D9B1 /* Comment.swift */,
-				37F71B5328DF488400F6D9B1 /* CommentView.swift */,
 			);
 			path = Post;
 			sourceTree = "<group>";
@@ -704,10 +698,8 @@
 				37F71B5028DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift in Sources */,
 				372248DA28DB479D0066BCE5 /* TimelineView.swift in Sources */,
 				37C54C59292B12A0006E8DBA /* InfuraApiClient+Environment.swift in Sources */,
-				37F71B5428DF488400F6D9B1 /* CommentView.swift in Sources */,
 				37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */,
 				37C54C6B292C897C006E8DBA /* File+Publication.swift in Sources */,
-				37F71B5228DF487000F6D9B1 /* Comment.swift in Sources */,
 				37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */,
 				376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,

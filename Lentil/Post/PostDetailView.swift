@@ -43,7 +43,7 @@ struct PostDetailView: View {
               action: Post.Action.comment
             )
           ) {
-            CommentView(store: $0)
+            PostView(store: $0)
           }
           
           Spacer()
