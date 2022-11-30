@@ -21,6 +21,7 @@ struct Timeline: ReducerProtocol {
     var cursorFeed: String?
     var cursorExplore: String?
     var indexingPost: Bool = false
+    var loadingInFlight: Bool = false
     
     var destination: Destination?
     var connectWallet: Wallet.State = .init()
@@ -38,7 +39,7 @@ struct Timeline: ReducerProtocol {
     case fetchPublications
     case publicationResponse(Model.Publication?)
     case publicationsResponse(QueryResult<[Model.Publication]>, ResponseType)
-    case loadMore
+    case fetchingFailed
     
     case ownProfileTapped
     case lentilButtonTapped
@@ -76,7 +77,9 @@ struct Timeline: ReducerProtocol {
           
         case .refreshFeed:
           state.indexingPost = false
+          state.loadingInFlight = false
           state.cursorFeed = nil
+          state.cursorExplore = nil
           return .concatenate(
             .cancel(id: CancelFetchPublicationsID.self),
             .init(value: .fetchPublications)
@@ -104,26 +107,25 @@ struct Timeline: ReducerProtocol {
           return .none
           
         case .fetchPublications:
+          guard !state.loadingInFlight
+          else { return .none }
+          
+          state.loadingInFlight = true
           return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
             do {
               if let id {
                 await send(.publicationsResponse(try await lensApi.feed(40, cursorFeed, id, .fetchIgnoringCacheData, id), .feed))
-                await send(.publicationsResponse(try await lensApi.explorePublications(10, cursorExplore, .topCommented, [.post], .fetchIgnoringCacheData, id), .explore))
+                await send(.publicationsResponse(try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment], .fetchIgnoringCacheData, id), .explore))
               }
               else {
-                await send(.publicationsResponse(try await lensApi.explorePublications(50, cursorExplore, .topCommented, [.post], .fetchIgnoringCacheData, id), .explore))
+                await send(.publicationsResponse(try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment], .fetchIgnoringCacheData, id), .explore))
               }
             } catch let error {
+              await send(.fetchingFailed)
               log("Failed to load timeline", level: .error, error: error)
             }
           }
           .cancellable(id: CancelFetchPublicationsID.self)
-          
-        case .loadMore:
-          return .concatenate(
-            .cancel(id: CancelFetchPublicationsID.self),
-            .init(value: .fetchPublications)
-          )
           
         case .publicationResponse(let publication):
           state.indexingPost = false
@@ -174,6 +176,11 @@ struct Timeline: ReducerProtocol {
             case .feed:
               state.cursorFeed = response.cursorToNext
           }
+          state.loadingInFlight = false
+          return .none
+          
+        case .fetchingFailed:
+          state.loadingInFlight = false
           return .none
           
         case .ownProfileTapped:
@@ -232,9 +239,9 @@ struct Timeline: ReducerProtocol {
         case .post(let id, let postAction):
           if case .didAppear = postAction {
             for (index, currentID) in state.posts.ids.enumerated() {
-              print(Float(index) / Float(state.posts.count))
               if id == currentID, (Float(index) / Float(state.posts.count) > 0.75) {
                 // Reached more than 3/4 - load more publications
+                return Effect(value: .fetchPublications)
               }
             }
           }

@@ -35,6 +35,14 @@ struct TimelineView: View {
                 PostView(store: store)
               }
             }
+            if viewStore.loadingInFlight {
+              HStack {
+                Spacer()
+                ProgressView()
+                Spacer()
+              }
+              .padding(.top, 10)
+            }
           }
         }
         .toolbar {
