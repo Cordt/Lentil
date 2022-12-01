@@ -5,6 +5,27 @@ import Foundation
 import CryptoKit
 import SwiftUI
 
+// MARK: Image rendering
+
+extension UIImage {
+  func aspectFittedToDimension(_ maxDimension: CGFloat) -> UIImage {
+    let scale = self.size.width > self.size.height ? maxDimension / self.size.width : maxDimension / self.size.height
+    let newSize: CGSize = CGSize(width: self.size.width * scale, height: self.size.height * scale)
+    let renderer = UIGraphicsImageRenderer(size: newSize)
+    return renderer.image { _ in
+      self.draw(in: CGRect(origin: .zero, size: newSize))
+    }
+  }
+  
+  func compressed() -> UIImage? {
+    guard let jpegData = self.jpegData(compressionQuality: 0.6)
+    else { return nil }
+    
+    return UIImage(data: jpegData)
+  }
+}
+
+
 // MARK: Date conversion
 
 func age(_ from: Date) -> String {
@@ -83,20 +104,6 @@ extension String {
 fileprivate extension String {
   func index(at offset: Int) -> String.Index {
     index(startIndex, offsetBy: offset)
-  }
-}
-
-extension String {
-  var llamaToWords: String {
-    return self
-      .replacingOccurrences(
-        of: "([A-Z])",
-        with: " $1",
-        options: .regularExpression,
-        range: range(of: self)
-      )
-      .trimmingCharacters(in: .whitespacesAndNewlines)
-      .capitalized
   }
 }
 

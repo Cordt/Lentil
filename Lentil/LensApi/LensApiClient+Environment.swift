@@ -172,9 +172,12 @@ extension LensApi: DependencyKey {
     
     fetchImage: { url in
       let (data, _) = try await URLSession.shared.data(from: url)
-      guard let uiImage = UIImage(data: data)
+      guard let uiImage = UIImage(data: data),
+            let compressed = uiImage.compressed()
       else { throw ApiError.requestFailed }
-      return Image(uiImage: uiImage)
+      
+      let reduced = compressed.aspectFittedToDimension(800)
+      return Image(uiImage: reduced)
     },
     
     broadcast: { id, signature in
