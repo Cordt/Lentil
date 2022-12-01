@@ -13,7 +13,7 @@ struct Model {
     }
     
     let id: String
-    let typename: Typename
+    var typename: Typename
     
     let createdAt: Date
     let content: String

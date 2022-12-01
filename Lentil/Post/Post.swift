@@ -15,6 +15,14 @@ struct Post: ReducerProtocol {
     var commenter: String? {
       self.comments.first?.post.publication.profile.name ?? self.comments.first?.post.publication.profile.handle
     }
+    var isComment: Bool {
+      if case .comment = self.post.publication.typename {
+        return true
+      }
+      else {
+        return false
+      }
+    }
   }
   
   indirect enum Action: Equatable {

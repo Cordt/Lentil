@@ -51,8 +51,8 @@ struct PostView: View {
                   .frame(width: 1)
                 Spacer()
               }
-              .padding(.top, 28)
-              .padding(.leading, -28)
+              .padding(.top, 30)
+              .padding(.leading, -30)
             }
           }
         }
@@ -67,9 +67,9 @@ struct PostView: View {
           PostView(store: commentStore)
         }
         
-        Divider()
+        if !viewStore.isComment { Divider() }
       }
-      .padding([.leading, .trailing, .top])
+      .padding(!viewStore.isComment ? [.leading, .trailing, .top] : [])
       .onAppear { viewStore.send(.didAppear) }
       .task {
         await viewStore.send(
@@ -117,6 +117,11 @@ struct PostInfoView: View {
 
 #if DEBUG
 struct PostView_Previews: PreviewProvider {
+  static var mockComment: () -> Model.Publication = {
+    var tmp = MockData.mockPublications[2]
+    tmp.typename = .comment(of: MockData.mockPublications[0])
+    return tmp
+  }
   static var previews: some View {
     NavigationStack {
       ScrollView {
@@ -125,7 +130,7 @@ struct PostView_Previews: PreviewProvider {
             store: .init(
               initialState: .init(
                 navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]),
-                comments: [Post.State(navigationId: "abc", post: .init(publication: MockData.mockPublications[2]))]
+                comments: [Post.State(navigationId: "abc", post: .init(publication: mockComment()))]
               ),
               reducer: Post()
             )
