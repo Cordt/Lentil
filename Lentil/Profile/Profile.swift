@@ -94,7 +94,15 @@ struct Profile: ReducerProtocol {
         case .publicationsResponse(.success(let publications)):
           publications
             .filter { $0.typename == .post }
-            .map { Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: $0)) }
+            .map { publication in
+              if var postState = state.posts.first(where: { $0.post.publication.id == publication.id }) {
+                postState.post.publication = publication
+                return postState
+              }
+              else {
+                return Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: publication))
+              }
+            }
             .forEach { state.posts.updateOrAppend($0) }
           
           state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }

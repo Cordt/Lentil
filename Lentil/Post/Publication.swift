@@ -108,12 +108,6 @@ struct Publication: ReducerProtocol {
           self.navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .publication(state.id)
-            )
-          )
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
               destination: .createPublication(.replyingToPost(state.id, state.publication.profile.handle))
             )
           )
