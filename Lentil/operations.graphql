@@ -98,6 +98,9 @@ query Publication($request: PublicationQueryRequest!) {
     ... on Comment {
       ...CommentBaseFields
     }
+    ... on Mirror {
+      ...MirrorBaseFields
+    }
   }
 }
 

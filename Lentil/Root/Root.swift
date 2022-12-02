@@ -184,13 +184,14 @@ struct Root: ReducerProtocol {
               
               switch publication.typename {
                 case .post:
-                  let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication))
+                  let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .post)
                   state.posts.updateOrAppend(postState)
                 case .comment:
-                  let commentState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication))
+                  let commentState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .comment)
                   state.comments.updateOrAppend(commentState)
                 case .mirror:
-                  // Ignore for now
+                  let mirrorState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .mirror)
+                  state.posts.updateOrAppend(mirrorState)
                   return .none
               }
               

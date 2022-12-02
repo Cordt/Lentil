@@ -7,22 +7,35 @@ import SwiftUI
 
 struct Post: ReducerProtocol {
   struct State: Equatable, Identifiable {
+    enum Typename: Equatable {
+      case post
+      case comment
+      case mirror
+      
+      static func from(typename: Model.Publication.Typename) -> Self {
+        switch typename {
+          case .post:     return .post
+          case .comment:  return .comment
+          case .mirror:   return .mirror
+        }
+      }
+    }
+    
     var navigationId: String
     var id: String { self.navigationId }
     var post: Publication.State
+    var typename: Typename
     var comments: IdentifiedArrayOf<Post.State> = []
     
     var commenter: String? {
       self.comments.first?.post.publication.profile.name ?? self.comments.first?.post.publication.profile.handle
     }
-    var isComment: Bool {
-      if case .comment = self.post.publication.typename {
-        return true
-      }
-      else {
-        return false
-      }
+    var mirrorer: String? {
+      guard case let .mirror(mirroredPublication) = self.post.publication.typename
+      else { return nil }
+      return mirroredPublication?.profile.name ?? mirroredPublication?.profile.handle
     }
+    
   }
   
   indirect enum Action: Equatable {
@@ -80,7 +93,7 @@ struct Post: ReducerProtocol {
             case .success(let result):
               state.comments.append(
                 contentsOf: result.data.map {
-                  Post.State(navigationId: self.uuid.callAsFunction().uuidString, post: Publication.State(publication: $0))
+                  Post.State(navigationId: self.uuid.callAsFunction().uuidString, post: Publication.State(publication: $0), typename: .comment)
                 }
               )
               

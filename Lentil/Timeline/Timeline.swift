@@ -115,10 +115,10 @@ struct Timeline: ReducerProtocol {
             do {
               if let id {
                 await send(.publicationsResponse(try await lensApi.feed(40, cursorFeed, id, .fetchIgnoringCacheData, id), .feed))
-                await send(.publicationsResponse(try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment], .fetchIgnoringCacheData, id), .explore))
+                await send(.publicationsResponse(try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id), .explore))
               }
               else {
-                await send(.publicationsResponse(try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment], .fetchIgnoringCacheData, id), .explore))
+                await send(.publicationsResponse(try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id), .explore))
               }
             } catch let error {
               await send(.fetchingFailed)
@@ -131,19 +131,32 @@ struct Timeline: ReducerProtocol {
           state.indexingPost = false
           guard let publication else { return .none }
           
-          let postState = Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: publication))
+          let postState = Post.State(
+            navigationId: uuid.callAsFunction().uuidString,
+            post: .init(publication: publication),
+            typename: Post.State.Typename.from(typename: publication.typename)
+          )
           state.posts.insert(postState, at: 0)
           publicationsCache.updateOrAppend(publication)
           return .none
           
         case .publicationsResponse(let response, let responseType):
-          response.data
-            .filter { $0.typename == .post }
-            .map { Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: $0)) }
+          let publications = response.data
+            .filter {
+              if case .post = $0.typename { return true }
+              if case .mirror = $0.typename { return true }
+              return false
+            }
+          
+          publications
+            .map { Post.State(
+              navigationId: uuid.callAsFunction().uuidString,
+              post: .init(publication: $0),
+              typename: Post.State.Typename.from(typename: $0.typename)
+            )}
             .forEach { state.posts.updateOrAppend($0) }
           
-          response.data
-            .filter { $0.typename == .post }
+          publications
             .forEach { publicationsCache.updateOrAppend($0) }
           
           response.data
@@ -151,7 +164,11 @@ struct Timeline: ReducerProtocol {
               if case .comment = $0.typename { return true }
               else { return false }
             }
-            .map { Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: $0)) }
+            .map { Post.State(
+              navigationId: uuid.callAsFunction().uuidString,
+              post: .init(publication: $0),
+              typename: Post.State.Typename.from(typename: $0.typename)
+            )}
             .forEach { commentState in
               if case .comment(let parent) = commentState.post.publication.typename {
                 guard let parent else { return }
@@ -159,6 +176,7 @@ struct Timeline: ReducerProtocol {
                   Post.State(
                     navigationId: uuid.callAsFunction().uuidString,
                     post: Publication.State(publication: parent),
+                    typename: Post.State.Typename.from(typename: parent.typename),
                     comments: [commentState]
                   )
                 )

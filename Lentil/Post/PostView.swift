@@ -14,6 +14,9 @@ struct PostView: View {
         if viewStore.comments.count > 0, let commenter = viewStore.commenter {
           PostInfoView(infoType: .commented, name: commenter)
         }
+        if viewStore.typename == .mirror, let mirrorer = viewStore.mirrorer {
+          PostInfoView(infoType: .mirrored, name: mirrorer)
+        }
         PostHeaderView(
           store: self.store.scope(
             state: \.post,
@@ -67,9 +70,9 @@ struct PostView: View {
           PostView(store: commentStore)
         }
         
-        if !viewStore.isComment { Divider() }
+        if viewStore.typename != .comment { Divider() }
       }
-      .padding(!viewStore.isComment ? [.leading, .trailing, .top] : [])
+      .padding(viewStore.typename != .comment ? [.leading, .trailing, .top] : [])
       .onAppear { viewStore.send(.didAppear) }
       .task {
         await viewStore.send(
@@ -130,14 +133,19 @@ struct PostView_Previews: PreviewProvider {
             store: .init(
               initialState: .init(
                 navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]),
-                comments: [Post.State(navigationId: "abc", post: .init(publication: mockComment()))]
+                typename: .post,
+                comments: [Post.State(
+                  navigationId: "abc",
+                  post: .init(publication: mockComment()),
+                  typename: .comment
+                )]
               ),
               reducer: Post()
             )
           )
           PostView(
             store: .init(
-              initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[1])),
+              initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[1]), typename: .post),
               reducer: Post()
             )
           )

@@ -76,7 +76,7 @@ struct PostDetail_Previews: PreviewProvider {
     NavigationStack {
       PostDetailView(
         store: .init(
-          initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[1])),
+          initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[1]), typename: .post),
           reducer: Post()
         )
       )

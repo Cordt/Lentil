@@ -4278,6 +4278,10 @@ public final class PublicationQuery: GraphQLQuery {
           __typename
           ...CommentBaseFields
         }
+        ... on Mirror {
+          __typename
+          ...MirrorBaseFields
+        }
       }
     }
     """
@@ -4294,6 +4298,7 @@ public final class PublicationQuery: GraphQLQuery {
     document.append("\n" + CollectModuleFields.fragmentDefinition)
     document.append("\n" + Erc20Fields.fragmentDefinition)
     document.append("\n" + CommentBaseFields.fragmentDefinition)
+    document.append("\n" + MirrorBaseFields.fragmentDefinition)
     return document
   }
 
@@ -4341,7 +4346,7 @@ public final class PublicationQuery: GraphQLQuery {
       public static var selections: [GraphQLSelection] {
         return [
           GraphQLTypeCase(
-            variants: ["Post": AsPost.selections, "Comment": AsComment.selections],
+            variants: ["Post": AsPost.selections, "Comment": AsComment.selections, "Mirror": AsMirror.selections],
             default: [
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             ]
@@ -4353,10 +4358,6 @@ public final class PublicationQuery: GraphQLQuery {
 
       public init(unsafeResultMap: ResultMap) {
         self.resultMap = unsafeResultMap
-      }
-
-      public static func makeMirror() -> Publication {
-        return Publication(unsafeResultMap: ["__typename": "Mirror"])
       }
 
       public var __typename: String {
@@ -4488,6 +4489,70 @@ public final class PublicationQuery: GraphQLQuery {
           public var commentBaseFields: CommentBaseFields {
             get {
               return CommentBaseFields(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+        }
+      }
+
+      public var asMirror: AsMirror? {
+        get {
+          if !AsMirror.possibleTypes.contains(__typename) { return nil }
+          return AsMirror(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsMirror: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["Mirror"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLFragmentSpread(MirrorBaseFields.self),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var fragments: Fragments {
+          get {
+            return Fragments(unsafeResultMap: resultMap)
+          }
+          set {
+            resultMap += newValue.resultMap
+          }
+        }
+
+        public struct Fragments {
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var mirrorBaseFields: MirrorBaseFields {
+            get {
+              return MirrorBaseFields(unsafeResultMap: resultMap)
             }
             set {
               resultMap += newValue.resultMap

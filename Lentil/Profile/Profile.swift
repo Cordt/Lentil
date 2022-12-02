@@ -100,7 +100,11 @@ struct Profile: ReducerProtocol {
                 return postState
               }
               else {
-                return Post.State(navigationId: uuid.callAsFunction().uuidString, post: .init(publication: publication))
+                return Post.State(
+                  navigationId: uuid.callAsFunction().uuidString,
+                  post: .init(publication: publication),
+                  typename: Post.State.Typename.from(typename: publication.typename)
+                )
               }
             }
             .forEach { state.posts.updateOrAppend($0) }
