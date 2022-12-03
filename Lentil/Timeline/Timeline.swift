@@ -149,11 +149,19 @@ struct Timeline: ReducerProtocol {
             }
           
           publications
-            .map { Post.State(
-              navigationId: uuid.callAsFunction().uuidString,
-              post: .init(publication: $0),
-              typename: Post.State.Typename.from(typename: $0.typename)
-            )}
+            .map { publication in
+              if var postState = state.posts.first(where: { $0.post.publication.id == publication.id }) {
+                postState.post.publication = publication
+                return postState
+              }
+              else {
+                return Post.State(
+                  navigationId: uuid.callAsFunction().uuidString,
+                  post: .init(publication: publication),
+                  typename: Post.State.Typename.from(typename: publication.typename)
+                )
+              }
+            }
             .forEach { state.posts.updateOrAppend($0) }
           
           publications
