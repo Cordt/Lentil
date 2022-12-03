@@ -90,6 +90,7 @@ fileprivate struct PostProfilePicture: View {
         if let image = viewStore.profilePicture {
           image
             .resizable()
+            .aspectRatio(contentMode: .fill)
             .frame(width: 40, height: 40)
             .clipShape(Circle())
         }
