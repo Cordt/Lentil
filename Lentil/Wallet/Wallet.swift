@@ -116,8 +116,6 @@ struct Wallet: ReducerProtocol {
           log("Could not store auth tokens", level: .error, error: error)
         }
         
-        state.connectionStatus = .authenticated
-        
         guard let address = state.address else { return .none }
         return .run { send in
           do {
@@ -141,8 +139,12 @@ struct Wallet: ReducerProtocol {
           guard let address = state.address else { return .none }
           let userProfile = UserProfile(id: defaultProfile.id, handle: defaultProfile.handle, name: defaultProfile.name, address: address)
           try self.profileStorageApi.store(userProfile)
+          
+          state.connectionStatus = .authenticated
+          
         } catch let error {
           log("Failed to store user profile to defaults", level: .error, error: error)
+          state.errorMessage = Toast(message: "Default Profile could not be loaded. Did you claim your Lens Handle with this wallet?")
         }
         return .none
         

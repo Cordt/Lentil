@@ -241,8 +241,8 @@ struct Timeline: ReducerProtocol {
         case .connectWallet(let walletConnectAction):
           switch walletConnectAction {
             case .defaultProfileResponse(let defaultProfile):
+              state.userProfile = profileStorageApi.load()
               state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
-              
               profilesCache.updateOrAppend(defaultProfile)
               
               return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
