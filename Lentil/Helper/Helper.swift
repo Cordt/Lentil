@@ -9,11 +9,22 @@ import SwiftUI
 
 extension UIImage {
   func aspectFittedToDimension(_ maxDimension: CGFloat) -> UIImage {
-    let scale = self.size.width > self.size.height ? maxDimension / self.size.width : maxDimension / self.size.height
-    let newSize: CGSize = CGSize(width: self.size.width * scale, height: self.size.height * scale)
-    let renderer = UIGraphicsImageRenderer(size: newSize)
+    // Adjust for device scale (affects UIImage)
+    let screenScale = maxDimension / UIScreen.main.scale
+    let aspectRatio = size.width/size.height
+    var width: CGFloat
+    var height: CGFloat
+    if aspectRatio > 1 {
+      width = screenScale
+      height = screenScale / aspectRatio
+    }
+    else {
+      width = screenScale * aspectRatio
+      height = screenScale
+    }
+    let renderer = UIGraphicsImageRenderer(size: CGSize(width: width, height: height), format: UIGraphicsImageRendererFormat.default())
     return renderer.image { _ in
-      self.draw(in: CGRect(origin: .zero, size: newSize))
+      self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
     }
   }
   

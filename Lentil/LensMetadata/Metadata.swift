@@ -41,6 +41,13 @@ struct Metadata: Codable, Equatable {
     var value: String
   }
   
+  struct Medium: Codable, Equatable {
+    var item: String
+    var type: ImageFile.ImageMimeType
+    var altTag: String?
+    var cover: String?
+  }
+  
   var version: Version
   var metadata_id: String
   var description: String
@@ -54,5 +61,6 @@ struct Metadata: Codable, Equatable {
   var attributes: [Attribute]
   var image: String
   var imageMimeType: ImageFile.ImageMimeType
+  var media: [Medium] = []
   var appId: String = LentilEnvironment.shared.lentilAppId
 }

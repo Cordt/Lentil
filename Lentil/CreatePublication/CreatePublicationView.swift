@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import PhotosUI
 import SwiftUI
 
 
@@ -12,23 +13,61 @@ struct CreatePublicationView: View {
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       ZStack {
-        VStack {
-          CreatePublicationInfoView(store: self.store)
-          TextField(
-            viewStore.placeholder,
-            text: viewStore.binding(
-              get: \.publicationText,
-              send: CreatePublication.Action.publicationTextChanged
-            ),
-            axis: .vertical
-          )
-          .focused(self.$textFieldIsFocused)
-          .lineLimit(100)
-          .submitLabel(.return)
-          .disabled(viewStore.isPosting)
-          .opacity(viewStore.isPosting ? 0.5 : 1.0)
-          
-          Spacer()
+        GeometryReader { geometry in
+          VStack(alignment: .leading) {
+            CreatePublicationInfoView(store: self.store)
+            TextField(
+              viewStore.placeholder,
+              text: viewStore.binding(
+                get: \.publicationText,
+                send: CreatePublication.Action.publicationTextChanged
+              ),
+              axis: .vertical
+            )
+            .focused(self.$textFieldIsFocused)
+            .lineLimit(100)
+            .submitLabel(.return)
+            .disabled(viewStore.isPosting)
+            .opacity(viewStore.isPosting ? 0.5 : 1.0)
+            
+            Spacer()
+            
+            if let image = viewStore.selectedPhoto {
+              ZStack(alignment: .topTrailing) {
+                Image(uiImage: image)
+                  .resizable()
+                  .aspectRatio(contentMode: .fill)
+                  .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.35)
+                  .clipped()
+                  .padding(.vertical)
+                
+                Button {
+                  viewStore.send(.deleteImageTapped)
+                } label: {
+                  Icon.times.view(.large)
+                    .foregroundColor(Theme.Color.white)
+                }
+                .frame(width: 25, height: 25)
+                .background(Theme.Color.primary)
+                .clipShape(Circle())
+                .offset(x: 10, y: 5)
+              }
+              .disabled(viewStore.isPosting)
+              .opacity(viewStore.isPosting ? 0.5 : 1.0)
+            }
+            
+            PhotosPicker(
+              selection: viewStore.binding(
+                get: \.photoPickerItem,
+                send: CreatePublication.Action.photoSelectionTapped
+              ),
+              matching: .images,
+              photoLibrary: .shared()) {
+                Image(systemName: "photo")
+              }
+              .disabled(viewStore.selectedPhoto != nil || viewStore.isPosting)
+              .opacity(viewStore.isPosting ? 0.5 : 1.0)
+          }
         }
         
         ProgressView { Text("Posting...") }

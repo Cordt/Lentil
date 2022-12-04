@@ -12,18 +12,12 @@ struct PublicationFile: FormDataAppendable {
   let name: String
   let fileName: String
   
-  init?(metadata: Metadata, name: String) {
+  init(metadata: Metadata, name: String) throws {
     let encoder = JSONEncoder()
-    do {
-      let encodedMetadata = try encoder.encode(metadata)
-      let name = name
-      self.encodedMetadata = encodedMetadata
-      self.name = name
-      self.fileName = name + ".json"
-      
-    } catch let error {
-      log("Failed to encode Metadata for publication", level: .error, error: error)
-      return nil
-    }
+    let encodedMetadata = try encoder.encode(metadata)
+    let name = name
+    self.encodedMetadata = encodedMetadata
+    self.name = name
+    self.fileName = name + ".json"
   }
 }

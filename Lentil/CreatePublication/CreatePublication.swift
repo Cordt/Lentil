@@ -3,6 +3,8 @@
 
 import ComposableArchitecture
 import Foundation
+import PhotosUI
+import SwiftUI
 
 
 struct CreatePublication: ReducerProtocol {
@@ -17,6 +19,9 @@ struct CreatePublication: ReducerProtocol {
     var publicationText: String = ""
     var isPosting: Bool = false
     var cancelAlert: AlertState<Action>?
+    
+    var photoPickerItem: PhotosPickerItem?
+    var selectedPhoto: UIImage?
     
     var placeholder: String {
       switch self.reason {
@@ -35,6 +40,10 @@ struct CreatePublication: ReducerProtocol {
     case cancelAlertDismissed
     case createPublication
     case createPublicationResponse(TaskResult<MutationResult<Result<RelayerResult, RelayErrorReasons>>>)
+    
+    case photoSelectionTapped(PhotosPickerItem?)
+    case photoSelected(TaskResult<UIImage>)
+    case deleteImageTapped
   }
   
   @Dependency(\.infuraApi) var infuraApi
@@ -81,47 +90,54 @@ struct CreatePublication: ReducerProtocol {
         return .none
         
       case .createPublication:
-        guard let userProfile = self.profileStorageApi.load()
+        guard state.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) != "",
+              let userProfile = self.profileStorageApi.load()
         else { return .none}
         
-        let name = "lentil-" + uuid.callAsFunction().uuidString
-        let publicationUrl = URL(string: "https://lentilapp.xyz/publication/\(name)")
-        var description: String
-        if case .creatingPost = state.reason { description = "Post by \(userProfile.handle) via lentil" }
-        else { description = "Comment by \(userProfile.handle) via lentil" }
+        state.isPosting = true
         
-        guard
-          state.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) != "",
-          let publicationFile = PublicationFile(
+        return .task { [reason = state.reason, publicationText = state.publicationText, selectedPhoto = state.selectedPhoto] in
+          let name = "lentil-" + uuid.callAsFunction().uuidString
+          let publicationUrl = URL(string: "https://lentilapp.xyz/publication/\(name)")
+          var description: String
+          if case .creatingPost = reason { description = "Post by \(userProfile.handle) via lentil" }
+          else { description = "Comment by \(userProfile.handle) via lentil" }
+          
+          var media: [Metadata.Medium] = []
+          if let reducedImage = selectedPhoto?.aspectFittedToDimension(800).compressed() {
+            let imageFile = ImageFile(image: reducedImage, mimeType: .jpeg)
+            let infuraImageResult = try await self.infuraApi.uploadImage(imageFile)
+            let contentUri = "ipfs://\(infuraImageResult.Hash)"
+            media.append(Metadata.Medium(item: contentUri, type: .jpeg))
+          }
+          
+          let publicationFile = try PublicationFile(
             metadata: Metadata(
               version: .two,
               metadata_id: name,
               description: description,
-              content: state.publicationText,
+              content: publicationText,
               locale: .english,
               tags: [],
               contentWarning: nil,
-              mainContentFocus: .text_only,
+              mainContentFocus: media.count > 0 ? .image : .text_only,
               external_url: publicationUrl,
               name: name,
               attributes: [],
               image: LentilEnvironment.shared.lentilIconIPFSUrl,
               imageMimeType: .jpeg,
+              media: media,
               appId: LentilEnvironment.shared.lentilAppId
             ),
             name: name
-          )
-        else { return .none }
-        
-        state.isPosting = true
-        
-        return .task { [state = state] in
-          let infuraResult = try await self.infuraApi.uploadPublication(publicationFile)
+            )
+          
+          let infuraPublicationResult = try await self.infuraApi.uploadPublication(publicationFile)
           
           return await .createPublicationResponse(
             TaskResult {
-              let contentUri = "ipfs://\(infuraResult.Hash)"
-              switch state.reason {
+              let contentUri = "ipfs://\(infuraPublicationResult.Hash)"
+              switch reason {
                 case .creatingPost:
                   return try await self.lensApi.createPost(userProfile.id, contentUri)
                 case .replyingToPost(let postId, _):
@@ -150,6 +166,32 @@ struct CreatePublication: ReducerProtocol {
       case .createPublicationResponse(.failure(let error)):
         state.isPosting = false
         log("Failed to create publication", level: .error, error: error)
+        return .none
+        
+      case .photoSelectionTapped(let item):
+        state.photoPickerItem = item
+        if let item {
+          return .task {
+            guard let data = try await item.loadTransferable(type: Data.self),
+                  let uiImage = UIImage(data: data)
+            else { return .photoSelected(.failure(PHPhotosError(.invalidResource))) }
+            return await .photoSelected(TaskResult { uiImage })
+          }
+        }
+        else {
+          return .none
+        }
+        
+      case .photoSelected(.success(let image)):
+        state.selectedPhoto = image
+        return .none
+        
+      case .photoSelected(.failure(let error)):
+        log("Failed to load image from PhotoSelection", level: .error, error: error)
+        return .none
+        
+      case .deleteImageTapped:
+        state.selectedPhoto = nil
         return .none
     }
   }

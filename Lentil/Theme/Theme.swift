@@ -152,6 +152,7 @@ enum Icon {
   case twitter, website, nft
   case location, lens
   case follow, collection
+  case times
   
   enum FontSize {
     case `default`, large, xlarge
@@ -184,6 +185,7 @@ enum Icon {
       case .lens:         return ""
       case .follow:       return ""
       case .collection:   return ""
+      case .times:        return ""
     }
   }
   
