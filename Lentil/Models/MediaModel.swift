@@ -4,7 +4,7 @@
 import Foundation
 
 extension Model {
-  struct Media: Equatable {
+  struct Media: Equatable, Identifiable {
     enum MediaType: Equatable {
       case image(ImageMimeType)
     }
@@ -19,8 +19,9 @@ extension Model {
       case webp = "image/webp"
     }
     
+    var id: String { self.url.absoluteString }
+    
     let mediaType: MediaType
     let url: URL
-    var data: Data? = nil
   }
 }

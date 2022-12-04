@@ -3,7 +3,6 @@
 
 import Apollo
 import Foundation
-import SwiftUI
 
 
 class Network {
@@ -133,7 +132,7 @@ struct LensApi {
   
   var fetchImage: @Sendable (
     _ from: URL
-  ) async throws -> Image
+  ) async throws -> Data
   
   // MARK: API Mutations
   

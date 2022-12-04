@@ -11,10 +11,7 @@ struct Publication: ReducerProtocol {
     var profilePicture: Image?
     var remoteProfilePicture: RemoteImage.State {
       get {
-        RemoteImage.State(
-          imageUrl: self.publication.profile.profilePictureUrl,
-          image: self.profilePicture
-        )
+        RemoteImage.State(imageUrl: self.publication.profile.profilePictureUrl)
       }
       set {
         self.profilePicture = newValue.image
@@ -25,10 +22,7 @@ struct Publication: ReducerProtocol {
     var publicationImage: Image?
     var remotePublicationImage: RemoteImage.State {
       get {
-        RemoteImage.State(
-          imageUrl: self.publication.media.first?.url,
-          image: self.publicationImage
-        )
+        RemoteImage.State(imageUrl: self.publication.media.first?.url)
       }
       set {
         self.publicationImage = newValue.image

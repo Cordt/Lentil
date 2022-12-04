@@ -3,8 +3,10 @@
 
 import Apollo
 import ComposableArchitecture
-import SwiftUI
+import Foundation
+#if DEBUG
 import UIKit
+#endif
 
 
 extension LensApi: DependencyKey {
@@ -171,13 +173,7 @@ extension LensApi: DependencyKey {
     },
     
     fetchImage: { url in
-      let (data, _) = try await URLSession.shared.data(from: url)
-      guard let uiImage = UIImage(data: data),
-            let compressed = uiImage.compressed()
-      else { throw ApiError.requestFailed }
-      
-      let reduced = compressed.aspectFittedToDimension(800)
-      return Image(uiImage: reduced)
+      try await URLSession.shared.data(from: url).0
     },
     
     broadcast: { id, signature in
@@ -336,10 +332,10 @@ extension LensApi: DependencyKey {
     profile: { _ in QueryResult(data: MockData.mockProfiles[0]) },
     profiles: { _ in QueryResult(data: MockData.mockProfiles) },
     fetchImage: { url in
-      if url.absoluteString == "https://profile-picture" { return Image("cryptopunk1") }
-      else if url.absoluteString == "https://cover-picture" { return Image("munich") }
-      else if url.absoluteString == "https://cover-picture-2" { return Image("crete") }
-      else if url.absoluteString == "https://feed-picture" { return Image("munich") }
+      if url.absoluteString == "https://profile-picture" { return UIImage(named: "cryptopunk1")!.jpegData(compressionQuality: 0.5)! }
+      else if url.absoluteString == "https://cover-picture" { return UIImage(named: "munich")!.jpegData(compressionQuality: 0.5)! }
+      else if url.absoluteString == "https://cover-picture-2" { return UIImage(named: "crete")!.jpegData(compressionQuality: 0.5)! }
+      else if url.absoluteString == "https://feed-picture" { return UIImage(named: "munich")!.jpegData(compressionQuality: 0.5)! }
       else { throw ApiError.requestFailed }
     },
     broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },

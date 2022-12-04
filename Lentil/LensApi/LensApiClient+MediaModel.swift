@@ -21,6 +21,8 @@ extension Model.Media {
   }
   
   static func media(from: [MetadataOutputFields.Medium]) -> [Model.Media] {
-    return from.compactMap(medium(from:))
+    let mediaModels = from.compactMap(medium(from:))
+    mediaModels.forEach { mediaCache.updateOrAppend($0) }
+    return mediaModels
   }
 }

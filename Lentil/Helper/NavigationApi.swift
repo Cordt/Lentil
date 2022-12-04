@@ -10,6 +10,8 @@ import SwiftUI
 // FIXME: TMP
 var publicationsCache: IdentifiedArrayOf<Model.Publication> = []
 var profilesCache: IdentifiedArrayOf<Model.Profile> = []
+var mediaCache: IdentifiedArrayOf<Model.Media> = []
+var mediaDataCache: IdentifiedArrayOf<Model.MediaData> = []
 
 extension NavigationApi: DependencyKey {
   static var liveValue: NavigationApi {

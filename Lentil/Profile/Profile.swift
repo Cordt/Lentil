@@ -19,8 +19,7 @@ struct Profile: ReducerProtocol {
     var remoteCoverPicture: RemoteImage.State {
       get {
         RemoteImage.State(
-          imageUrl: self.profile.coverPictureUrl,
-          image: self.coverPicture
+          imageUrl: self.profile.coverPictureUrl
         )
       }
       set {
@@ -31,8 +30,7 @@ struct Profile: ReducerProtocol {
     var remoteProfilePicture: RemoteImage.State {
       get {
         RemoteImage.State(
-          imageUrl: self.profile.profilePictureUrl,
-          image: self.profilePicture
+          imageUrl: self.profile.profilePictureUrl
         )
       }
       set {
