@@ -64,7 +64,10 @@ struct PostDetailView: View {
       .navigationBarBackButtonHidden(true)
       .accentColor(Theme.Color.primary)
       .task {
-        viewStore.send(.fetchComments)
+        await viewStore.send(.fetchComments)
+          .finish()
+        await viewStore.send(.post(action: .remotePublicationImage(.fetchImage)))
+          .finish()
       }
     }
   }

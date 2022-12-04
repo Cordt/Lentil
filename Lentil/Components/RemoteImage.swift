@@ -41,7 +41,6 @@ struct RemoteImage: ReducerProtocol {
         self.storedImage = .image(image)
       }
     }
-    
   }
   
   enum Action: Equatable {
@@ -62,9 +61,7 @@ struct RemoteImage: ReducerProtocol {
             }
             else if let url = state.imageUrl {
               return .task { [url] in
-                await .updateImage(
-                  TaskResult { try await lensApi.fetchImage(url) }
-                )
+                await .updateImage(TaskResult { try await lensApi.fetchImage(url) })
               }
             }
             else {
@@ -75,14 +72,11 @@ struct RemoteImage: ReducerProtocol {
         }
         
       case .updateImage(let .success(imageData)):
-        
-        if
-          let uiImage = UIImage(data: imageData)?
-            .compressed()?
-            .aspectFittedToDimension(800)
-            ,
-          let imageUrl = state.imageUrl?.absoluteString {
-          
+        if let uiImage = UIImage(data: imageData)?
+          .compressed()?
+          .aspectFittedToDimension(800),
+           let imageUrl = state.imageUrl?.absoluteString
+        {
           mediaDataCache.updateOrAppend(Model.MediaData(url: imageUrl, data: imageData))
           state.storedImage = .image(Image(uiImage: uiImage))
         }
