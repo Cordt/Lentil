@@ -29,16 +29,19 @@ struct Timeline: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    enum ResponseType: Equatable {
-      case explore, feed
+    struct PublicationsResponse: Equatable {
+      let publications: [Model.Publication]
+      let cursorExplore: String?
+      let cursorFeed: String?
     }
+    
     case timelineAppeared
     case refreshFeed
     case fetchDefaultProfile
     case defaultProfileResponse(TaskResult<Model.Profile>)
     case fetchPublications
     case publicationResponse(Model.Publication?)
-    case publicationsResponse(QueryResult<[Model.Publication]>, ResponseType)
+    case publicationsResponse(PublicationsResponse)
     case fetchingFailed
     
     case ownProfileTapped
@@ -114,11 +117,29 @@ struct Timeline: ReducerProtocol {
           return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
             do {
               if let id {
-                await send(.publicationsResponse(try await lensApi.feed(40, cursorFeed, id, .fetchIgnoringCacheData, id), .feed))
-                await send(.publicationsResponse(try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id), .explore))
+                let feed = try await lensApi.feed(40, cursorFeed, id, .fetchIgnoringCacheData, id)
+                let exploration = try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id)
+                await send(
+                  .publicationsResponse(
+                    Action.PublicationsResponse(
+                      publications: feed.data + exploration.data,
+                      cursorExplore: feed.cursorToNext,
+                      cursorFeed: exploration.cursorToNext
+                    )
+                  )
+                )
               }
               else {
-                await send(.publicationsResponse(try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id), .explore))
+                let exploration = try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id)
+                await send(
+                  .publicationsResponse(
+                    Action.PublicationsResponse(
+                      publications: exploration.data,
+                      cursorExplore: nil,
+                      cursorFeed: exploration.cursorToNext
+                    )
+                  )
+                )
               }
             } catch let error {
               await send(.fetchingFailed)
@@ -140,15 +161,15 @@ struct Timeline: ReducerProtocol {
           publicationsCache.updateOrAppend(publication)
           return .none
           
-        case .publicationsResponse(let response, let responseType):
-          let publications = response.data
+        case .publicationsResponse(let response):
+          let filteredPublications = response.publications
             .filter {
               if case .post = $0.typename { return true }
               if case .mirror = $0.typename { return true }
               return false
             }
           
-          publications
+          filteredPublications
             .map { publication in
               if var postState = state.posts.first(where: { $0.post.publication.id == publication.id }) {
                 postState.post.publication = publication
@@ -164,10 +185,10 @@ struct Timeline: ReducerProtocol {
             }
             .forEach { state.posts.updateOrAppend($0) }
           
-          publications
+          filteredPublications
             .forEach { publicationsCache.updateOrAppend($0) }
           
-          response.data
+          response.publications
             .filter {
               if case .comment = $0.typename { return true }
               else { return false }
@@ -191,17 +212,12 @@ struct Timeline: ReducerProtocol {
               }
             }
           
-          response.data
+          response.publications
             .forEach { profilesCache.updateOrAppend($0.profile) }
           
           state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
-          
-          switch responseType {
-            case .explore:
-              state.cursorExplore = response.cursorToNext
-            case .feed:
-              state.cursorFeed = response.cursorToNext
-          }
+          state.cursorExplore = response.cursorExplore
+          state.cursorFeed = response.cursorFeed
           state.loadingInFlight = false
           return .none
           
