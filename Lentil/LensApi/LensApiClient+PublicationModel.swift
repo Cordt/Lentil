@@ -95,7 +95,7 @@ extension Model.Publication {
       let content = post.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: post.createdAt),
       let profilePictureUrlString = post.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
+      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/"))
     else { return nil }
     
     return postFrom(
@@ -115,7 +115,7 @@ extension Model.Publication {
       let content = comment.fragments.commentBaseFields.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: comment.fragments.commentBaseFields.createdAt),
       let profilePictureUrlString = comment.fragments.commentBaseFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
+      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/"))
     else { return nil }
     
     // If no parent is passed explicitly, check whether the query data contains one
@@ -142,7 +142,7 @@ extension Model.Publication {
       let content = mirror.fragments.mirrorBaseFields.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: mirror.fragments.mirrorBaseFields.createdAt),
       let profilePictureUrlString = mirror.fragments.mirrorBaseFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
+      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/"))
     else { return nil }
     
     // If no parent is passed explicitly, check whether the query data contains one
@@ -172,7 +172,7 @@ extension Model.Publication {
       let content = comment.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: comment.createdAt),
       let profilePictureUrlString = comment.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
+      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/"))
     else { return nil }
     
     return commentFrom(
@@ -193,7 +193,7 @@ extension Model.Publication {
       let content = mirror.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: mirror.createdAt),
       let profilePictureUrlString = mirror.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://infura-ipfs.io/ipfs/"))
+      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/"))
     else { return nil }
     
     return mirrorFrom(

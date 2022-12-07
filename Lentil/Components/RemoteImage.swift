@@ -45,7 +45,7 @@ struct RemoteImage: ReducerProtocol {
   
   enum Action: Equatable {
     case fetchImage
-    case updateImage(TaskResult<Data>)
+    case updateImage(TaskResult<State.StoredImage>)
   }
   
   @Dependency(\.lensApi) var lensApi
@@ -60,8 +60,16 @@ struct RemoteImage: ReducerProtocol {
               return .none
             }
             else if let url = state.imageUrl {
-              return .task { [url] in
-                await .updateImage(TaskResult { try await lensApi.fetchImage(url) })
+              return .task(priority: .userInitiated) { [url] in
+                let imageData = try await lensApi.fetchImage(url)
+
+                if let uiImage = UIImage(data: imageData)?.compressed()?.aspectFittedToDimension(800) {
+                  mediaDataCache.updateOrAppend(Model.MediaData(url: url.absoluteString, data: imageData))
+                  return await .updateImage(TaskResult { .image(Image(uiImage: uiImage)) })
+                }
+                else {
+                  return await .updateImage(TaskResult { .notAvailable })
+                }
               }
             }
             else {
@@ -70,19 +78,9 @@ struct RemoteImage: ReducerProtocol {
           case .image, .notAvailable:
             return .none
         }
-        
-      case .updateImage(let .success(imageData)):
-        if let uiImage = UIImage(data: imageData)?
-          .compressed()?
-          .aspectFittedToDimension(800),
-           let imageUrl = state.imageUrl?.absoluteString
-        {
-          mediaDataCache.updateOrAppend(Model.MediaData(url: imageUrl, data: imageData))
-          state.storedImage = .image(Image(uiImage: uiImage))
-        }
-        else {
-          state.storedImage = .notAvailable
-        }
+
+      case .updateImage(let .success(storedImage)):
+        state.storedImage = storedImage
         return .none
         
       case .updateImage(.failure(let error)):

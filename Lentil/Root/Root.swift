@@ -30,6 +30,7 @@ struct Root: ReducerProtocol {
   
   enum Action: Equatable {
     case loadingScreenAppeared
+    case hideLoadingScreen
     case loadingScreenDisappeared
     case startTimer
     case switchProgressLabel
@@ -56,13 +57,6 @@ struct Root: ReducerProtocol {
   private enum TimerID {}
 
   var body: some ReducerProtocol<State, Action> {
-    Scope(
-      state: \State.timelineState,
-      action: /Action.timelineAction
-    ) {
-      Timeline()
-    }
-    
     Reduce { state, action in
       switch action {
         case .loadingScreenAppeared:
@@ -86,11 +80,16 @@ struct Root: ReducerProtocol {
             Effect(value: .checkAuthenticationStatus)
           )
           
+        case .hideLoadingScreen:
+          state.isLoading = false
+          return .none
+          
         case .loadingScreenDisappeared:
           return .cancel(id: TimerID.self)
           
         case .startTimer:
-          return .run { send in
+          return .run { [isLoading = state.isLoading] send in
+            guard isLoading else { return }
             for await _ in self.clock.timer(interval: .seconds(1.5)) {
               await send(.switchProgressLabel, animation: .default)
             }
@@ -125,20 +124,26 @@ struct Root: ReducerProtocol {
               profilesCache.removeAll()
               
               // No valid tokens or profile available, open app
-              state.isLoading = false
-              return .none
+              return .run { send in
+                try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+                await send(.hideLoadingScreen)
+              }
             }
           } catch let error {
             log("Failed to load access tokens or user profile", level: .error, error: error)
-            state.isLoading = false
-            return .none
+            return .run { send in
+              try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              await send(.hideLoadingScreen)
+            }
           }
           
         case .refreshTokenResponse(let refreshToken, let tokenIsValid):
           if tokenIsValid.data {
             // Valid tokens and profile available, open app
-            state.isLoading = false
-            return .none
+            return .run { send in
+              try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              await send(.hideLoadingScreen)
+            }
           }
           else {
             return .task {
@@ -154,13 +159,17 @@ struct Root: ReducerProtocol {
             try self.authTokenApi.store(.refresh, tokens.data.refreshToken)
             
             // Valid tokens and profile available, open app
-            state.isLoading = false
-            return .none
+            return .run { send in
+              try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              await send(.hideLoadingScreen)
+            }
             
           } catch let error {
             log("Failed to store access tokens", level: .error, error: error)
-            state.isLoading = false
-            return .none
+            return .run { send in
+              try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              await send(.hideLoadingScreen)
+            }
           }
           
         case .authTokenResponse(let .failure(error)):
@@ -168,10 +177,11 @@ struct Root: ReducerProtocol {
           self.profileStorageApi.remove()
           publicationsCache.removeAll()
           profilesCache.removeAll()
-          state.isLoading = false
-          
           log("Failed to refresh token, logging user out", level: .debug, error: error)
-          return .none
+          return .run { send in
+            try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+            await send(.hideLoadingScreen)
+          }
           
         case .timelineAction:
           return .none
@@ -263,6 +273,13 @@ struct Root: ReducerProtocol {
     }
     .ifLet(\.createPublication, action: /Action.createPublication) {
       CreatePublication()
+    }
+    
+    Scope(
+      state: \State.timelineState,
+      action: /Action.timelineAction
+    ) {
+      Timeline()
     }
   }
 }

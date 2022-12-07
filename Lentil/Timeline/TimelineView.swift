@@ -14,7 +14,7 @@ struct TimelineView: View {
       
       ScrollViewReader { proxy in
         ScrollView(.vertical, showsIndicators: false) {
-          LazyVStack(alignment: .leading) {
+          VStack(alignment: .leading) {
             if viewStore.indexingPost {
               HStack {
                 Spacer()

@@ -46,33 +46,33 @@ struct PostStatsView: View {
   }
   
   var body: some View {
-    WithViewStore(self.store) { viewStore in
+    WithViewStore(self.store, observe: \.publication) { viewStore in
       HStack(spacing: 25) {
         self.view(
           for: .like,
-          with: viewStore.publication.upvotes,
-          userInteracted: viewStore.publication.upvotedByUser,
+          with: viewStore.state.upvotes,
+          userInteracted: viewStore.state.upvotedByUser,
           interaction: { viewStore.send(.toggleReaction) }
         )
         
         self.view(
           for: .comment,
-          with: viewStore.publication.comments,
-          userInteracted: viewStore.publication.commentdByUser,
+          with: viewStore.state.comments,
+          userInteracted: viewStore.state.commentdByUser,
           interaction: { viewStore.send(.commentTapped) }
         )
         
         self.view(
           for: .mirror,
-          with: viewStore.publication.mirrors,
-          userInteracted: viewStore.publication.mirrordByUser,
+          with: viewStore.state.mirrors,
+          userInteracted: viewStore.state.mirrordByUser,
           interaction: { /* TODO: Mirror publication */ }
         )
         
         self.view(
           for: .collect,
-          with: viewStore.publication.collects,
-          userInteracted: viewStore.publication.collectdByUser,
+          with: viewStore.state.collects,
+          userInteracted: viewStore.state.collectdByUser,
           interaction: { /* TODO: Collect publication */ }
         )
         

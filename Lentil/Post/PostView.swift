@@ -74,12 +74,6 @@ struct PostView: View {
       }
       .padding(viewStore.typename != .comment ? [.leading, .trailing, .top] : [])
       .onAppear { viewStore.send(.didAppear) }
-      .task {
-        await viewStore.send(
-          .post(action: .remotePublicationImage(.fetchImage))
-        )
-        .finish()
-      }
       .id(viewStore.id)
     }
   }

@@ -63,11 +63,7 @@ struct Post: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          if let publication = publicationsCache[id: state.post.id],
-             publication != state.post.publication {
-            state.post.publication = publication
-          }
-          return .none
+          return Effect(value: .post(action: .remotePublicationImage(.fetchImage)))
           
         case .dismissView:
           self.navigationApi.remove(

@@ -62,6 +62,82 @@ struct Timeline: ReducerProtocol {
   @Dependency(\.profileStorageApi) var profileStorageApi
   @Dependency(\.uuid) var uuid
   
+  func fetchPublications(from response: Action.PublicationsResponse, updating posts: IdentifiedArrayOf<Post.State>) -> IdentifiedArrayOf<Post.State> {
+    // First, handle posts and mirrors
+    var updatedPosts = posts
+    let filteredPublications = response.publications
+      .filter {
+        if case .post = $0.typename { return true }
+        if case .mirror = $0.typename { return true }
+        return false
+      }
+    
+    filteredPublications
+      .map { publication in
+        if var postState = posts.first(where: { $0.post.publication.id == publication.id }) {
+          postState.post.publication = publication
+          return postState
+        }
+        else {
+          return Post.State(
+            navigationId: uuid.callAsFunction().uuidString,
+            post: .init(publication: publication),
+            typename: Post.State.Typename.from(typename: publication.typename)
+          )
+        }
+      }
+      .forEach { updatedPosts.updateOrAppend($0) }
+    
+    // Write to cache
+    filteredPublications
+      .forEach { publicationsCache.append($0) }
+    
+    // Second, handle comments
+    response.publications
+      .filter {
+        if case .comment = $0.typename { return true }
+        else { return false }
+      }
+      .map { publication in
+        if var postState = posts.first(where: { $0.post.publication.id == publication.id }) {
+          postState.post.publication = publication
+          return postState
+        }
+        else {
+          return Post.State(
+            navigationId: uuid.callAsFunction().uuidString,
+            post: .init(publication: publication),
+            typename: Post.State.Typename.from(typename: publication.typename)
+          )
+        }
+      }
+      .forEach { commentState in
+        if case .comment(let parent) = commentState.post.publication.typename {
+          guard let parent else { return }
+          if let postState = updatedPosts.first(where: { $0.post.publication.id == parent.id }) {
+            updatedPosts[id: postState.id]?.comments = [commentState]
+          }
+          else {
+            updatedPosts.append(
+              Post.State(
+                navigationId: uuid.callAsFunction().uuidString,
+                post: Publication.State(publication: parent),
+                typename: Post.State.Typename.from(typename: parent.typename),
+                comments: [commentState]
+              )
+            )
+          }
+        }
+      }
+    
+    // Write to cache
+    response.publications
+      .forEach { profilesCache.updateOrAppend($0.profile) }
+    
+    updatedPosts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
+    return updatedPosts
+  }
+  
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.connectWallet, action: /Action.connectWallet) {
       Wallet()
@@ -115,36 +191,34 @@ struct Timeline: ReducerProtocol {
           
           state.loadingInFlight = true
           return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
-            do {
-              if let id {
-                let feed = try await lensApi.feed(40, cursorFeed, id, .fetchIgnoringCacheData, id)
-                let exploration = try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id)
-                await send(
-                  .publicationsResponse(
-                    Action.PublicationsResponse(
-                      publications: feed.data + exploration.data,
-                      cursorExplore: feed.cursorToNext,
-                      cursorFeed: exploration.cursorToNext
-                    )
+            if let id {
+              let feed = try await lensApi.feed(40, cursorFeed, id, .fetchIgnoringCacheData, id)
+              let exploration = try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id)
+              await send(
+                .publicationsResponse(
+                  Action.PublicationsResponse(
+                    publications: feed.data + exploration.data,
+                    cursorExplore: exploration.cursorToNext,
+                    cursorFeed: feed.cursorToNext
                   )
                 )
-              }
-              else {
-                let exploration = try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id)
-                await send(
-                  .publicationsResponse(
-                    Action.PublicationsResponse(
-                      publications: exploration.data,
-                      cursorExplore: nil,
-                      cursorFeed: exploration.cursorToNext
-                    )
-                  )
-                )
-              }
-            } catch let error {
-              await send(.fetchingFailed)
-              log("Failed to load timeline", level: .error, error: error)
+              )
             }
+            else {
+              let exploration = try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id)
+              await send(
+                .publicationsResponse(
+                  Action.PublicationsResponse(
+                    publications: exploration.data,
+                    cursorExplore: exploration.cursorToNext,
+                    cursorFeed: nil
+                  )
+                )
+              )
+            }
+          } catch: { error, send in
+            log("Failed to load timeline", level: .error, error: error)
+            await send(.fetchingFailed)
           }
           .cancellable(id: CancelFetchPublicationsID.self)
           
@@ -152,70 +226,23 @@ struct Timeline: ReducerProtocol {
           state.indexingPost = false
           guard let publication else { return .none }
           
-          let postState = Post.State(
-            navigationId: uuid.callAsFunction().uuidString,
-            post: .init(publication: publication),
-            typename: Post.State.Typename.from(typename: publication.typename)
-          )
-          state.posts.insert(postState, at: 0)
-          publicationsCache.updateOrAppend(publication)
+          if var postState = state.posts.first(where: { $0.post.publication.id == publication.id }) {
+            postState.post.publication = publication
+          }
+          else {
+            let postState = Post.State(
+              navigationId: uuid.callAsFunction().uuidString,
+              post: .init(publication: publication),
+              typename: Post.State.Typename.from(typename: publication.typename)
+            )
+            state.posts.insert(postState, at: 0)
+          }
+          publicationsCache.append(publication)
           return .none
           
         case .publicationsResponse(let response):
-          let filteredPublications = response.publications
-            .filter {
-              if case .post = $0.typename { return true }
-              if case .mirror = $0.typename { return true }
-              return false
-            }
-          
-          filteredPublications
-            .map { publication in
-              if var postState = state.posts.first(where: { $0.post.publication.id == publication.id }) {
-                postState.post.publication = publication
-                return postState
-              }
-              else {
-                return Post.State(
-                  navigationId: uuid.callAsFunction().uuidString,
-                  post: .init(publication: publication),
-                  typename: Post.State.Typename.from(typename: publication.typename)
-                )
-              }
-            }
-            .forEach { state.posts.updateOrAppend($0) }
-          
-          filteredPublications
-            .forEach { publicationsCache.updateOrAppend($0) }
-          
-          response.publications
-            .filter {
-              if case .comment = $0.typename { return true }
-              else { return false }
-            }
-            .map { Post.State(
-              navigationId: uuid.callAsFunction().uuidString,
-              post: .init(publication: $0),
-              typename: Post.State.Typename.from(typename: $0.typename)
-            )}
-            .forEach { commentState in
-              if case .comment(let parent) = commentState.post.publication.typename {
-                guard let parent else { return }
-                state.posts.updateOrAppend(
-                  Post.State(
-                    navigationId: uuid.callAsFunction().uuidString,
-                    post: Publication.State(publication: parent),
-                    typename: Post.State.Typename.from(typename: parent.typename),
-                    comments: [commentState]
-                  )
-                )
-              }
-            }
-          
-          response.publications
-            .forEach { profilesCache.updateOrAppend($0.profile) }
-          
-          state.posts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
+          let updatedPosts = self.fetchPublications(from: response, updating: state.posts)
+          if updatedPosts != state.posts { state.posts = updatedPosts }
           state.cursorExplore = response.cursorExplore
           state.cursorFeed = response.cursorFeed
           state.loadingInFlight = false
@@ -275,18 +302,7 @@ struct Timeline: ReducerProtocol {
               return .none
           }
           
-        case .showProfile:
-          return .none
-          
-        case .post(let id, let postAction):
-          if case .didAppear = postAction {
-            for (index, currentID) in state.posts.ids.enumerated() {
-              if id == currentID, (Float(index) / Float(state.posts.count) > 0.75) {
-                // Reached more than 3/4 - load more publications
-                return Effect(value: .fetchPublications)
-              }
-            }
-          }
+        case .showProfile, .post:
           return .none
           
         case .setDestination(let destination):

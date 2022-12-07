@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>SENTRY_DSN_PROJECT_ID</key>
+	<string>$(SENTRY_DSN_PROJECT_ID)</string>
+	<key>SENTRY_DSN_KEY_1</key>
+	<string>$(SENTRY_DSN_KEY_1)</string>
+	<key>SENTRY_DSN_KEY_2</key>
+	<string>$(SENTRY_DSN_KEY_2)</string>
 	<key>LENTIL_CID</key>
 	<string>$(LENTIL_CID)</string>
 	<key>TEST_WALLET_ADDRESS</key>

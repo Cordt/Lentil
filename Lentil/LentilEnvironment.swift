@@ -15,6 +15,8 @@ class LentilEnvironment {
   let lentilAppId: String
   let lentilIconIPFSUrl: String
   
+  let sentryDsn: String
+  
   #if DEBUG
   let testWalletAddress: String
   #endif
@@ -37,6 +39,8 @@ class LentilEnvironment {
     
     self.lentilAppId = "lentil"
     self.lentilIconIPFSUrl = "ipfs://" + value(for: "LENTIL_CID")
+    
+    self.sentryDsn = "\(value(for: "SENTRY_DSN_KEY_1"))@\(value(for: "SENTRY_DSN_KEY_2")).ingest.sentry.io/\(value(for: "SENTRY_DSN_PROJECT_ID"))"
     
     #if DEBUG
     self.testWalletAddress = value(for: "TEST_WALLET_ADDRESS")
