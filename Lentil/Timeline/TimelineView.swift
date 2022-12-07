@@ -9,6 +9,23 @@ import SwiftUI
 struct TimelineView: View {
   let store: Store<Timeline.State, Timeline.Action>
   
+  var footer: some View {
+    WithViewStore(self.store) { viewStore in
+      HStack {
+        Spacer()
+        if viewStore.loadingInFlight {
+          ProgressView()
+        }
+        else {
+          Button("Load more", action: { viewStore.send(.fetchPublications) })
+            .font(style: .annotation, color: Theme.Color.primary)
+        }
+        Spacer()
+      }
+      .padding(.top, 10)
+    }
+  }
+  
   var body: some View {
     WithViewStore(self.store) { viewStore in
       
@@ -35,14 +52,7 @@ struct TimelineView: View {
                 PostView(store: store)
               }
             }
-            if viewStore.loadingInFlight {
-              HStack {
-                Spacer()
-                ProgressView()
-                Spacer()
-              }
-              .padding(.top, 10)
-            }
+            self.footer
           }
         }
         .toolbar {

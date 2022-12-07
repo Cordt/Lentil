@@ -99,6 +99,9 @@ struct Publication: ReducerProtocol {
           }
           
         case .commentTapped:
+          guard self.profileStorageApi.load() != nil
+          else { return .none }
+          
           self.navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,
