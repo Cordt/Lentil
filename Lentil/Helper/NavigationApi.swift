@@ -82,7 +82,7 @@ class NavigationEvents: AsyncSequence, AsyncIteratorProtocol {
   
   func next() async throws -> Element? {
     while true {
-      try await Task.sleep(nanoseconds: NSEC_PER_SEC / 10)
+      try await Task.sleep(nanoseconds: NSEC_PER_SEC / 50)
       if !self.eventsToEmit.isEmpty {
         return self.eventsToEmit.removeFirst()
       }

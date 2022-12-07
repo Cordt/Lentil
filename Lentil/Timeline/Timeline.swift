@@ -63,16 +63,17 @@ struct Timeline: ReducerProtocol {
   @Dependency(\.uuid) var uuid
   
   func fetchPublications(from response: Action.PublicationsResponse, updating posts: IdentifiedArrayOf<Post.State>) -> IdentifiedArrayOf<Post.State> {
-    // First, handle posts and mirrors
     var updatedPosts = posts
-    let filteredPublications = response.publications
+    
+    // First, handle posts and mirrors
+    let postsAndMirrors = response.publications
       .filter {
         if case .post = $0.typename { return true }
         if case .mirror = $0.typename { return true }
         return false
       }
     
-    filteredPublications
+    postsAndMirrors
       .map { publication in
         if var postState = posts.first(where: { $0.post.publication.id == publication.id }) {
           postState.post.publication = publication
@@ -88,16 +89,15 @@ struct Timeline: ReducerProtocol {
       }
       .forEach { updatedPosts.updateOrAppend($0) }
     
-    // Write to cache
-    filteredPublications
-      .forEach { publicationsCache.append($0) }
-    
     // Second, handle comments
-    response.publications
+    let comments = response.publications
       .filter {
         if case .comment = $0.typename { return true }
         else { return false }
       }
+    
+    var parentPublications: [Model.Publication] = []
+    comments
       .map { publication in
         if var postState = posts.first(where: { $0.post.publication.id == publication.id }) {
           postState.post.publication = publication
@@ -114,6 +114,7 @@ struct Timeline: ReducerProtocol {
       .forEach { commentState in
         if case .comment(let parent) = commentState.post.publication.typename {
           guard let parent else { return }
+          parentPublications.append(parent)
           if let postState = updatedPosts.first(where: { $0.post.publication.id == parent.id }) {
             updatedPosts[id: postState.id]?.comments = [commentState]
           }
@@ -130,8 +131,18 @@ struct Timeline: ReducerProtocol {
         }
       }
     
-    // Write to cache
+    // Write publications to cache
+    postsAndMirrors
+      .forEach { publicationsCache.updateOrAppend($0) }
+    comments
+      .forEach { publicationsCache.updateOrAppend($0) }
+    parentPublications
+      .forEach { publicationsCache.updateOrAppend($0) }
+    
+    // Write profiles to cache
     response.publications
+      .forEach { profilesCache.updateOrAppend($0.profile) }
+    parentPublications
       .forEach { profilesCache.updateOrAppend($0.profile) }
     
     updatedPosts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
