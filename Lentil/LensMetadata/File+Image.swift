@@ -24,8 +24,7 @@ struct ImageFile: FormDataAppendable {
   let name: String
   let fileName: String
   
-  init(image: UIImage, mimeType: ImageMimeType) {
-    let imageData = image.jpegData(compressionQuality: 0.75)!
+  init(imageData: Data, mimeType: ImageMimeType) {
     let name = "lentil-" + UUID().uuidString
     
     self.image = imageData

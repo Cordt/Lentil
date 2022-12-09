@@ -9,9 +9,9 @@ struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var id: String { self.publication.id }
     var profilePicture: Image?
-    var remoteProfilePicture: RemoteImage.State {
+    var remoteProfilePicture: LentilImage.State {
       get {
-        RemoteImage.State(imageUrl: self.publication.profile.profilePictureUrl)
+        LentilImage.State(imageUrl: self.publication.profile.profilePictureUrl, kind: .profile)
       }
       set {
         self.profilePicture = newValue.image
@@ -20,9 +20,9 @@ struct Publication: ReducerProtocol {
     
     var publication: Model.Publication
     var publicationImage: Image?
-    var remotePublicationImage: RemoteImage.State {
+    var remotePublicationImage: LentilImage.State {
       get {
-        RemoteImage.State(imageUrl: self.publication.media.first?.url)
+        LentilImage.State(imageUrl: self.publication.media.first?.url, kind: .feed)
       }
       set {
         self.publicationImage = newValue.image
@@ -42,11 +42,11 @@ struct Publication: ReducerProtocol {
   
   enum Action: Equatable {
     case userProfileTapped
-    case remotePublicationImage(RemoteImage.Action)
+    case remotePublicationImage(LentilImage.Action)
     case toggleReaction
     case commentTapped
     
-    case remoteProfilePicture(RemoteImage.Action)
+    case remoteProfilePicture(LentilImage.Action)
   }
   
   @Dependency(\.lensApi) var lensApi
@@ -56,11 +56,11 @@ struct Publication: ReducerProtocol {
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
-      RemoteImage()
+      LentilImage()
     }
     
     Scope(state: \.remotePublicationImage, action: /Action.remotePublicationImage) {
-      RemoteImage()
+      LentilImage()
     }
     
     Reduce { state, action in

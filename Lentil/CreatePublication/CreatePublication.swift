@@ -104,8 +104,8 @@ struct CreatePublication: ReducerProtocol {
           else { description = "Comment by \(userProfile.handle) via lentil" }
           
           var media: [Metadata.Medium] = []
-          if let reducedImage = selectedPhoto?.aspectFittedToDimension(800).compressed() {
-            let imageFile = ImageFile(image: reducedImage, mimeType: .jpeg)
+          if let imageData = selectedPhoto?.imageData(for: .feed, and: .storage) {
+            let imageFile = ImageFile(imageData: imageData, mimeType: .jpeg)
             let infuraImageResult = try await self.infuraApi.uploadImage(imageFile)
             let contentUri = "ipfs://\(infuraImageResult.Hash)"
             media.append(Metadata.Medium(item: contentUri, type: .jpeg))

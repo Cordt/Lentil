@@ -16,10 +16,11 @@ struct Profile: ReducerProtocol {
     var cursorPublications: String?
     
     var coverPicture: Image?
-    var remoteCoverPicture: RemoteImage.State {
+    var remoteCoverPicture: LentilImage.State {
       get {
-        RemoteImage.State(
-          imageUrl: self.profile.coverPictureUrl
+        LentilImage.State(
+          imageUrl: self.profile.coverPictureUrl,
+          kind: .cover
         )
       }
       set {
@@ -27,10 +28,11 @@ struct Profile: ReducerProtocol {
       }
     }
     var profilePicture: Image?
-    var remoteProfilePicture: RemoteImage.State {
+    var remoteProfilePicture: LentilImage.State {
       get {
-        RemoteImage.State(
-          imageUrl: self.profile.profilePictureUrl
+        LentilImage.State(
+          imageUrl: self.profile.profilePictureUrl,
+          kind: .profile
         )
       }
       set {
@@ -42,8 +44,8 @@ struct Profile: ReducerProtocol {
   indirect enum Action: Equatable {
     case dismissView
     case loadProfile
-    case remoteCoverPicture(RemoteImage.Action)
-    case remoteProfilePicture(RemoteImage.Action)
+    case remoteCoverPicture(LentilImage.Action)
+    case remoteProfilePicture(LentilImage.Action)
     case fetchPublications
     case publicationsResponse(TaskResult<[Model.Publication]>)
     
@@ -56,10 +58,10 @@ struct Profile: ReducerProtocol {
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.remoteCoverPicture, action: /Action.remoteCoverPicture) {
-      RemoteImage()
+      LentilImage()
     }
     Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
-      RemoteImage()
+      LentilImage()
     }
     
     Reduce { state, action in

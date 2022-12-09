@@ -10,6 +10,8 @@ struct Theme {
   static let maxPostLength: Int = 256
   static let defaultRadius: CGFloat = 5.0
   static let defaultBorderWidth: CGFloat = 2.0
+  
+  static let imageCompression: CGFloat = 0.6
 }
 
 

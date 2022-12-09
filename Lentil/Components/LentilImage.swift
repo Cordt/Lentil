@@ -4,7 +4,10 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct RemoteImage: ReducerProtocol {
+struct LentilImage: ReducerProtocol {
+  enum Kind: Equatable { case profile, feed, cover }
+  enum Resolution: Equatable { case display, storage }
+  
   struct State: Equatable {
     enum StoredImage: Equatable {
       case notLoaded
@@ -12,6 +15,7 @@ struct RemoteImage: ReducerProtocol {
       case notAvailable
     }
     
+    let kind: Kind
     var imageUrl: URL?
     fileprivate var storedImage: StoredImage
     fileprivate var cachedImage: Image? {
@@ -19,7 +23,7 @@ struct RemoteImage: ReducerProtocol {
          let medium = mediaCache[id: imageUrl.absoluteString],
          case .image = medium.mediaType,
          let imageData = mediaDataCache[id: imageUrl.absoluteString]?.data,
-         let uiImage = UIImage(data: imageData) {
+         let uiImage = imageData.image(for: self.kind, and: .display) {
         return Image(uiImage: uiImage)
       }
       else {
@@ -29,12 +33,12 @@ struct RemoteImage: ReducerProtocol {
     var image: Image? {
       guard case .image(let loadedImage) = self.storedImage
       else { return nil }
-      
       return loadedImage
     }
     
-    init(imageUrl: URL? = nil) {
+    init(imageUrl: URL? = nil, kind: Kind) {
       self.imageUrl = imageUrl
+      self.kind = kind
       self.storedImage = .notLoaded
       
       if let image = cachedImage {
@@ -60,13 +64,15 @@ struct RemoteImage: ReducerProtocol {
               return .none
             }
             else if let url = state.imageUrl {
-              return .task(priority: .userInitiated) { [url] in
-                let imageData = try await lensApi.fetchImage(url)
-
-                if let uiImage = UIImage(data: imageData)?.compressed()?.aspectFittedToDimension(800) {
+              return .task(priority: .userInitiated) { [url, kind = state.kind] in
+                let data = try await lensApi.fetchImage(url)
+                if
+                  let storageData = data.imageData(for: kind, and: .storage),
+                  let displayImage = data.image(for: kind, and: .display)
+                {
                   mediaCache.updateOrAppend(Model.Media(mediaType: .image(.jpeg), url: url))
-                  mediaDataCache.updateOrAppend(Model.MediaData(url: url.absoluteString, data: imageData))
-                  return await .updateImage(TaskResult { .image(Image(uiImage: uiImage)) })
+                  mediaDataCache.updateOrAppend(Model.MediaData(url: url.absoluteString, data: storageData))
+                  return await .updateImage(TaskResult { .image(Image(uiImage: displayImage)) })
                 }
                 else {
                   return await .updateImage(TaskResult { .notAvailable })

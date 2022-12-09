@@ -7,8 +7,46 @@ import SwiftUI
 
 // MARK: Image rendering
 
+fileprivate func data(from image: UIImage, for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> Data? {
+  let imageDimension: CGFloat
+  switch kind {
+    case .profile:
+      switch resolution {
+        case .display: imageDimension = 200
+        case .storage: imageDimension = 400
+      }
+    case .feed:
+      switch resolution {
+        case .display: imageDimension = 600
+        case .storage: imageDimension = 800
+      }
+    case .cover:
+      switch resolution {
+        case .display: imageDimension = 800
+        case .storage: imageDimension = 1200
+      }
+  }
+  return image
+    .aspectFittedToDimension(imageDimension)
+    .jpegData(compressionQuality: Theme.imageCompression)
+}
+
+extension Data {
+  func imageData(for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> Data? {
+    guard let image = UIImage(data: self)
+    else { return nil}
+    return data(from: image, for: kind, and: resolution)
+  }
+  
+  func image(for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> UIImage? {
+    guard let imageData = self.imageData(for: kind, and: resolution)
+    else { return nil }
+    return UIImage(data: imageData)
+  }
+}
+
 extension UIImage {
-  func aspectFittedToDimension(_ maxDimension: CGFloat) -> UIImage {
+  fileprivate func aspectFittedToDimension(_ maxDimension: CGFloat) -> UIImage {
     // Adjust for device scale (affects UIImage)
     let screenScale = maxDimension / UIScreen.main.scale
     let aspectRatio = size.width/size.height
@@ -28,11 +66,14 @@ extension UIImage {
     }
   }
   
-  func compressed() -> UIImage? {
-    guard let jpegData = self.jpegData(compressionQuality: 0.6)
+  func imageData(for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> Data? {
+    data(from: self, for: kind, and: resolution)
+  }
+  
+  func image(for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> UIImage? {
+    guard let imageData = data(from: self, for: kind, and: resolution)
     else { return nil }
-    
-    return UIImage(data: jpegData)
+    return UIImage(data: imageData)
   }
 }
 
