@@ -111,19 +111,16 @@ struct ProfileView: View {
           .padding([.leading, .trailing])
           
           ScrollView(.vertical, showsIndicators: false) {
-            LazyVStack(alignment: .leading) {
+            VStack(alignment: .leading) {
               ForEachStore(
                 self.store.scope(
                   state: \.posts,
                   action: Profile.Action.post)
               ) { store in
-                VStack(spacing: 0) {
-                  PostView(store: store)
-                }
+                PostView(store: store)
               }
             }
           }
-          .padding(.trailing)
         }
         .ignoresSafeArea()
         .toolbar {

@@ -64,6 +64,7 @@ struct RemoteImage: ReducerProtocol {
                 let imageData = try await lensApi.fetchImage(url)
 
                 if let uiImage = UIImage(data: imageData)?.compressed()?.aspectFittedToDimension(800) {
+                  mediaCache.updateOrAppend(Model.Media(mediaType: .image(.jpeg), url: url))
                   mediaDataCache.updateOrAppend(Model.MediaData(url: url.absoluteString, data: imageData))
                   return await .updateImage(TaskResult { .image(Image(uiImage: uiImage)) })
                 }

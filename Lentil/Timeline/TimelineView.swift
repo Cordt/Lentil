@@ -48,9 +48,7 @@ struct TimelineView: View {
                 action: Timeline.Action.post
               )
             ) { store in
-              VStack(spacing: 0) {
-                PostView(store: store)
-              }
+              PostView(store: store)
             }
             self.footer
           }
