@@ -101,6 +101,7 @@ fileprivate struct PostProfilePicture: View {
           else: {
             profileGradient(from: viewStore.state)
               .frame(width: 40, height: 40)
+              .clipShape(Circle())
           }
         )
       }

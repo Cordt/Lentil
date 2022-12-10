@@ -16,10 +16,6 @@ struct TimelineView: View {
         if viewStore.loadingInFlight {
           ProgressView()
         }
-        else {
-          Button("Load more", action: { viewStore.send(.fetchPublications) })
-            .font(style: .annotation, color: Theme.Color.primary)
-        }
         Spacer()
       }
       .padding(.top, 10)

@@ -33,8 +33,9 @@ struct PostView: View {
                 state: \.post.remotePublicationImage,
                 action: { Post.Action.post(action: .remotePublicationImage($0)) }
               ),
-              then: {
-                LentilImageView(store: $0)
+              then: { store in
+                LentilImageView(store: store)
+                  .frame(maxHeight: 300)
                   .clipped()
               }
             )

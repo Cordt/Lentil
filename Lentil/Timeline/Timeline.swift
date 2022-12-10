@@ -312,7 +312,18 @@ struct Timeline: ReducerProtocol {
               return .none
           }
           
-        case .showProfile, .post:
+        case .showProfile:
+          return .none
+          
+        case .post(let id, let postAction):
+          if case .didAppear = postAction {
+            for (index, currentID) in state.posts.ids.enumerated() {
+              if id == currentID, (Float(index) / Float(state.posts.count) > 0.75) {
+                // Reached more than 3/4 - load more publications
+                return Effect(value: .fetchPublications)
+              }
+            }
+          }
           return .none
           
         case .setDestination(let destination):

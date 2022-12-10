@@ -29,11 +29,6 @@ struct LentilImage: ReducerProtocol {
         return nil
       }
     }
-    fileprivate var image: Image? {
-      guard case .image(let loadedImage) = self.storedImage
-      else { return nil }
-      return loadedImage
-    }
     
     init(imageUrl: URL, kind: Kind) {
       self.imageUrl = imageUrl
@@ -63,20 +58,24 @@ struct LentilImage: ReducerProtocol {
               return .none
             }
             else {
-              return .task(priority: .userInitiated) { [url = state.imageUrl, kind = state.kind] in
-                let data = try await lensApi.fetchImage(url)
-                if
-                  let storageData = data.imageData(for: kind, and: .storage),
-                  let displayImage = data.image(for: kind, and: .display)
-                {
-                  mediaCache.updateOrAppend(Model.Media(mediaType: .image(.jpeg), url: url))
-                  mediaDataCache.updateOrAppend(Model.MediaData(url: url.absoluteString, data: storageData))
-                  return await .updateImage(TaskResult { .image(Image(uiImage: displayImage)) })
+              return .task(
+                priority: .userInitiated,
+                operation: { [url = state.imageUrl, kind = state.kind] in
+                  let data = try await lensApi.fetchImage(url)
+                  if let storageData = data.imageData(for: kind, and: .storage),
+                     let displayImage = data.image(for: kind, and: .display) {
+                    mediaCache.updateOrAppend(Model.Media(mediaType: .image(.jpeg), url: url))
+                    mediaDataCache.updateOrAppend(Model.MediaData(url: url.absoluteString, data: storageData))
+                    return await .updateImage(TaskResult { .image(Image(uiImage: displayImage)) })
+                  }
+                  else {
+                    return await .updateImage(TaskResult { .notAvailable })
+                  }
+                },
+                catch: { error in
+                  return .updateImage(.failure(error))
                 }
-                else {
-                  return await .updateImage(TaskResult { .notAvailable })
-                }
-              }
+              )
             }
           case .image, .notAvailable:
             return .none
@@ -97,25 +96,46 @@ struct LentilImage: ReducerProtocol {
 struct LentilImageView: View {
   let store: Store<LentilImage.State, LentilImage.Action>
   
+  var placeholder: some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      switch viewStore.kind {
+        case .profile(let handle):
+          profileGradient(from: handle)
+          
+        case .feed:
+          ZStack {
+            Theme.Color.greyShade1
+            ProgressView()
+          }
+          
+        case .cover:
+          ZStack {
+            lentilGradient()
+            ProgressView()
+          }
+      }
+    }
+  }
+  
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
-      if let image = viewStore.image {
-        image
-          .resizable()
-          .aspectRatio(contentMode: .fill)
-      }
-      else {
-        switch viewStore.kind {
-          case .profile(let handle):
-            profileGradient(from: handle)
-              .onAppear { viewStore.send(.didAppear) }
-          case .feed:
-            Theme.Color.greyShade3
-              .onAppear { viewStore.send(.didAppear) }
-          case .cover:
-            lentilGradient()
-              .onAppear { viewStore.send(.didAppear) }
-        }
+      switch viewStore.storedImage {
+        case .notLoaded:
+          self.placeholder
+            .onAppear { viewStore.send(.didAppear) }
+          
+        case .image(let image):
+          image
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+          
+        case .notAvailable:
+          if case .feed = viewStore.kind {
+            EmptyView()
+          }
+          else {
+            self.placeholder
+          }
       }
     }
   }
@@ -128,22 +148,36 @@ struct LentilImageView_Previews: PreviewProvider {
     VStack {
       LentilImageView(
         store: .init(
-          initialState: LentilImage.State(imageUrl: URL(string: "")!, kind: .profile("Cordt")),
+          initialState: LentilImage.State(imageUrl: URL(string: "https://profile-picture")!, kind: .profile("Cordt")),
           reducer: LentilImage()
         )
       )
+      .frame(width: 40, height: 40)
+      .clipShape(Circle())
+      
       LentilImageView(
         store: .init(
-          initialState: LentilImage.State(imageUrl: URL(string: "")!, kind: .feed),
+          initialState: LentilImage.State(imageUrl: URL(string: "https://feed-picture")!, kind: .feed),
           reducer: LentilImage()
         )
       )
+      .clipped()
+      
       LentilImageView(
         store: .init(
-          initialState: LentilImage.State(imageUrl: URL(string: "")!, kind: .cover),
+          initialState: LentilImage.State(imageUrl: URL(string: "https://feed-picture-missing")!, kind: .feed),
           reducer: LentilImage()
         )
       )
+      .clipped()
+      
+      LentilImageView(
+        store: .init(
+          initialState: LentilImage.State(imageUrl: URL(string: "https://cover-picture")!, kind: .cover),
+          reducer: LentilImage()
+        )
+      )
+      
     }
   }
 }
