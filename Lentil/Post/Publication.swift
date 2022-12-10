@@ -8,26 +8,9 @@ import SwiftUI
 struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
     var id: String { self.publication.id }
-    var profilePicture: Image?
-    var remoteProfilePicture: LentilImage.State {
-      get {
-        LentilImage.State(imageUrl: self.publication.profile.profilePictureUrl, kind: .profile)
-      }
-      set {
-        self.profilePicture = newValue.image
-      }
-    }
-    
     var publication: Model.Publication
-    var publicationImage: Image?
-    var remotePublicationImage: LentilImage.State {
-      get {
-        LentilImage.State(imageUrl: self.publication.media.first?.url, kind: .feed)
-      }
-      set {
-        self.publicationImage = newValue.image
-      }
-    }
+    var remoteProfilePicture: LentilImage.State?
+    var remotePublicationImage: LentilImage.State?
     
     var publicationContent: String { self.publication.content.trimmingCharacters(in: .whitespacesAndNewlines) }
     var shortenedContent: String {
@@ -36,6 +19,19 @@ struct Publication: ReducerProtocol {
       }
       else {
         return self.publicationContent
+      }
+    }
+    
+    init(publication: Model.Publication) {
+      self.publication = publication
+      self.remoteProfilePicture = nil
+      self.remotePublicationImage = nil
+      
+      if let profilePictureUrl = publication.profile.profilePictureUrl {
+        self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(publication.profile.handle))
+      }
+      if let publicationImageUrl = publication.media.first?.url {
+        self.remotePublicationImage = .init(imageUrl: publicationImageUrl, kind: .feed)
       }
     }
   }
@@ -55,14 +51,6 @@ struct Publication: ReducerProtocol {
   @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
-    Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
-      LentilImage()
-    }
-    
-    Scope(state: \.remotePublicationImage, action: /Action.remotePublicationImage) {
-      LentilImage()
-    }
-    
     Reduce { state, action in
       switch action {
         case .userProfileTapped:
@@ -113,6 +101,12 @@ struct Publication: ReducerProtocol {
         case .remoteProfilePicture:
           return .none
       }
+    }
+    .ifLet(\.remoteProfilePicture, action: /Action.remoteProfilePicture) {
+      LentilImage()
+    }
+    .ifLet(\.remotePublicationImage, action: /Action.remotePublicationImage) {
+      LentilImage()
     }
   }
 }

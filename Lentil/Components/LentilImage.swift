@@ -5,7 +5,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct LentilImage: ReducerProtocol {
-  enum Kind: Equatable { case profile, feed, cover }
+  enum Kind: Equatable { case profile(_ handle: String), feed, cover }
   enum Resolution: Equatable { case display, storage }
   
   struct State: Equatable {
@@ -16,13 +16,12 @@ struct LentilImage: ReducerProtocol {
     }
     
     let kind: Kind
-    var imageUrl: URL?
+    var imageUrl: URL
     fileprivate var storedImage: StoredImage
     fileprivate var cachedImage: Image? {
-      if let imageUrl = self.imageUrl,
-         let medium = mediaCache[id: imageUrl.absoluteString],
+      if let medium = mediaCache[id: self.imageUrl.absoluteString],
          case .image = medium.mediaType,
-         let imageData = mediaDataCache[id: imageUrl.absoluteString]?.data,
+         let imageData = mediaDataCache[id: self.imageUrl.absoluteString]?.data,
          let uiImage = imageData.image(for: self.kind, and: .display) {
         return Image(uiImage: uiImage)
       }
@@ -30,13 +29,13 @@ struct LentilImage: ReducerProtocol {
         return nil
       }
     }
-    var image: Image? {
+    fileprivate var image: Image? {
       guard case .image(let loadedImage) = self.storedImage
       else { return nil }
       return loadedImage
     }
     
-    init(imageUrl: URL? = nil, kind: Kind) {
+    init(imageUrl: URL, kind: Kind) {
       self.imageUrl = imageUrl
       self.kind = kind
       self.storedImage = .notLoaded
@@ -48,7 +47,7 @@ struct LentilImage: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    case fetchImage
+    case didAppear
     case updateImage(TaskResult<State.StoredImage>)
   }
   
@@ -56,15 +55,15 @@ struct LentilImage: ReducerProtocol {
   
   func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
     switch action {
-      case .fetchImage:
+      case .didAppear:
         switch state.storedImage {
           case .notLoaded:
             if let image = state.cachedImage {
               state.storedImage = .image(image)
               return .none
             }
-            else if let url = state.imageUrl {
-              return .task(priority: .userInitiated) { [url, kind = state.kind] in
+            else {
+              return .task(priority: .userInitiated) { [url = state.imageUrl, kind = state.kind] in
                 let data = try await lensApi.fetchImage(url)
                 if
                   let storageData = data.imageData(for: kind, and: .storage),
@@ -79,9 +78,6 @@ struct LentilImage: ReducerProtocol {
                 }
               }
             }
-            else {
-              return .none
-            }
           case .image, .notAvailable:
             return .none
         }
@@ -92,8 +88,63 @@ struct LentilImage: ReducerProtocol {
         
       case .updateImage(.failure(let error)):
         state.storedImage = .notAvailable
-        log("Failed to load remote image for \(String(describing: state.imageUrl?.absoluteString))", level: .debug, error: error)
+        log("Failed to load remote image for \(String(describing: state.imageUrl.absoluteString))", level: .debug, error: error)
         return .none
     }
   }
 }
+
+struct LentilImageView: View {
+  let store: Store<LentilImage.State, LentilImage.Action>
+  
+  var body: some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      if let image = viewStore.image {
+        image
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+      }
+      else {
+        switch viewStore.kind {
+          case .profile(let handle):
+            profileGradient(from: handle)
+              .onAppear { viewStore.send(.didAppear) }
+          case .feed:
+            Theme.Color.greyShade3
+              .onAppear { viewStore.send(.didAppear) }
+          case .cover:
+            lentilGradient()
+              .onAppear { viewStore.send(.didAppear) }
+        }
+      }
+    }
+  }
+}
+
+
+#if DEBUG
+struct LentilImageView_Previews: PreviewProvider {
+  static var previews: some View {
+    VStack {
+      LentilImageView(
+        store: .init(
+          initialState: LentilImage.State(imageUrl: URL(string: "")!, kind: .profile("Cordt")),
+          reducer: LentilImage()
+        )
+      )
+      LentilImageView(
+        store: .init(
+          initialState: LentilImage.State(imageUrl: URL(string: "")!, kind: .feed),
+          reducer: LentilImage()
+        )
+      )
+      LentilImageView(
+        store: .init(
+          initialState: LentilImage.State(imageUrl: URL(string: "")!, kind: .cover),
+          reducer: LentilImage()
+        )
+      )
+    }
+  }
+}
+#endif

@@ -190,7 +190,7 @@ struct Timeline: ReducerProtocol {
         case .defaultProfileResponse(let .success(defaultProfile)):
           state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
           profilesCache.updateOrAppend(defaultProfile)
-          return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
+          return .none
           
         case .defaultProfileResponse(let .failure(error)):
           log("Failed to load default profile for authenticated user", level: .error, error: error)
@@ -306,8 +306,7 @@ struct Timeline: ReducerProtocol {
               state.userProfile = profileStorageApi.load()
               state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
               profilesCache.updateOrAppend(defaultProfile)
-              
-              return Effect(value: .showProfile(.remoteProfilePicture(.fetchImage)))
+              return .none
               
             default:
               return .none

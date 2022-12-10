@@ -12,31 +12,25 @@ struct Profile: ReducerProtocol {
     var id: String { self.navigationId }
     
     var profile: Model.Profile
-    var posts: IdentifiedArrayOf<Post.State> = []
+    var posts: IdentifiedArrayOf<Post.State>
     var cursorPublications: String?
     
-    var coverPicture: Image?
-    var remoteCoverPicture: LentilImage.State {
-      get {
-        LentilImage.State(
-          imageUrl: self.profile.coverPictureUrl,
-          kind: .cover
-        )
+    var remoteCoverPicture: LentilImage.State?
+    var remoteProfilePicture: LentilImage.State?
+    
+    init(navigationId: String, profile: Model.Profile) {
+      self.navigationId = navigationId
+      self.profile = profile
+      self.posts = []
+      self.cursorPublications = nil
+      self.remoteCoverPicture = nil
+      self.remoteProfilePicture = nil
+      
+      if let coverPictureUrl = profile.coverPictureUrl {
+        self.remoteCoverPicture = .init(imageUrl: coverPictureUrl, kind: .cover)
       }
-      set {
-        self.coverPicture = newValue.image
-      }
-    }
-    var profilePicture: Image?
-    var remoteProfilePicture: LentilImage.State {
-      get {
-        LentilImage.State(
-          imageUrl: self.profile.profilePictureUrl,
-          kind: .profile
-        )
-      }
-      set {
-        self.profilePicture = newValue.image
+      if let profilePictureUrl = profile.profilePictureUrl {
+        self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(profile.handle))
       }
     }
   }
@@ -57,13 +51,6 @@ struct Profile: ReducerProtocol {
   @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
-    Scope(state: \.remoteCoverPicture, action: /Action.remoteCoverPicture) {
-      LentilImage()
-    }
-    Scope(state: \.remoteProfilePicture, action: /Action.remoteProfilePicture) {
-      LentilImage()
-    }
-    
     Reduce { state, action in
       switch action {
         case .dismissView:
@@ -76,11 +63,7 @@ struct Profile: ReducerProtocol {
           return .none
           
         case .loadProfile:
-          return .merge(
-            Effect(value: .remoteProfilePicture(.fetchImage)),
-            Effect(value: .remoteCoverPicture(.fetchImage)),
-            Effect(value: .fetchPublications)
-          )
+          return Effect(value: .fetchPublications)
           
         case .fetchPublications:
           return .task { [id = state.profile.id] in
@@ -130,6 +113,12 @@ struct Profile: ReducerProtocol {
         case .post:
           return .none
       }
+    }
+    .ifLet(\.remoteCoverPicture, action: /Action.remoteCoverPicture) {
+      LentilImage()
+    }
+    .ifLet(\.remoteProfilePicture, action: /Action.remoteProfilePicture) {
+      LentilImage()
     }
     .forEach(\.posts, action: /Action.post) {
       Post()

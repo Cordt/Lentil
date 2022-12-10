@@ -28,7 +28,7 @@ fileprivate func data(from image: UIImage, for kind: LentilImage.Kind, and resol
   }
   return image
     .aspectFittedToDimension(imageDimension)
-    .jpegData(compressionQuality: Theme.imageCompression)
+    .jpegData(compressionQuality: Theme.compressionQuality)
 }
 
 extension Data {

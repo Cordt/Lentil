@@ -23,16 +23,21 @@ struct ProfileView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       GeometryReader { geometry in
         VStack(spacing: 0) {
-          if let coverPicture = viewStore.coverPicture {
-            coverPicture
-              .resizable()
-              .aspectRatio(contentMode: .fill)
-              .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
-              .clipped()
-          } else {
-            lentilGradient()
-              .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
-          }
+          IfLetStore(
+            self.store.scope(
+              state: \.remoteCoverPicture,
+              action: Profile.Action.remoteCoverPicture
+            ),
+            then: {
+              LentilImageView(store: $0)
+                .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
+                .clipped()
+            },
+            else: {
+              lentilGradient()
+                .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
+            }
+          )
           
           VStack(alignment: .leading) {
             HStack {
@@ -50,19 +55,24 @@ struct ProfileView: View {
               
               Spacer()
               
-              if let profilePicture = viewStore.profilePicture {
-                profilePicture
-                  .resizable()
-                  .aspectRatio(contentMode: .fill)
-                  .frame(width: 112, height: 112)
-                  .clipShape(Circle())
-                  .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
-              } else {
-                profileGradient(from: viewStore.profile.handle)
-                  .frame(width: 112, height: 112)
-                  .clipShape(Circle())
-                  .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
-              }
+              IfLetStore(
+                self.store.scope(
+                  state: \.remoteProfilePicture,
+                  action: Profile.Action.remoteProfilePicture
+                ),
+                then: {
+                  LentilImageView(store: $0)
+                    .frame(width: 112, height: 112)
+                    .clipShape(Circle())
+                    .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
+                },
+                else: {
+                  profileGradient(from: viewStore.profile.handle)
+                    .frame(width: 112, height: 112)
+                    .clipShape(Circle())
+                    .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
+                }
+              )
             }
             .padding(.bottom, 5)
             

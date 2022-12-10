@@ -28,12 +28,16 @@ struct PostView: View {
           viewStore.send(.postTapped)
         } label: {
           VStack(alignment: .leading, spacing: 10) {
-            if let image = viewStore.post.publicationImage {
-              image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .clipped()
-            }
+            IfLetStore(
+              self.store.scope(
+                state: \.post.remotePublicationImage,
+                action: { Post.Action.post(action: .remotePublicationImage($0)) }
+              ),
+              then: {
+                LentilImageView(store: $0)
+                  .clipped()
+              }
+            )
             
             Text(viewStore.post.shortenedContent)
               .font(style: .body)

@@ -38,7 +38,6 @@ struct PostHeaderView: View {
         Spacer()
       }
       .lineLimit(1)
-      .onAppear { viewStore.send(.remoteProfilePicture(.fetchImage)) }
     }
   }
 }
@@ -74,38 +73,36 @@ struct PostDetailHeaderView: View {
         Spacer()
       }
       .lineLimit(1)
-      .onAppear { viewStore.send(.remoteProfilePicture(.fetchImage)) }
     }
   }
 }
 
 fileprivate struct PostProfilePicture: View {
-  struct ObervedState: Equatable {
-    let profilePicture: Image?
-    let profileHandle: String
-  }
   let store: Store<Publication.State, Publication.Action>
-  
   
   var body: some View {
     WithViewStore(
       self.store,
-      observe: { ObervedState(profilePicture: $0.profilePicture, profileHandle: $0.publication.profile.handle)}
+      observe: { $0.publication.profile.handle }
     ) { viewStore in
       Button {
         viewStore.send(.userProfileTapped)
       } label: {
-        if let image = viewStore.state.profilePicture {
-          image
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 40, height: 40)
-            .clipShape(Circle())
-        }
-        else {
-          profileGradient(from: viewStore.state.profileHandle)
-            .frame(width: 40, height: 40)
-        }
+        IfLetStore(
+          self.store.scope(
+            state: \.remoteProfilePicture,
+            action: Publication.Action.remoteProfilePicture
+          ),
+          then: {
+            LentilImageView(store: $0)
+              .frame(width: 40, height: 40)
+              .clipShape(Circle())
+          },
+          else: {
+            profileGradient(from: viewStore.state)
+              .frame(width: 40, height: 40)
+          }
+        )
       }
     }
   }

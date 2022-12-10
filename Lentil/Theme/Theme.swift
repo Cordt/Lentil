@@ -11,7 +11,7 @@ struct Theme {
   static let defaultRadius: CGFloat = 5.0
   static let defaultBorderWidth: CGFloat = 2.0
   
-  static let imageCompression: CGFloat = 0.6
+  static let compressionQuality: CGFloat = 0.75
 }
 
 

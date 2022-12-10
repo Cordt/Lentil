@@ -31,7 +31,7 @@ struct TimelineView: View {
       
       ScrollViewReader { proxy in
         ScrollView(.vertical, showsIndicators: false) {
-          VStack(alignment: .leading) {
+          LazyVStack(alignment: .leading) {
             if viewStore.indexingPost {
               HStack {
                 Spacer()
@@ -59,17 +59,21 @@ struct TimelineView: View {
               Button {
                 viewStore.send(.ownProfileTapped)
               } label: {
-                if let profilePicture = viewStore.showProfile?.profilePicture {
-                  profilePicture
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 32, height: 32)
-                    .clipShape(Circle())
-                }
-                else {
-                  profileGradient(from: userProfile.handle)
-                    .frame(width: 32, height: 32)
-                }
+                IfLetStore(
+                  self.store.scope(
+                    state: \.showProfile?.remoteProfilePicture,
+                    action: { Timeline.Action.showProfile(.remoteProfilePicture($0)) }
+                  ),
+                  then: {
+                    LentilImageView(store: $0)
+                      .frame(width: 32, height: 32)
+                      .clipShape(Circle())
+                  },
+                  else: {
+                    profileGradient(from: userProfile.handle)
+                      .frame(width: 32, height: 32)
+                  }
+                )
               }
             }
             else {

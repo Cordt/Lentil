@@ -19,11 +19,15 @@ struct PostDetailView: View {
             )
           )
           
-          if let image = viewStore.post.publicationImage {
-            image
-              .resizable()
-              .scaledToFit()
-          }
+          IfLetStore(
+            self.store.scope(
+              state: \.post.remotePublicationImage,
+              action: { Post.Action.post(action: .remotePublicationImage($0)) }
+            ),
+            then: {
+              LentilImageView(store: $0)
+            }
+          )
           
           Text(viewStore.post.publicationContent)
             .font(style: .bodyDetailed)
@@ -65,8 +69,6 @@ struct PostDetailView: View {
       .accentColor(Theme.Color.primary)
       .task {
         await viewStore.send(.fetchComments)
-          .finish()
-        await viewStore.send(.post(action: .remotePublicationImage(.fetchImage)))
           .finish()
       }
     }
