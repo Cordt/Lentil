@@ -34,9 +34,12 @@ struct PostView: View {
                 action: { Post.Action.post(action: .remotePublicationImage($0)) }
               ),
               then: { store in
-                LentilImageView(store: store)
-                  .frame(maxHeight: 300)
-                  .clipped()
+                GeometryReader { reader in
+                  LentilImageView(store: store)
+                    .frame(width: reader.size.width, height: 250)
+                    .clipped()
+                }
+                .frame(minHeight: 250)
               }
             )
             

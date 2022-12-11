@@ -50,7 +50,10 @@ struct MockData {
       upvotedByUser: false,
       collectdByUser: false,
       commentdByUser: false,
-      mirrordByUser: false
+      mirrordByUser: false,
+      media: [
+        .init(mediaType: .image(.jpeg), url: URL(string: "https://feed-picture")!)
+      ]
     ),
     .init(
       id: "d80681f9-b301-443d-960b-0415a134e1e3",
