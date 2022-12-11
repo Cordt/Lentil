@@ -63,25 +63,28 @@ extension Model.Publication {
   
   private static func mirrorFrom(
     mirrorFields: MirrorBaseFields,
-    mirror of: Model.Publication?,
+    mirror by: Model.Profile,
+    publication of: Model.Profile,
     content: String,
     createdDate: Date,
     profilePictureUrl: URL,
+    publicationStatsFields: PublicationStatsFields,
     upvotedByUser: Bool,
     collectdByUser: Bool,
     commentdByUser: Bool,
     mirrordByUser: Bool
   ) -> Self? {
+    
     return Model.Publication(
       id: mirrorFields.id,
-      typename: .mirror(of: of),
+      typename: .mirror(by: by),
       createdAt: createdDate,
       content: content,
-      profile: Model.Profile.from(mirrorFields.profile.fragments.profileFields),
-      upvotes: mirrorFields.stats.fragments.publicationStatsFields.totalUpvotes,
-      collects: mirrorFields.stats.fragments.publicationStatsFields.totalAmountOfCollects,
-      comments: mirrorFields.stats.fragments.publicationStatsFields.totalAmountOfComments,
-      mirrors: mirrorFields.stats.fragments.publicationStatsFields.totalAmountOfMirrors,
+      profile: of,
+      upvotes: publicationStatsFields.totalUpvotes,
+      collects: publicationStatsFields.totalAmountOfCollects,
+      comments: publicationStatsFields.totalAmountOfComments,
+      mirrors: publicationStatsFields.totalAmountOfMirrors,
       upvotedByUser: upvotedByUser,
       collectdByUser: collectdByUser,
       commentdByUser: commentdByUser,
@@ -137,29 +140,37 @@ extension Model.Publication {
     )
   }
   
-  private static func publication(from mirror: MirrorFields, reaction: ReactionTypes?, mirror of: Model.Publication? = nil) -> Self? {
+  private static func publication(from mirror: MirrorFields, reaction: ReactionTypes?) -> Self? {
+    let profileFields: ProfileFields
+    let publicationStatsFields: PublicationStatsFields
+    if let mirroredPost = mirror.mirrorOf.asPost {
+      profileFields = mirroredPost.fragments.postFields.profile.fragments.profileFields
+      publicationStatsFields = mirroredPost.fragments.postFields.stats.fragments.publicationStatsFields
+    }
+    else if let mirroredComment = mirror.mirrorOf.asComment {
+      profileFields = mirroredComment.fragments.commentFields.fragments.commentBaseFields.profile.fragments.profileFields
+      publicationStatsFields = mirroredComment.fragments.commentFields.fragments.commentBaseFields.stats.fragments.publicationStatsFields
+    }
+    else { return nil }
+    
     guard
       let content = mirror.fragments.mirrorBaseFields.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: mirror.fragments.mirrorBaseFields.createdAt),
-      let profilePictureUrlString = mirror.fragments.mirrorBaseFields.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
+      let profilePictureUrlString = profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
       let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/"))
     else { return nil }
     
-    // If no parent is passed explicitly, check whether the query data contains one
-    var parent: Model.Publication? = of
-    if parent == nil, let parentPost = mirror.mirrorOf.asPost {
-      parent = publication(from: parentPost.fragments.postFields, reaction: nil)
-    }
-    else if parent == nil, let parentComment = mirror.mirrorOf.asComment {
-      parent = publication(from: parentComment.fragments.commentFields, reaction: nil)
-    }
+    let mirroringProfile = Model.Profile.from(mirror.fragments.mirrorBaseFields.profile)
+    let publicationAuthorProfile = Model.Profile.from(profileFields)
     
     return mirrorFrom(
       mirrorFields: mirror.fragments.mirrorBaseFields,
-      mirror: parent,
+      mirror: mirroringProfile,
+      publication: publicationAuthorProfile,
       content: content,
       createdDate: createdDate,
       profilePictureUrl: profilePictureUrl,
+      publicationStatsFields: publicationStatsFields,
       upvotedByUser: reaction == .upvote,
       collectdByUser: mirror.fragments.mirrorBaseFields.hasCollectedByMe,
       commentdByUser: false,
@@ -188,27 +199,6 @@ extension Model.Publication {
     )
   }
   
-  private static func publication(from mirror: MirrorBaseFields) -> Self? {
-    guard
-      let content = mirror.metadata.fragments.metadataOutputFields.content,
-      let createdDate = date(from: mirror.createdAt),
-      let profilePictureUrlString = mirror.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/"))
-    else { return nil }
-    
-    return mirrorFrom(
-      mirrorFields: mirror,
-      mirror: nil,
-      content: content,
-      createdDate: createdDate,
-      profilePictureUrl: profilePictureUrl,
-      upvotedByUser: false,
-      collectdByUser: mirror.hasCollectedByMe,
-      commentdByUser: false,
-      mirrordByUser: false
-    )
-  }
-  
   static func publication(from item: FeedQuery.Data.Feed.Item.Root, child of: Model.Publication? = nil) -> Self? {
     if let postFields = item.asPost?.fragments.postFields {
       return publication(from: postFields, reaction: item.asPost?.postReaction)
@@ -229,9 +219,7 @@ extension Model.Publication {
     else if let commentBaseFields = item?.asComment?.fragments.commentBaseFields {
       return publication(from: commentBaseFields)
     }
-    else if let mirrorBaseFields = item?.asMirror?.fragments.mirrorBaseFields {
-      return publication(from: mirrorBaseFields)
-    }
+    // TODO: Handle Mirror
     else {
       return nil
     }
@@ -245,7 +233,7 @@ extension Model.Publication {
       return publication(from: commentFields, reaction: item.asComment?.commentReaction, child: of)
     }
     else if let mirrorFields = item.asMirror?.fragments.mirrorFields {
-      return publication(from: mirrorFields, reaction: item.asMirror?.mirrorReaction, mirror: of)
+      return publication(from: mirrorFields, reaction: item.asMirror?.mirrorReaction)
     }
     else {
       return nil
@@ -260,7 +248,7 @@ extension Model.Publication {
       return publication(from: commentFields, reaction: item.asComment?.commentReaction, child: of)
     }
     else if let mirrorFields = item.asMirror?.fragments.mirrorFields {
-      return publication(from: mirrorFields, reaction: item.asMirror?.mirrorReaction, mirror: of)
+      return publication(from: mirrorFields, reaction: item.asMirror?.mirrorReaction)
     }
     else {
       return nil

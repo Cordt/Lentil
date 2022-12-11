@@ -216,7 +216,7 @@ struct Timeline: ReducerProtocol {
               )
             }
             else {
-              let exploration = try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id)
+              let exploration = try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, nil)
               await send(
                 .publicationsResponse(
                   Action.PublicationsResponse(

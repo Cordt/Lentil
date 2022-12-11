@@ -33,4 +33,8 @@ extension Model.Profile {
   static func from(_ profiles: ProfilesQuery.Data.Profile) -> [Self] {
     return profiles.items.compactMap { self.from($0.fragments.profileFields) }
   }
+  
+  static func from(_ profile: MirrorBaseFields.Profile) -> Self {
+    from(profile.fragments.profileFields)
+  }
 }

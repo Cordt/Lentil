@@ -31,9 +31,9 @@ struct Post: ReducerProtocol {
       self.comments.first?.post.publication.profile.name ?? self.comments.first?.post.publication.profile.handle
     }
     var mirrorer: String? {
-      guard case let .mirror(mirroredPublication) = self.post.publication.typename
+      guard case let .mirror(mirroringProfile) = self.post.publication.typename
       else { return nil }
-      return mirroredPublication?.profile.name ?? mirroredPublication?.profile.handle
+      return mirroringProfile?.name ?? mirroringProfile?.handle
     }
     
   }
