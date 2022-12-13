@@ -94,13 +94,15 @@ extension AuthTokenApi: DependencyKey {
     checkFor: AuthTokenStorage.checkFor,
     delete: AuthTokenStorage.delete
   )
-  
+
+  #if DEBUG
   static let previewValue = AuthTokenApi(
     store: { _, _ in () },
     load: { _ in "abc-def" },
     checkFor: { _ in true },
     delete: { () }
   )
+  #endif
 }
 
 extension DependencyValues {

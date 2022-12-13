@@ -96,10 +96,10 @@ struct Profile: ReducerProtocol {
           
           publications
             .filter { $0.typename == .post }
-            .forEach { publicationsCache.updateOrAppend($0) }
+            .forEach { Cache.shared.updateOrAppend($0) }
           
           publications
-            .forEach { profilesCache.updateOrAppend($0.profile) }
+            .forEach { Cache.shared.updateOrAppend($0.profile) }
           
           return .none
           

@@ -24,7 +24,8 @@ struct Wallet: ReducerProtocol {
     case connectTapped
     case signInTapped
     case challengeResponse(TaskResult<Challenge>)
-    case authenticationChallengeResponse(TaskResult<AuthenticationTokens>)
+    case authenticationResponse
+    case failedToLoadAuthTokens
     case defaultProfileResponse(Model.Profile)
     case failedToLoadDefaultProfile
     case errorMessageUpdated(Toast?)
@@ -32,7 +33,6 @@ struct Wallet: ReducerProtocol {
   
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.authTokenApi) var authTokenApi
   @Dependency(\.profileStorageApi) var profileStorageApi
   enum WalletEventsCancellationID {}
   
@@ -93,47 +93,39 @@ struct Wallet: ReducerProtocol {
         log("Trying to sign challenge", level: .info)
         guard let address = state.address else { return .none }
         
-        return .task { [walletConnect = self.walletConnect] in
-          if try authTokenApi.checkFor(.access) { try authTokenApi.delete() }
+        return .run { [walletConnect = self.walletConnect] send in
           let signature = try await walletConnect.sign(challenge.message)
-          return await .authenticationChallengeResponse(
-            TaskResult {
-              try await lensApi.authenticate(address, signature).data
-            }
-          )
+          try await lensApi.authenticate(address, signature)
+          log("Successfully authenticated user with challenge", level: .info)
+          await send(.authenticationResponse)
+
+        } catch: { error, send in
+          await send(.failedToLoadAuthTokens)
+          log("Failed to authenticate user", level: .info, error: error)
         }
+        
+      case .failedToLoadAuthTokens:
+        log("Could not retrieve tokens for signature", level: .error)
+        state.errorMessage = Toast(message: "We couldn't authenticate you :( Please try again")
+        return .none
         
       case let .challengeResponse(.failure(error)):
         log("Could not retrieve challenge to sign", level: .error, error: error)
         return .none
         
-      case .authenticationChallengeResponse(.success(let tokens)):
-        log("Successfully retrieved tokens", level: .info)
-        do {
-          try authTokenApi.store(.access, tokens.accessToken)
-          try authTokenApi.store(.refresh, tokens.refreshToken)
-        } catch let error {
-          log("Could not store auth tokens", level: .error, error: error)
-        }
-        
+      case .authenticationResponse:
+        log("Trying to fetch default profile", level: .info)
         guard let address = state.address else { return .none }
+        
         return .run { send in
-          do {
-            let defaultProfile = try await lensApi.defaultProfile(address).data
-            await send(.defaultProfileResponse(defaultProfile))
-          } catch let error {
-            try authTokenApi.delete()
-            await send(.failedToLoadDefaultProfile)
-            log("Could not retrieve profile for user", level: .info, error: error)
-          }
+          let defaultProfile = try await lensApi.defaultProfile(address).data
+          await send(.defaultProfileResponse(defaultProfile))
+          
+        } catch: { error, send in
+          await send(.failedToLoadDefaultProfile)
+          log("Failed to load default profile for user", level: .info, error: error)
         }
-        
-      case .authenticationChallengeResponse(.failure(let error)):
-        log("Could not retrieve tokens for signature", level: .error, error: error)
-        state.errorMessage = Toast(message: "We couldn't authenticate you :( Please try again")
-        return .none
-        
-        
+      
       case .defaultProfileResponse(let defaultProfile):
         do {
           guard let address = state.address else { return .none }

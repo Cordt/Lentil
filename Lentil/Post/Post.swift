@@ -94,7 +94,7 @@ struct Post: ReducerProtocol {
               )
               
               result.data
-                .forEach { publicationsCache.updateOrAppend($0) }
+                .forEach { Cache.shared.updateOrAppend($0) }
               
               return .none
               

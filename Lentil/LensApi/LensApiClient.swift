@@ -66,6 +66,8 @@ struct Challenge: Equatable {
 }
 
 enum ApiError: Error, Equatable {
+  case unauthenticated
+  
   case requestFailed
   case graphQLError
   case cannotParseResponse
@@ -80,7 +82,6 @@ struct LensApi {
   ) async throws -> QueryResult<Challenge>
   
   var verify: @Sendable (
-    _ accessToken: String
   ) async throws -> QueryResult<Bool>
   
   var publication: @Sendable (
@@ -144,11 +145,10 @@ struct LensApi {
   var authenticate: @Sendable (
     _ address: String,
     _ signature: String
-  ) async throws -> MutationResult<AuthenticationTokens>
+  ) async throws -> Void
   
   var refreshAuthentication: @Sendable (
-    _ refreshToken: String
-  ) async throws -> MutationResult<AuthenticationTokens>
+  ) async throws -> Void
   
   var createPost: @Sendable (
     _ profileId: String,

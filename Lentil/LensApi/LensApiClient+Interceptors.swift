@@ -64,15 +64,13 @@ class OriginHeaderInterceptor: ApolloInterceptor {
 }
 
 class TokenAddingInterceptor: ApolloInterceptor {
-  @Dependency(\.authTokenApi) var authTokenApi
-  
   func interceptAsync<Operation>(
     chain: RequestChain,
     request: HTTPRequest<Operation>,
     response: HTTPResponse<Operation>?,
     completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) where Operation : GraphQLOperation {
       do {
-        let accessToken = try authTokenApi.load(.access)
+        let accessToken = try AuthTokenStorage.load(token: .access)
         request.addHeader(
           name: "x-access-token",
           value: accessToken

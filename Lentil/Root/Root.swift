@@ -36,8 +36,7 @@ struct Root: ReducerProtocol {
     case switchProgressLabel
     
     case checkAuthenticationStatus
-    case refreshTokenResponse(_ accessToken: String, QueryResult<Bool>)
-    case authTokenResponse(TaskResult<MutationResult<AuthenticationTokens>>)
+    case refreshTokenResponse(QueryResult<Bool>)
     
     case timelineAction(Timeline.Action)
     
@@ -109,19 +108,16 @@ struct Root: ReducerProtocol {
                try self.authTokenApi.checkFor(.refresh),
                self.profileStorageApi.load() != nil {
               
-              let accessToken = try self.authTokenApi.load(.access)
-              let refreshToken = try self.authTokenApi.load(.refresh)
-              
               // Verify that the access token is still valid
               return .run { send in
-                try await send(.refreshTokenResponse(refreshToken, self.lensApi.verify(accessToken)))
+                let valid = try await self.lensApi.verify()
+                await send(.refreshTokenResponse(valid))
               }
             }
             else {
               try self.authTokenApi.delete()
               self.profileStorageApi.remove()
-              publicationsCache.removeAll()
-              profilesCache.removeAll()
+              Cache.shared.clearCache()
               
               // No valid tokens or profile available, open app
               return .run { send in
@@ -137,7 +133,7 @@ struct Root: ReducerProtocol {
             }
           }
           
-        case .refreshTokenResponse(let refreshToken, let tokenIsValid):
+        case .refreshTokenResponse(let tokenIsValid):
           if tokenIsValid.data {
             // Valid tokens and profile available, open app
             return .run { send in
@@ -146,41 +142,19 @@ struct Root: ReducerProtocol {
             }
           }
           else {
-            return .task {
-              await .authTokenResponse(
-                TaskResult { try await self.lensApi.refreshAuthentication(refreshToken) }
-              )
-            }
-          }
-          
-        case .authTokenResponse(let .success(tokens)):
-          do {
-            try self.authTokenApi.store(.access, tokens.data.accessToken)
-            try self.authTokenApi.store(.refresh, tokens.data.refreshToken)
-            
-            // Valid tokens and profile available, open app
             return .run { send in
+              try await self.lensApi.refreshAuthentication()
               try await Task.sleep(nanoseconds: NSEC_PER_SEC)
               await send(.hideLoadingScreen)
-            }
-            
-          } catch let error {
-            log("Failed to store access tokens", level: .error, error: error)
-            return .run { send in
-              try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              
+            } catch: { error, send in
+              try? self.authTokenApi.delete()
+              self.profileStorageApi.remove()
+              Cache.shared.clearCache()
+              log("Failed to refresh token, logging user out", level: .debug, error: error)
+              try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
               await send(.hideLoadingScreen)
             }
-          }
-          
-        case .authTokenResponse(let .failure(error)):
-          try? self.authTokenApi.delete()
-          self.profileStorageApi.remove()
-          publicationsCache.removeAll()
-          profilesCache.removeAll()
-          log("Failed to refresh token, logging user out", level: .debug, error: error)
-          return .run { send in
-            try await Task.sleep(nanoseconds: NSEC_PER_SEC)
-            await send(.hideLoadingScreen)
           }
           
         case .timelineAction:
@@ -189,7 +163,7 @@ struct Root: ReducerProtocol {
         case .addPath(let destinationPath):
           switch destinationPath.destination {
             case .publication(let elementId):
-              guard let publication = publicationsCache[id: elementId]
+              guard let publication = Cache.shared.publication(elementId)
               else { return .none }
               
               switch publication.typename {
@@ -206,7 +180,7 @@ struct Root: ReducerProtocol {
               }
               
             case .profile(let elementId):
-              guard let profile = profilesCache[id: elementId]
+              guard let profile = Cache.shared.profile(elementId)
               else { return .none }
               
               let profileState = Profile.State(navigationId: destinationPath.navigationId, profile: profile)

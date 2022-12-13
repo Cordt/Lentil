@@ -26,8 +26,9 @@ extension LensApi: DependencyKey {
       )
     },
     
-    verify: { accessToken in
-      try await run(
+    verify: {
+      let accessToken = try AuthTokenStorage.load(token: .access)
+      return try await run(
         query: VerifyQuery(request: VerifyRequest(accessToken: accessToken)),
         mapResult: { data in
           QueryResult(
@@ -203,26 +204,19 @@ extension LensApi: DependencyKey {
       try await run(
         mutation: AuthenticateMutation(request: SignedAuthChallenge(address: address, signature: signature)),
         mapResult: { data in
-          MutationResult(
-            data: AuthenticationTokens(
-              accessToken: data.authenticate.accessToken,
-              refreshToken: data.authenticate.refreshToken
-            )
-          )
+          try AuthTokenStorage.store(token: .access, key: data.authenticate.accessToken)
+          try AuthTokenStorage.store(token: .refresh, key: data.authenticate.refreshToken)
         }
       )
     },
     
-    refreshAuthentication: { refreshToken in
+    refreshAuthentication: {
+      let refreshToken = try AuthTokenStorage.load(token: .refresh)
       try await run(
         mutation: RefreshMutation(request: RefreshRequest(refreshToken: refreshToken)),
         mapResult: { data in
-          MutationResult(
-            data: AuthenticationTokens(
-              accessToken: data.refresh.accessToken,
-              refreshToken: data.refresh.refreshToken
-            )
-          )
+          try AuthTokenStorage.store(token: .access, key: data.refresh.accessToken)
+          try AuthTokenStorage.store(token: .refresh, key: data.refresh.refreshToken)
         }
       )
     },
@@ -322,7 +316,7 @@ extension LensApi: DependencyKey {
 #if DEBUG
   static let previewValue = LensApi(
     authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
-    verify: { _ in QueryResult(data: true) },
+    verify: { QueryResult(data: true) },
     publication: { _ in QueryResult(data: MockData.mockPublications[0]) },
     publications: { _, _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     explorePublications: { _, _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
@@ -339,8 +333,8 @@ extension LensApi: DependencyKey {
       else { throw ApiError.requestFailed }
     },
     broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
-    authenticate: { _, _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
-    refreshAuthentication: { _ in MutationResult(data: AuthenticationTokens(accessToken: "abc", refreshToken: "def")) },
+    authenticate: { _, _ in },
+    refreshAuthentication: {},
     createPost: { _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
     createComment: { _, _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
     addReaction: { _, _, _ in },

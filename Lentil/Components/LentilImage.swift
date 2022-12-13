@@ -18,31 +18,17 @@ struct LentilImage: ReducerProtocol {
     let kind: Kind
     var imageUrl: URL
     fileprivate var storedImage: StoredImage
-    fileprivate var cachedImage: Image? {
-      if let medium = mediaCache[id: self.imageUrl.absoluteString],
-         case .image = medium.mediaType,
-         let imageData = mediaDataCache[id: self.imageUrl.absoluteString]?.data,
-         let uiImage = imageData.image(for: self.kind, and: .display) {
-        return Image(uiImage: uiImage)
-      }
-      else {
-        return nil
-      }
-    }
     
     init(imageUrl: URL, kind: Kind) {
       self.imageUrl = imageUrl
       self.kind = kind
       self.storedImage = .notLoaded
-      
-      if let image = cachedImage {
-        self.storedImage = .image(image)
-      }
     }
   }
   
   enum Action: Equatable {
     case didAppear
+    case didAppearFinishing
     case updateImage(TaskResult<State.StoredImage>)
   }
   
@@ -51,32 +37,36 @@ struct LentilImage: ReducerProtocol {
   func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
     switch action {
       case .didAppear:
+        return .none
+        
+      case .didAppearFinishing:
         switch state.storedImage {
           case .notLoaded:
-            if let image = state.cachedImage {
-              state.storedImage = .image(image)
-              return .none
-            }
-            else {
-              return .task(
-                priority: .userInitiated,
-                operation: { [url = state.imageUrl, kind = state.kind] in
-                  let data = try await lensApi.fetchImage(url)
-                  if let storageData = data.imageData(for: kind, and: .storage),
-                     let displayImage = data.image(for: kind, and: .display) {
-                    mediaCache.updateOrAppend(Model.Media(mediaType: .image(.jpeg), url: url))
-                    mediaDataCache.updateOrAppend(Model.MediaData(url: url.absoluteString, data: storageData))
-                    return await .updateImage(TaskResult { .image(Image(uiImage: displayImage)) })
-                  }
-                  else {
-                    return await .updateImage(TaskResult { .notAvailable })
-                  }
-                },
-                catch: { error in
-                  return .updateImage(.failure(error))
+            return .task(priority: .background) { [imageUrl = state.imageUrl, kind = state.kind] in
+              if let medium = Cache.shared.medium(imageUrl.absoluteString),
+                 case .image = medium.mediaType,
+                 let imageData = Cache.shared.mediumData(imageUrl.absoluteString)?.data,
+                 let uiImage = imageData.image(for: kind, and: .display) {
+                
+                return await .updateImage(TaskResult { .image(Image(uiImage: uiImage)) })
+              }
+              else {
+                let data = try await lensApi.fetchImage(imageUrl)
+                if let storageData = data.imageData(for: kind, and: .storage),
+                   let displayImage = data.image(for: kind, and: .display) {
+                  Cache.shared.updateOrAppend(Model.Media(mediaType: .image(.jpeg), url: imageUrl))
+                  Cache.shared.updateOrAppend(Model.MediaData(url: imageUrl.absoluteString, data: storageData))
+                  return await .updateImage(TaskResult { .image(Image(uiImage: displayImage)) })
                 }
-              )
+                else {
+                  return await .updateImage(TaskResult { .notAvailable })
+                }
+              }
             }
+            catch: { error in
+              return .updateImage(.failure(error))
+            }
+            
           case .image, .notAvailable:
             return .none
         }
@@ -123,6 +113,10 @@ struct LentilImageView: View {
         case .notLoaded:
           self.placeholder
             .onAppear { viewStore.send(.didAppear) }
+            .task {
+              await viewStore.send(.didAppearFinishing)
+                .finish()
+            }
           
         case .image(let image):
           image
