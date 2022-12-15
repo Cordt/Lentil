@@ -69,7 +69,7 @@ struct Profile: ReducerProtocol {
           return .task { [id = state.profile.id] in
             await .publicationsResponse(
               TaskResult {
-                try await lensApi.publications(40, nil, id, [.post], .fetchIgnoringCacheData, id).data
+                try await lensApi.publications(40, nil, id, [.post], id).data
               }
             )
           }

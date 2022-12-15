@@ -104,12 +104,21 @@ extension AuthTokenApi: DependencyKey {
 }
 
 #if DEBUG
+import XCTestDynamicOverlay
+
 extension AuthTokenApi {
   static let previewValue = AuthTokenApi(
     store: { _, _ in () },
     load: { _ in "abc-def" },
     checkFor: { _ in true },
     delete: { () }
+  )
+  
+  static let testValue = AuthTokenApi(
+    store: unimplemented("store"),
+    load: unimplemented("load"),
+    checkFor: unimplemented("checkFor"),
+    delete: unimplemented("delete")
   )
 }
 #endif

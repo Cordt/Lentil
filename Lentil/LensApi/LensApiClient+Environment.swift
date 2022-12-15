@@ -4,10 +4,14 @@
 import Apollo
 import ComposableArchitecture
 import Foundation
-#if DEBUG
-import UIKit
-#endif
 
+
+extension DependencyValues {
+  var lensApi: LensApi {
+    get { self[LensApi.self] }
+    set { self[LensApi.self] = newValue }
+  }
+}
 
 extension LensApi: DependencyKey {
   static let liveValue = LensApi(
@@ -53,8 +57,8 @@ extension LensApi: DependencyKey {
         }
       )
     },
-  
-    publications: { limit, cursor, profileId, publicationTypes, overridingCachePolicy, reactionsForProfile in
+    
+    publications: { limit, cursor, profileId, publicationTypes, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
       return try await run(
@@ -67,7 +71,7 @@ extension LensApi: DependencyKey {
           ),
           reactionRequest: reactionFieldRequest
         ),
-        cachePolicy: overridingCachePolicy ?? .default,
+        cachePolicy: .fetchIgnoringCacheData,
         mapResult: { data in
           QueryResult(
             data: data.publications.items.compactMap { Model.Publication.publication(from: $0) },
@@ -77,7 +81,7 @@ extension LensApi: DependencyKey {
       )
     },
     
-    explorePublications: { limit, cursor, sortCriteria, publicationTypes, overridingCachePolicy, reactionsForProfile in
+    explorePublications: { limit, cursor, sortCriteria, publicationTypes, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
       return try await run(
@@ -90,7 +94,7 @@ extension LensApi: DependencyKey {
           ),
           reactionRequest: reactionFieldRequest
         ),
-        cachePolicy: overridingCachePolicy ?? .default,
+        cachePolicy: .default,
         mapResult: { data in
           QueryResult(
             data: data.explorePublications.items.compactMap { Model.Publication.publication(from: $0) },
@@ -100,7 +104,7 @@ extension LensApi: DependencyKey {
       )
     },
     
-    feed: { limit, cursor, profileId, overridingCachePolicy, reactionsForProfile in
+    feed: { limit, cursor, profileId, reactionsForProfile in
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
       return try await run(
@@ -112,7 +116,7 @@ extension LensApi: DependencyKey {
           ),
           reactionRequest: reactionFieldRequest
         ),
-        cachePolicy: overridingCachePolicy ?? .default,
+        cachePolicy: .default,
         mapResult: { data in
           QueryResult(data: data.feed.items.compactMap { Model.Publication.publication(from: $0.root) })
         }
@@ -312,15 +316,21 @@ extension LensApi: DependencyKey {
       )
     }
   )
+}
   
 #if DEBUG
+import UIKit
+import XCTestDynamicOverlay
+
+
+extension LensApi {
   static let previewValue = LensApi(
     authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
     verify: { QueryResult(data: true) },
     publication: { _ in QueryResult(data: MockData.mockPublications[0]) },
-    publications: { _, _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
-    explorePublications: { _, _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
-    feed: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    publications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    explorePublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    feed: { _, _, _, _ in QueryResult(data: MockData.mockPublications) },
     commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
     defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
     profile: { _ in QueryResult(data: MockData.mockProfiles[0]) },
@@ -342,13 +352,26 @@ extension LensApi: DependencyKey {
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }
   )
   
-  static let testValue: LensApi = previewValue
+  static var testValue = LensApi(
+    authenticationChallenge: unimplemented("authenticationChallenge"),
+    verify: unimplemented("verify"),
+    publication: unimplemented("publication"),
+    publications: unimplemented("publications"),
+    explorePublications: unimplemented("explorePublications"),
+    feed: unimplemented("feed"),
+    commentsOfPublication: unimplemented("commentsOfPublication"),
+    defaultProfile: unimplemented("defaultProfile"),
+    profile: unimplemented("profile"),
+    profiles: unimplemented("profiles"),
+    fetchImage: unimplemented("fetchImage"),
+    broadcast: unimplemented("broadcast"),
+    authenticate: unimplemented("authenticate"),
+    refreshAuthentication: unimplemented("refreshAuthentication"),
+    createPost: unimplemented("createPost"),
+    createComment: unimplemented("createComment"),
+    addReaction: unimplemented("addReaction"),
+    removeReaction: unimplemented("removeReaction"),
+    getDefaultProfileTypedData: unimplemented("getDefaultProfileTypedData")
+  )
+}
 #endif
-}
-
-extension DependencyValues {
-  var lensApi: LensApi {
-    get { self[LensApi.self] }
-    set { self[LensApi.self] = newValue }
-  }
-}

@@ -8,12 +8,10 @@ import ComposableArchitecture
 
 @MainActor
 final class RootTests: XCTestCase {
-  
   override func setUpWithError() throws {}
   override func tearDownWithError() throws {}
   
   func testValidatesTokenAndOpensApp() async throws {
-    
     let store = TestStore(
       initialState: Root.State(
         isLoading: true,
@@ -24,24 +22,13 @@ final class RootTests: XCTestCase {
     
     let clock = TestClock()
     
-    store.dependencies.authTokenApi = AuthTokenApi(
-      store: { _, _ in () },
-      load: { _ in "abc-def" },
-      checkFor: { _ in true },
-      delete: { () }
-    )
-    
-    store.dependencies.profileStorageApi = ProfileStorageApi(
-      store: { _ in },
-      load: { UserProfile(id: "abc", handle: "@Cordt", address: "0x123") },
-      remove: {}
-    )
-    
+    store.dependencies.authTokenApi.checkFor = { _ in true }
+    store.dependencies.authTokenApi.load = { _ in "token" }
+    store.dependencies.profileStorageApi.load = { UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
     store.dependencies.lensApi.verify = {
       try await clock.sleep(for: .seconds(1))
       return QueryResult(data: true)
     }
-    
     store.dependencies.withRandomNumberGenerator = WithRandomNumberGenerator(PredictableNumberGenerator())
     store.dependencies.continuousClock = clock
     

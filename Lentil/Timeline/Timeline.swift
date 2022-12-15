@@ -203,8 +203,8 @@ struct Timeline: ReducerProtocol {
           state.loadingInFlight = true
           return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
             if let id {
-              let feed = try await lensApi.feed(40, cursorFeed, id, .fetchIgnoringCacheData, id)
-              let exploration = try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, id)
+              let feed = try await lensApi.feed(40, cursorFeed, id, id)
+              let exploration = try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment, .mirror], id)
               await send(
                 .publicationsResponse(
                   Action.PublicationsResponse(
@@ -216,7 +216,7 @@ struct Timeline: ReducerProtocol {
               )
             }
             else {
-              let exploration = try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], .fetchIgnoringCacheData, nil)
+              let exploration = try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], nil)
               await send(
                 .publicationsResponse(
                   Action.PublicationsResponse(

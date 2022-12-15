@@ -45,22 +45,6 @@ struct ProfileStorageApi {
   var remove: () -> Void
 }
 
-extension ProfileStorageApi: DependencyKey {
-  static let liveValue = ProfileStorageApi(
-    store: ProfileStorage.store,
-    load: ProfileStorage.load,
-    remove: ProfileStorage.remove
-  )
-  
-  #if DEBUG
-  static let previewValue = ProfileStorageApi(
-    store: { _ in },
-    load: { mockUserProfile },
-    remove: {}
-  )
-  #endif
-}
-
 extension DependencyValues {
   var profileStorageApi: ProfileStorageApi {
     get { self[ProfileStorageApi.self] }
@@ -68,8 +52,33 @@ extension DependencyValues {
   }
 }
 
+extension ProfileStorageApi: DependencyKey {
+  static let liveValue = ProfileStorageApi(
+    store: ProfileStorage.store,
+    load: ProfileStorage.load,
+    remove: ProfileStorage.remove
+  )
+}
+
+
 
 #if DEBUG
+import XCTestDynamicOverlay
+
+extension ProfileStorageApi {
+  static let previewValue = ProfileStorageApi(
+    store: { _ in },
+    load: { mockUserProfile },
+    remove: {}
+  )
+  
+  static let testValue = ProfileStorageApi(
+    store: unimplemented("store"),
+    load: unimplemented("load"),
+    remove: unimplemented("remove")
+  )
+}
+
 var mockUserProfile = UserProfile(
   id: "3",
   handle: "cordt.lens",
