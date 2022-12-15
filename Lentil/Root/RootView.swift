@@ -88,6 +88,8 @@ struct RootView: View {
             }
           }
         }
+        .onAppear { viewStore.send(.rootScreenAppeared) }
+        .onDisappear { viewStore.send(.rootScreenDisappeared) }
       }
     }
   }

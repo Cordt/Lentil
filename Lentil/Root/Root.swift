@@ -38,6 +38,9 @@ struct Root: ReducerProtocol {
     case checkAuthenticationStatus
     case refreshTokenResponse(QueryResult<Bool>)
     
+    case rootScreenAppeared
+    case rootScreenDisappeared
+    
     case timelineAction(Timeline.Action)
     
     case addPath(DestinationPath)
@@ -53,28 +56,18 @@ struct Root: ReducerProtocol {
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
   @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.withRandomNumberGenerator) var randomNumberGenerator
   private enum TimerID {}
+  private enum NavigationEventsID {}
 
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {
         case .loadingScreenAppeared:
-          state.currentText = Int.random(in: 0..<state.loadingText.count)
+          state.currentText = Int(self.randomNumberGenerator.callAsFunction {
+            $0.next(upperBound: UInt8(state.loadingText.count) - 1)
+          })
           return .merge(
-            .run { send in
-              do {
-                for try await event in self.navigationApi.eventStream {
-                  switch event {
-                    case .append(let destinationPath):
-                      await send(.addPath(destinationPath))
-                    case .remove(let destinationPath):
-                      await send(.removePath(destinationPath))
-                  }
-                }
-              } catch let error {
-                log("Failed to receive navigation events", level: .error, error: error)
-              }
-            },
             Effect(value: .startTimer),
             Effect(value: .checkAuthenticationStatus)
           )
@@ -121,14 +114,14 @@ struct Root: ReducerProtocol {
               
               // No valid tokens or profile available, open app
               return .run { send in
-                try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+                try await self.clock.sleep(for: .seconds(1))
                 await send(.hideLoadingScreen)
               }
             }
           } catch let error {
             log("Failed to load access tokens or user profile", level: .error, error: error)
             return .run { send in
-              try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              try await self.clock.sleep(for: .seconds(1))
               await send(.hideLoadingScreen)
             }
           }
@@ -137,14 +130,14 @@ struct Root: ReducerProtocol {
           if tokenIsValid.data {
             // Valid tokens and profile available, open app
             return .run { send in
-              try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              try await self.clock.sleep(for: .seconds(1))
               await send(.hideLoadingScreen)
             }
           }
           else {
             return .run { send in
               try await self.lensApi.refreshAuthentication()
-              try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              try await self.clock.sleep(for: .seconds(1))
               await send(.hideLoadingScreen)
               
             } catch: { error, send in
@@ -152,10 +145,30 @@ struct Root: ReducerProtocol {
               self.profileStorageApi.remove()
               Cache.shared.clearCache()
               log("Failed to refresh token, logging user out", level: .debug, error: error)
-              try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
+              try? await self.clock.sleep(for: .seconds(1))
               await send(.hideLoadingScreen)
             }
           }
+          
+        case .rootScreenAppeared:
+          return .run { send in
+            do {
+              for try await event in self.navigationApi.eventStream {
+                switch event {
+                  case .append(let destinationPath):
+                    await send(.addPath(destinationPath))
+                  case .remove(let destinationPath):
+                    await send(.removePath(destinationPath))
+                }
+              }
+            } catch let error {
+              log("Failed to receive navigation events", level: .error, error: error)
+            }
+          }
+          .cancellable(id: NavigationEventsID.self, cancelInFlight: true)
+          
+        case .rootScreenDisappeared:
+          return .cancel(id: NavigationEventsID.self)
           
         case .timelineAction:
           return .none
@@ -219,7 +232,7 @@ struct Root: ReducerProtocol {
                     if let publication = try await self.lensApi.publication(txHash).data {
                       return .timelineAction(.publicationResponse(publication))
                     }
-                    try await Task.sleep(nanoseconds: NSEC_PER_SEC * 2)
+                    try await self.clock.sleep(for: .seconds(2))
                     attempts -= 1
                   }
                   log("Failed to load recently created publication for TX Hash after 5 retries \(txHash)", level: .warn)

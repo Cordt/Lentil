@@ -9,8 +9,10 @@ import XCTest
 @testable import Lentil
 
 final class LentilTests: XCTestCase {
-
-    override func setUpWithError() throws {}
-    override func tearDownWithError() throws {}
-
+  
+  override func setUpWithError() throws {}
+  override func tearDownWithError() throws {}
+  
+  
+  
 }

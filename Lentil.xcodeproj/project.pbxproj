@@ -27,6 +27,9 @@
 		372248DA28DB479D0066BCE5 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248D928DB479D0066BCE5 /* TimelineView.swift */; };
 		372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DB28DB47A80066BCE5 /* Timeline.swift */; };
 		372248DF28DBFF080066BCE5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248DE28DBFF080066BCE5 /* Theme.swift */; };
+		372D1782294B043A008D2BEF /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 372D1781294B043A008D2BEF /* Sentry */; };
+		372D1788294B0771008D2BEF /* RootTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D1787294B0771008D2BEF /* RootTests.swift */; };
+		372D178A294B0E41008D2BEF /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D1789294B0E41008D2BEF /* TestHelper.swift */; };
 		373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */; };
 		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
 		373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */ = {isa = PBXBuildFile; productRef = 373DAF1E29305C3700648C8E /* SwiftUINavigation */; };
@@ -49,7 +52,6 @@
 		37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */; };
 		37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */; };
 		37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */; };
-		37BBB13428F3B42500A6D202 /* LensApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB13328F3B42500A6D202 /* LensApiTests.swift */; };
 		37BBBAFE2901292900E74462 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBBAFD2901292900E74462 /* Keychain.swift */; };
 		37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */; };
 		37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* LentilButton.swift */; };
@@ -122,6 +124,8 @@
 		372248D928DB479D0066BCE5 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		372248DB28DB47A80066BCE5 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		372248DE28DBFF080066BCE5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		372D1787294B0771008D2BEF /* RootTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTests.swift; sourceTree = "<group>"; };
+		372D1789294B0E41008D2BEF /* TestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
 		373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+ProfileModel.swift"; sourceTree = "<group>"; };
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		3758528C293281FD0017A415 /* NavigationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationApi.swift; sourceTree = "<group>"; };
@@ -147,7 +151,6 @@
 		37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Run.swift"; sourceTree = "<group>"; };
 		37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Environment.swift"; sourceTree = "<group>"; };
 		37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Interceptors.swift"; sourceTree = "<group>"; };
-		37BBB13328F3B42500A6D202 /* LensApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiTests.swift; sourceTree = "<group>"; };
 		37BBBAFD2901292900E74462 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenStorage.swift; sourceTree = "<group>"; };
 		37BE767028FAA73800282ED0 /* LentilButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilButton.swift; sourceTree = "<group>"; };
@@ -203,6 +206,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				372D1782294B043A008D2BEF /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +283,14 @@
 				372248DB28DB47A80066BCE5 /* Timeline.swift */,
 			);
 			path = Timeline;
+			sourceTree = "<group>";
+		};
+		372D1786294B0752008D2BEF /* RootTests */ = {
+			isa = PBXGroup;
+			children = (
+				372D1787294B0771008D2BEF /* RootTests.swift */,
+			);
+			path = RootTests;
 			sourceTree = "<group>";
 		};
 		3737037C291FF56E0006FB04 /* Righteous */ = {
@@ -375,9 +387,11 @@
 		3777831528CCA05E00E7E32A /* LentilTests */ = {
 			isa = PBXGroup;
 			children = (
+				372D1786294B0752008D2BEF /* RootTests */,
 				37BBB13228F3B41700A6D202 /* LensApiTests */,
 				3777831628CCA05E00E7E32A /* LentilTests.swift */,
 				372248CB28DADE3C0066BCE5 /* HelperTests.swift */,
+				372D1789294B0E41008D2BEF /* TestHelper.swift */,
 			);
 			path = LentilTests;
 			sourceTree = "<group>";
@@ -417,7 +431,6 @@
 		37BBB13228F3B41700A6D202 /* LensApiTests */ = {
 			isa = PBXGroup;
 			children = (
-				37BBB13328F3B42500A6D202 /* LensApiTests.swift */,
 			);
 			path = LensApiTests;
 			sourceTree = "<group>";
@@ -554,6 +567,7 @@
 			);
 			name = LentilTests;
 			packageProductDependencies = (
+				372D1781294B043A008D2BEF /* Sentry */,
 			);
 			productName = LentilTests;
 			productReference = 3777831228CCA05E00E7E32A /* LentilTests.xctest */;
@@ -748,9 +762,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37BBB13428F3B42500A6D202 /* LensApiTests.swift in Sources */,
 				3777831728CCA05E00E7E32A /* LentilTests.swift in Sources */,
+				372D1788294B0771008D2BEF /* RootTests.swift in Sources */,
 				372248CC28DADE3C0066BCE5 /* HelperTests.swift in Sources */,
+				372D178A294B0E41008D2BEF /* TestHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1157,6 +1172,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		372D1781294B043A008D2BEF /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 		373DAF1E29305C3700648C8E /* SwiftUINavigation */ = {
 			isa = XCSwiftPackageProductDependency;

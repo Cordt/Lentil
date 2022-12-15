@@ -341,6 +341,8 @@ extension LensApi: DependencyKey {
     removeReaction: { _, _, _ in },
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }
   )
+  
+  static let testValue: LensApi = previewValue
 #endif
 }
 

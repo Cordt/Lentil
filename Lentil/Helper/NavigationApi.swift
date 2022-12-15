@@ -7,24 +7,6 @@ import Foundation
 import SwiftUI
 
 
-extension NavigationApi: DependencyKey {
-  static var liveValue: NavigationApi {
-    NavigationApi(
-      eventStream: Navigation.shared.eventStream,
-      pathBinding: Navigation.shared.pathBinding,
-      append: Navigation.shared.append,
-      remove: Navigation.shared.remove
-    )
-  }
-}
-
-extension DependencyValues {
-  var navigationApi: NavigationApi {
-    get { self[NavigationApi.self] }
-    set { self[NavigationApi.self] = newValue }
-  }
-}
-
 struct NavigationApi {
   var eventStream: NavigationEvents
   var pathBinding: () -> Binding<IdentifiedArrayOf<DestinationPath>>
@@ -94,3 +76,32 @@ class NavigationEvents: AsyncSequence, AsyncIteratorProtocol {
   }
 }
 
+
+extension DependencyValues {
+  var navigationApi: NavigationApi {
+    get { self[NavigationApi.self] }
+    set { self[NavigationApi.self] = newValue }
+  }
+}
+
+extension NavigationApi: DependencyKey {
+  static var liveValue: NavigationApi {
+    NavigationApi(
+      eventStream: Navigation.shared.eventStream,
+      pathBinding: Navigation.shared.pathBinding,
+      append: Navigation.shared.append,
+      remove: Navigation.shared.remove
+    )
+  }
+}
+
+#if DEBUG
+extension NavigationApi {
+  static var testValue = NavigationApi(
+    eventStream: Navigation.shared.eventStream,
+    pathBinding: Navigation.shared.pathBinding,
+    append: Navigation.shared.append,
+    remove: Navigation.shared.remove
+  )
+}
+#endif

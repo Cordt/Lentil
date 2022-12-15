@@ -87,6 +87,13 @@ struct AuthTokenApi {
   var delete: () throws -> Void
 }
 
+extension DependencyValues {
+  var authTokenApi: AuthTokenApi {
+    get { self[AuthTokenApi.self] }
+    set { self[AuthTokenApi.self] = newValue }
+  }
+}
+
 extension AuthTokenApi: DependencyKey {
   static let liveValue = AuthTokenApi(
     store: AuthTokenStorage.store,
@@ -94,20 +101,15 @@ extension AuthTokenApi: DependencyKey {
     checkFor: AuthTokenStorage.checkFor,
     delete: AuthTokenStorage.delete
   )
+}
 
-  #if DEBUG
+#if DEBUG
+extension AuthTokenApi {
   static let previewValue = AuthTokenApi(
     store: { _, _ in () },
     load: { _ in "abc-def" },
     checkFor: { _ in true },
     delete: { () }
   )
-  #endif
 }
-
-extension DependencyValues {
-  var authTokenApi: AuthTokenApi {
-    get { self[AuthTokenApi.self] }
-    set { self[AuthTokenApi.self] = newValue }
-  }
-}
+#endif
