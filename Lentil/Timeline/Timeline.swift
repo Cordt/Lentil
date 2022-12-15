@@ -16,7 +16,7 @@ struct Timeline: ReducerProtocol {
     var scrollPosition: ScrollPosition?
     var cursorFeed: String?
     var cursorExplore: String?
-    var indexingPost: Bool = false
+    var isIndexing: Toast? = nil
     var loadingInFlight: Bool = false
     
     var connectWallet: Wallet.State? = nil
@@ -38,6 +38,8 @@ struct Timeline: ReducerProtocol {
     case publicationResponse(Model.Publication?)
     case publicationsResponse(PublicationsResponse)
     case fetchingFailed
+    
+    case updateIndexingToast(Toast?)
     
     case connectWalletTapped
     case setConnectWallet(Wallet.State?)
@@ -159,7 +161,6 @@ struct Timeline: ReducerProtocol {
           return .merge(effects)
           
         case .refreshFeed:
-          state.indexingPost = false
           state.loadingInFlight = false
           state.cursorFeed = nil
           state.cursorExplore = nil
@@ -227,7 +228,7 @@ struct Timeline: ReducerProtocol {
           .cancellable(id: CancelFetchPublicationsID.self)
           
         case .publicationResponse(let publication):
-          state.indexingPost = false
+          state.isIndexing = nil
           guard let publication else { return .none }
           
           if var postState = state.posts.first(where: { $0.post.publication.id == publication.id }) {
@@ -254,6 +255,10 @@ struct Timeline: ReducerProtocol {
           
         case .fetchingFailed:
           state.loadingInFlight = false
+          return .none
+          
+        case .updateIndexingToast(let toast):
+          state.isIndexing = toast
           return .none
           
         case .connectWalletTapped:

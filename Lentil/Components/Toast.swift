@@ -5,8 +5,18 @@ import SwiftUI
 
 
 struct Toast: Equatable {
+  enum Duration {
+    case short, medium, long
+  }
   var message: String
-  var duration: Double = 3
+  var duration: Duration = .short
+  fileprivate var durationTime: Double {
+    switch self.duration {
+      case .short:  return 2.0
+      case .medium: return 3.0
+      case .long:   return 4.0
+    }
+  }
 }
 
 struct ToastView: View {
@@ -59,7 +69,7 @@ struct ToastModifier: ViewModifier {
     UIImpactFeedbackGenerator(style: .light)
       .impactOccurred()
     
-    if toast.duration > 0 {
+    if toast.durationTime > 0 {
       workItem?.cancel()
       
       let task = DispatchWorkItem {
@@ -67,7 +77,7 @@ struct ToastModifier: ViewModifier {
       }
       
       workItem = task
-      DispatchQueue.main.asyncAfter(deadline: .now() + toast.duration, execute: task)
+      DispatchQueue.main.asyncAfter(deadline: .now() + toast.durationTime, execute: task)
     }
   }
   

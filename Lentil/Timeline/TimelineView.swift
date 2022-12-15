@@ -28,16 +28,6 @@ struct TimelineView: View {
       ScrollViewReader { proxy in
         ScrollView(.vertical, showsIndicators: false) {
           LazyVStack(alignment: .leading) {
-            if viewStore.indexingPost {
-              HStack {
-                Spacer()
-                Text("Your publication is being indexed")
-                  .font(style: .annotation, color: Theme.Color.greyShade3)
-                Spacer()
-              }
-              .padding(.top, 10)
-              .padding(.bottom, -10)
-            }
             ForEachStore(
               self.store.scope(
                 state: \.posts,
@@ -101,6 +91,12 @@ struct TimelineView: View {
             }
           }
         }
+        .toastView(
+          toast: viewStore.binding(
+            get: \.isIndexing,
+            send: { Timeline.Action.updateIndexingToast($0) }
+          )
+        )
         .navigationDestination(
           unwrapping: viewStore.binding(
             get: \.connectWallet,

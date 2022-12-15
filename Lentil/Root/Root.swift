@@ -225,7 +225,7 @@ struct Root: ReducerProtocol {
         case .createPublication(let createPublicationAction):
           if case .dismissView(let txHash) = createPublicationAction {
             if let txHash {
-              state.timelineState.indexingPost = true
+              state.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
               return .task {
                 do {
                   var attempts = 5

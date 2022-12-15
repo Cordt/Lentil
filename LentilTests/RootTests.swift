@@ -133,4 +133,57 @@ final class RootTests: XCTestCase {
     await store.send(.rootScreenAppeared)
     await store.send(.rootScreenDisappeared)
   }
+  
+  func testToastIsShownWhileIndexing() async throws {
+    let store = TestStore(
+      initialState: Root.State(timelineState: .init(), createPublication: CreatePublication.State(navigationId: "abc-def", reason: .creatingPost)),
+      reducer: Root()
+    )
+    let publication = MockData.mockPublications[0]
+    
+    store.dependencies.uuid = .incrementing
+    
+    store.dependencies.cache.updateOrAppendPublication = { _ in }
+    store.dependencies.lensApi.publication = { _ in QueryResult(data: publication) }
+    
+    await store.send(.createPublication(.dismissView("abc-def"))) {
+      $0.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
+    }
+    await store.receive(.timelineAction(.publicationResponse(publication))) {
+      $0.timelineState.posts.append(
+        .init(
+          navigationId: "00000000-0000-0000-0000-000000000000",
+          post: .init(publication: publication),
+          typename: .post
+        )
+      )
+      $0.timelineState.isIndexing = nil
+    }
+  }
+  
+  func testToastIsHiddenWhenIndexingFails() async throws {
+    let store = TestStore(
+      initialState: Root.State(timelineState: .init(), createPublication: CreatePublication.State(navigationId: "abc-def", reason: .creatingPost)),
+      reducer: Root()
+    )
+    let publication = MockData.mockPublications[0]
+    let clock = TestClock()
+    
+    store.dependencies.continuousClock = clock
+    store.dependencies.uuid = .incrementing
+    
+    store.dependencies.cache.updateOrAppendPublication = { _ in }
+    store.dependencies.lensApi.publication = { _ in QueryResult(data: nil) }
+    
+    await store.send(.createPublication(.dismissView("abc-def"))) {
+      $0.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
+    }
+    
+    // Waiting 5 * 2 seconds, retrying
+    await clock.advance(by: .seconds(10))
+    
+    await store.receive(.timelineAction(.publicationResponse(nil))) {
+      $0.timelineState.isIndexing = nil
+    }
+  }
 }
