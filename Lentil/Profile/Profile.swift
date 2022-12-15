@@ -15,6 +15,24 @@ struct Profile: ReducerProtocol {
     var posts: IdentifiedArrayOf<Post.State>
     var cursorPublications: String?
     
+    var twitterURL: URL? {
+      guard let twitterAttribute = self.profile.attributes.first(where: { $0.key == .twitter })
+      else { return nil }
+      return URL(string: "https://twitter.com/" + twitterAttribute.value)
+    }
+    
+    var websiteURL: URL? {
+      guard let websiteAttribute = self.profile.attributes.first(where: { $0.key == .website })
+      else { return nil }
+      return URL(string: websiteAttribute.value)
+    }
+    
+    var profileLocation: String? {
+      guard let locationAttribute = self.profile.attributes.first(where: { $0.key == .location })
+      else { return nil }
+      return locationAttribute.value
+    }
+    
     var remoteCoverPicture: LentilImage.State?
     var remoteProfilePicture: LentilImage.State?
     
@@ -37,7 +55,7 @@ struct Profile: ReducerProtocol {
   
   indirect enum Action: Equatable {
     case dismissView
-    case loadProfile
+    case didAppear
     case remoteCoverPicture(LentilImage.Action)
     case remoteProfilePicture(LentilImage.Action)
     case fetchPublications
@@ -63,7 +81,7 @@ struct Profile: ReducerProtocol {
           )
           return .none
           
-        case .loadProfile:
+        case .didAppear:
           return Effect(value: .fetchPublications)
           
         case .fetchPublications:

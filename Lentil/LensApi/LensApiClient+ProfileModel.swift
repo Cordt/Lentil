@@ -12,7 +12,11 @@ extension Model.Profile {
     var coverUrl: URL? = nil
     if let urlString = profilePictureURL { profileUrl = URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/")) }
     if let urlString = coverPictureURL { coverUrl = URL(string: urlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/")) }
-    
+    let attributes = profile.attributes?.compactMap { attribute -> Model.Profile.Attribute? in
+      guard let key = Model.Profile.Attribute.Key(rawValue: attribute.key)
+      else { return nil }
+      return Model.Profile.Attribute(key: key, value: attribute.value)
+    }
     return Model.Profile(
       id: profile.id,
       name: profile.name,
@@ -24,8 +28,8 @@ extension Model.Profile {
       isFollowedByMe: profile.isFollowedByMe,
       following: profile.stats.totalFollowing,
       followers: profile.stats.totalFollowers,
-      location: nil,
       joinedDate: nil,
+      attributes: attributes ?? [],
       isDefault: profile.isDefault
     )
   }

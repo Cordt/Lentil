@@ -10,34 +10,53 @@ struct ProfileView: View {
   
   @ViewBuilder
   func linkIcon(icon: Icon, url: URL) -> some View {
-    Theme.Color.white
-      .opacity(0.7)
-      .clipShape(Circle())
-      .overlay {
-        icon.view()
-          .foregroundColor(Theme.Color.tertiary)
+    Link(destination: url) {
+      icon.view(.xlarge)
+        .frame(width: 40, height: 40)
+        .background { Theme.Color.white.opacity(0.7) }
+        .clipShape(Circle())
+    }
+    .tint(Theme.Color.tertiary)
+    .padding([.top, .leading, .bottom], 10)
+  }
+  
+  @ViewBuilder
+  func cover(width: CGFloat, height: CGFloat) -> some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      ZStack(alignment: .bottomLeading) {
+        IfLetStore(
+          self.store.scope(
+            state: \.remoteCoverPicture,
+            action: Profile.Action.remoteCoverPicture
+          ),
+          then: {
+            LentilImageView(store: $0)
+              .frame(width: width, height: height)
+              .clipped()
+          },
+          else: {
+            lentilGradient()
+              .frame(width: width, height: height)
+          }
+        )
+        HStack {
+          if let twitter = viewStore.twitterURL {
+            self.linkIcon(icon: Icon.twitter, url: twitter)
+          }
+          
+          if let website = viewStore.websiteURL {
+            self.linkIcon(icon: Icon.website, url: website)
+          }
+        }
       }
+    }
   }
   
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       GeometryReader { geometry in
         VStack(spacing: 0) {
-          IfLetStore(
-            self.store.scope(
-              state: \.remoteCoverPicture,
-              action: Profile.Action.remoteCoverPicture
-            ),
-            then: {
-              LentilImageView(store: $0)
-                .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
-                .clipped()
-            },
-            else: {
-              lentilGradient()
-                .frame(width: geometry.size.width, height: geometry.size.height * 0.35)
-            }
-          )
+          self.cover(width: geometry.size.width, height: geometry.size.height * 0.35)
           
           VStack(alignment: .leading) {
             HStack {
@@ -108,7 +127,7 @@ struct ProfileView: View {
                     .font(style: .body)
                 }
                 HStack {
-                  if let location = viewStore.profile.location {
+                  if let location = viewStore.profileLocation {
                     Icon.location.view()
                     Text(location)
                       .font(style: .body)
@@ -141,8 +160,9 @@ struct ProfileView: View {
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .accentColor(Theme.Color.primary)
-        .onAppear {
-          viewStore.send(.loadProfile)
+        .task {
+          await viewStore.send(.didAppear)
+            .finish()
         }
       }
     }

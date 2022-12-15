@@ -6,6 +6,13 @@ import SwiftUI
 
 extension Model {
   struct Profile: Identifiable, Equatable {
+    struct Attribute: Equatable {
+      enum Key: String {
+        case location, twitter, website
+      }
+      var key: Key
+      var value: String
+    }
     var id: String
     var name: String?
     var handle: String
@@ -16,8 +23,8 @@ extension Model {
     var isFollowedByMe: Bool
     var following: Int
     var followers: Int
-    var location: String?
     var joinedDate: Date?
+    var attributes: [Attribute]
     
     var isDefault: Bool
     
@@ -41,8 +48,11 @@ extension MockData {
       isFollowedByMe: false,
       following: 142,
       followers: 12705,
-      location: "Downtown",
       joinedDate: Date(timeIntervalSince1970: 957916800),
+      attributes: [
+        .init(key: .location, value: "The moon"),
+        .init(key: .twitter, value: "nidavellir")
+      ],
       isDefault: false
     ),
     .init(
@@ -56,8 +66,11 @@ extension MockData {
       isFollowedByMe: true,
       following: 142,
       followers: 12705,
-      location: "Downtown",
       joinedDate: Date(timeIntervalSince1970: 957916800),
+      attributes: [
+        .init(key: .location, value: "The mars"),
+        .init(key: .twitter, value: "dabit3")
+      ],
       isDefault: false
     ),
     .init(
@@ -71,8 +84,12 @@ extension MockData {
       isFollowedByMe: false,
       following: 142,
       followers: 12705,
-      location: "It depends",
       joinedDate: Date(timeIntervalSince1970: 957916800),
+      attributes: [
+        .init(key: .location, value: "It depends"),
+        .init(key: .twitter, value: "cordtminzer"),
+        .init(key: .website, value: "https://lentilapp.xyz")
+      ],
       isDefault: true
     ),
     .init(
@@ -86,8 +103,10 @@ extension MockData {
       isFollowedByMe: false,
       following: 142,
       followers: 12705,
-      location: "Downtown",
       joinedDate: Date(timeIntervalSince1970: 957916800),
+      attributes: [
+        .init(key: .twitter, value: "navals")
+      ],
       isDefault: false
     ),
   ]
