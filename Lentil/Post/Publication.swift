@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import IdentifiedCollections
 import SwiftUI
 
 
@@ -10,7 +11,12 @@ struct Publication: ReducerProtocol {
     var id: String { self.publication.id }
     var publication: Model.Publication
     var remoteProfilePicture: LentilImage.State?
-    var remotePublicationImage: LentilImage.State?
+    var remotePublicationImages: MultiImage.State?
+    var publicationImageRows: Int {
+      guard let count = self.remotePublicationImages?.images.count
+      else { return 0 }
+      return count / 2 + count % 2
+    }
     
     var publicationContent: String { self.publication.content.trimmingCharacters(in: .whitespacesAndNewlines) }
     var shortenedContent: String {
@@ -25,24 +31,25 @@ struct Publication: ReducerProtocol {
     init(publication: Model.Publication) {
       self.publication = publication
       self.remoteProfilePicture = nil
-      self.remotePublicationImage = nil
+      self.remotePublicationImages = nil
       
       if let profilePictureUrl = publication.profile.profilePictureUrl {
         self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(publication.profile.handle))
       }
-      if let publicationImageUrl = publication.media.first?.url {
-        self.remotePublicationImage = .init(imageUrl: publicationImageUrl, kind: .feed)
+      if publication.media.count > 0 {
+        let imageStates = publication.media.map { LentilImage.State(imageUrl: $0.url, kind: .feed) }
+        self.remotePublicationImages = .init(images: IdentifiedArrayOf(uniqueElements: imageStates))
       }
     }
   }
   
   enum Action: Equatable {
     case userProfileTapped
-    case remotePublicationImage(LentilImage.Action)
     case toggleReaction
     case commentTapped
     
     case remoteProfilePicture(LentilImage.Action)
+    case remotePublicationImages(MultiImage.Action)
   }
   
   @Dependency(\.cache) var cache
@@ -63,7 +70,7 @@ struct Publication: ReducerProtocol {
           )
           return .none
           
-        case .remotePublicationImage:
+        case .remotePublicationImages:
           return .none
           
         case .toggleReaction:
@@ -106,8 +113,8 @@ struct Publication: ReducerProtocol {
     .ifLet(\.remoteProfilePicture, action: /Action.remoteProfilePicture) {
       LentilImage()
     }
-    .ifLet(\.remotePublicationImage, action: /Action.remotePublicationImage) {
-      LentilImage()
+    .ifLet(\.remotePublicationImages, action: /Action.remotePublicationImages) {
+      MultiImage()
     }
   }
 }

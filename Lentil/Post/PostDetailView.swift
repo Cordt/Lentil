@@ -9,7 +9,7 @@ struct PostDetailView: View {
   let store: Store<Post.State, Post.Action>
   
   var body: some View {
-    WithViewStore(self.store) { viewStore in
+    WithViewStore(self.store, observe: { $0.post.publicationContent }) { viewStore in
       ScrollView(showsIndicators: false) {
         VStack(alignment: .leading, spacing: 10) {
           PostDetailHeaderView(
@@ -21,15 +21,14 @@ struct PostDetailView: View {
           
           IfLetStore(
             self.store.scope(
-              state: \.post.remotePublicationImage,
-              action: { Post.Action.post(action: .remotePublicationImage($0)) }
-            ),
-            then: {
-              LentilImageView(store: $0)
-            }
-          )
+              state: \.post.remotePublicationImages,
+              action: { Post.Action.post(action: .remotePublicationImages($0)) }
+            )
+          ) { imageStore in
+            MultiImageView(store: imageStore)
+          }
           
-          Text(viewStore.post.publicationContent)
+          Text(viewStore.state)
             .font(style: .bodyDetailed)
           
           PostStatsView(

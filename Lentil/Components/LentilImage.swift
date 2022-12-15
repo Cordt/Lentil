@@ -8,12 +8,13 @@ struct LentilImage: ReducerProtocol {
   enum Kind: Equatable { case profile(_ handle: String), feed, cover }
   enum Resolution: Equatable { case display, storage }
   
-  struct State: Equatable {
+  struct State: Equatable, Identifiable {
     enum StoredImage: Equatable {
       case notLoaded
       case image(Image)
       case notAvailable
     }
+    var id: String { self.imageUrl.absoluteString }
     
     let kind: Kind
     var imageUrl: URL

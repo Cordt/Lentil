@@ -30,16 +30,16 @@ struct PostView: View {
           VStack(alignment: .leading, spacing: 10) {
             IfLetStore(
               self.store.scope(
-                state: \.post.remotePublicationImage,
-                action: { Post.Action.post(action: .remotePublicationImage($0)) }
+                state: \.post.remotePublicationImages,
+                action: { Post.Action.post(action: .remotePublicationImages($0)) }
               ),
               then: { store in
                 GeometryReader { reader in
-                  LentilImageView(store: store)
-                    .frame(width: reader.size.width, height: 250)
+                  MultiImageView(store: store)
+                    .frame(width: reader.size.width, height: CGFloat(viewStore.post.publicationImageRows) * 250)
                     .clipped()
                 }
-                .frame(minHeight: 250)
+                .frame(minHeight: CGFloat(viewStore.post.publicationImageRows) * 250)
               }
             )
             

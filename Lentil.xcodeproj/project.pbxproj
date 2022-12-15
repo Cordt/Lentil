@@ -31,6 +31,7 @@
 		372D1788294B0771008D2BEF /* RootTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D1787294B0771008D2BEF /* RootTests.swift */; };
 		372D178A294B0E41008D2BEF /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D1789294B0E41008D2BEF /* TestHelper.swift */; };
 		372D178D294B32D8008D2BEF /* TimelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D178C294B32D8008D2BEF /* TimelineTests.swift */; };
+		372D1792294B808E008D2BEF /* MultiImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D1791294B808E008D2BEF /* MultiImageView.swift */; };
 		373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */; };
 		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
 		373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */ = {isa = PBXBuildFile; productRef = 373DAF1E29305C3700648C8E /* SwiftUINavigation */; };
@@ -119,6 +120,7 @@
 		372D1787294B0771008D2BEF /* RootTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTests.swift; sourceTree = "<group>"; };
 		372D1789294B0E41008D2BEF /* TestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
 		372D178C294B32D8008D2BEF /* TimelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineTests.swift; sourceTree = "<group>"; };
+		372D1791294B808E008D2BEF /* MultiImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiImageView.swift; sourceTree = "<group>"; };
 		373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+ProfileModel.swift"; sourceTree = "<group>"; };
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		3758528C293281FD0017A415 /* NavigationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationApi.swift; sourceTree = "<group>"; };
@@ -431,6 +433,7 @@
 				37C51792291F518C002D2B6D /* LentilImage.swift */,
 				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 				37CC0D0129279DC30036C6E9 /* Toast.swift */,
+				372D1791294B808E008D2BEF /* MultiImageView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -692,6 +695,7 @@
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
+				372D1792294B808E008D2BEF /* MultiImageView.swift in Sources */,
 				37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */,
 				37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */,
 				37A7A6F9293C53F100964768 /* Cache.swift in Sources */,
