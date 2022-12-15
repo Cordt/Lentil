@@ -106,7 +106,7 @@ struct ProfileView: View {
                 HStack(spacing: 5) {
                   Text(simpleCount(from: viewStore.profile.followers))
                     .font(style: .bodyBold)
-                  Text("Follower")
+                  Text(viewStore.profile.followers == 1 ? "Follower" : "Followers")
                     .font(style: .body)
                 }
                 HStack {
