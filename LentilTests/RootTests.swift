@@ -124,5 +124,13 @@ final class RootTests: XCTestCase {
     XCTAssertTrue(tokensDeleted && userDeleted && cacheCleared)
   }
   
-  
+  func testRootScreenDoesItsThing() async throws {
+    let store = TestStore(
+      initialState: Root.State.init(timelineState: .init()),
+      reducer: Root()
+    )
+    
+    await store.send(.rootScreenAppeared)
+    await store.send(.rootScreenDisappeared)
+  }
 }

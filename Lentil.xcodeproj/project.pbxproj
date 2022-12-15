@@ -30,6 +30,7 @@
 		372D1782294B043A008D2BEF /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 372D1781294B043A008D2BEF /* Sentry */; };
 		372D1788294B0771008D2BEF /* RootTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D1787294B0771008D2BEF /* RootTests.swift */; };
 		372D178A294B0E41008D2BEF /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D1789294B0E41008D2BEF /* TestHelper.swift */; };
+		372D178D294B32D8008D2BEF /* TimelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372D178C294B32D8008D2BEF /* TimelineTests.swift */; };
 		373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */; };
 		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
 		373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */ = {isa = PBXBuildFile; productRef = 373DAF1E29305C3700648C8E /* SwiftUINavigation */; };
@@ -117,6 +118,7 @@
 		372248DE28DBFF080066BCE5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		372D1787294B0771008D2BEF /* RootTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTests.swift; sourceTree = "<group>"; };
 		372D1789294B0E41008D2BEF /* TestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
+		372D178C294B32D8008D2BEF /* TimelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineTests.swift; sourceTree = "<group>"; };
 		373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+ProfileModel.swift"; sourceTree = "<group>"; };
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		3758528C293281FD0017A415 /* NavigationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationApi.swift; sourceTree = "<group>"; };
@@ -266,12 +268,12 @@
 			path = Timeline;
 			sourceTree = "<group>";
 		};
-		372D1786294B0752008D2BEF /* RootTests */ = {
+		372D178B294B3282008D2BEF /* TimelineTests */ = {
 			isa = PBXGroup;
 			children = (
-				372D1787294B0771008D2BEF /* RootTests.swift */,
+				372D178C294B32D8008D2BEF /* TimelineTests.swift */,
 			);
-			path = RootTests;
+			path = TimelineTests;
 			sourceTree = "<group>";
 		};
 		3737037C291FF56E0006FB04 /* Righteous */ = {
@@ -366,10 +368,11 @@
 		3777831528CCA05E00E7E32A /* LentilTests */ = {
 			isa = PBXGroup;
 			children = (
-				372D1786294B0752008D2BEF /* RootTests */,
+				372D178B294B3282008D2BEF /* TimelineTests */,
 				37BBB13228F3B41700A6D202 /* LensApiTests */,
 				3777831628CCA05E00E7E32A /* LentilTests.swift */,
 				372248CB28DADE3C0066BCE5 /* HelperTests.swift */,
+				372D1787294B0771008D2BEF /* RootTests.swift */,
 				372D1789294B0E41008D2BEF /* TestHelper.swift */,
 			);
 			path = LentilTests;
@@ -704,6 +707,7 @@
 			files = (
 				3777831728CCA05E00E7E32A /* LentilTests.swift in Sources */,
 				372D1788294B0771008D2BEF /* RootTests.swift in Sources */,
+				372D178D294B32D8008D2BEF /* TimelineTests.swift in Sources */,
 				372248CC28DADE3C0066BCE5 /* HelperTests.swift in Sources */,
 				372D178A294B0E41008D2BEF /* TestHelper.swift in Sources */,
 			);

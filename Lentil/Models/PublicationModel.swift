@@ -40,7 +40,7 @@ struct MockData {
     .init(
       id: "6797e4fd-0d8b-4ca0-b434-daf4acce2276",
       typename: .post,
-      createdAt: Date().addingTimeInterval(-60*3),
+      createdAt: Date(timeIntervalSince1970: 60*60*24*365*38),
       content: "\n\nCommerce on the Internet has come to rely almost exclusively on financial institutions serving as trusted third parties to process electronic payments. While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the trust based model.\nCompletely non-reversible transactions are not really possible, since financial institutions cannot avoid mediating disputes. The cost of mediation increases transaction costs, limiting the minimum practical transaction size and cutting off the possibility for small casual transactions, and there is a broader cost in the loss of ability to make non-reversible payments for nonreversible services.\n \n",
       profile: MockData.mockProfiles[0],
       upvotes: 15,
@@ -58,7 +58,7 @@ struct MockData {
     .init(
       id: "d80681f9-b301-443d-960b-0415a134e1e3",
       typename: .post,
-      createdAt: Date().addingTimeInterval(-60*60),
+      createdAt: Date(timeIntervalSince1970: 60*60*24*365*40),
       content: "When Satoshi Nakamoto first set the Bitcoin blockchain into motion in January 2009, he was simultaneously introducing two radical and untested concepts. The first is the \"bitcoin\", a decentralized peer-to-peer online currency that maintains a value without any backing, intrinsic value or central issuer. So far, the \"bitcoin\" as a currency unit has taken up the bulk of the public attention, both in terms of the political aspects of a currency without a central bank and its extreme upward and downward volatility in price.\n    However, there is also another, equally important, part to Satoshi's grand experiment: the concept of a proof of work-based blockchain to allow for public agreement on the order of transactions. Bitcoin as an application can be described as a first-to-file system: if one entity has 50 BTC, and simultaneously sends the same 50 BTC to A and to B, only the transaction that gets confirmed first will process",
       profile: MockData.mockProfiles[1],
       upvotes: 12,

@@ -58,6 +58,7 @@ struct Timeline: ReducerProtocol {
   }
   
   @Dependency(\.cache) var cache
+  @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.profileStorageApi) var profileStorageApi
@@ -293,7 +294,7 @@ struct Timeline: ReducerProtocol {
           
         case .scrollAnimationFinished:
           return .run { send in
-            try await Task.sleep(nanoseconds: NSEC_PER_SEC * 1)
+            try await self.clock.sleep(for: .seconds(1))
             await send(.scrollAnimationFinishedResult)
           }
           
