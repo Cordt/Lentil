@@ -76,6 +76,7 @@
 		37D6808F292386B100F31669 /* UINavigationController+BackGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */; };
 		37D680912924AB3200F31669 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D680902924AB3200F31669 /* Profile.swift */; };
 		37DB471D2924D7DA00DE9EB3 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DB471C2924D7DA00DE9EB3 /* UserProfile.swift */; };
+		37E5C4ED29481B6A005B3979 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = 37E5C4EC29481B6A005B3979 /* Cache */; };
 		37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E5291FBC34003C9E40 /* WalletView.swift */; };
 		37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E7291FBC4E003C9E40 /* Wallet.swift */; };
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
@@ -186,6 +187,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				37E5C4ED29481B6A005B3979 /* Cache in Frameworks */,
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
 				370ABF01292A847F005B8E11 /* Alamofire in Frameworks */,
 				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
@@ -531,6 +533,7 @@
 				37557A22292744FB005524C5 /* Sentry */,
 				370ABF00292A847F005B8E11 /* Alamofire */,
 				373DAF1E29305C3700648C8E /* SwiftUINavigation */,
+				37E5C4EC29481B6A005B3979 /* Cache */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -613,6 +616,7 @@
 				37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				373DAF1D29305C3700648C8E /* XCRemoteSwiftPackageReference "swiftui-navigation" */,
+				37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -897,7 +901,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Dev";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
@@ -934,7 +938,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
@@ -1133,6 +1137,14 @@
 				revision = 42646f765d22dac0f22bfff48590102195c76da4;
 			};
 		};
+		37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hyperoslo/Cache.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1175,6 +1187,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */;
 			productName = ApolloWebSocket;
+		};
+		37E5C4EC29481B6A005B3979 /* Cache */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */;
+			productName = Cache;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

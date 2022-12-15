@@ -42,7 +42,7 @@ struct LentilImage: ReducerProtocol {
       case .didAppearFinishing:
         switch state.storedImage {
           case .notLoaded:
-            return .task(priority: .background) { [imageUrl = state.imageUrl, kind = state.kind] in
+            return .task(priority: .userInitiated) { [imageUrl = state.imageUrl, kind = state.kind] in
               if let medium = Cache.shared.medium(imageUrl.absoluteString),
                  case .image = medium.mediaType,
                  let imageData = Cache.shared.mediumData(imageUrl.absoluteString)?.data,
