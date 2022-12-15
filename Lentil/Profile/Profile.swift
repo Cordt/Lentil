@@ -46,6 +46,7 @@ struct Profile: ReducerProtocol {
     case post(id: Post.State.ID, action: Post.Action)
   }
   
+  @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
@@ -96,10 +97,10 @@ struct Profile: ReducerProtocol {
           
           publications
             .filter { $0.typename == .post }
-            .forEach { Cache.shared.updateOrAppend($0) }
+            .forEach { self.cache.updateOrAppendPublication($0) }
           
           publications
-            .forEach { Cache.shared.updateOrAppend($0.profile) }
+            .forEach { self.cache.updateOrAppendProfile($0.profile) }
           
           return .none
           

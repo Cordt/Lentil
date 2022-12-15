@@ -50,6 +50,7 @@ struct Post: ReducerProtocol {
     case postTapped
   }
   
+  @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
   @Dependency(\.navigationApi) var navigationApi
@@ -94,7 +95,7 @@ struct Post: ReducerProtocol {
               )
               
               result.data
-                .forEach { Cache.shared.updateOrAppend($0) }
+                .forEach { self.cache.updateOrAppendPublication($0) }
               
               return .none
               

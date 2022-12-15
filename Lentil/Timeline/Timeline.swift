@@ -57,6 +57,7 @@ struct Timeline: ReducerProtocol {
     case setDestination(Destination?)
   }
   
+  @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.profileStorageApi) var profileStorageApi
@@ -133,17 +134,17 @@ struct Timeline: ReducerProtocol {
     
     // Write publications to cache
     postsAndMirrors
-      .forEach { Cache.shared.updateOrAppend($0) }
+      .forEach { self.cache.updateOrAppendPublication($0) }
     comments
-      .forEach { Cache.shared.updateOrAppend($0) }
+      .forEach { self.cache.updateOrAppendPublication($0) }
     parentPublications
-      .forEach { Cache.shared.updateOrAppend($0) }
+      .forEach { self.cache.updateOrAppendPublication($0) }
     
     // Write profiles to cache
     response.publications
-      .forEach { Cache.shared.updateOrAppend($0.profile) }
+      .forEach { self.cache.updateOrAppendProfile($0.profile) }
     parentPublications
-      .forEach { Cache.shared.updateOrAppend($0.profile) }
+      .forEach { self.cache.updateOrAppendProfile($0.profile) }
     
     updatedPosts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
     return updatedPosts
@@ -189,7 +190,7 @@ struct Timeline: ReducerProtocol {
           
         case .defaultProfileResponse(let .success(defaultProfile)):
           state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
-          Cache.shared.updateOrAppend(defaultProfile)
+          self.cache.updateOrAppendProfile(defaultProfile)
           return .none
           
         case .defaultProfileResponse(let .failure(error)):
@@ -248,7 +249,7 @@ struct Timeline: ReducerProtocol {
             )
             state.posts.insert(postState, at: 0)
           }
-          Cache.shared.updateOrAppend(publication)
+          self.cache.updateOrAppendPublication(publication)
           return .none
           
         case .publicationsResponse(let response):
@@ -305,7 +306,7 @@ struct Timeline: ReducerProtocol {
             case .defaultProfileResponse(let defaultProfile):
               state.userProfile = profileStorageApi.load()
               state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
-              Cache.shared.updateOrAppend(defaultProfile)
+              self.cache.updateOrAppendProfile(defaultProfile)
               return .none
               
             default:

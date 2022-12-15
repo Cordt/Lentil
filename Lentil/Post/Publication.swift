@@ -45,6 +45,7 @@ struct Publication: ReducerProtocol {
     case remoteProfilePicture(LentilImage.Action)
   }
   
+  @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
   @Dependency(\.navigationApi) var navigationApi
@@ -72,7 +73,7 @@ struct Publication: ReducerProtocol {
           if state.publication.upvotedByUser {
             state.publication.upvotes -= 1
             state.publication.upvotedByUser = false
-            Cache.shared.updateOrAppend(state.publication)
+            self.cache.updateOrAppendPublication(state.publication)
             return .fireAndForget { [publicationId = state.publication.id] in
               try await self.lensApi.removeReaction(userProfile.id, .upvote, publicationId)
             }
@@ -80,7 +81,7 @@ struct Publication: ReducerProtocol {
           else {
             state.publication.upvotes += 1
             state.publication.upvotedByUser = true
-            Cache.shared.updateOrAppend(state.publication)
+            self.cache.updateOrAppendPublication(state.publication)
             return .fireAndForget { [publicationId = state.publication.id] in
               try await self.lensApi.addReaction(userProfile.id, .upvote, publicationId)
             }

@@ -42,8 +42,6 @@
 		3777830A28CCA05E00E7E32A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3777830928CCA05E00E7E32A /* Assets.xcassets */; };
 		3777830D28CCA05E00E7E32A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3777830C28CCA05E00E7E32A /* Preview Assets.xcassets */; };
 		3777831728CCA05E00E7E32A /* LentilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777831628CCA05E00E7E32A /* LentilTests.swift */; };
-		3777832128CCA05F00E7E32A /* LentilUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777832028CCA05F00E7E32A /* LentilUITests.swift */; };
-		3777832328CCA05F00E7E32A /* LentilUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777832228CCA05F00E7E32A /* LentilUITestsLaunchTests.swift */; };
 		3777834328CCD39500E7E32A /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834228CCD39500E7E32A /* API.swift */; };
 		3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834628CDA27600E7E32A /* LensApiClient.swift */; };
 		37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */; };
@@ -95,13 +93,6 @@
 			remoteGlobalIDString = 3777830128CCA05D00E7E32A;
 			remoteInfo = Lentil;
 		};
-		3777831D28CCA05F00E7E32A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 377782FA28CCA05D00E7E32A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3777830128CCA05D00E7E32A;
-			remoteInfo = Lentil;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -138,9 +129,6 @@
 		3777830C28CCA05E00E7E32A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3777831228CCA05E00E7E32A /* LentilTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LentilTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3777831628CCA05E00E7E32A /* LentilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilTests.swift; sourceTree = "<group>"; };
-		3777831C28CCA05F00E7E32A /* LentilUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LentilUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3777832028CCA05F00E7E32A /* LentilUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilUITests.swift; sourceTree = "<group>"; };
-		3777832228CCA05F00E7E32A /* LentilUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		3777833F28CCD21400E7E32A /* operations.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = operations.graphql; sourceTree = "<group>"; };
 		3777834128CCD35300E7E32A /* schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		3777834228CCD39500E7E32A /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -207,13 +195,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				372D1782294B043A008D2BEF /* Sentry in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3777831928CCA05F00E7E32A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,7 +307,6 @@
 			children = (
 				3777830428CCA05D00E7E32A /* Lentil */,
 				3777831528CCA05E00E7E32A /* LentilTests */,
-				3777831F28CCA05F00E7E32A /* LentilUITests */,
 				3777830328CCA05D00E7E32A /* Products */,
 				37BBB13528F3BA0500A6D202 /* Frameworks */,
 			);
@@ -337,7 +317,6 @@
 			children = (
 				3777830228CCA05D00E7E32A /* Lentil.app */,
 				3777831228CCA05E00E7E32A /* LentilTests.xctest */,
-				3777831C28CCA05F00E7E32A /* LentilUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -394,15 +373,6 @@
 				372D1789294B0E41008D2BEF /* TestHelper.swift */,
 			);
 			path = LentilTests;
-			sourceTree = "<group>";
-		};
-		3777831F28CCA05F00E7E32A /* LentilUITests */ = {
-			isa = PBXGroup;
-			children = (
-				3777832028CCA05F00E7E32A /* LentilUITests.swift */,
-				3777832228CCA05F00E7E32A /* LentilUITestsLaunchTests.swift */,
-			);
-			path = LentilUITests;
 			sourceTree = "<group>";
 		};
 		37A7A6F7293C53E500964768 /* Cache */ = {
@@ -573,24 +543,6 @@
 			productReference = 3777831228CCA05E00E7E32A /* LentilTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		3777831B28CCA05F00E7E32A /* LentilUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3777832C28CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "LentilUITests" */;
-			buildPhases = (
-				3777831828CCA05F00E7E32A /* Sources */,
-				3777831928CCA05F00E7E32A /* Frameworks */,
-				3777831A28CCA05F00E7E32A /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3777831E28CCA05F00E7E32A /* PBXTargetDependency */,
-			);
-			name = LentilUITests;
-			productName = LentilUITests;
-			productReference = 3777831C28CCA05F00E7E32A /* LentilUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -605,10 +557,6 @@
 						CreatedOnToolsVersion = 14.0;
 					};
 					3777831128CCA05E00E7E32A = {
-						CreatedOnToolsVersion = 14.0;
-						TestTargetID = 3777830128CCA05D00E7E32A;
-					};
-					3777831B28CCA05F00E7E32A = {
 						CreatedOnToolsVersion = 14.0;
 						TestTargetID = 3777830128CCA05D00E7E32A;
 					};
@@ -638,7 +586,6 @@
 			targets = (
 				3777830128CCA05D00E7E32A /* Lentil */,
 				3777831128CCA05E00E7E32A /* LentilTests */,
-				3777831B28CCA05F00E7E32A /* LentilUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -664,13 +611,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		3777831028CCA05E00E7E32A /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3777831A28CCA05F00E7E32A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -769,15 +709,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3777831828CCA05F00E7E32A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3777832328CCA05F00E7E32A /* LentilUITestsLaunchTests.swift in Sources */,
-				3777832128CCA05F00E7E32A /* LentilUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -785,11 +716,6 @@
 			isa = PBXTargetDependency;
 			target = 3777830128CCA05D00E7E32A /* Lentil */;
 			targetProxy = 3777831328CCA05E00E7E32A /* PBXContainerItemProxy */;
-		};
-		3777831E28CCA05F00E7E32A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3777830128CCA05D00E7E32A /* Lentil */;
-			targetProxy = 3777831D28CCA05F00E7E32A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1026,42 +952,6 @@
 			};
 			name = Release;
 		};
-		3777832D28CCA05F00E7E32A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G9B9Z38Z32;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cordt.LentilUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Lentil;
-			};
-			name = Debug;
-		};
-		3777832E28CCA05F00E7E32A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G9B9Z38Z32;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cordt.LentilUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Lentil;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1088,15 +978,6 @@
 			buildConfigurations = (
 				3777832A28CCA05F00E7E32A /* Debug */,
 				3777832B28CCA05F00E7E32A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3777832C28CCA05F00E7E32A /* Build configuration list for PBXNativeTarget "LentilUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3777832D28CCA05F00E7E32A /* Debug */,
-				3777832E28CCA05F00E7E32A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

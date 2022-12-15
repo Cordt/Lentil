@@ -52,6 +52,7 @@ struct Root: ReducerProtocol {
   }
   
   @Dependency(\.authTokenApi) var authTokenApi
+  @Dependency(\.cache) var cache
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.profileStorageApi) var profileStorageApi
@@ -110,7 +111,7 @@ struct Root: ReducerProtocol {
             else {
               try self.authTokenApi.delete()
               self.profileStorageApi.remove()
-              Cache.shared.clearCache()
+              self.cache.clearCache()
               
               // No valid tokens or profile available, open app
               return .run { send in
@@ -143,7 +144,7 @@ struct Root: ReducerProtocol {
             } catch: { error, send in
               try? self.authTokenApi.delete()
               self.profileStorageApi.remove()
-              Cache.shared.clearCache()
+              self.cache.clearCache()
               log("Failed to refresh token, logging user out", level: .debug, error: error)
               try? await self.clock.sleep(for: .seconds(1))
               await send(.hideLoadingScreen)
@@ -176,7 +177,7 @@ struct Root: ReducerProtocol {
         case .addPath(let destinationPath):
           switch destinationPath.destination {
             case .publication(let elementId):
-              guard let publication = Cache.shared.publication(elementId)
+              guard let publication = self.cache.publication(elementId)
               else { return .none }
               
               switch publication.typename {
@@ -193,7 +194,7 @@ struct Root: ReducerProtocol {
               }
               
             case .profile(let elementId):
-              guard let profile = Cache.shared.profile(elementId)
+              guard let profile = self.cache.profile(elementId)
               else { return .none }
               
               let profileState = Profile.State(navigationId: destinationPath.navigationId, profile: profile)

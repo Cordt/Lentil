@@ -32,6 +32,7 @@ struct LentilImage: ReducerProtocol {
     case updateImage(TaskResult<State.StoredImage>)
   }
   
+  @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
   
   func reduce(into state: inout State, action: Action) -> Effect<Action, Never> {
@@ -43,9 +44,9 @@ struct LentilImage: ReducerProtocol {
         switch state.storedImage {
           case .notLoaded:
             return .task(priority: .userInitiated) { [imageUrl = state.imageUrl, kind = state.kind] in
-              if let medium = Cache.shared.medium(imageUrl.absoluteString),
+              if let medium = self.cache.medium(imageUrl.absoluteString),
                  case .image = medium.mediaType,
-                 let imageData = Cache.shared.mediumData(imageUrl.absoluteString)?.data,
+                 let imageData = self.cache.mediumData(imageUrl.absoluteString)?.data,
                  let uiImage = imageData.image(for: kind, and: .display) {
                 
                 return await .updateImage(TaskResult { .image(Image(uiImage: uiImage)) })
@@ -54,8 +55,8 @@ struct LentilImage: ReducerProtocol {
                 let data = try await lensApi.fetchImage(imageUrl)
                 if let storageData = data.imageData(for: kind, and: .storage),
                    let displayImage = data.image(for: kind, and: .display) {
-                  Cache.shared.updateOrAppend(Model.Media(mediaType: .image(.jpeg), url: imageUrl))
-                  Cache.shared.updateOrAppend(Model.MediaData(url: imageUrl.absoluteString, data: storageData))
+                  self.cache.updateOrAppendMedia(Model.Media(mediaType: .image(.jpeg), url: imageUrl))
+                  self.cache.updateOrAppendMediaData(Model.MediaData(url: imageUrl.absoluteString, data: storageData))
                   return await .updateImage(TaskResult { .image(Image(uiImage: displayImage)) })
                 }
                 else {

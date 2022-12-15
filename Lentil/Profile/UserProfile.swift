@@ -68,7 +68,7 @@ import XCTestDynamicOverlay
 extension ProfileStorageApi {
   static let previewValue = ProfileStorageApi(
     store: { _ in },
-    load: { mockUserProfile },
+    load: { MockData.mockUserProfile },
     remove: {}
   )
   
@@ -79,10 +79,14 @@ extension ProfileStorageApi {
   )
 }
 
-var mockUserProfile = UserProfile(
-  id: "3",
-  handle: "cordt.lens",
-  name: "Cordt",
-  address: LentilEnvironment.shared.testWalletAddress
-)
+extension MockData {
+  static var mockUserProfile: UserProfile {
+    UserProfile(
+      id: "3",
+      handle: "cordt.lens",
+      name: "Cordt",
+      address: LentilEnvironment.shared.testWalletAddress
+    )
+  }
+}
 #endif
