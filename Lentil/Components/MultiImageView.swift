@@ -41,11 +41,74 @@ struct MultiImageView: View {
             )
           )
         case 2:
-          EmptyView()
+          HStack {
+            LentilImageView(
+              store: self.store.scope(
+                state: \.images[0],
+                action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
+              )
+            )
+            LentilImageView(
+              store: self.store.scope(
+                state: \.images[1],
+                action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
+              )
+            )
+          }
         case 3:
-          EmptyView()
+          VStack {
+            HStack {
+              LentilImageView(
+                store: self.store.scope(
+                  state: \.images[0],
+                  action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
+                )
+              )
+              LentilImageView(
+                store: self.store.scope(
+                  state: \.images[1],
+                  action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
+                )
+              )
+            }
+            LentilImageView(
+              store: self.store.scope(
+                state: \.images[2],
+                action: { MultiImage.Action.image(viewStore.images[2].id, $0) }
+              )
+            )
+          }
         case 4:
-          EmptyView()
+          VStack {
+            HStack {
+              LentilImageView(
+                store: self.store.scope(
+                  state: \.images[0],
+                  action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
+                )
+              )
+              LentilImageView(
+                store: self.store.scope(
+                  state: \.images[1],
+                  action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
+                )
+              )
+            }
+            HStack {
+              LentilImageView(
+                store: self.store.scope(
+                  state: \.images[2],
+                  action: { MultiImage.Action.image(viewStore.images[2].id, $0) }
+                )
+              )
+              LentilImageView(
+                store: self.store.scope(
+                  state: \.images[3],
+                  action: { MultiImage.Action.image(viewStore.images[3].id, $0) }
+                )
+              )
+            }
+          }
         default:
           EmptyView()
       }
