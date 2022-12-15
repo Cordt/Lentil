@@ -74,7 +74,7 @@ struct TimelineView: View {
             }
             else {
               Button {
-                viewStore.send(.setDestination(.connectWallet))
+                viewStore.send(.connectWalletTapped)
               } label: {
                 Icon.link.view(.xlarge)
                   .foregroundColor(Theme.Color.white)
@@ -103,17 +103,14 @@ struct TimelineView: View {
         }
         .navigationDestination(
           unwrapping: viewStore.binding(
-            get: \.destination,
-            send: Timeline.Action.setDestination
+            get: \.connectWallet,
+            send: Timeline.Action.setConnectWallet
           ),
-          case: /Timeline.Destination.connectWallet,
           destination: { _ in
-            WalletView(
-              store: self.store.scope(
-                state: \.connectWallet,
-                action: Timeline.Action.connectWallet
-              )
-            )
+            IfLetStore(self.store.scope(
+              state: \.connectWallet,
+              action: Timeline.Action.connectWallet
+            )) { WalletView(store: $0) }
           }
         )
         .navigationBarTitleDisplayMode(.inline)

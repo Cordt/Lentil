@@ -95,4 +95,26 @@ final class TimelineTests: XCTestCase {
       $0.loadingInFlight = false
     }
   }
+  
+  func testWalletConnectIsOpened() async throws {
+    let store = TestStore(initialState: Timeline.State(), reducer: Timeline())
+    
+    await store.send(.connectWalletTapped) {
+      $0.connectWallet = .init()
+    }
+  }
+  
+  func testProfileIsLoadedAfterWalletConnected() async throws {
+    let store = TestStore(initialState: Timeline.State(connectWallet: .init()), reducer: Timeline())
+    
+    store.dependencies.uuid = .incrementing
+    
+    store.dependencies.cache.updateOrAppendProfile = { _ in }
+    store.dependencies.profileStorageApi.load = { MockData.mockUserProfile }
+    
+    await store.send(.connectWallet(.defaultProfileResponse(MockData.mockProfiles[0]))) {
+      $0.userProfile = MockData.mockUserProfile
+      $0.showProfile = Profile.State(navigationId: "00000000-0000-0000-0000-000000000000", profile: MockData.mockProfiles[0])
+    }
+  }
 }

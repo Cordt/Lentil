@@ -7,10 +7,6 @@ import Foundation
 
 
 struct Timeline: ReducerProtocol {
-  enum Destination: Equatable {
-    case connectWallet
-  }
-  
   struct State: Equatable {
     enum ScrollPosition: Equatable {
       case top(_ navigationID: String)
@@ -23,8 +19,7 @@ struct Timeline: ReducerProtocol {
     var indexingPost: Bool = false
     var loadingInFlight: Bool = false
     
-    var destination: Destination?
-    var connectWallet: Wallet.State = .init()
+    var connectWallet: Wallet.State? = nil
     var showProfile: Profile.State? = nil
   }
   
@@ -44,6 +39,8 @@ struct Timeline: ReducerProtocol {
     case publicationsResponse(PublicationsResponse)
     case fetchingFailed
     
+    case connectWalletTapped
+    case setConnectWallet(Wallet.State?)
     case ownProfileTapped
     case lentilButtonTapped
     case createPublicationTapped
@@ -53,8 +50,6 @@ struct Timeline: ReducerProtocol {
     case connectWallet(Wallet.Action)
     case showProfile(Profile.Action)
     case post(id: Post.State.ID, action: Post.Action)
-    
-    case setDestination(Destination?)
   }
   
   @Dependency(\.cache) var cache
@@ -152,10 +147,6 @@ struct Timeline: ReducerProtocol {
   }
   
   var body: some ReducerProtocol<State, Action> {
-    Scope(state: \.connectWallet, action: /Action.connectWallet) {
-      Wallet()
-    }
-    
     Reduce { state, action in
       enum CancelFetchPublicationsID {}
       
@@ -265,6 +256,14 @@ struct Timeline: ReducerProtocol {
           state.loadingInFlight = false
           return .none
           
+        case .connectWalletTapped:
+          state.connectWallet = .init()
+          return .none
+          
+        case .setConnectWallet(let walletState):
+          state.connectWallet = walletState
+          return .none
+          
         case .ownProfileTapped:
           guard let userProfile = state.userProfile
           else { return .none }
@@ -327,11 +326,10 @@ struct Timeline: ReducerProtocol {
             }
           }
           return .none
-          
-        case .setDestination(let destination):
-          state.destination = destination
-          return .none
       }
+    }
+    .ifLet(\.connectWallet, action: /Action.connectWallet) {
+      Wallet()
     }
     .ifLet(\.showProfile, action: /Action.showProfile) {
       Profile()
