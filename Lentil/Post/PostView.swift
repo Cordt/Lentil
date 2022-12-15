@@ -36,10 +36,10 @@ struct PostView: View {
               then: { store in
                 GeometryReader { reader in
                   MultiImageView(store: store)
-                    .frame(width: reader.size.width, height: CGFloat(viewStore.post.publicationImageRows) * 250)
+                    .frame(width: reader.size.width, height: viewStore.post.publicationImageHeight)
                     .clipped()
                 }
-                .frame(minHeight: CGFloat(viewStore.post.publicationImageRows) * 250)
+                .frame(minHeight: viewStore.post.publicationImageHeight)
               }
             )
             

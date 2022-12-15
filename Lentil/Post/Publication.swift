@@ -12,10 +12,11 @@ struct Publication: ReducerProtocol {
     var publication: Model.Publication
     var remoteProfilePicture: LentilImage.State?
     var remotePublicationImages: MultiImage.State?
-    var publicationImageRows: Int {
+    var publicationImageHeight: CGFloat {
       guard let count = self.remotePublicationImages?.images.count
       else { return 0 }
-      return count / 2 + count % 2
+      return CGFloat(count % 2 + 1) * 125
+      
     }
     
     var publicationContent: String { self.publication.content.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -37,8 +38,13 @@ struct Publication: ReducerProtocol {
         self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(publication.profile.handle))
       }
       if publication.media.count > 0 {
-        let imageStates = publication.media.map { LentilImage.State(imageUrl: $0.url, kind: .feed) }
-        self.remotePublicationImages = .init(images: IdentifiedArrayOf(uniqueElements: imageStates))
+        let imageStates = publication.media
+          .map { LentilImage.State(imageUrl: $0.url, kind: .feed) }
+        var uniqueImageStates: [LentilImage.State] = []
+        imageStates.forEach {
+          if !uniqueImageStates.contains($0) { uniqueImageStates.append($0) }
+        }
+        self.remotePublicationImages = .init(images: IdentifiedArrayOf(uniqueElements: uniqueImageStates))
       }
     }
   }

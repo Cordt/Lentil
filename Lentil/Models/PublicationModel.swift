@@ -52,7 +52,8 @@ struct MockData {
       commentdByUser: false,
       mirrordByUser: false,
       media: [
-        .init(mediaType: .image(.jpeg), url: URL(string: "https://feed-picture")!)
+        .init(mediaType: .image(.jpeg), url: URL(string: "https://feed-picture")!),
+        .init(mediaType: .image(.jpeg), url: URL(string: "https://cover-picture")!)
       ]
     ),
     .init(
