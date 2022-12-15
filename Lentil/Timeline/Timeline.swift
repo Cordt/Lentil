@@ -235,12 +235,33 @@ struct Timeline: ReducerProtocol {
             postState.post.publication = publication
           }
           else {
-            let postState = Post.State(
+            let publicationState = Post.State(
               navigationId: uuid.callAsFunction().uuidString,
               post: .init(publication: publication),
               typename: Post.State.Typename.from(typename: publication.typename)
             )
-            state.posts.insert(postState, at: 0)
+            
+            if case .comment(let parent) = publication.typename {
+              if var postState = state.posts.first(where: { $0.post.publication.id == parent?.id }) {
+                postState.comments.updateOrAppend(publicationState)
+                state.posts[id: postState.id] = postState
+              }
+              else if let parentId = parent?.id, let post = self.cache.publication(parentId) {
+                let parentState = Post.State(
+                  navigationId: uuid.callAsFunction().uuidString,
+                  post: .init(publication: post),
+                  typename: Post.State.Typename.from(typename: post.typename),
+                  comments: [publicationState]
+                )
+                state.posts.insert(parentState, at: 0)
+              }
+              else {
+                log("Couldn't find parent publication for published comment", level: .warn)
+              }
+            }
+            else {            
+              state.posts.insert(publicationState, at: 0)
+            }
           }
           self.cache.updateOrAppendPublication(publication)
           return .none

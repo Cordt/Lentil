@@ -166,7 +166,6 @@ final class RootTests: XCTestCase {
       initialState: Root.State(timelineState: .init(), createPublication: CreatePublication.State(navigationId: "abc-def", reason: .creatingPost)),
       reducer: Root()
     )
-    let publication = MockData.mockPublications[0]
     let clock = TestClock()
     
     store.dependencies.continuousClock = clock

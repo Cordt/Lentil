@@ -117,4 +117,33 @@ final class TimelineTests: XCTestCase {
       $0.showProfile = Profile.State(navigationId: "00000000-0000-0000-0000-000000000000", profile: MockData.mockProfiles[0])
     }
   }
+  
+  func testAssociatedPostIsAddedToIndexedComment() async throws {
+    let store = TestStore(initialState: Timeline.State(), reducer: Timeline())
+    let comment = MockData.mockComments[0]
+    let parent = MockData.mockPosts[0]
+    
+    store.dependencies.uuid = .incrementing
+    
+    store.dependencies.cache.publication = { _ in parent }
+    store.dependencies.cache.updateOrAppendPublication = { _ in }
+    
+    await store.send(.publicationResponse(comment)) {
+      let postState = Post.State(
+        navigationId: "00000000-0000-0000-0000-000000000001",
+        post: .init(publication: parent),
+        typename: .post,
+        comments: [
+          Post.State(
+            navigationId: "00000000-0000-0000-0000-000000000000",
+            post: .init(publication: comment),
+            typename: .comment
+          )
+        ]
+      )
+      
+      $0.posts.append(postState)
+      $0.isIndexing = nil
+    }
+  }
 }
