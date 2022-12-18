@@ -9,7 +9,7 @@ struct PostDetailView: View {
   let store: Store<Post.State, Post.Action>
   
   var body: some View {
-    WithViewStore(self.store, observe: { $0.post.publicationContent }) { viewStore in
+    WithViewStore(self.store, observe: { $0.post }) { viewStore in
       ScrollView(showsIndicators: false) {
         VStack(alignment: .leading, spacing: 10) {
           PostDetailHeaderView(
@@ -26,9 +26,10 @@ struct PostDetailView: View {
             )
           ) { imageStore in
             MultiImageView(store: imageStore)
-          }
+              .frame(height: viewStore.state.publicationImageHeight)
+            }
           
-          Text(viewStore.state)
+          Text(viewStore.state.publicationContent)
             .font(style: .bodyDetailed)
           
           PostStatsView(
@@ -80,7 +81,7 @@ struct PostDetail_Previews: PreviewProvider {
     NavigationStack {
       PostDetailView(
         store: .init(
-          initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[1]), typename: .post),
+          initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]), typename: .post),
           reducer: Post()
         )
       )

@@ -39,7 +39,7 @@ struct PostView: View {
                     .frame(width: reader.size.width, height: viewStore.post.publicationImageHeight)
                     .clipped()
                 }
-                .frame(minHeight: viewStore.post.publicationImageHeight)
+                .frame(height: viewStore.post.publicationImageHeight)
               }
             )
             

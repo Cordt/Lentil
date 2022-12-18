@@ -56,27 +56,37 @@ struct MultiImageView: View {
             )
           }
         case 3:
-          VStack {
-            HStack {
+          GeometryReader { geometry in
+            VStack {
+              HStack {
+                LentilImageView(
+                  store: self.store.scope(
+                    state: \.images[0],
+                    action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
+                  )
+                )
+                .frame(width: geometry.size.width * 0.5 - 4, height: geometry.size.height / 3)
+                .clipped()
+                
+                LentilImageView(
+                  store: self.store.scope(
+                    state: \.images[1],
+                    action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
+                  )
+                )
+                .frame(width: geometry.size.width * 0.5 - 4, height: geometry.size.height / 3)
+                .clipped()
+              }
+              
               LentilImageView(
                 store: self.store.scope(
-                  state: \.images[0],
-                  action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
+                  state: \.images[2],
+                  action: { MultiImage.Action.image(viewStore.images[2].id, $0) }
                 )
               )
-              LentilImageView(
-                store: self.store.scope(
-                  state: \.images[1],
-                  action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
-                )
-              )
+              .frame(width: geometry.size.width, height: geometry.size.height / 3 * 2)
+              .clipped()
             }
-            LentilImageView(
-              store: self.store.scope(
-                state: \.images[2],
-                action: { MultiImage.Action.image(viewStore.images[2].id, $0) }
-              )
-            )
           }
         case 4:
           VStack {

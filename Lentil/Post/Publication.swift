@@ -15,8 +15,15 @@ struct Publication: ReducerProtocol {
     var publicationImageHeight: CGFloat {
       guard let count = self.remotePublicationImages?.images.count
       else { return 0 }
-      return CGFloat(count % 2 + 1) * 125
-      
+      switch count {
+        case 0:   return 0
+        case 1:   return 250
+        case 2:   return 125
+        case 3:   return 375
+        case 4:   return 250
+        case 5:   return 500
+        default:  return 0
+      }
     }
     
     var publicationContent: String { self.publication.content.trimmingCharacters(in: .whitespacesAndNewlines) }

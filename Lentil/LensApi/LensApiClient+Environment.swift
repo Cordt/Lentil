@@ -338,8 +338,9 @@ extension LensApi {
     fetchImage: { url in
       if url.absoluteString == "https://profile-picture" { return UIImage(named: "cryptopunk1")!.jpegData(compressionQuality: 0.5)! }
       else if url.absoluteString == "https://cover-picture" { return UIImage(named: "munich")!.jpegData(compressionQuality: 0.5)! }
-      else if url.absoluteString == "https://cover-picture-2" { return UIImage(named: "crete")!.jpegData(compressionQuality: 0.5)! }
+      else if url.absoluteString == "https://crete" { return UIImage(named: "crete")!.jpegData(compressionQuality: 0.5)! }
       else if url.absoluteString == "https://feed-picture" { return UIImage(named: "munich")!.jpegData(compressionQuality: 0.5)! }
+      else if url.absoluteString == "https://lentil-beta" { return UIImage(named: "lentilBeta")!.jpegData(compressionQuality: 0.5)! }
       else { throw ApiError.requestFailed }
     },
     broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
