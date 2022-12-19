@@ -17,6 +17,7 @@ struct PostView: View {
         if viewStore.typename == .mirror, let mirrorer = viewStore.mirrorer {
           PostInfoView(infoType: .mirrored, name: mirrorer)
         }
+        
         PostHeaderView(
           store: self.store.scope(
             state: \.post,
@@ -24,47 +25,49 @@ struct PostView: View {
           )
         )
         
-        Button {
-          viewStore.send(.postTapped)
-        } label: {
-          VStack(alignment: .leading, spacing: 10) {
-            IfLetStore(
-              self.store.scope(
-                state: \.post.remotePublicationImages,
-                action: { Post.Action.post(action: .remotePublicationImages($0)) }
-              ),
-              then: { store in
-                GeometryReader { reader in
-                  MultiImageView(store: store)
-                    .frame(width: reader.size.width, height: viewStore.post.publicationImageHeight)
-                    .clipped()
-                }
-                .frame(height: viewStore.post.publicationImageHeight)
+        
+        VStack(alignment: .leading, spacing: 10) {
+          IfLetStore(
+            self.store.scope(
+              state: \.post.remotePublicationImages,
+              action: { Post.Action.post(action: .remotePublicationImages($0)) }
+            ),
+            then: { store in
+              GeometryReader { reader in
+                MultiImageView(store: store)
+                  .frame(width: reader.size.width, height: viewStore.post.publicationImageHeight)
+                  .clipped()
               }
-            )
-            
+              .frame(height: viewStore.post.publicationImageHeight)
+            }
+          )
+          
+          Button {
+            viewStore.send(.postTapped)
+          } label: {
             Text(viewStore.post.shortenedContent)
               .font(style: .body)
               .multilineTextAlignment(.leading)
-            
-            PostStatsView(
-              store: self.store.scope(
-                state: \.post,
-                action: Post.Action.post
-              )
-            )
           }
-          .background {
-            if viewStore.comments.count > 0 {
-              HStack {
-                Rectangle()
-                  .fill(Theme.Color.greyShade3)
-                  .frame(width: 1)
-                Spacer()
-              }
-              .padding(.top, 30)
-              .padding(.leading, -30)
+          
+          PostStatsView(
+            store: self.store.scope(
+              state: \.post,
+              action: Post.Action.post
+            )
+          )
+          
+        }
+        .background {
+          if viewStore.comments.count > 0 {
+            HStack {
+              Rectangle()
+                .fill(Theme.Color.greyShade3)
+                .frame(width: 1)
+              Spacer()
             }
+            .padding(.top, 30)
+            .padding(.leading, -30)
           }
         }
         .padding(.top, -25)
@@ -137,7 +140,7 @@ struct PostView_Previews: PreviewProvider {
                 navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]),
                 typename: .post,
                 comments: [Post.State(
-                  navigationId: "abc",
+                  navigationId: "cba",
                   post: .init(publication: mockComment()),
                   typename: .comment
                 )]
@@ -147,7 +150,19 @@ struct PostView_Previews: PreviewProvider {
           )
           PostView(
             store: .init(
-              initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[1]), typename: .post),
+              initialState: .init(navigationId: "def", post: Publication.State(publication: MockData.mockPublications[1]), typename: .post),
+              reducer: Post()
+            )
+          )
+          PostView(
+            store: .init(
+              initialState: .init(navigationId: "ghi", post: Publication.State(publication: MockData.mockPublications[2]), typename: .post),
+              reducer: Post()
+            )
+          )
+          PostView(
+            store: .init(
+              initialState: .init(navigationId: "jkl", post: Publication.State(publication: MockData.mockPublications[3]), typename: .post),
               reducer: Post()
             )
           )

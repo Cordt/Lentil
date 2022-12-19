@@ -34,26 +34,37 @@ struct MultiImageView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       switch viewStore.images.count {
         case 1:
-          LentilImageView(
-            store: self.store.scope(
-              state: \.images[0],
-              action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
-            )
-          )
-        case 2:
-          HStack {
+          GeometryReader { geometry in
             LentilImageView(
               store: self.store.scope(
                 state: \.images[0],
                 action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
               )
             )
-            LentilImageView(
-              store: self.store.scope(
-                state: \.images[1],
-                action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .clipped()
+          }
+        case 2:
+          GeometryReader { geometry in
+            HStack {
+              LentilImageView(
+                store: self.store.scope(
+                  state: \.images[0],
+                  action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
+                )
               )
-            )
+              .frame(width: geometry.size.width * 0.5 - 4, height: geometry.size.height)
+              .clipped()
+              
+              LentilImageView(
+                store: self.store.scope(
+                  state: \.images[1],
+                  action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
+                )
+              )
+              .frame(width: geometry.size.width * 0.5 - 4, height: geometry.size.height)
+              .clipped()
+            }
           }
         case 3:
           GeometryReader { geometry in
@@ -89,34 +100,46 @@ struct MultiImageView: View {
             }
           }
         case 4:
-          VStack {
-            HStack {
-              LentilImageView(
-                store: self.store.scope(
-                  state: \.images[0],
-                  action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
+          GeometryReader { geometry in
+            VStack {
+              HStack {
+                LentilImageView(
+                  store: self.store.scope(
+                    state: \.images[0],
+                    action: { MultiImage.Action.image(viewStore.images[0].id, $0) }
+                  )
                 )
-              )
-              LentilImageView(
-                store: self.store.scope(
-                  state: \.images[1],
-                  action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
+                .frame(width: geometry.size.width * 0.5 - 4, height: geometry.size.height / 2)
+                .clipped()
+                
+                LentilImageView(
+                  store: self.store.scope(
+                    state: \.images[1],
+                    action: { MultiImage.Action.image(viewStore.images[1].id, $0) }
+                  )
                 )
-              )
-            }
-            HStack {
-              LentilImageView(
-                store: self.store.scope(
-                  state: \.images[2],
-                  action: { MultiImage.Action.image(viewStore.images[2].id, $0) }
+                .frame(width: geometry.size.width * 0.5 - 4, height: geometry.size.height / 2)
+                .clipped()
+              }
+              HStack {
+                LentilImageView(
+                  store: self.store.scope(
+                    state: \.images[2],
+                    action: { MultiImage.Action.image(viewStore.images[2].id, $0) }
+                  )
                 )
-              )
-              LentilImageView(
-                store: self.store.scope(
-                  state: \.images[3],
-                  action: { MultiImage.Action.image(viewStore.images[3].id, $0) }
+                .frame(width: geometry.size.width * 0.5 - 4, height: geometry.size.height / 2)
+                .clipped()
+                
+                LentilImageView(
+                  store: self.store.scope(
+                    state: \.images[3],
+                    action: { MultiImage.Action.image(viewStore.images[3].id, $0) }
+                  )
                 )
-              )
+                .frame(width: geometry.size.width * 0.5 - 4, height: geometry.size.height / 2)
+                .clipped()
+              }
             }
           }
         default:

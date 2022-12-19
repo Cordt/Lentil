@@ -48,6 +48,7 @@
 		3777834328CCD39500E7E32A /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834228CCD39500E7E32A /* API.swift */; };
 		3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834628CDA27600E7E32A /* LensApiClient.swift */; };
 		37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */; };
+		378AE5AE294FA564001584DD /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE5AD294FA564001584DD /* ImageView.swift */; };
 		37A7A6F6293C4DAB00964768 /* MediaDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */; };
 		37A7A6F9293C53F100964768 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F8293C53F100964768 /* Cache.swift */; };
 		37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */; };
@@ -140,6 +141,7 @@
 		3777834228CCD39500E7E32A /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		3777834628CDA27600E7E32A /* LensApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiClient.swift; sourceTree = "<group>"; };
 		37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
+		378AE5AD294FA564001584DD /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataModel.swift; sourceTree = "<group>"; };
 		37A7A6F8293C53F100964768 /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Run.swift"; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 		37C5178F291F5142002D2B6D /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				378AE5AD294FA564001584DD /* ImageView.swift */,
 				37BE767028FAA73800282ED0 /* LentilButton.swift */,
 				37C51792291F518C002D2B6D /* LentilImage.swift */,
 				372D1791294B808E008D2BEF /* MultiImageView.swift */,
@@ -666,6 +669,7 @@
 				37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* Post.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */,
+				378AE5AE294FA564001584DD /* ImageView.swift in Sources */,
 				370ABEFE292A83C8005B8E11 /* InfuraApiClient.swift in Sources */,
 				373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */,
 				372248D828DB46890066BCE5 /* Root.swift in Sources */,
