@@ -26,7 +26,7 @@ struct TimelineView: View {
     WithViewStore(self.store) { viewStore in
       
       ScrollViewReader { proxy in
-        ScrollView(.vertical, showsIndicators: false) {
+        ScrollView(axes: .vertical, showsIndicators: false) {
           LazyVStack(alignment: .leading) {
             ForEachStore(
               self.store.scope(

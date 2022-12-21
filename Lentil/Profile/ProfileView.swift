@@ -11,8 +11,8 @@ struct ProfileView: View {
   @ViewBuilder
   func linkIcon(icon: Icon, url: URL) -> some View {
     Link(destination: url) {
-      icon.view(.xlarge)
-        .frame(width: 40, height: 40)
+      icon.view(.large)
+        .frame(width: 36, height: 36)
         .background { Theme.Color.white.opacity(0.7) }
         .clipShape(Circle())
     }
@@ -48,6 +48,7 @@ struct ProfileView: View {
             self.linkIcon(icon: Icon.website, url: website)
           }
         }
+        .opacity(viewStore.profileDetailHidden ? 0.0 : 1.0)
       }
     }
   }
@@ -56,91 +57,102 @@ struct ProfileView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       GeometryReader { geometry in
         VStack(spacing: 0) {
-          self.cover(width: geometry.size.width, height: geometry.size.height * 0.35)
-          
-          VStack(alignment: .leading) {
-            HStack {
-              VStack(alignment: .leading) {
-                Spacer()
-                Text(viewStore.profile.name ?? "@\(viewStore.profile.handle)")
-                  .font(style: .largeHeadline)
-                
-                if viewStore.profile.name != nil {
-                  Text("@\(viewStore.profile.handle)")
-                    .font(style: .body)
-                }
-              }
-              .frame(height: 112)
-              
-              Spacer()
-              
-              IfLetStore(
-                self.store.scope(
-                  state: \.remoteProfilePicture,
-                  action: Profile.Action.remoteProfilePicture
-                ),
-                then: {
-                  LentilImageView(store: $0)
-                    .frame(width: 112, height: 112)
-                    .clipShape(Circle())
-                    .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
-                },
-                else: {
-                  profileGradient(from: viewStore.profile.handle)
-                    .frame(width: 112, height: 112)
-                    .clipShape(Circle())
-                    .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
-                }
-              )
-            }
-            .padding(.bottom, 5)
+          ZStack(alignment: .bottomTrailing) {
+            self.cover(width: geometry.size.width, height: 300)
             
-            if let bio = viewStore.profile.bio {
-              Text(bio)
-                .font(style: .annotation, color: Theme.Color.greyShade3)
-                .padding(.bottom, 5)
-            }
-            
-            HStack(alignment: .top) {
-              VStack(alignment: .leading, spacing: 5) {
-                HStack(spacing: 5) {
-                  Text(simpleCount(from: viewStore.profile.followers))
-                    .font(style: .bodyBold)
-                  Text(viewStore.profile.followers == 1 ? "Follower" : "Followers")
-                    .font(style: .body)
-                }
-                HStack {
-                  if let joined = viewStore.profile.joinedDate {
-                    Icon.lens.view()
-                    Text("Joined " + age(joined))
-                      .font(style: .body)
-                  }
-                }
+            IfLetStore(
+              self.store.scope(
+                state: \.remoteProfilePicture,
+                action: Profile.Action.remoteProfilePicture
+              ),
+              then: {
+                LentilImageView(store: $0)
+                  .frame(width: 112, height: 112)
+                  .clipShape(Circle())
+                  .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
+                  .offset(y: 64)
+              },
+              else: {
+                profileGradient(from: viewStore.profile.handle)
+                  .frame(width: 112, height: 112)
+                  .clipShape(Circle())
+                  .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
+                  .offset(y: 64)
               }
-              .padding(.trailing, 10)
-              
-              VStack(alignment: .leading, spacing: 5) {
-                HStack {
-                  Text(simpleCount(from: viewStore.profile.following))
-                    .font(style: .bodyBold)
-                  Text("Following")
-                    .font(style: .body)
-                }
-                HStack {
-                  if let location = viewStore.profileLocation {
-                    Icon.location.view()
-                    Text(location)
-                      .font(style: .body)
-                  }
-                }
-              }
-            }
+            )
+            .opacity(viewStore.profileDetailHidden ? 0.0 : 1.0)
+            .padding(.trailing)
           }
-          .padding(.top, -48)
-          .padding([.leading, .trailing])
+          .padding(.top, viewStore.coverOffset)
           
-          ScrollView(.vertical, showsIndicators: false) {
+          ScrollView(
+            axes: .vertical,
+            showsIndicators: false,
+            offsetChanged: { viewStore.send(.scrollPositionChanged($0)) }
+          ) {
             LazyVStack(alignment: .leading) {
+              VStack(alignment: .leading) {
+                HStack {
+                  VStack(alignment: .leading) {
+                    Spacer()
+                    Text(viewStore.profile.name ?? "@\(viewStore.profile.handle)")
+                      .font(style: .largeHeadline)
+                    
+                    if viewStore.profile.name != nil {
+                      Text("@\(viewStore.profile.handle)")
+                        .font(style: .body)
+                    }
+                  }
+                  .frame(height: 112)
+                  
+                  Spacer()
+                }
+                .padding(.bottom, 5)
+                
+                if let bio = viewStore.profile.bio {
+                  Text(bio)
+                    .font(style: .annotation, color: Theme.Color.greyShade3)
+                    .padding(.bottom, 5)
+                }
+                
+                HStack(alignment: .top) {
+                  VStack(alignment: .leading, spacing: 5) {
+                    HStack(spacing: 5) {
+                      Text(simpleCount(from: viewStore.profile.followers))
+                        .font(style: .bodyBold)
+                      Text(viewStore.profile.followers == 1 ? "Follower" : "Followers")
+                        .font(style: .body)
+                    }
+                    HStack {
+                      if let joined = viewStore.profile.joinedDate {
+                        Icon.lens.view()
+                        Text("Joined " + age(joined))
+                          .font(style: .body)
+                      }
+                    }
+                  }
+                  .padding(.trailing, 10)
+                  
+                  VStack(alignment: .leading, spacing: 5) {
+                    HStack {
+                      Text(simpleCount(from: viewStore.profile.following))
+                        .font(style: .bodyBold)
+                      Text("Following")
+                        .font(style: .body)
+                    }
+                    HStack {
+                      if let location = viewStore.profileLocation {
+                        Icon.location.view()
+                        Text(location)
+                          .font(style: .body)
+                      }
+                    }
+                  }
+                }
+              }
+              .padding(.top, -48)
+              .padding([.leading, .trailing])
+              
               ForEachStore(
                 self.store.scope(
                   state: \.posts,
@@ -155,7 +167,13 @@ struct ProfileView: View {
         .ignoresSafeArea()
         .toolbar {
           ToolbarItem(placement: .navigationBarLeading) {
-            BackButton { viewStore.send(.dismissView) }
+            HStack {
+              BackButton { viewStore.send(.dismissView) }
+              
+              Text(viewStore.profile.name ?? "@\(viewStore.profile.handle)")
+                .font(style: .headline, color: Theme.Color.white)
+                .opacity(viewStore.profileDetailHidden ? 1.0 : 0.0)
+            }
           }
         }
         .toolbarBackground(.hidden, for: .navigationBar)

@@ -36,6 +36,11 @@ struct Profile: ReducerProtocol {
     var remoteCoverPicture: LentilImage.State?
     var remoteProfilePicture: LentilImage.State?
     
+    var coverOffset: CGFloat = 0.0
+    var profileDetailHidden: Bool {
+      self.coverOffset <= -100
+    }
+    
     init(navigationId: String, profile: Model.Profile) {
       self.navigationId = navigationId
       self.profile = profile
@@ -60,6 +65,7 @@ struct Profile: ReducerProtocol {
     case remoteProfilePicture(LentilImage.Action)
     case fetchPublications
     case publicationsResponse(TaskResult<[Model.Publication]>)
+    case scrollPositionChanged(CGPoint)
     
     case post(id: Post.State.ID, action: Post.Action)
   }
@@ -127,6 +133,10 @@ struct Profile: ReducerProtocol {
           return .none
           
         case .remoteCoverPicture, .remoteProfilePicture:
+          return .none
+          
+        case .scrollPositionChanged(let position):
+          state.coverOffset = min(max(position.y, -200), 0)
           return .none
           
         case .post:
