@@ -36,7 +36,7 @@ query ExplorePublications($request: ExplorePublicationRequest!, $reactionRequest
 }
 
 query Feed($request: FeedRequest!, $reactionRequest: ReactionFieldResolverRequest) {
-  feed(request:$request) {
+  feed(request: $request) {
     items {
       root {
         ... on Post {
@@ -50,10 +50,25 @@ query Feed($request: FeedRequest!, $reactionRequest: ReactionFieldResolverReques
       }
       mirrors {
         profile {
-          id
-          handle
-        }
+    			...ProfileFields
+  			}
         timestamp
+      }
+      collects {
+        profile {
+    			...ProfileFields
+  			}
+        timestamp
+      }
+      reactions {
+        profile {
+    			...ProfileFields
+  			}
+        reaction
+        timestamp
+      }
+      comments {
+        ...CommentFields
       }
     }
     pageInfo {
@@ -89,17 +104,21 @@ query Publications($request: PublicationsQueryRequest!, $reactionRequest: Reacti
 	}
 }
 
-query Publication($request: PublicationQueryRequest!) {
+query Publication($request: PublicationQueryRequest!, $reactionRequest: ReactionFieldResolverRequest) {
   publication(request: $request) {
    __typename
+    __typename
     ... on Post {
       ...PostFields
+      postReaction: reaction(request: $reactionRequest)
     }
     ... on Comment {
-      ...CommentBaseFields
+      ...CommentFields
+      commentReaction: reaction(request: $reactionRequest)
     }
     ... on Mirror {
-      ...MirrorBaseFields
+      ...MirrorFields
+      mirrorReaction: reaction(request: $reactionRequest)
     }
   }
 }
@@ -201,6 +220,18 @@ mutation AddReaction($request: ReactionRequest!) {
 
 mutation RemoveReaction($request: ReactionRequest!) {
 	removeReaction(request: $request)
+}
+
+mutation CreateMirrorViaDispatcher($request: CreateMirrorRequest!) {
+  createMirrorViaDispatcher(request: $request) {
+    ... on RelayerResult {
+      txHash
+      txId
+    }
+    ... on RelayError {
+      reason
+    }
+  }
 }
 
 mutation CreateSetDefaultProfileTypedData($request: CreateSetDefaultProfileRequest!) {

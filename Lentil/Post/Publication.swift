@@ -60,6 +60,9 @@ struct Publication: ReducerProtocol {
     case userProfileTapped
     case toggleReaction
     case commentTapped
+    case mirrorTapped
+    case mirrorResult(TaskResult<MutationResult<Result<RelayerResult, RelayErrorReasons>>>)
+    case mirrorSuccess(_ txnHash: String)
     
     case remoteProfilePicture(LentilImage.Action)
     case remotePublicationImages(MultiImage.Action)
@@ -117,6 +120,34 @@ struct Publication: ReducerProtocol {
               destination: .createPublication(.replyingToPost(state.id, state.publication.profile.handle))
             )
           )
+          return .none
+          
+        case .mirrorTapped:
+          guard let user = self.profileStorageApi.load()
+          else { return .none }
+          
+          return .task { [publicationId = state.publication.id] in
+            await .mirrorResult(
+              TaskResult { try await self.lensApi.createMirror(user.id, publicationId) }
+            )
+          }
+          
+        case .mirrorResult(.success(let result)):
+          switch result.data {
+            case .success(let relayerResult):
+              log("Successfully mirrored publication", level: .info)
+              return Effect(value: .mirrorSuccess(relayerResult.txnHash))
+              
+            case .failure(let relayerError):
+              log("Failed to mirror publication", level: .error, error: relayerError)
+          }
+          return .none
+          
+        case .mirrorResult(.failure(let error)):
+          log("Failed to mirror publication", level: .error, error: error)
+          return .none
+          
+        case .mirrorSuccess:
           return .none
        
         case .remoteProfilePicture:

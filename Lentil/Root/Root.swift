@@ -61,6 +61,33 @@ struct Root: ReducerProtocol {
   private enum TimerID {}
   private enum NavigationEventsID {}
 
+  func fetchIndexedTransaction(txHash: String?, state: inout State) -> EffectTask<Action> {
+    if let txHash {
+      state.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
+      return .task {
+        do {
+          var attempts = 5
+          while attempts > 0 {
+            if let publication = try await self.lensApi.publication(txHash).data {
+              return .timelineAction(.publicationResponse(publication))
+            }
+            try await self.clock.sleep(for: .seconds(5))
+            attempts -= 1
+          }
+          log("Failed to load recently created publication for TX Hash after 5 retries \(txHash)", level: .warn)
+          return .timelineAction(.publicationResponse(nil))
+          
+        } catch let error {
+          log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
+          return .timelineAction(.publicationResponse(nil))
+        }
+      }
+    }
+    else {
+      return .none
+    }
+  }
+  
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {
@@ -171,8 +198,18 @@ struct Root: ReducerProtocol {
         case .rootScreenDisappeared:
           return .cancel(id: NavigationEventsID.self)
           
-        case .timelineAction:
-          return .none
+        case .timelineAction(let timelineAction):
+          if case .post(_, let postAction) = timelineAction {
+            if case .post(.mirrorSuccess(let txHash)) = postAction {
+              return fetchIndexedTransaction(txHash: txHash, state: &state)
+            }
+            else {
+              return .none
+            }
+          }
+          else {
+            return .none
+          }
           
         case .addPath(let destinationPath):
           switch destinationPath.destination {
@@ -224,30 +261,11 @@ struct Root: ReducerProtocol {
           
         case .createPublication(let createPublicationAction):
           if case .dismissView(let txHash) = createPublicationAction {
-            if let txHash {
-              state.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
-              return .task {
-                do {
-                  var attempts = 5
-                  while attempts > 0 {
-                    if let publication = try await self.lensApi.publication(txHash).data {
-                      return .timelineAction(.publicationResponse(publication))
-                    }
-                    try await self.clock.sleep(for: .seconds(2))
-                    attempts -= 1
-                  }
-                  log("Failed to load recently created publication for TX Hash after 5 retries \(txHash)", level: .warn)
-                  return .timelineAction(.publicationResponse(nil))
-
-                } catch let error {
-                  log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
-                  return .timelineAction(.publicationResponse(nil))
-                }
-              }
-            }
+            return fetchIndexedTransaction(txHash: txHash, state: &state)
           }
-          return .none
-
+          else {
+            return .none
+          }
       }
     }
     .forEach(\.posts, action: /Action.post) {

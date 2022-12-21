@@ -2430,6 +2430,48 @@ public struct ReactionRequest: GraphQLMapConvertible {
   }
 }
 
+public struct CreateMirrorRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - profileId: Profile id
+  ///   - publicationId: Publication id of what you want to mirror on remember if this is a comment it will be that as the id
+  ///   - referenceModule: The reference module info
+  public init(profileId: String, publicationId: String, referenceModule: Swift.Optional<ReferenceModuleParams?> = nil) {
+    graphQLMap = ["profileId": profileId, "publicationId": publicationId, "referenceModule": referenceModule]
+  }
+
+  /// Profile id
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// Publication id of what you want to mirror on remember if this is a comment it will be that as the id
+  public var publicationId: String {
+    get {
+      return graphQLMap["publicationId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "publicationId")
+    }
+  }
+
+  /// The reference module info
+  public var referenceModule: Swift.Optional<ReferenceModuleParams?> {
+    get {
+      return graphQLMap["referenceModule"] as? Swift.Optional<ReferenceModuleParams?> ?? Swift.Optional<ReferenceModuleParams?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "referenceModule")
+    }
+  }
+}
+
 public struct CreateSetDefaultProfileRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -3289,10 +3331,30 @@ public final class FeedQuery: GraphQLQuery {
             __typename
             profile {
               __typename
-              id
-              handle
+              ...ProfileFields
             }
             timestamp
+          }
+          collects {
+            __typename
+            profile {
+              __typename
+              ...ProfileFields
+            }
+            timestamp
+          }
+          reactions {
+            __typename
+            profile {
+              __typename
+              ...ProfileFields
+            }
+            reaction
+            timestamp
+          }
+          comments {
+            __typename
+            ...CommentFields
           }
         }
         pageInfo {
@@ -3419,6 +3481,9 @@ public final class FeedQuery: GraphQLQuery {
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("root", type: .nonNull(.object(Root.selections))),
             GraphQLField("mirrors", type: .nonNull(.list(.nonNull(.object(Mirror.selections))))),
+            GraphQLField("collects", type: .nonNull(.list(.nonNull(.object(Collect.selections))))),
+            GraphQLField("reactions", type: .nonNull(.list(.nonNull(.object(Reaction.selections))))),
+            GraphQLField("comments", type: .list(.nonNull(.object(Comment.selections)))),
           ]
         }
 
@@ -3428,8 +3493,8 @@ public final class FeedQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public init(root: Root, mirrors: [Mirror]) {
-          self.init(unsafeResultMap: ["__typename": "FeedItem", "root": root.resultMap, "mirrors": mirrors.map { (value: Mirror) -> ResultMap in value.resultMap }])
+        public init(root: Root, mirrors: [Mirror], collects: [Collect], reactions: [Reaction], comments: [Comment]? = nil) {
+          self.init(unsafeResultMap: ["__typename": "FeedItem", "root": root.resultMap, "mirrors": mirrors.map { (value: Mirror) -> ResultMap in value.resultMap }, "collects": collects.map { (value: Collect) -> ResultMap in value.resultMap }, "reactions": reactions.map { (value: Reaction) -> ResultMap in value.resultMap }, "comments": comments.flatMap { (value: [Comment]) -> [ResultMap] in value.map { (value: Comment) -> ResultMap in value.resultMap } }])
         }
 
         public var __typename: String {
@@ -3457,6 +3522,36 @@ public final class FeedQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue.map { (value: Mirror) -> ResultMap in value.resultMap }, forKey: "mirrors")
+          }
+        }
+
+        /// Sorted by most recent first. Resolves defaultProfile and if null omits the wallet collect event from the list.
+        public var collects: [Collect] {
+          get {
+            return (resultMap["collects"] as! [ResultMap]).map { (value: ResultMap) -> Collect in Collect(unsafeResultMap: value) }
+          }
+          set {
+            resultMap.updateValue(newValue.map { (value: Collect) -> ResultMap in value.resultMap }, forKey: "collects")
+          }
+        }
+
+        /// Sorted by most recent first. Up to page size - 1 reactions
+        public var reactions: [Reaction] {
+          get {
+            return (resultMap["reactions"] as! [ResultMap]).map { (value: ResultMap) -> Reaction in Reaction(unsafeResultMap: value) }
+          }
+          set {
+            resultMap.updateValue(newValue.map { (value: Reaction) -> ResultMap in value.resultMap }, forKey: "reactions")
+          }
+        }
+
+        /// Sorted by most recent first. Up to page size - 1 comments.
+        public var comments: [Comment]? {
+          get {
+            return (resultMap["comments"] as? [ResultMap]).flatMap { (value: [ResultMap]) -> [Comment] in value.map { (value: ResultMap) -> Comment in Comment(unsafeResultMap: value) } }
+          }
+          set {
+            resultMap.updateValue(newValue.flatMap { (value: [Comment]) -> [ResultMap] in value.map { (value: Comment) -> ResultMap in value.resultMap } }, forKey: "comments")
           }
         }
 
@@ -3692,8 +3787,7 @@ public final class FeedQuery: GraphQLQuery {
             public static var selections: [GraphQLSelection] {
               return [
                 GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                GraphQLField("id", type: .nonNull(.scalar(String.self))),
-                GraphQLField("handle", type: .nonNull(.scalar(String.self))),
+                GraphQLFragmentSpread(ProfileFields.self),
               ]
             }
 
@@ -3701,10 +3795,6 @@ public final class FeedQuery: GraphQLQuery {
 
             public init(unsafeResultMap: ResultMap) {
               self.resultMap = unsafeResultMap
-            }
-
-            public init(id: String, handle: String) {
-              self.init(unsafeResultMap: ["__typename": "Profile", "id": id, "handle": handle])
             }
 
             public var __typename: String {
@@ -3716,23 +3806,293 @@ public final class FeedQuery: GraphQLQuery {
               }
             }
 
-            /// The profile id
-            public var id: String {
+            public var fragments: Fragments {
               get {
-                return resultMap["id"]! as! String
+                return Fragments(unsafeResultMap: resultMap)
               }
               set {
-                resultMap.updateValue(newValue, forKey: "id")
+                resultMap += newValue.resultMap
               }
             }
 
-            /// The profile handle
-            public var handle: String {
+            public struct Fragments {
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public var profileFields: ProfileFields {
+                get {
+                  return ProfileFields(unsafeResultMap: resultMap)
+                }
+                set {
+                  resultMap += newValue.resultMap
+                }
+              }
+            }
+          }
+        }
+
+        public struct Collect: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["CollectedEvent"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("profile", type: .nonNull(.object(Profile.selections))),
+              GraphQLField("timestamp", type: .nonNull(.scalar(String.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(profile: Profile, timestamp: String) {
+            self.init(unsafeResultMap: ["__typename": "CollectedEvent", "profile": profile.resultMap, "timestamp": timestamp])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var profile: Profile {
+            get {
+              return Profile(unsafeResultMap: resultMap["profile"]! as! ResultMap)
+            }
+            set {
+              resultMap.updateValue(newValue.resultMap, forKey: "profile")
+            }
+          }
+
+          public var timestamp: String {
+            get {
+              return resultMap["timestamp"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "timestamp")
+            }
+          }
+
+          public struct Profile: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Profile"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLFragmentSpread(ProfileFields.self),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var __typename: String {
               get {
-                return resultMap["handle"]! as! String
+                return resultMap["__typename"]! as! String
               }
               set {
-                resultMap.updateValue(newValue, forKey: "handle")
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var fragments: Fragments {
+              get {
+                return Fragments(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+
+            public struct Fragments {
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public var profileFields: ProfileFields {
+                get {
+                  return ProfileFields(unsafeResultMap: resultMap)
+                }
+                set {
+                  resultMap += newValue.resultMap
+                }
+              }
+            }
+          }
+        }
+
+        public struct Reaction: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["ReactionEvent"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("profile", type: .nonNull(.object(Profile.selections))),
+              GraphQLField("reaction", type: .nonNull(.scalar(ReactionTypes.self))),
+              GraphQLField("timestamp", type: .nonNull(.scalar(String.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(profile: Profile, reaction: ReactionTypes, timestamp: String) {
+            self.init(unsafeResultMap: ["__typename": "ReactionEvent", "profile": profile.resultMap, "reaction": reaction, "timestamp": timestamp])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var profile: Profile {
+            get {
+              return Profile(unsafeResultMap: resultMap["profile"]! as! ResultMap)
+            }
+            set {
+              resultMap.updateValue(newValue.resultMap, forKey: "profile")
+            }
+          }
+
+          public var reaction: ReactionTypes {
+            get {
+              return resultMap["reaction"]! as! ReactionTypes
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "reaction")
+            }
+          }
+
+          public var timestamp: String {
+            get {
+              return resultMap["timestamp"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "timestamp")
+            }
+          }
+
+          public struct Profile: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Profile"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLFragmentSpread(ProfileFields.self),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var fragments: Fragments {
+              get {
+                return Fragments(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+
+            public struct Fragments {
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public var profileFields: ProfileFields {
+                get {
+                  return ProfileFields(unsafeResultMap: resultMap)
+                }
+                set {
+                  resultMap += newValue.resultMap
+                }
+              }
+            }
+          }
+        }
+
+        public struct Comment: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Comment"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(CommentFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var commentFields: CommentFields {
+              get {
+                return CommentFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
               }
             }
           }
@@ -4267,20 +4627,23 @@ public final class PublicationQuery: GraphQLQuery {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition: String =
     """
-    query Publication($request: PublicationQueryRequest!) {
+    query Publication($request: PublicationQueryRequest!, $reactionRequest: ReactionFieldResolverRequest) {
       publication(request: $request) {
         __typename
         ... on Post {
           __typename
           ...PostFields
+          postReaction: reaction(request: $reactionRequest)
         }
         ... on Comment {
           __typename
-          ...CommentBaseFields
+          ...CommentFields
+          commentReaction: reaction(request: $reactionRequest)
         }
         ... on Mirror {
           __typename
-          ...MirrorBaseFields
+          ...MirrorFields
+          mirrorReaction: reaction(request: $reactionRequest)
         }
       }
     }
@@ -4297,19 +4660,24 @@ public final class PublicationQuery: GraphQLQuery {
     document.append("\n" + MetadataOutputFields.fragmentDefinition)
     document.append("\n" + CollectModuleFields.fragmentDefinition)
     document.append("\n" + Erc20Fields.fragmentDefinition)
+    document.append("\n" + CommentFields.fragmentDefinition)
     document.append("\n" + CommentBaseFields.fragmentDefinition)
     document.append("\n" + MirrorBaseFields.fragmentDefinition)
+    document.append("\n" + CommentMirrorOfFields.fragmentDefinition)
+    document.append("\n" + MirrorFields.fragmentDefinition)
     return document
   }
 
   public var request: PublicationQueryRequest
+  public var reactionRequest: ReactionFieldResolverRequest?
 
-  public init(request: PublicationQueryRequest) {
+  public init(request: PublicationQueryRequest, reactionRequest: ReactionFieldResolverRequest? = nil) {
     self.request = request
+    self.reactionRequest = reactionRequest
   }
 
   public var variables: GraphQLMap? {
-    return ["request": request]
+    return ["request": request, "reactionRequest": reactionRequest]
   }
 
   public struct Data: GraphQLSelectionSet {
@@ -4388,6 +4756,7 @@ public final class PublicationQuery: GraphQLQuery {
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLFragmentSpread(PostFields.self),
+            GraphQLField("reaction", alias: "postReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
           ]
         }
 
@@ -4403,6 +4772,15 @@ public final class PublicationQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var postReaction: ReactionTypes? {
+          get {
+            return resultMap["postReaction"] as? ReactionTypes
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "postReaction")
           }
         }
 
@@ -4451,7 +4829,8 @@ public final class PublicationQuery: GraphQLQuery {
           return [
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLFragmentSpread(CommentBaseFields.self),
+            GraphQLFragmentSpread(CommentFields.self),
+            GraphQLField("reaction", alias: "commentReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
           ]
         }
 
@@ -4467,6 +4846,15 @@ public final class PublicationQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var commentReaction: ReactionTypes? {
+          get {
+            return resultMap["commentReaction"] as? ReactionTypes
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "commentReaction")
           }
         }
 
@@ -4486,9 +4874,9 @@ public final class PublicationQuery: GraphQLQuery {
             self.resultMap = unsafeResultMap
           }
 
-          public var commentBaseFields: CommentBaseFields {
+          public var commentFields: CommentFields {
             get {
-              return CommentBaseFields(unsafeResultMap: resultMap)
+              return CommentFields(unsafeResultMap: resultMap)
             }
             set {
               resultMap += newValue.resultMap
@@ -4515,7 +4903,8 @@ public final class PublicationQuery: GraphQLQuery {
           return [
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLFragmentSpread(MirrorBaseFields.self),
+            GraphQLFragmentSpread(MirrorFields.self),
+            GraphQLField("reaction", alias: "mirrorReaction", arguments: ["request": GraphQLVariable("reactionRequest")], type: .scalar(ReactionTypes.self)),
           ]
         }
 
@@ -4531,6 +4920,15 @@ public final class PublicationQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var mirrorReaction: ReactionTypes? {
+          get {
+            return resultMap["mirrorReaction"] as? ReactionTypes
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "mirrorReaction")
           }
         }
 
@@ -4550,9 +4948,9 @@ public final class PublicationQuery: GraphQLQuery {
             self.resultMap = unsafeResultMap
           }
 
-          public var mirrorBaseFields: MirrorBaseFields {
+          public var mirrorFields: MirrorFields {
             get {
-              return MirrorBaseFields(unsafeResultMap: resultMap)
+              return MirrorFields(unsafeResultMap: resultMap)
             }
             set {
               resultMap += newValue.resultMap
@@ -6207,6 +6605,220 @@ public final class RemoveReactionMutation: GraphQLMutation {
       }
       set {
         resultMap.updateValue(newValue, forKey: "removeReaction")
+      }
+    }
+  }
+}
+
+public final class CreateMirrorViaDispatcherMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation CreateMirrorViaDispatcher($request: CreateMirrorRequest!) {
+      createMirrorViaDispatcher(request: $request) {
+        __typename
+        ... on RelayerResult {
+          __typename
+          txHash
+          txId
+        }
+        ... on RelayError {
+          __typename
+          reason
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "CreateMirrorViaDispatcher"
+
+  public var request: CreateMirrorRequest
+
+  public init(request: CreateMirrorRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("createMirrorViaDispatcher", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(CreateMirrorViaDispatcher.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(createMirrorViaDispatcher: CreateMirrorViaDispatcher) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "createMirrorViaDispatcher": createMirrorViaDispatcher.resultMap])
+    }
+
+    public var createMirrorViaDispatcher: CreateMirrorViaDispatcher {
+      get {
+        return CreateMirrorViaDispatcher(unsafeResultMap: resultMap["createMirrorViaDispatcher"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "createMirrorViaDispatcher")
+      }
+    }
+
+    public struct CreateMirrorViaDispatcher: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["RelayerResult", "RelayError"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLTypeCase(
+            variants: ["RelayerResult": AsRelayerResult.selections, "RelayError": AsRelayError.selections],
+            default: [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            ]
+          )
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public static func makeRelayerResult(txHash: String, txId: String) -> CreateMirrorViaDispatcher {
+        return CreateMirrorViaDispatcher(unsafeResultMap: ["__typename": "RelayerResult", "txHash": txHash, "txId": txId])
+      }
+
+      public static func makeRelayError(reason: RelayErrorReasons) -> CreateMirrorViaDispatcher {
+        return CreateMirrorViaDispatcher(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var asRelayerResult: AsRelayerResult? {
+        get {
+          if !AsRelayerResult.possibleTypes.contains(__typename) { return nil }
+          return AsRelayerResult(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsRelayerResult: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["RelayerResult"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("txHash", type: .nonNull(.scalar(String.self))),
+            GraphQLField("txId", type: .nonNull(.scalar(String.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(txHash: String, txId: String) {
+          self.init(unsafeResultMap: ["__typename": "RelayerResult", "txHash": txHash, "txId": txId])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The tx hash - you should use the `txId` as your identifier as gas prices can be upgraded meaning txHash will change
+        public var txHash: String {
+          get {
+            return resultMap["txHash"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "txHash")
+          }
+        }
+
+        /// The tx id
+        public var txId: String {
+          get {
+            return resultMap["txId"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "txId")
+          }
+        }
+      }
+
+      public var asRelayError: AsRelayError? {
+        get {
+          if !AsRelayError.possibleTypes.contains(__typename) { return nil }
+          return AsRelayError(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsRelayError: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["RelayError"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("reason", type: .nonNull(.scalar(RelayErrorReasons.self))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(reason: RelayErrorReasons) {
+          self.init(unsafeResultMap: ["__typename": "RelayError", "reason": reason])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var reason: RelayErrorReasons {
+          get {
+            return resultMap["reason"]! as! RelayErrorReasons
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "reason")
+          }
+        }
       }
     }
   }

@@ -66,7 +66,7 @@ struct PostStatsView: View {
           for: .mirror,
           with: viewStore.state.mirrors,
           userInteracted: viewStore.state.mirrordByUser,
-          interaction: { /* TODO: Mirror publication */ }
+          interaction: { viewStore.send(.mirrorTapped) }
         )
         
         self.view(

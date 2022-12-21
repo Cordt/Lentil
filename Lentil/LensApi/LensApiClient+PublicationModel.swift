@@ -62,7 +62,7 @@ extension Model.Publication {
   }
   
   private static func mirrorFrom(
-    mirrorFields: MirrorBaseFields,
+    id: String,
     mirror by: Model.Profile,
     publication of: Model.Profile,
     content: String,
@@ -72,11 +72,12 @@ extension Model.Publication {
     upvotedByUser: Bool,
     collectdByUser: Bool,
     commentdByUser: Bool,
-    mirrordByUser: Bool
+    mirrordByUser: Bool,
+    media: [MetadataOutputFields.Medium]
   ) -> Self? {
     
     return Model.Publication(
-      id: mirrorFields.id,
+      id: id,
       typename: .mirror(by: by),
       createdAt: createdDate,
       content: content,
@@ -89,7 +90,7 @@ extension Model.Publication {
       collectdByUser: collectdByUser,
       commentdByUser: commentdByUser,
       mirrordByUser: mirrordByUser,
-      media: Model.Media.media(from: mirrorFields.metadata.fragments.metadataOutputFields.media)
+      media: Model.Media.media(from: media)
     )
   }
   
@@ -164,7 +165,7 @@ extension Model.Publication {
     let publicationAuthorProfile = Model.Profile.from(profileFields)
     
     return mirrorFrom(
-      mirrorFields: mirror.fragments.mirrorBaseFields,
+      id: mirror.fragments.mirrorBaseFields.id,
       mirror: mirroringProfile,
       publication: publicationAuthorProfile,
       content: content,
@@ -174,52 +175,45 @@ extension Model.Publication {
       upvotedByUser: reaction == .upvote,
       collectdByUser: mirror.fragments.mirrorBaseFields.hasCollectedByMe,
       commentdByUser: false,
-      mirrordByUser: false
+      mirrordByUser: false,
+      media: mirror.fragments.mirrorBaseFields.metadata.fragments.metadataOutputFields.media
     )
   }
   
-  private static func publication(from comment: CommentBaseFields) -> Self? {
-    guard
-      let content = comment.metadata.fragments.metadataOutputFields.content,
-      let createdDate = date(from: comment.createdAt),
-      let profilePictureUrlString = comment.profile.fragments.profileFields.picture?.asMediaSet?.original.fragments.mediaFields.url,
-      let profilePictureUrl = URL(string: profilePictureUrlString.replacingOccurrences(of: "ipfs://", with: "https://lens.infura-ipfs.io/ipfs/"))
-    else { return nil }
-    
-    return commentFrom(
-      commentFields: comment,
-      child: nil,
-      content: content,
-      createdDate: createdDate,
-      profilePictureUrl: profilePictureUrl,
-      upvotedByUser: false,
-      collectdByUser: comment.hasCollectedByMe,
-      commentdByUser: false,
-      mirrordByUser: false
-    )
-  }
-  
-  static func publication(from item: FeedQuery.Data.Feed.Item.Root, child of: Model.Publication? = nil) -> Self? {
-    if let postFields = item.asPost?.fragments.postFields {
-      return publication(from: postFields, reaction: item.asPost?.postReaction)
+  static func publication(from item: FeedQuery.Data.Feed.Item, child of: Model.Publication? = nil) -> Self? {
+    var pub: Model.Publication
+    if let postFields = item.root.asPost?.fragments.postFields {
+      guard let post = publication(from: postFields, reaction: item.root.asPost?.postReaction)
+      else { return nil }
+      pub = post
     }
-    else if let commentFields = item.asComment?.fragments.commentFields {
-      return publication(from: commentFields, reaction: item.asComment?.commentReaction, child: of)
+    else if let commentFields = item.root.asComment?.fragments.commentFields {
+      guard let comment = publication(from: commentFields, reaction: item.root.asComment?.commentReaction, child: of)
+      else { return nil }
+      pub = comment
     }
-    // FIXME: Include Mirrors from Feed Endpoint
     else {
       return nil
     }
+    
+    if let mirror = item.mirrors.first {
+      let mirrorer = Model.Profile.from(mirror.profile.fragments.profileFields)
+      pub.typename = .mirror(by: mirrorer)
+    }
+    
+    return pub
   }
   
   static func publication(from item: PublicationQuery.Data.Publication?) -> Self? {
     if let postFields = item?.asPost?.fragments.postFields {
       return publication(from: postFields, reaction: nil)
     }
-    else if let commentBaseFields = item?.asComment?.fragments.commentBaseFields {
-      return publication(from: commentBaseFields)
+    else if let commentFields = item?.asComment?.fragments.commentFields {
+      return publication(from: commentFields, reaction: item?.asComment?.commentReaction)
     }
-    // TODO: Handle Mirror
+    else if let mirrorFields = item?.asMirror?.fragments.mirrorFields {
+      return publication(from: mirrorFields, reaction: item?.asMirror?.mirrorReaction)
+    }
     else {
       return nil
     }

@@ -179,7 +179,7 @@ final class RootTests: XCTestCase {
     }
     
     // Waiting 5 * 2 seconds, retrying
-    await clock.advance(by: .seconds(10))
+    await clock.advance(by: .seconds(25))
     
     await store.receive(.timelineAction(.publicationResponse(nil))) {
       $0.timelineState.isIndexing = nil

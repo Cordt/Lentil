@@ -118,7 +118,7 @@ extension LensApi: DependencyKey {
         ),
         cachePolicy: .default,
         mapResult: { data in
-          QueryResult(data: data.feed.items.compactMap { Model.Publication.publication(from: $0.root) })
+          QueryResult(data: data.feed.items.compactMap { Model.Publication.publication(from: $0) })
         }
       )
     },
@@ -290,6 +290,30 @@ extension LensApi: DependencyKey {
       )
     },
     
+    createMirror: { profileId, publicationId in
+      try await run(
+        networkClient: .authenticated,
+        mutation: CreateMirrorViaDispatcherMutation(
+          request: .init(
+            profileId: profileId,
+            publicationId: publicationId,
+            referenceModule: ReferenceModuleParams(followerOnlyReferenceModule: false)
+          )
+        ),
+        mapResult: { data in
+          if let result = data.createMirrorViaDispatcher.asRelayerResult {
+            return MutationResult(data: .success(RelayerResult(txnHash: result.txHash, txnId: result.txId)))
+          }
+          else if let error = data.createMirrorViaDispatcher.asRelayError {
+            return MutationResult(data: .failure(error.reason))
+          }
+          else {
+            return MutationResult(data: .failure(.__unknown("Received unexpected failure from CreateMirrorViaDispatcher")))
+          }
+        }
+      )
+    },
+    
     getDefaultProfileTypedData: { profileId in
       try await run(
         networkClient: .authenticated,
@@ -350,6 +374,7 @@ extension LensApi {
     createComment: { _, _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
     addReaction: { _, _, _ in },
     removeReaction: { _, _, _ in },
+    createMirror: { _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
     getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }
   )
   
@@ -372,6 +397,7 @@ extension LensApi {
     createComment: unimplemented("createComment"),
     addReaction: unimplemented("addReaction"),
     removeReaction: unimplemented("removeReaction"),
+    createMirror: unimplemented("createMirror"),
     getDefaultProfileTypedData: unimplemented("getDefaultProfileTypedData")
   )
 }

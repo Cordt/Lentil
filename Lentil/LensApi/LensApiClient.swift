@@ -38,8 +38,7 @@ struct QueryResult<Result: Equatable>: Equatable {
   var cursorToNext: String?
 }
 
-struct MutationResult<Result: Equatable>: Equatable {
-  
+struct MutationResult<Result: Equatable>: Equatable {  
   var data: Result
 }
 
@@ -169,6 +168,11 @@ struct LensApi {
     _ reaction: ReactionTypes,
     _ publicationId: String
   ) async throws -> Void
+  
+  var createMirror: @Sendable (
+    _ profileId: String,
+    _ publicationId: String
+  ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
   
   var getDefaultProfileTypedData: @Sendable (
     _ profileId: String
