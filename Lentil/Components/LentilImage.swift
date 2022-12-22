@@ -19,7 +19,6 @@ struct LentilImage: ReducerProtocol {
     let kind: Kind
     var imageUrl: URL
     fileprivate var storedImage: StoredImage
-    var imageView: Image?
     
     init(imageUrl: URL, kind: Kind) {
       self.imageUrl = imageUrl
@@ -33,11 +32,12 @@ struct LentilImage: ReducerProtocol {
     case didAppearFinishing
     case updateImage(TaskResult<State.StoredImage>)
     case imageDetailTapped
-    case updateImageDetail(Image?)
   }
   
   @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
@@ -87,13 +87,12 @@ struct LentilImage: ReducerProtocol {
           return .none
           
         case .imageDetailTapped:
-          guard case .image(let image) = state.storedImage
-          else { return .none }
-          state.imageView = image
-          return .none
-          
-        case .updateImageDetail(let image):
-          state.imageView = image
+          self.navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              destination: .imageDetail(state.imageUrl)
+            )
+          )
           return .none
       }
     }
@@ -141,16 +140,6 @@ struct LentilImageView: View {
               .resizable()
               .aspectRatio(contentMode: .fill)
               .onTapGesture { viewStore.send(.imageDetailTapped) }
-              .navigationDestination(
-                unwrapping: viewStore.binding(
-                  get: \.imageView,
-                  send: LentilImage.Action.imageDetailTapped
-                )) { image in
-                  ImageView(
-                    image: image.wrappedValue,
-                    dismiss: { viewStore.send(.updateImageDetail(nil)) }
-                  )
-                }
           }
           else {
             image

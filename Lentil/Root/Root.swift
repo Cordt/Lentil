@@ -26,6 +26,7 @@ struct Root: ReducerProtocol {
     var comments: IdentifiedArrayOf<Post.State> = []
     var profiles: IdentifiedArrayOf<Profile.State> = []
     var createPublication: CreatePublication.State?
+    var imageDetail: Image?
   }
   
   enum Action: Equatable {
@@ -239,6 +240,15 @@ struct Root: ReducerProtocol {
               
             case .createPublication(let reason):
               state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)
+              
+            case .imageDetail(let url):
+              guard let medium = self.cache.medium(url.absoluteString),
+                    case .image = medium.mediaType,
+                    let imageData = self.cache.mediumData(url.absoluteString)?.data,
+                    let uiImage = imageData.image(for: .feed, and: .display)
+              else { return .none }
+              
+              state.imageDetail = Image(uiImage: uiImage)
           }
           return .none
           
@@ -253,6 +263,9 @@ struct Root: ReducerProtocol {
               
             case .createPublication:
               state.createPublication = nil
+              
+            case .imageDetail:
+              state.imageDetail = nil
           }
           return .none
           

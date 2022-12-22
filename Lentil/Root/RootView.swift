@@ -85,6 +85,13 @@ struct RootView: View {
                   ),
                   then: CreatePublicationView.init
                 )
+                
+              case .imageDetail:
+                if let image = viewStore.imageDetail {
+                  ImageView(image: image) {
+                    self.navigationApi.remove(destinationPath)
+                  }
+                }
             }
           }
         }

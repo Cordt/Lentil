@@ -20,6 +20,7 @@ struct DestinationPath: Identifiable, Equatable, Hashable {
     case publication(_ elementId: String)
     case profile(_ elementId: String)
     case createPublication(_ reason: CreatePublication.State.Reason)
+    case imageDetail(_ imageUrl: URL)
   }
   var navigationId: String
   var destination: Destination
