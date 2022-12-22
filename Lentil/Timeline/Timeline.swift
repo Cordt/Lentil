@@ -343,15 +343,16 @@ struct Timeline: ReducerProtocol {
           return .none
           
         case .post(let id, let postAction):
-          if case .didAppear = postAction {
-            for (index, currentID) in state.posts.ids.enumerated() {
-              if id == currentID, (Float(index) / Float(state.posts.count) > 0.75) {
-                // Reached more than 3/4 - load more publications
-                return Effect(value: .fetchPublications)
+          return .run(priority: .background) { [posts = state.posts] in
+            if case .didAppear = postAction {
+              for (index, currentID) in posts.ids.enumerated() {
+                if id == currentID, (Float(index) / Float(posts.count) > 0.75) {
+                  // Reached more than 3/4 - load more publications
+                  await $0(.fetchPublications)
+                }
               }
             }
           }
-          return .none
       }
     }
     .ifLet(\.connectWallet, action: /Action.connectWallet) {
