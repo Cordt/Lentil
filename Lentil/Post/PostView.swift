@@ -42,13 +42,15 @@ struct PostView: View {
             }
           )
           
-          Button {
-            viewStore.send(.postTapped)
-          } label: {
+          ZStack(alignment: .topLeading) {
+            Rectangle()
+              .fill(Color.white)
+            
             Text(viewStore.post.shortenedContent)
               .font(style: .body)
               .multilineTextAlignment(.leading)
           }
+          .onTapGesture { viewStore.send(.postTapped) }
           
           PostStatsView(
             store: self.store.scope(
@@ -59,11 +61,20 @@ struct PostView: View {
           
         }
         .background {
-          if viewStore.comments.count > 0 {
+          ZStack(alignment: .topLeading) {
+            Rectangle()
+              .fill(Color.white)
+              .frame(width: 35)
+              .padding(.top, 12)
+              .padding(.leading, -45)
+              .onTapGesture { viewStore.send(.postTapped) }
+            
             HStack {
-              Rectangle()
-                .fill(Theme.Color.greyShade3)
-                .frame(width: 1)
+              if viewStore.comments.count > 0 {
+                Rectangle()
+                  .fill(Theme.Color.greyShade3)
+                  .frame(width: 1)
+              }
               Spacer()
             }
             .padding(.top, 30)
