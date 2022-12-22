@@ -51,21 +51,19 @@ struct MultiImageView: View {
     imageId: String,
     statePath: @escaping (MultiImage.State) -> LentilImage.State,
     actionPath: @escaping (LentilImage.Action) -> MultiImage.Action,
-    dimensions: @escaping (CGSize) -> CGSize
+    dimensions: CGSize
   ) -> some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
-      GeometryReader { geometry in
-        LentilImageView(
-          store: self.store.scope(
-            state: statePath,
-            action: actionPath
-          )
+      LentilImageView(
+        store: self.store.scope(
+          state: statePath,
+          action: actionPath
         )
-        .frame(width: dimensions(geometry.size).width, height: dimensions(geometry.size).height)
-        .clipped()
-        .contentShape(Rectangle().inset(by: 20))
-        .onTapGesture { viewStore.send(.imageTapped(imageId)) }
-      }
+      )
+      .frame(width: dimensions.width, height: dimensions.height)
+      .clipped()
+      .contentShape(Rectangle().inset(by: 20))
+      .onTapGesture { viewStore.send(.imageTapped(imageId)) }
     }
   }
   
@@ -73,12 +71,14 @@ struct MultiImageView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       switch viewStore.images.count {
         case 1:
-          self.image(
-            imageId: viewStore.images[0].id,
-            statePath: \.images[0],
-            actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
-            dimensions: { $0 }
-          )
+          GeometryReader { geometry in
+            self.image(
+              imageId: viewStore.images[0].id,
+              statePath: \.images[0],
+              actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
+              dimensions: geometry.size
+            )
+          }
         case 2:
           GeometryReader { geometry in
             HStack {
@@ -86,14 +86,14 @@ struct MultiImageView: View {
                 imageId: viewStore.images[0].id,
                 statePath: \.images[0],
                 actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
-                dimensions: { CGSize(width: max($0.width * 0.5 - 4, 0) , height: $0.height) }
+                dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height)
               )
               
               self.image(
                 imageId: viewStore.images[1].id,
                 statePath: \.images[1],
                 actionPath: { MultiImage.Action.image(viewStore.images[1].id, $0) },
-                dimensions: { CGSize(width: max($0.width * 0.5 - 4, 0) , height: $0.height) }
+                dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height)
               )
             }
           }
@@ -105,14 +105,14 @@ struct MultiImageView: View {
                   imageId: viewStore.images[0].id,
                   statePath: \.images[0],
                   actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
-                  dimensions: { CGSize(width: max($0.width * 0.5 - 4, 0) , height: $0.height / 3.0) }
+                  dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 3.0)
                 )
                 
                 self.image(
                   imageId: viewStore.images[1].id,
                   statePath: \.images[1],
                   actionPath: { MultiImage.Action.image(viewStore.images[1].id, $0) },
-                  dimensions: { CGSize(width: max($0.width * 0.5 - 4, 0) , height: $0.height / 3.0) }
+                  dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 3.0)
                 )
               }
               
@@ -120,7 +120,7 @@ struct MultiImageView: View {
                 imageId: viewStore.images[2].id,
                 statePath: \.images[2],
                 actionPath: { MultiImage.Action.image(viewStore.images[2].id, $0) },
-                dimensions: { CGSize(width: $0.width, height: $0.height / 3.0 * 2.0) }
+                dimensions: CGSize(width: geometry.size.width, height: geometry.size.height / 3.0 * 2.0)
               )
             }
           }
@@ -132,14 +132,14 @@ struct MultiImageView: View {
                   imageId: viewStore.images[0].id,
                   statePath: \.images[0],
                   actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
-                  dimensions: { CGSize(width: max($0.width * 0.5 - 4, 0) , height: $0.height / 2.0) }
+                  dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 2.0)
                 )
                 
                 self.image(
                   imageId: viewStore.images[1].id,
                   statePath: \.images[1],
                   actionPath: { MultiImage.Action.image(viewStore.images[1].id, $0) },
-                  dimensions: { CGSize(width: max($0.width * 0.5 - 4, 0) , height: $0.height / 2.0) }
+                  dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 2.0)
                 )
               }
               HStack {
@@ -147,14 +147,14 @@ struct MultiImageView: View {
                   imageId: viewStore.images[2].id,
                   statePath: \.images[2],
                   actionPath: { MultiImage.Action.image(viewStore.images[2].id, $0) },
-                  dimensions: { CGSize(width: max($0.width * 0.5 - 4, 0) , height: $0.height / 2.0) }
+                  dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 2.0)
                 )
                 
                 self.image(
                   imageId: viewStore.images[3].id,
                   statePath: \.images[3],
                   actionPath: { MultiImage.Action.image(viewStore.images[3].id, $0) },
-                  dimensions: { CGSize(width: max($0.width * 0.5 - 4, 0) , height: $0.height / 2.0) }
+                  dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 2.0)
                 )
               }
             }
