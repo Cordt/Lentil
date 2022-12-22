@@ -31,13 +31,10 @@ struct LentilImage: ReducerProtocol {
     case didAppear
     case didAppearFinishing
     case updateImage(TaskResult<State.StoredImage>)
-    case imageDetailTapped
   }
   
   @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.navigationApi) var navigationApi
-  @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
@@ -85,15 +82,6 @@ struct LentilImage: ReducerProtocol {
           state.storedImage = .notAvailable
           log("Failed to load remote image for \(String(describing: state.imageUrl.absoluteString))", level: .debug, error: error)
           return .none
-          
-        case .imageDetailTapped:
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .imageDetail(state.imageUrl)
-            )
-          )
-          return .none
       }
     }
   }
@@ -139,7 +127,6 @@ struct LentilImageView: View {
             image
               .resizable()
               .aspectRatio(contentMode: .fill)
-              .onTapGesture { viewStore.send(.imageDetailTapped) }
           }
           else {
             image
