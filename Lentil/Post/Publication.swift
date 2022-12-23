@@ -8,6 +8,11 @@ import SwiftUI
 
 struct Publication: ReducerProtocol {
   struct State: Equatable, Identifiable {
+    struct MirrorConfirmationDialogue: Equatable {
+      var profileHandle: String
+      var action: Action
+    }
+    
     var id: String { self.publication.id }
     var publication: Model.Publication
     var remoteProfilePicture: LentilImage.State?
@@ -36,10 +41,13 @@ struct Publication: ReducerProtocol {
       }
     }
     
+    var mirrorConfirmationDialogue: MirrorConfirmationDialogue?
+    
     init(publication: Model.Publication) {
       self.publication = publication
       self.remoteProfilePicture = nil
       self.remotePublicationImages = nil
+      self.mirrorConfirmationDialogue = nil
       
       if let profilePictureUrl = publication.profile.profilePictureUrl {
         self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(publication.profile.handle))
@@ -56,11 +64,14 @@ struct Publication: ReducerProtocol {
     }
   }
   
-  enum Action: Equatable {
+  indirect enum Action: Equatable {
     case userProfileTapped
     case toggleReaction
     case commentTapped
     case mirrorTapped
+    
+    case mirrorConfirmationSet(State.MirrorConfirmationDialogue?)
+    case mirrorConfirmationConfirmed
     case mirrorResult(TaskResult<MutationResult<Result<RelayerResult, RelayErrorReasons>>>)
     case mirrorSuccess(_ txnHash: String)
     
@@ -123,6 +134,20 @@ struct Publication: ReducerProtocol {
           return .none
           
         case .mirrorTapped:
+          guard self.profileStorageApi.load() != nil
+          else { return .none }
+          
+          state.mirrorConfirmationDialogue = State.MirrorConfirmationDialogue(
+            profileHandle: state.publication.profile.handle,
+            action: .mirrorConfirmationConfirmed
+          )
+          return .none
+          
+        case .mirrorConfirmationSet(let confirmationState):
+          state.mirrorConfirmationDialogue = confirmationState
+          return .none
+          
+        case .mirrorConfirmationConfirmed:
           guard let user = self.profileStorageApi.load()
           else { return .none }
           

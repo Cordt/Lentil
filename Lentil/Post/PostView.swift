@@ -25,7 +25,6 @@ struct PostView: View {
           )
         )
         
-        
         VStack(alignment: .leading, spacing: 10) {
           IfLetStore(
             self.store.scope(
@@ -95,6 +94,20 @@ struct PostView: View {
         if viewStore.typename != .comment { Divider() }
       }
       .padding(viewStore.typename != .comment ? [.leading, .trailing, .top] : [])
+      .confirmationDialog(
+        title: { Text("Publication by @\($0.profileHandle)") },
+        titleVisibility: .visible,
+        unwrapping: viewStore.binding(
+          get: \.post.mirrorConfirmationDialogue,
+          send: { Post.Action.post(action: .mirrorConfirmationSet($0)) }
+        ),
+        actions: { confirmationState in
+          Button { viewStore.send(.post(action: confirmationState.action)) } label: {
+            Text("Mirror")
+          }
+        },
+        message: { _ in Text("Do you want to mirror this publication?") }
+      )
       .onAppear { viewStore.send(.didAppear) }
       .id(viewStore.id)
     }
