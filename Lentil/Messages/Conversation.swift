@@ -19,7 +19,8 @@ struct Conversation: ReducerProtocol {
     var profile: Model.Profile?
     var profilePicture: LentilImage.State? = nil
     var messages: IdentifiedArrayOf<Message.State>
-    var message: String = ""
+    var messageText: String = "abc"
+    var isSending: Bool = true
     
     init(
       navigationId: String,
@@ -50,6 +51,8 @@ struct Conversation: ReducerProtocol {
     case dismissView
     case updateMessageText(String)
     case sendMessageTapped
+    case sendMessageResult
+    case updateSendingStatus(Bool)
     case profilePicture(LentilImage.Action)
     case message(Message.State.ID, Message.Action)
   }
@@ -98,11 +101,30 @@ struct Conversation: ReducerProtocol {
           return .none
           
         case .updateMessageText(let message):
-          state.message = message
+          state.messageText = message
           return .none
           
         case .sendMessageTapped:
-          state.message = ""
+          guard state.messageText.trimmingCharacters(in: .whitespacesAndNewlines) != ""
+          else { return .none }
+          
+          state.isSending = true
+          return .run { [conversation = state.conversation, message = state.messageText] send in
+            try await conversation.send(message)
+            await send(.sendMessageResult)
+            
+          } catch: { error, send in
+            log("Failed to send message", level: .error, error: error)
+            await send(.updateSendingStatus(false))
+          }
+          
+        case .sendMessageResult:
+          state.messageText = ""
+          state.isSending = false
+          return Effect(value: .loadMessages)
+          
+        case .updateSendingStatus(let active):
+          state.isSending = active
           return .none
           
         case .profilePicture:
@@ -161,7 +183,7 @@ struct ConversationView: View {
                 TextField(
                   "Message",
                   text: viewStore.binding(
-                    get: \.message,
+                    get: \.messageText,
                     send: Conversation.Action.updateMessageText
                   )
                 )
@@ -172,10 +194,15 @@ struct ConversationView: View {
                 }
                 .padding([.leading, .top, .bottom], 10)
               
-                SendButton { viewStore.send(.sendMessageTapped) }
+                SendButton(
+                  isSending: viewStore.binding(
+                    get: \.isSending,
+                    send: Conversation.Action.updateSendingStatus
+                  )
+                ) { viewStore.send(.sendMessageTapped) }
                 .padding(.trailing, 10)
-                .disabled(viewStore.message == "")
-                .opacity(viewStore.message == "" ? 0.75 : 1.0)
+                .disabled(viewStore.messageText == "" || viewStore.isSending)
+                .opacity(viewStore.messageText == "" ? 0.75 : 1.0)
               }
               
               Spacer()

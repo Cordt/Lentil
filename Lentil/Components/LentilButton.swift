@@ -75,28 +75,52 @@ struct BackButton: View {
 }
 
 struct SendButton: View {
+  @Binding var isSending: Bool
   var action: () -> ()
   
+  @State private var arrowOffset: CGFloat = 0.0
+  
+  func toggleAnimation() {
+    if self.isSending {
+      withAnimation(
+        .easeOut(duration: 0.5)
+        .repeatForever(autoreverses: true)
+      ) {
+        self.arrowOffset = 30
+      }
+    }
+    else {
+      withAnimation(
+        .easeOut(duration: 0.5)
+      ) {
+        self.arrowOffset = 0
+      }
+    }
+  }
+  
   var body: some View {
-    Icon.back.view()
-      .foregroundColor(Theme.Color.white)
-      .rotationEffect(.degrees(90))
-      .onTapGesture { self.action() }
-      .frame(width: 30, height: 30)
-      .background(
-        Circle()
-          .fill(Theme.Color.primary)
-          .frame(width: 30, height: 30)
-      )
-      .accentColor(Theme.Color.white)
+    ZStack {
+      Circle()
+        .fill(Theme.Color.primary)
+        
+      Icon.back.view()
+        .foregroundColor(Theme.Color.white)
+        .rotationEffect(.degrees(90))
+        .tint(Theme.Color.white)
+        .offset(y: -1 * self.arrowOffset)
+        .onChange(of: self.isSending) { _ in self.toggleAnimation() }
+    }
+    .frame(width: 30, height: 30)
+    .onTapGesture { self.action(); self.isSending = !self.isSending }
   }
 }
 
+#if DEBUG
 struct LentilButton_Previews: PreviewProvider {
   static var previews: some View {
     NavigationStack {
       VStack {
-        SendButton { }
+        SendButton(isSending: .constant(false)) { }
         LentilButton(title: "Active button") {}
         LentilButton(title: "Disabled button", disabled: true) {}
         LentilButton(title: "Secondary button", kind: .secondary) {}
@@ -113,4 +137,4 @@ struct LentilButton_Previews: PreviewProvider {
     }
   }
 }
-
+#endif
