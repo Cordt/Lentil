@@ -221,6 +221,7 @@ struct ConversationView: View {
           )
         }
       }
+      .toolbar(.hidden, for: .tabBar)
       .toolbarBackground(.visible, for: .navigationBar)
       .toolbarBackground(Theme.Color.white, for: .navigationBar)
       .navigationBarTitleDisplayMode(.inline)

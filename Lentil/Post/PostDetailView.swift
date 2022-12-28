@@ -64,6 +64,7 @@ struct PostDetailView: View {
             .font(style: .headline, color: Theme.Color.primary)
         }
       }
+      .toolbar(.hidden, for: .tabBar)
       .toolbarBackground(.hidden, for: .navigationBar)
       .navigationBarBackButtonHidden(true)
       .tint(Theme.Color.white)

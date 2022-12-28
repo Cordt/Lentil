@@ -176,9 +176,10 @@ struct ProfileView: View {
             }
           }
         }
+        .toolbar(.hidden, for: .tabBar)
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
-        .accentColor(Theme.Color.primary)
+        .tint(Theme.Color.white)
         .task {
           await viewStore.send(.didAppear)
             .finish()
