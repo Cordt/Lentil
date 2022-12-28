@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		3704F6B329220FDD00AAF569 /* WalletConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3704F6B229220FDD00AAF569 /* WalletConnector.swift */; };
-		3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3704F6B5292288E900AAF569 /* WalletConnectSwift */; };
 		370ABEFE292A83C8005B8E11 /* InfuraApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ABEFD292A83C8005B8E11 /* InfuraApiClient.swift */; };
 		370ABF01292A847F005B8E11 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 370ABF00292A847F005B8E11 /* Alamofire */; };
 		370D8E8E291F8C3B004A091F /* DMSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E88291F8C3B004A091F /* DMSans-Medium.ttf */; };
@@ -50,9 +49,16 @@
 		3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834628CDA27600E7E32A /* LensApiClient.swift */; };
 		37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */; };
 		378AE5AE294FA564001584DD /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE5AD294FA564001584DD /* ImageView.swift */; };
+		37A56518295C3142001A676A /* XMTPConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A56517295C3142001A676A /* XMTPConversation.swift */; };
 		37A7A6F6293C4DAB00964768 /* MediaDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */; };
 		37A7A6F9293C53F100964768 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F8293C53F100964768 /* Cache.swift */; };
 		37B7D6922956075500F8674C /* PostTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D6912956075500F8674C /* PostTests.swift */; };
+		37B7D69529561A6E00F8674C /* XMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 37B7D69429561A6E00F8674C /* XMTP */; };
+		37B7D69829561C4100F8674C /* XMPTApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D69729561C4100F8674C /* XMPTApi.swift */; };
+		37B7D69B2957058900F8674C /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D69A2957058900F8674C /* ConversationsView.swift */; };
+		37B7D69D2957116100F8674C /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D69C2957116100F8674C /* Conversation.swift */; };
+		37B7D69F295711ED00F8674C /* ConversationRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D69E295711ED00F8674C /* ConversationRow.swift */; };
+		37B7D6A129589E7800F8674C /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D6A029589E7800F8674C /* MessageView.swift */; };
 		37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */; };
 		37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */; };
 		37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */; };
@@ -145,9 +151,15 @@
 		3777834628CDA27600E7E32A /* LensApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiClient.swift; sourceTree = "<group>"; };
 		37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
 		378AE5AD294FA564001584DD /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
+		37A56517295C3142001A676A /* XMTPConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPConversation.swift; sourceTree = "<group>"; };
 		37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataModel.swift; sourceTree = "<group>"; };
 		37A7A6F8293C53F100964768 /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		37B7D6912956075500F8674C /* PostTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTests.swift; sourceTree = "<group>"; };
+		37B7D69729561C4100F8674C /* XMPTApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMPTApi.swift; sourceTree = "<group>"; };
+		37B7D69A2957058900F8674C /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsView.swift; sourceTree = "<group>"; };
+		37B7D69C2957116100F8674C /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
+		37B7D69E295711ED00F8674C /* ConversationRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRow.swift; sourceTree = "<group>"; };
+		37B7D6A029589E7800F8674C /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Run.swift"; sourceTree = "<group>"; };
 		37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Environment.swift"; sourceTree = "<group>"; };
 		37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Interceptors.swift"; sourceTree = "<group>"; };
@@ -193,8 +205,8 @@
 				37E5C4ED29481B6A005B3979 /* Cache in Frameworks */,
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
 				370ABF01292A847F005B8E11 /* Alamofire in Frameworks */,
+				37B7D69529561A6E00F8674C /* XMTP in Frameworks */,
 				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
-				3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */,
 				373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
@@ -359,6 +371,7 @@
 				370ABEFC292A83AE005B8E11 /* InfuraApi */,
 				37BBB12D28F2737600A6D202 /* LensApi */,
 				37C54C63292C7EBD006E8DBA /* LensMetadata */,
+				37B7D6992957055B00F8674C /* Messages */,
 				376C5ED428D4245500BA908A /* Models */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
@@ -366,6 +379,7 @@
 				37BE767228FAA77D00282ED0 /* Theme */,
 				372248DD28DB47AE0066BCE5 /* Timeline */,
 				37F5C5E4291FBC25003C9E40 /* Wallet */,
+				37B7D69629561C2100F8674C /* XMTP */,
 				37C89B6329278535003583E8 /* LentilEnvironment.swift */,
 				3777830528CCA05D00E7E32A /* LentilApp.swift */,
 				3777834228CCD39500E7E32A /* API.swift */,
@@ -413,6 +427,26 @@
 				37B7D6912956075500F8674C /* PostTests.swift */,
 			);
 			path = PostTests;
+			sourceTree = "<group>";
+		};
+		37B7D69629561C2100F8674C /* XMTP */ = {
+			isa = PBXGroup;
+			children = (
+				37B7D69729561C4100F8674C /* XMPTApi.swift */,
+				37A56517295C3142001A676A /* XMTPConversation.swift */,
+			);
+			path = XMTP;
+			sourceTree = "<group>";
+		};
+		37B7D6992957055B00F8674C /* Messages */ = {
+			isa = PBXGroup;
+			children = (
+				37B7D69C2957116100F8674C /* Conversation.swift */,
+				37B7D6A029589E7800F8674C /* MessageView.swift */,
+				37B7D69E295711ED00F8674C /* ConversationRow.swift */,
+				37B7D69A2957058900F8674C /* ConversationsView.swift */,
+			);
+			path = Messages;
 			sourceTree = "<group>";
 		};
 		37BBB12D28F2737600A6D202 /* LensApi */ = {
@@ -546,11 +580,11 @@
 				37D1236B28F70EC90037A4A7 /* Dependencies */,
 				37D1236E28F70EE90037A4A7 /* Apollo */,
 				37D1237028F70EE90037A4A7 /* ApolloWebSocket */,
-				3704F6B5292288E900AAF569 /* WalletConnectSwift */,
 				37557A22292744FB005524C5 /* Sentry */,
 				370ABF00292A847F005B8E11 /* Alamofire */,
 				373DAF1E29305C3700648C8E /* SwiftUINavigation */,
 				37E5C4EC29481B6A005B3979 /* Cache */,
+				37B7D69429561A6E00F8674C /* XMTP */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -608,11 +642,11 @@
 			packageReferences = (
 				37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */,
-				3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */,
 				37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				373DAF1D29305C3700648C8E /* XCRemoteSwiftPackageReference "swiftui-navigation" */,
 				37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */,
+				37B7D69329561A6E00F8674C /* XCRemoteSwiftPackageReference "xmtp-ios" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -681,9 +715,11 @@
 			files = (
 				3704F6B329220FDD00AAF569 /* WalletConnector.swift in Sources */,
 				37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */,
+				37B7D6A129589E7800F8674C /* MessageView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* Post.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */,
 				378AE5AE294FA564001584DD /* ImageView.swift in Sources */,
+				37B7D69829561C4100F8674C /* XMPTApi.swift in Sources */,
 				370ABEFE292A83C8005B8E11 /* InfuraApiClient.swift in Sources */,
 				373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */,
 				372248D828DB46890066BCE5 /* Root.swift in Sources */,
@@ -709,15 +745,19 @@
 				37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */,
 				37C54C6B292C897C006E8DBA /* File+Publication.swift in Sources */,
 				37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */,
+				37B7D69F295711ED00F8674C /* ConversationRow.swift in Sources */,
 				376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */,
+				37B7D69D2957116100F8674C /* Conversation.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
 				37F71B5628DF4D6400F6D9B1 /* Publication.swift in Sources */,
 				37CC0CFE292793930036C6E9 /* MediaModel.swift in Sources */,
 				37C54C65292C7EE6006E8DBA /* Metadata.swift in Sources */,
 				37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */,
+				37A56518295C3142001A676A /* XMTPConversation.swift in Sources */,
 				37D680912924AB3200F31669 /* Profile.swift in Sources */,
 				37C54C69292C895B006E8DBA /* File+FormDataAppendable.swift in Sources */,
 				37C5178E291EA986002D2B6D /* ProfileView.swift in Sources */,
+				37B7D69B2957058900F8674C /* ConversationsView.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
 				37CC0D00292796780036C6E9 /* LensApiClient+MediaModel.swift in Sources */,
 				37C54C5E292B20B4006E8DBA /* CreatePublication.swift in Sources */,
@@ -882,7 +922,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Dev";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
@@ -919,7 +959,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
@@ -1025,14 +1065,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/WalletConnect/WalletConnectSwift.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -1055,6 +1087,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 7.31.1;
+			};
+		};
+		37B7D69329561A6E00F8674C /* XCRemoteSwiftPackageReference "xmtp-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/xmtp/xmtp-ios.git";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 		37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
@@ -1084,11 +1124,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		3704F6B5292288E900AAF569 /* WalletConnectSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3704F6B4292288E900AAF569 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */;
-			productName = WalletConnectSwift;
-		};
 		370ABF00292A847F005B8E11 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -1108,6 +1143,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
+		};
+		37B7D69429561A6E00F8674C /* XMTP */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37B7D69329561A6E00F8674C /* XCRemoteSwiftPackageReference "xmtp-ios" */;
+			productName = XMTP;
 		};
 		37D1236928F70EC90037A4A7 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;

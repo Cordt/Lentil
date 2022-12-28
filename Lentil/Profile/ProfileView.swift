@@ -35,7 +35,7 @@ struct ProfileView: View {
               .clipped()
           },
           else: {
-            lentilGradient()
+            Theme.lentilGradient()
               .frame(width: width, height: height)
           }
         )

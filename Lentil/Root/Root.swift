@@ -16,17 +16,23 @@ struct Root: ReducerProtocol {
   ]
   
   struct State: Equatable {
+    enum TabDestination: Equatable {
+      case feed, messages
+    }
     var isLoading: Bool = true
     var loadingText = loadingTexts[0]
     var currentText: Int = 0
     
-    var timelineState: Timeline.State
+    var tabDestination: TabDestination = .feed
+    var timelineState: Timeline.State = .init()
+    var conversationsState: Conversations.State = .init()
     
     var posts: IdentifiedArrayOf<Post.State> = []
     var comments: IdentifiedArrayOf<Post.State> = []
     var profiles: IdentifiedArrayOf<Profile.State> = []
     var createPublication: CreatePublication.State?
     var imageDetail: Image?
+    var conversation: Conversation.State?
   }
   
   enum Action: Equatable {
@@ -39,10 +45,11 @@ struct Root: ReducerProtocol {
     case checkAuthenticationStatus
     case refreshTokenResponse(QueryResult<Bool>)
     
-    case rootScreenAppeared
-    case rootScreenDisappeared
+    case rootAppeared
+    case rootDisappeared
     
     case timelineAction(Timeline.Action)
+    case conversationsAction(Conversations.Action)
     
     case addPath(DestinationPath)
     case removePath(DestinationPath)
@@ -50,6 +57,7 @@ struct Root: ReducerProtocol {
     case comment(id: Post.State.ID, action: Post.Action)
     case profile(id: Profile.State.ID, action: Profile.Action)
     case createPublication(CreatePublication.Action)
+    case conversation(Conversation.Action)
   }
   
   @Dependency(\.authTokenApi) var authTokenApi
@@ -89,7 +97,77 @@ struct Root: ReducerProtocol {
     }
   }
   
+  func handleNavigationDestination(_ destinationPath: DestinationPath, state: inout State) {
+    switch destinationPath.destination {
+      case .publication(let elementId):
+        guard let publication = self.cache.publication(elementId)
+        else {
+          self.navigationApi.remove(destinationPath)
+          return
+        }
+        
+        switch publication.typename {
+          case .post:
+            let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .post)
+            state.posts.updateOrAppend(postState)
+          case .comment:
+            let commentState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .comment)
+            state.comments.updateOrAppend(commentState)
+          case .mirror:
+            let mirrorState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .mirror)
+            state.posts.updateOrAppend(mirrorState)
+        }
+        
+      case .profile(let elementId):
+        guard let profile = self.cache.profileById(elementId)
+        else {
+          self.navigationApi.remove(destinationPath)
+          return
+        }
+        
+        let profileState = Profile.State(navigationId: destinationPath.navigationId, profile: profile)
+        state.profiles.updateOrAppend(profileState)
+        
+      case .createPublication(let reason):
+        state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)
+        
+      case .imageDetail(let url):
+        guard let medium = self.cache.medium(url.absoluteString),
+              case .image = medium.mediaType,
+              let imageData = self.cache.mediumData(url.absoluteString)?.data,
+              let uiImage = imageData.image(for: .feed, and: .display)
+        else {
+          self.navigationApi.remove(destinationPath)
+          return
+        }
+        
+        state.imageDetail = Image(uiImage: uiImage)
+        
+      case .conversation(let conversation):
+        guard let user = self.profileStorageApi.load()
+        else {
+          self.navigationApi.remove(destinationPath)
+          return
+        }
+        
+        state.conversation = Conversation.State(
+          navigationId: destinationPath.navigationId,
+          userAddress: user.address,
+          conversation: conversation,
+          profile: self.cache.profileByAddress(conversation.peerAddress)
+        )
+    }
+  }
+  
   var body: some ReducerProtocol<State, Action> {
+    Scope(state: \State.timelineState, action: /Action.timelineAction) {
+      Timeline()
+    }
+    
+    Scope(state: \State.conversationsState, action: /Action.conversationsAction) {
+      Conversations()
+    }
+    
     Reduce { state, action in
       switch action {
         case .loadingScreenAppeared:
@@ -179,7 +257,7 @@ struct Root: ReducerProtocol {
             }
           }
           
-        case .rootScreenAppeared:
+        case .rootAppeared:
           return .run { send in
             do {
               for try await event in self.navigationApi.eventStream {
@@ -196,7 +274,7 @@ struct Root: ReducerProtocol {
           }
           .cancellable(id: NavigationEventsID.self, cancelInFlight: true)
           
-        case .rootScreenDisappeared:
+        case .rootDisappeared:
           return .cancel(id: NavigationEventsID.self)
           
         case .timelineAction(let timelineAction):
@@ -212,44 +290,11 @@ struct Root: ReducerProtocol {
             return .none
           }
           
+        case .conversationsAction:
+          return .none
+          
         case .addPath(let destinationPath):
-          switch destinationPath.destination {
-            case .publication(let elementId):
-              guard let publication = self.cache.publication(elementId)
-              else { return .none }
-              
-              switch publication.typename {
-                case .post:
-                  let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .post)
-                  state.posts.updateOrAppend(postState)
-                case .comment:
-                  let commentState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .comment)
-                  state.comments.updateOrAppend(commentState)
-                case .mirror:
-                  let mirrorState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .mirror)
-                  state.posts.updateOrAppend(mirrorState)
-                  return .none
-              }
-              
-            case .profile(let elementId):
-              guard let profile = self.cache.profile(elementId)
-              else { return .none }
-              
-              let profileState = Profile.State(navigationId: destinationPath.navigationId, profile: profile)
-              state.profiles.updateOrAppend(profileState)
-              
-            case .createPublication(let reason):
-              state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)
-              
-            case .imageDetail(let url):
-              guard let medium = self.cache.medium(url.absoluteString),
-                    case .image = medium.mediaType,
-                    let imageData = self.cache.mediumData(url.absoluteString)?.data,
-                    let uiImage = imageData.image(for: .feed, and: .display)
-              else { return .none }
-              
-              state.imageDetail = Image(uiImage: uiImage)
-          }
+          self.handleNavigationDestination(destinationPath, state: &state)
           return .none
           
         case .removePath(let destinationPath):
@@ -266,10 +311,13 @@ struct Root: ReducerProtocol {
               
             case .imageDetail:
               state.imageDetail = nil
+              
+            case .conversation:
+              state.conversation = nil
           }
           return .none
           
-        case .post, .comment, .profile:
+        case .post, .comment, .profile, .conversation:
           return .none
           
         case .createPublication(let createPublicationAction):
@@ -293,12 +341,8 @@ struct Root: ReducerProtocol {
     .ifLet(\.createPublication, action: /Action.createPublication) {
       CreatePublication()
     }
-    
-    Scope(
-      state: \State.timelineState,
-      action: /Action.timelineAction
-    ) {
-      Timeline()
+    .ifLet(\.conversation, action: /Action.conversation) {
+      Conversation()
     }
   }
 }

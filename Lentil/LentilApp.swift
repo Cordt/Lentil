@@ -28,9 +28,7 @@ struct LentilApp: App {
     WindowGroup {
       RootView(
         store: Store(
-          initialState: Root.State(
-            timelineState: .init()
-          ),
+          initialState: Root.State(),
           reducer: Root()
         )
       )

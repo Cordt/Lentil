@@ -104,7 +104,7 @@ struct LentilImageView: View {
           
         case .cover:
           ZStack {
-            lentilGradient()
+            Theme.lentilGradient()
             ProgressView()
           }
       }

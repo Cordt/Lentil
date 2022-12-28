@@ -29,6 +29,9 @@ class Cache {
   func profile(_ for: Model.Profile.ID) -> Model.Profile? {
     self.profilesCache[id: `for`]
   }
+  func profile(for address: String) -> Model.Profile? {
+    self.profilesCache.first { $0.ownedBy == address }
+  }
   func medium(_ for: Model.Media.ID) -> Model.Media? {
     self.mediaCache[id: `for`]
   }
@@ -48,7 +51,9 @@ class Cache {
   }
   
   func updateOrAppendMedia(_ medium: Model.Media) {
+    dataLock.lock()
     self.mediaCache.updateOrAppend(medium)
+    dataLock.unlock()
   }
   
   func updateOrAppendMediaData(_ mediumData: Model.MediaData) {
@@ -69,7 +74,8 @@ class Cache {
 
 struct CacheApi {
   var publication: (_ for: Model.Publication.ID) -> Model.Publication?
-  var profile: (_ for: Model.Profile.ID) -> Model.Profile?
+  var profileById: (Model.Profile.ID) -> Model.Profile?
+  var profileByAddress: (String) -> Model.Profile?
   var medium: (_ for: Model.Media.ID) -> Model.Media?
   var mediumData: (_ for: Model.MediaData.ID) -> Model.MediaData?
   var updateOrAppendPublication: (_ publication: Model.Publication) -> Void
@@ -89,7 +95,8 @@ extension DependencyValues {
 extension CacheApi: DependencyKey {
   static let liveValue = CacheApi(
     publication: Cache.shared.publication,
-    profile: Cache.shared.profile,
+    profileById: { Cache.shared.profile($0) },
+    profileByAddress: { Cache.shared.profile(for: $0) },
     medium: Cache.shared.medium,
     mediumData: Cache.shared.mediumData,
     updateOrAppendPublication: Cache.shared.updateOrAppendPublication,
@@ -106,7 +113,8 @@ import XCTestDynamicOverlay
 extension CacheApi {
   static let previewValue = CacheApi(
     publication: { _ in MockData.mockPublications[0] },
-    profile: { _ in MockData.mockProfiles[0] },
+    profileById: { _ in MockData.mockProfiles[0] },
+    profileByAddress: { _ in MockData.mockProfiles[0] },
     medium: { _ in MockData.mockPublications[0].media.first },
     mediumData: { _ in Model.MediaData(url: "https://image-url", data: Data()) },
     updateOrAppendPublication: { _ in },
@@ -118,7 +126,8 @@ extension CacheApi {
   
   static let testValue = CacheApi(
     publication: unimplemented("publication"),
-    profile: unimplemented("profile"),
+    profileById: unimplemented("profileById"),
+    profileByAddress: unimplemented("profileByAddress"),
     medium: unimplemented("medium"),
     mediumData: unimplemented("mediumData"),
     updateOrAppendPublication: unimplemented("updateOrAppendPublication"),

@@ -10,10 +10,10 @@ struct TimelineView: View {
   let store: Store<Timeline.State, Timeline.Action>
   
   var footer: some View {
-    WithViewStore(self.store) { viewStore in
+    WithViewStore(self.store, observe: { $0.loadingInFlight }) { viewStore in
       HStack {
         Spacer()
-        if viewStore.loadingInFlight {
+        if viewStore.state {
           ProgressView()
         }
         Spacer()
@@ -24,7 +24,6 @@ struct TimelineView: View {
   
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      
       ScrollViewReader { proxy in
         ScrollView(axes: .vertical, showsIndicators: false) {
           LazyVStack(alignment: .leading) {

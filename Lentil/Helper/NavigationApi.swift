@@ -5,6 +5,7 @@ import IdentifiedCollections
 import Dependencies
 import Foundation
 import SwiftUI
+import XMTP
 
 
 struct NavigationApi {
@@ -21,6 +22,8 @@ struct DestinationPath: Identifiable, Equatable, Hashable {
     case profile(_ elementId: String)
     case createPublication(_ reason: CreatePublication.State.Reason)
     case imageDetail(_ imageUrl: URL)
+    
+    case conversation(_ conversation: XMTPConversation)
   }
   var navigationId: String
   var destination: Destination

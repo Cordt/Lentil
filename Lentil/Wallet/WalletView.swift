@@ -37,7 +37,7 @@ struct WalletView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       ZStack {
         Rectangle()
-          .fill(lentilGradient())
+          .fill(Theme.lentilGradient())
           .ignoresSafeArea()
         
         VStack(spacing: 20) {

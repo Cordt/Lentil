@@ -19,7 +19,7 @@ struct SignInWithLens: View {
       .padding([.leading, .trailing], 12)
     }
     .background(Theme.Color.lensLightGreen)
-    .cornerRadius(Theme.defaultRadius)
+    .cornerRadius(Theme.narrowRadius)
     .padding(0)
   }
 }

@@ -13,6 +13,73 @@ struct RootView: View {
   @Dependency(\.navigationApi) var navigationApi
   let store: Store<Root.State, Root.Action>
   
+  @ViewBuilder
+  func destinationHandler(_ destinationPath: DestinationPath) -> some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      switch destinationPath.destination {
+        case .publication:
+          if viewStore.posts[id: destinationPath.navigationId] != nil {
+            let store: Store<Post.State?, Post.Action> = self.store.scope(
+              state: {
+                guard let postState = $0.posts[id: destinationPath.navigationId]
+                else { return nil }
+                return postState
+              },
+              action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
+            )
+            IfLetStore(store, then: PostDetailView.init)
+          }
+          else if viewStore.comments[id: destinationPath.navigationId] != nil {
+            let store: Store<Post.State?, Post.Action> = self.store.scope(
+              state: {
+                guard let commentState = $0.comments[id: destinationPath.navigationId]
+                else { return nil }
+                return commentState
+              },
+              action: { Root.Action.comment(id: destinationPath.navigationId, action: $0) }
+            )
+            IfLetStore(store, then: PostDetailView.init)
+          }
+          
+        case .profile:
+          let store: Store<Profile.State?, Profile.Action> = self.store.scope(
+            state: {
+              guard let profileState = $0.profiles[id: destinationPath.navigationId]
+              else { return nil }
+              return profileState
+            },
+            action: { Root.Action.profile(id: destinationPath.navigationId, action: $0) }
+          )
+          IfLetStore(store, then: ProfileView.init)
+          
+        case .createPublication:
+          IfLetStore(
+            self.store.scope(
+              state: \.createPublication,
+              action: Root.Action.createPublication
+            ),
+            then: CreatePublicationView.init
+          )
+          
+        case .imageDetail:
+          if let image = viewStore.imageDetail {
+            ImageView(image: image) {
+              self.navigationApi.remove(destinationPath)
+            }
+          }
+          
+        case .conversation:
+          IfLetStore(
+            self.store.scope(
+              state: \.conversation,
+              action: Root.Action.conversation
+            ),
+            then: ConversationView.init
+          )
+      }
+    }
+  }
+  
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       if viewStore.isLoading {
@@ -31,72 +98,38 @@ struct RootView: View {
         .onDisappear { viewStore.send(.loadingScreenDisappeared) }
       }
       else {
-        NavigationStack(path: self.navigationApi.pathBinding()) {
-          TimelineView(
-            store: self.store.scope(
-              state: \.timelineState,
-              action: Root.Action.timelineAction
+        TabView {
+          NavigationStack(path: self.navigationApi.pathBinding()) {
+            TimelineView(
+              store: self.store.scope(
+                state: \.timelineState,
+                action: Root.Action.timelineAction
+              )
             )
-          )
-          .toolbarBackground(Theme.Color.primary, for: .navigationBar)
-          .toolbarBackground(.visible, for: .navigationBar)
-          .navigationDestination(for: DestinationPath.self) { destinationPath in
-            switch destinationPath.destination {
-              case .publication:
-                if viewStore.posts[id: destinationPath.navigationId] != nil {
-                  let store: Store<Post.State?, Post.Action> = self.store.scope(
-                    state: {
-                      guard let postState = $0.posts[id: destinationPath.navigationId]
-                      else { return nil }
-                      return postState
-                    },
-                    action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
-                  )
-                  IfLetStore(store, then: PostDetailView.init)
-                }
-                else if viewStore.comments[id: destinationPath.navigationId] != nil {
-                  let store: Store<Post.State?, Post.Action> = self.store.scope(
-                    state: {
-                      guard let commentState = $0.comments[id: destinationPath.navigationId]
-                      else { return nil }
-                      return commentState
-                    },
-                    action: { Root.Action.comment(id: destinationPath.navigationId, action: $0) }
-                  )
-                  IfLetStore(store, then: PostDetailView.init)
-                }
-                
-              case .profile:
-                let store: Store<Profile.State?, Profile.Action> = self.store.scope(
-                  state: {
-                    guard let profileState = $0.profiles[id: destinationPath.navigationId]
-                    else { return nil }
-                    return profileState
-                  },
-                  action: { Root.Action.profile(id: destinationPath.navigationId, action: $0) }
-                )
-                IfLetStore(store, then: ProfileView.init)
-                
-              case .createPublication:
-                IfLetStore(
-                  self.store.scope(
-                    state: \.createPublication,
-                    action: Root.Action.createPublication
-                  ),
-                  then: CreatePublicationView.init
-                )
-                
-              case .imageDetail:
-                if let image = viewStore.imageDetail {
-                  ImageView(image: image) {
-                    self.navigationApi.remove(destinationPath)
-                  }
-                }
-            }
+            .toolbarBackground(Theme.Color.primary, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .navigationDestination(for: DestinationPath.self, destination: self.destinationHandler)
           }
+          .tabItem { Label("Feed", systemImage: "house") }
+          .tag(Root.State.TabDestination.feed)
+          
+          NavigationStack(path: self.navigationApi.pathBinding()) {
+            ConversationsView(
+              store: self.store.scope(
+                state: \.conversationsState,
+                action: Root.Action.conversationsAction
+              )
+            )
+            .toolbarBackground(Theme.Color.primary, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .navigationDestination(for: DestinationPath.self, destination: self.destinationHandler)
+          }
+          .tabItem { Label("Messages", systemImage: "envelope") }
+          .tag(Root.State.TabDestination.messages)
         }
-        .onAppear { viewStore.send(.rootScreenAppeared) }
-        .onDisappear { viewStore.send(.rootScreenDisappeared) }
+        .tint(Theme.Color.primary)
+        .onAppear { viewStore.send(.rootAppeared) }
+        .onDisappear { viewStore.send(.rootDisappeared) }
       }
     }
   }

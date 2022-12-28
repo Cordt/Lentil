@@ -8,7 +8,8 @@ import SwiftUI
 
 struct Theme {
   static let maxPostLength: Int = 256
-  static let defaultRadius: CGFloat = 5.0
+  static let narrowRadius: CGFloat = 5.0
+  static let wideRadius: CGFloat = 20.0
   static let defaultBorderWidth: CGFloat = 2.0
   
   static let compressionQuality: CGFloat = 0.75
@@ -66,14 +67,15 @@ struct Constants_Preview: PreviewProvider {
   }
 }
 
-func lentilGradient() -> LinearGradient {
-  LinearGradient(
-    gradient: Gradient(colors: [Theme.Color.primary, Theme.Color.secondary]),
-    startPoint: .top,
-    endPoint: .bottom
-  )
+extension Theme {
+  static func lentilGradient() -> LinearGradient {
+    LinearGradient(
+      gradient: Gradient(colors: [Theme.Color.primary, Theme.Color.secondary]),
+      startPoint: .top,
+      endPoint: .bottom
+    )
+  }
 }
-
 
 
 // MARK: Fonts
@@ -149,12 +151,13 @@ extension View {
 // MARK: Line Aweseome Icons
 
 enum Icon {
-  case back, notification, settings, share, link, add
+  case back, notification, settings, share, link, add, create
   case heart, heartFilled, comment, mirror, collect
   case twitter, website, nft
   case location, lens
   case follow, collection
   case times
+  case feed, messages
   
   enum FontSize {
     case `default`, large, xlarge
@@ -175,6 +178,7 @@ enum Icon {
       case .share:        return ""
       case .link:         return ""
       case .add:          return ""
+      case .create:       return ""
       case .heart:        return ""
       case .heartFilled:  return ""
       case .comment:      return ""
@@ -188,6 +192,8 @@ enum Icon {
       case .follow:       return ""
       case .collection:   return ""
       case .times:        return ""
+      case .feed:         return ""
+      case .messages:     return ""
     }
   }
   

@@ -48,10 +48,10 @@ struct LentilButton: View {
       }
       .background(self.backgroundColor)
       .overlay(
-        RoundedRectangle(cornerRadius: Theme.defaultRadius)
+        RoundedRectangle(cornerRadius: Theme.narrowRadius)
           .stroke(self.borderColor, lineWidth: Theme.defaultBorderWidth)
       )
-      .cornerRadius(Theme.defaultRadius)
+      .cornerRadius(Theme.narrowRadius)
     }
   }
 }
@@ -74,10 +74,29 @@ struct BackButton: View {
   }
 }
 
+struct SendButton: View {
+  var action: () -> ()
+  
+  var body: some View {
+    Icon.back.view()
+      .foregroundColor(Theme.Color.white)
+      .rotationEffect(.degrees(90))
+      .onTapGesture { self.action() }
+      .frame(width: 30, height: 30)
+      .background(
+        Circle()
+          .fill(Theme.Color.primary)
+          .frame(width: 30, height: 30)
+      )
+      .accentColor(Theme.Color.white)
+  }
+}
+
 struct LentilButton_Previews: PreviewProvider {
   static var previews: some View {
     NavigationStack {
       VStack {
+        SendButton { }
         LentilButton(title: "Active button") {}
         LentilButton(title: "Disabled button", disabled: true) {}
         LentilButton(title: "Secondary button", kind: .secondary) {}
