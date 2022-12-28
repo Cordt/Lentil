@@ -291,17 +291,17 @@ extension MockData {
   static var conversationStubs: [ConversationRow.MessageStub] {
     [
       ConversationRow.MessageStub(
-        stub: "Hello, I hope this finds you well. I have a sample text for you that goes like this: Lorem ipsum dolor",
+        stub: "Commerce on the Internet has come to rely almost exclusively on financial institutions serving",
         lastMessage: Date().addingTimeInterval(-60 * 5),
         from: .peer
       ),
       ConversationRow.MessageStub(
-        stub: "Hello, I hope this finds you well. I have a sample text for you that goes like this: Lorem ipsum dolor",
+        stub: "While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the",
         lastMessage: Date().addingTimeInterval(-60 * 60 * 5),
         from: .user
       ),
       ConversationRow.MessageStub(
-        stub: "Hello, I hope this finds you well. I have a sample text for you that goes like this: Lorem ipsum dolor",
+        stub: "The cost of mediation increases transaction costs, limiting the minimum practical transaction size and cutting off",
         lastMessage: Date().addingTimeInterval(-60 * 60 * 24),
         from: .user
       ),
@@ -311,19 +311,19 @@ extension MockData {
   static var messages: [XMTP.DecodedMessage] {
     [
       XMTP.DecodedMessage(
-        body: "Hello, I hope this finds you well. I have a sample text for you that goes like this: Lorem ipsum dolor",
+        body: "Commerce on the Internet has come to rely almost exclusively on financial institutions serving as trusted third parties to process electronic payments.",
         senderAddress: "0x123456",
-        sent: Date().addingTimeInterval(-60 * 5)
+        sent: Date().addingTimeInterval(-60 * 60 * 5)
       ),
       XMTP.DecodedMessage(
-        body: "Hello, I hope this finds you well. I have a sample text for you that goes like this: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec?",
+        body: "While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the trust based model. Completely non-reversible transactions are not really possible, since financial institutions cannot avoid mediating disputes. ",
         senderAddress: "0xabc123def",
         sent: Date().addingTimeInterval(-60 * 60)
       ),
       XMTP.DecodedMessage(
-        body: "Hello!",
+        body: "The cost of mediation increases transaction costs, limiting the minimum practical transaction size and cutting off the possibility for small casual transactions, and there is a broader cost in the loss of ability to make non-reversible payments for nonreversible services.",
         senderAddress: "0xabc123",
-        sent: Date().addingTimeInterval(-60 * 60 * 5)
+        sent: Date().addingTimeInterval(-60 * 5)
       )
     ]
   }
