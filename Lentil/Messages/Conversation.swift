@@ -19,7 +19,7 @@ struct Conversation: ReducerProtocol {
     var profile: Model.Profile?
     var profilePicture: LentilImage.State? = nil
     var messages: IdentifiedArrayOf<Message.State>
-    var messageText: String = "abc"
+    var messageText: String = ""
     var isSending: Bool = true
     
     init(
@@ -78,13 +78,17 @@ struct Conversation: ReducerProtocol {
           
         case .messagesResponse(.success(let messages)):
           state.messages = IdentifiedArrayOf(
-            uniqueElements: messages.map {
-              Message.State(
-                id: self.uuid.callAsFunction().uuidString,
-                message: $0,
-                from: $0.senderAddress == state.userAddress ? .user : .peer
-              )
-            }
+            uniqueElements: messages
+              .map {
+                Message.State(
+                  id: self.uuid.callAsFunction().uuidString,
+                  message: $0,
+                  from: $0.senderAddress == state.userAddress ? .user : .peer
+                )
+              }
+              .sorted { lhs, rhs in
+                lhs.message.sent > rhs.message.sent
+              }
           )
           return .none
           
@@ -148,6 +152,8 @@ struct ConversationView: View {
         
         GeometryReader { geometry in
           VStack {
+            Spacer()
+            
             ScrollView(axes: .vertical, showsIndicators: false) {
               LazyVStack {
                 ForEachStore(
@@ -170,13 +176,13 @@ struct ConversationView: View {
                       }
                       .padding(.horizontal)
                       .padding(.vertical, 5)
+                      .mirrored()
                     }
                   }
                 )
               }
             }
-            
-            Spacer()
+            .mirrored()
             
             VStack {
               HStack {

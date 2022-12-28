@@ -5,6 +5,23 @@ import Foundation
 import CryptoKit
 import SwiftUI
 
+
+// MARK: View Extensions
+
+struct Mirrored: ViewModifier {
+  func body(content: Content) -> some View {
+    content
+      .rotationEffect(.degrees(180))
+      .scaleEffect(x: -1, y: 1, anchor: .center)
+  }
+}
+
+extension View{
+  func mirrored() -> some View{
+    self.modifier(Mirrored())
+  }
+}
+
 // MARK: Image rendering
 
 fileprivate func data(from image: UIImage, for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> Data? {

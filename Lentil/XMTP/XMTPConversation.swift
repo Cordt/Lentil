@@ -41,10 +41,7 @@ extension MockData {
     [
       XMTPConversation(
         peerAddress: "0x123abcdef",
-        send: { _ in
-          try await Task.sleep(for: .seconds(5))
-          return
-        },
+        send: { _ in },
         topic: "TOPIC",
         streamMessages: { AsyncThrowingStream(unfolding: { nil })},
         messages: { MockData.messages },
