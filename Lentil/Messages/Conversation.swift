@@ -137,8 +137,12 @@ struct ConversationView: View {
                       HStack {
                         if messageViewStore.state == .peer { Spacer() }
                         
-                        MessageView(store: messageStore)
-                          .frame(width: geometry.size.width * 0.80)
+                        HStack {
+                          if messageViewStore.state == .peer { Spacer() }
+                          MessageView(store: messageStore)
+                          if messageViewStore.state == .user { Spacer() }
+                        }
+                        .frame(width: geometry.size.width * 0.80)
                         
                         if messageViewStore.state == .user { Spacer() }
                       }
@@ -196,7 +200,7 @@ struct ConversationView: View {
         
         ToolbarItem(placement: .principal) {
           Text(viewStore.profile?.name ?? viewStore.profile?.handle ?? viewStore.conversation.shortenedAddress)
-            .font(style: .headline, color: Theme.Color.white)
+            .font(style: .headline, color: Theme.Color.text)
         }
         
         ToolbarItem(placement: .navigationBarTrailing) {
@@ -283,7 +287,7 @@ extension MockData {
         sent: Date().addingTimeInterval(-60 * 60)
       ),
       XMTP.DecodedMessage(
-        body: "Hello, I hope this finds you well. I have a sample text for you that goes like this: Lorem ipsum dolor",
+        body: "Hello!",
         senderAddress: "0xabc123",
         sent: Date().addingTimeInterval(-60 * 60 * 5)
       )

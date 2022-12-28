@@ -85,6 +85,16 @@ struct MessageView_Previews: PreviewProvider {
               reducer: Message()
             )
           )
+          MessageView(
+            store: .init(
+              initialState: .init(
+                id: "abc-789",
+                message: MockData.messages[2],
+                from: .user
+              ),
+              reducer: Message()
+            )
+          )
         }
         .padding()
       }
