@@ -130,8 +130,8 @@ final class RootTests: XCTestCase {
       reducer: Root()
     )
     
-    await store.send(.feedRootAppeared)
-    await store.send(.feedRootDisappeared)
+    await store.send(.rootAppeared)
+    await store.send(.rootDisappeared)
   }
   
   func testToastIsShownWhileIndexing() async throws {

@@ -50,6 +50,7 @@
 		37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */; };
 		378AE5AE294FA564001584DD /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE5AD294FA564001584DD /* ImageView.swift */; };
 		37A56518295C3142001A676A /* XMTPConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A56517295C3142001A676A /* XMTPConversation.swift */; };
+		37A5651A295C5866001A676A /* XMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 37A56519295C5866001A676A /* XMTP */; };
 		37A7A6F6293C4DAB00964768 /* MediaDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */; };
 		37A7A6F9293C53F100964768 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F8293C53F100964768 /* Cache.swift */; };
 		37B7D6922956075500F8674C /* PostTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D6912956075500F8674C /* PostTests.swift */; };
@@ -219,6 +220,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				372D1782294B043A008D2BEF /* Sentry in Frameworks */,
+				37A5651A295C5866001A676A /* XMTP in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -606,6 +608,7 @@
 			name = LentilTests;
 			packageProductDependencies = (
 				372D1781294B043A008D2BEF /* Sentry */,
+				37A56519295C5866001A676A /* XMTP */,
 			);
 			productName = LentilTests;
 			productReference = 3777831228CCA05E00E7E32A /* LentilTests.xctest */;
@@ -1143,6 +1146,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
+		};
+		37A56519295C5866001A676A /* XMTP */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37B7D69329561A6E00F8674C /* XCRemoteSwiftPackageReference "xmtp-ios" */;
+			productName = XMTP;
 		};
 		37B7D69429561A6E00F8674C /* XMTP */ = {
 			isa = XCSwiftPackageProductDependency;
