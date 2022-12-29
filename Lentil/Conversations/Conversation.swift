@@ -20,7 +20,7 @@ struct Conversation: ReducerProtocol {
     var profilePicture: LentilImage.State? = nil
     var messages: IdentifiedArrayOf<Message.State>
     var messageText: String = ""
-    var isSending: Bool = true
+    var isSending: Bool = false
     
     init(
       navigationId: String,
@@ -137,7 +137,7 @@ struct Conversation: ReducerProtocol {
     }
     .ifLet(\.profilePicture, action: /Action.profilePicture) {
       LentilImage()
-    }
+    }._printChanges()
   }
 }
 
@@ -259,7 +259,7 @@ struct ConversationView: View {
       .toolbarBackground(Theme.Color.white, for: .navigationBar)
       .navigationBarTitleDisplayMode(.inline)
       .navigationBarBackButtonHidden(true)
-      .tint(Theme.Color.white)
+      .tint(Theme.Color.primary)
     }
   }
 }

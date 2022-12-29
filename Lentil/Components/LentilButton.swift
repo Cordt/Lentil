@@ -62,15 +62,15 @@ struct BackButton: View {
   var body: some View {
     Button(action: self.action) {
       Icon.back.view()
-        .offset(x: 5)
-    }
-    .frame(width: 30, height: 30)
-    .background(
-      Circle()
-        .fill(Theme.Color.primary)
         .frame(width: 30, height: 30)
-    )
-    .accentColor(Theme.Color.white)
+        .background(
+          Circle()
+            .fill(Theme.Color.primary)
+            .frame(width: 30, height: 30)
+        )
+        .tint(Theme.Color.white)
+    }
+    
   }
 }
 
@@ -99,19 +99,23 @@ struct SendButton: View {
   }
   
   var body: some View {
-    ZStack {
-      Circle()
-        .fill(Theme.Color.primary)
+    Button {
+      self.action()
+    } label: {
+      ZStack {
+        Circle()
+          .fill(Theme.Color.primary)
         
-      Icon.back.view()
-        .foregroundColor(Theme.Color.white)
-        .rotationEffect(.degrees(90))
-        .tint(Theme.Color.white)
-        .offset(y: -1 * self.arrowOffset)
-        .onChange(of: self.isSending) { _ in self.toggleAnimation() }
+        Icon.back.view()
+          .foregroundColor(Theme.Color.white)
+          .rotationEffect(.degrees(90))
+          .tint(Theme.Color.white)
+          .offset(y: -1 * self.arrowOffset)
+          .onChange(of: self.isSending) { _ in self.toggleAnimation() }
+      }
+      .clipShape(Circle())
+      .frame(width: 30, height: 30)
     }
-    .frame(width: 30, height: 30)
-    .onTapGesture { self.action(); self.isSending = !self.isSending }
   }
 }
 
