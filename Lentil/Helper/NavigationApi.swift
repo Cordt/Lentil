@@ -23,7 +23,7 @@ struct DestinationPath: Identifiable, Equatable, Hashable {
     case createPublication(_ reason: CreatePublication.State.Reason)
     case imageDetail(_ imageUrl: URL)
     
-    case conversation(_ conversation: XMTPConversation)
+    case conversation(_ conversation: XMTPConversation, _ userAddress: String)
   }
   var navigationId: String
   var destination: Destination

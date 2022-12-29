@@ -5,6 +5,7 @@ import ComposableArchitecture
 import Foundation
 import WalletConnectSwift
 import UIKit
+import web3
 
 
 enum WalletConnectorError: Error {
@@ -19,8 +20,11 @@ extension WalletConnectorApi: DependencyKey {
     WalletConnectorApi(
       eventStream: WalletConnector.shared.eventStream,
       connect: WalletConnector.shared.connect,
+      reconnect: WalletConnector.shared.reconnect,
       disconnect: WalletConnector.shared.disconnect,
-      sign: WalletConnector.shared.sign
+      sign: WalletConnector.shared.sign,
+      signData: WalletConnector.shared.signData,
+      connector: { WalletConnector.shared }
     )
   }
 }
@@ -35,17 +39,22 @@ extension DependencyValues {
 struct WalletConnectorApi {
   var eventStream: WalletEvents
   var connect: () -> ()
+  var reconnect: () -> ()
   var disconnect: () -> ()
   var sign: (_ message: String) async throws -> String
+  var signData: (_ data: Data) async throws -> Data
+  var connector: () -> WalletConnector
 }
 
-fileprivate class WalletConnector {
+class WalletConnector {
   private let appTitle = "Lentil App"
   private let appDescription = "The last social media app you'll need."
   private let clientUrl = URL(string: "https://lentil.xyz")!
   
   static let shared: WalletConnector = WalletConnector()
   var eventStream: WalletEvents { WalletConnect.shared.walletEvents }
+  // FIXME: Requirement of SigningKey Protocol of XMTP - shouldn't be made available like this
+  var address: String { WalletConnect.shared.address }
   
   private init() {}
   
@@ -62,6 +71,15 @@ fileprivate class WalletConnector {
     self.open(url: deepLink)
   }
   
+  func reconnect() {
+    do {
+      try WalletConnect.shared.reconnectIfNeeded()
+    }
+    catch let error {
+      log("Failed to reconnect with WC", level: .info, error: error)
+    }
+  }
+  
   func disconnect() {
     do {
       try WalletConnect.shared.disconnect()
@@ -71,8 +89,18 @@ fileprivate class WalletConnector {
   }
   
   func sign(message: String) async throws -> String {
-    let urlString = try WalletConnect.shared.reconnectIfNeeded()
+    try await self.prepareToSign()
+    return try await WalletConnect.shared.sign(message: message)
+  }
+  
+  func signData(_ data: Data) async throws -> Data {
+    try await self.prepareToSign()
+    return try await WalletConnect.shared.sign(data: data)
+  }
+  
+  private func prepareToSign() async throws {
     guard
+      let urlString = WalletConnect.shared.session?.url.absoluteString,
       let url = URL(string: urlString),
       let deepLink = self.deepLink(for: url)
     else {
@@ -84,7 +112,7 @@ fileprivate class WalletConnector {
       self.open(url: deepLink)
     }
     
-    return try await WalletConnect.shared.sign(message: message)
+    try await Task.sleep(for: .seconds(1))
   }
   
   private func deepLink(for url: URL) -> URL? {
@@ -119,6 +147,12 @@ fileprivate final class WalletConnect {
   var client: Client?
   var wcurl: WCURL?
   
+  var address: String {
+    guard let account = self.session?.walletInfo?.accounts.first
+    else { return "" }
+    return EthereumAddress(account).toChecksumAddress()
+  }
+  
   static let shared: WalletConnect = WalletConnect()
   
   private init() {}
@@ -149,21 +183,18 @@ fileprivate final class WalletConnect {
     }
   }
   
-  func reconnectIfNeeded() throws -> String {
-    if let oldSessionObject = UserDefaults.standard.object(forKey: sessionKey) as? Data,
-       let session = try? JSONDecoder().decode(Session.self, from: oldSessionObject) {
-      
+  func reconnectIfNeeded() throws {
+    if let session = self.storedSession() {
       do {
         self.client = Client(delegate: self, dAppInfo: session.dAppInfo)
         try client?.reconnect(to: session)
-        return session.url.absoluteString
         
       } catch let error {
-        log("Failed to re-connect with WC Client", level: .error, error: error)
+        log("Failed to re-connect with WC Client", level: .debug, error: error)
         throw WalletConnectorError.couldNotReconnectClient
       }
     } else {
-      log("Failed to re-connect with WC Client: Could not find session object", level: .warn)
+      log("Failed to re-connect with WC Client: Could not find session object", level: .debug)
       throw WalletConnectorError.couldNotReconnectClient
     }
   }
@@ -177,20 +208,18 @@ fileprivate final class WalletConnect {
   }
   
   func sign(message: String) async throws -> String {
-    guard let accounts = self.session?.walletInfo?.accounts,
-          let wallet = accounts.first,
-          let url = self.session?.url
+    guard let url = self.session?.url
     else { throw WalletConnectorError.couldNotSignMessage }
     
     // Wait for the user to switch to their wallet application
-    try await Task.sleep(nanoseconds: NSEC_PER_SEC * 2)
+    try await Task.sleep(for: .seconds(2))
     
     return try await withCheckedThrowingContinuation { continuation in
       do {
         try self.client?.personal_sign(
           url: url,
           message: message,
-          account: wallet,
+          account: self.address,
           completion: { response in
             guard let signedMessage = try? response.result(as: String.self)
             else {
@@ -207,6 +236,36 @@ fileprivate final class WalletConnect {
         continuation.resume(throwing: WalletConnectorError.couldNotSignMessage)
       }
     }
+  }
+  
+  func sign(data: Data) async throws -> Data {
+    guard let message = String(data: data, encoding: .utf8)
+    else { throw WalletConnectorError.couldNotSignMessage }
+    
+    var signedMessage = try await self.sign(message: message)
+    
+    // Strip leading 0x that we get back from `personal_sign`
+    if signedMessage.hasPrefix("0x"), signedMessage.count == 132 {
+      signedMessage = String(signedMessage.dropFirst(2))
+    }
+    
+    guard let resultDataBytes = signedMessage.web3.bytesFromHex
+    else { throw WalletConnectorError.couldNotSignMessage }
+    
+    var resultData = Data(resultDataBytes)
+    
+    // Ensure we have a valid recovery byte
+    resultData[resultData.count - 1] = 1 - resultData[resultData.count - 1] % 2
+    
+    return resultData
+  }
+  
+  private func storedSession() -> Session? {
+    guard let oldSessionObject = UserDefaults.standard.object(forKey: sessionKey) as? Data,
+          let session = try? JSONDecoder().decode(Session.self, from: oldSessionObject)
+    else { return nil }
+    
+    return session
   }
   
   // https://developer.apple.com/documentation/security/1399291-secrandomcopybytes

@@ -144,15 +144,9 @@ struct Root: ReducerProtocol {
         state.imageDetail = Image(uiImage: uiImage)
         
       case .conversation(let conversation):
-        guard let user = self.profileStorageApi.load()
-        else {
-          self.navigationApi.remove(destinationPath)
-          return
-        }
-        
         state.conversation = Conversation.State(
           navigationId: destinationPath.navigationId,
-          userAddress: user.address,
+          userAddress: user?.address,
           conversation: conversation,
           profile: self.cache.profileByAddress(conversation.peerAddress)
         )

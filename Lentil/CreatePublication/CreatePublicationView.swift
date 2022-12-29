@@ -95,6 +95,7 @@ struct CreatePublicationView: View {
         }
       }
       .toolbarBackground(.hidden, for: .navigationBar)
+      .toolbar(.hidden, for: .tabBar)
       .navigationBarBackButtonHidden(true)
       .alert(
         self.store.scope(state: \.cancelAlert),

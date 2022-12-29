@@ -10,25 +10,33 @@ import XMTP
 struct Conversations: ReducerProtocol {
   struct State: Equatable {
     enum ConnectionStatus: Equatable {
-      case disconnected, connected
+      case notConnected, connected, signedIn(XMTP.Client)
     }
     
-    var connectionStatus: ConnectionStatus = .disconnected
+    var connectionStatus: ConnectionStatus = .notConnected
     var conversations: IdentifiedArrayOf<ConversationRow.State> = []
   }
   
   enum Action: Equatable {
     case didAppear
     case didRefresh
+    case walletConnectDidAppear
+    case walletConnectDidDisappear
+    case didDisappear
+    case listenOnWallet
+    case updateConnectionStatus(State.ConnectionStatus)
+    case signInTapped
     case loadConversations
     case conversationsResult(TaskResult<[XMTPConversation]>)
     case connectTapped
-    case createMessageTapped
+    case createMessageTapped(XMTP.Client)
     
     case conversation(id: ConversationRow.State.ID, ConversationRow.Action)
   }
   
+  @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.xmtpConnector) var xmtpConnector
+  enum WalletEventsCancellationID {}
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
@@ -36,31 +44,72 @@ struct Conversations: ReducerProtocol {
         case .didAppear, .didRefresh:
           return Effect(value: .loadConversations)
           
+        case .walletConnectDidAppear:
+          return Effect(value: .listenOnWallet)
+          
+        case .walletConnectDidDisappear:
+          self.walletConnect.disconnect()
+          return .cancel(id: WalletEventsCancellationID.self)
+          
+        case .didDisappear:
+          return .none
+          
+        case .listenOnWallet:
+          return .run { send in
+            do {
+              for try await event in self.walletConnect.eventStream {
+                switch event {
+                  case .didFailToConnect, .didDisconnect:
+                    await send(.updateConnectionStatus(.notConnected))
+                    
+                  case .didConnect(_), .didUpdate(_):
+                    break
+                    
+                  case .didEstablishSession:
+                    await send(.updateConnectionStatus(.connected))
+                }
+              }
+            } catch let error {
+              log("Failed to receive wallet events", level: .warn, error: error)
+            }
+          }
+          .cancellable(id: WalletEventsCancellationID.self)
+          
+        case .updateConnectionStatus(let connectionStatus):
+          state.connectionStatus = connectionStatus
+          return .none
+          
+        case .signInTapped:
+          return .run { send in
+            let client = try await XMTP.Client.create(account: self.walletConnect.connector())
+            await send(.updateConnectionStatus(.signedIn(client)))
+            await send(.loadConversations)
+          }
+          
         case .loadConversations:
-          switch self.xmtpConnector.connectionStatus() {
-            case .disconnected, .connecting:
-              state.connectionStatus = .disconnected
+          switch state.connectionStatus {
+            case .notConnected:
+              self.walletConnect.reconnect()
+              return .none
+              
+            case .connected:
               return .none
 
-            case .connected:
-              state.connectionStatus = .connected
+            case .signedIn(let client):
               return .task {
                 .conversationsResult(
                   await TaskResult {
-                    await self.xmtpConnector.loadConversations()
+                    await self.xmtpConnector.loadConversations(client)
                   }
                 )
               }
-              
-            case .error(let error):
-              log("Wallet connection ended in error state", level: .error, error: error)
-              return .none
           }
           
         case .conversationsResult(.success(let conversations)):
           let conversationRows = conversations.map {
             ConversationRow.State(conversation: $0)
           }
+          
           state.conversations = IdentifiedArrayOf(uniqueElements: conversationRows)
           return .none
           
@@ -68,7 +117,8 @@ struct Conversations: ReducerProtocol {
             return .none
           
         case .connectTapped:
-          self.xmtpConnector.connectWallet()
+          state.connectionStatus = .connected
+          self.walletConnect.connect()
           return .none
           
         case .createMessageTapped:
@@ -81,6 +131,7 @@ struct Conversations: ReducerProtocol {
     .forEach(\.conversations, action: /Action.conversation) {
       ConversationRow()
     }
+    ._printChanges(.actionLabels)
   }
 }
 
@@ -91,12 +142,12 @@ struct ConversationsView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       Group {
         switch viewStore.connectionStatus {
-          case .disconnected:
+          case .notConnected:
             VStack(spacing: 30) {
               Text("Connect to XMTP")
                 .font(style: .largeHeadline)
               
-              Text("In order to use messaging, you need to sign the transaction with XMTP.")
+              Text("In order to use messaging, you need to sign a transaction with your wallet.")
                 .font(style: .bodyDetailed)
                 .multilineTextAlignment(.center)
               
@@ -105,8 +156,25 @@ struct ConversationsView: View {
               }
             }
             .padding(.horizontal, 60)
+            .onAppear { viewStore.send(.walletConnectDidAppear) }
             
           case .connected:
+            VStack(spacing: 30) {
+              Text("Connect to XMTP")
+                .font(style: .largeHeadline)
+              
+              Text("In order to use messaging, you need to sign a transaction with your wallet.")
+                .font(style: .bodyDetailed)
+                .multilineTextAlignment(.center)
+              
+              LentilButton(title: "Sign with Wallet", kind: .primary) {
+                viewStore.send(.signInTapped)
+              }
+            }
+            .padding(.horizontal, 60)
+            .onDisappear { viewStore.send(.walletConnectDidDisappear) }
+            
+          case .signedIn:
             ScrollView(axes: .vertical, showsIndicators: false) {
               LazyVStack(alignment: .leading) {
                 ForEachStore(
@@ -120,6 +188,7 @@ struct ConversationsView: View {
               }
             }
             .padding(.horizontal)
+            .refreshable { await viewStore.send(.didRefresh).finish() }
         }
       }
       .toolbar {
@@ -129,9 +198,9 @@ struct ConversationsView: View {
         }
         
         ToolbarItem(placement: .navigationBarTrailing) {
-          if viewStore.connectionStatus == .connected {
+          if case .signedIn(let client) = viewStore.connectionStatus {
             Button {
-              viewStore.send(.createMessageTapped)
+              viewStore.send(.createMessageTapped(client))
             } label: {
               Icon.create.view(.xlarge)
                 .foregroundColor(Theme.Color.white)
@@ -141,7 +210,7 @@ struct ConversationsView: View {
       }
       .navigationBarTitleDisplayMode(.inline)
       .task { await viewStore.send(.didAppear).finish() }
-      .refreshable { await viewStore.send(.didRefresh).finish() }
+      .onDisappear { viewStore.send(.didDisappear) }
     }
   }
 }

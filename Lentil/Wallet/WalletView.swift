@@ -97,6 +97,7 @@ struct WalletView: View {
         }
       }
       .toolbarBackground(.hidden, for: .navigationBar)
+      .toolbar(.hidden, for: .tabBar)
       .navigationBarBackButtonHidden(true)
       .accentColor(Theme.Color.primary)
       .task {
