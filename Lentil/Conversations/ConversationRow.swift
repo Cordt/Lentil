@@ -15,14 +15,16 @@ struct ConversationRow: ReducerProtocol {
   
   struct State: Equatable, Identifiable {
     var id: String { self.conversation.peerAddress }
-    var conversation: XMTPConversation
     
+    var conversation: XMTPConversation
+    var userAddress: String
     var profile: Model.Profile?
     var profilePicture: LentilImage.State?
     var lastMessage: MessageStub?
     
-    init(conversation: XMTPConversation, profile: Model.Profile? = nil, lastMessage: MessageStub? = nil) {
+    init(conversation: XMTPConversation, userAddress: String, profile: Model.Profile? = nil, lastMessage: MessageStub? = nil) {
       self.conversation = conversation
+      self.userAddress = userAddress
       self.profile = profile
       self.profilePicture = nil
       self.lastMessage = lastMessage
@@ -51,7 +53,7 @@ struct ConversationRow: ReducerProtocol {
           navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .conversation(state.conversation)
+              destination: .conversation(state.conversation, state.userAddress)
             )
           )
           return .none
@@ -149,6 +151,7 @@ struct ConversationRowView_Previews: PreviewProvider {
         store: .init(
           initialState: .init(
             conversation: MockData.conversations[0],
+            userAddress: "0xabc123",
             profile: MockData.mockProfiles[0],
             lastMessage: MockData.conversationStubs[0]
           ),
@@ -159,6 +162,7 @@ struct ConversationRowView_Previews: PreviewProvider {
         store: .init(
           initialState: .init(
             conversation: MockData.conversations[1],
+            userAddress: "0xabc123",
             profile: MockData.mockProfiles[1]
           ),
           reducer: ConversationRow()
@@ -168,6 +172,7 @@ struct ConversationRowView_Previews: PreviewProvider {
         store: .init(
           initialState: .init(
             conversation: MockData.conversations[2],
+            userAddress: "0xabc123",
             lastMessage: MockData.conversationStubs[2]
           ),
           reducer: ConversationRow()

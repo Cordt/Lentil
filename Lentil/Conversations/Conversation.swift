@@ -99,7 +99,7 @@ struct Conversation: ReducerProtocol {
           self.navigationApi.remove(
             DestinationPath(
               navigationId: state.navigationId,
-              destination: .conversation(state.conversation)
+              destination: .conversation(state.conversation, state.userAddress)
             )
           )
           return .none

@@ -106,8 +106,11 @@ struct Conversations: ReducerProtocol {
           }
           
         case .conversationsResult(.success(let conversations)):
+          guard case .signedIn(let client) = state.connectionStatus
+          else { return .none }
+          
           let conversationRows = conversations.map {
-            ConversationRow.State(conversation: $0)
+            ConversationRow.State(conversation: $0, userAddress: client.address)
           }
           
           state.conversations = IdentifiedArrayOf(uniqueElements: conversationRows)
@@ -131,7 +134,6 @@ struct Conversations: ReducerProtocol {
     .forEach(\.conversations, action: /Action.conversation) {
       ConversationRow()
     }
-    ._printChanges(.actionLabels)
   }
 }
 
@@ -225,15 +227,18 @@ struct MessagesView_Previews: PreviewProvider {
             conversations: [
               ConversationRow.State(
                 conversation: MockData.conversations[0],
+                userAddress: "0xabc123",
                 profile: MockData.mockProfiles[0],
                 lastMessage: MockData.conversationStubs[0]
               ),
               ConversationRow.State(
                 conversation: MockData.conversations[1],
+                userAddress: "0xabc123",
                 lastMessage: MockData.conversationStubs[1]
               ),
               ConversationRow.State(
                 conversation: MockData.conversations[2],
+                userAddress: "0xabc123",
                 lastMessage: MockData.conversationStubs[2]
               ),
             ]

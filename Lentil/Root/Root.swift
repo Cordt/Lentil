@@ -143,10 +143,10 @@ struct Root: ReducerProtocol {
         
         state.imageDetail = Image(uiImage: uiImage)
         
-      case .conversation(let conversation):
+      case .conversation(let conversation, let address):
         state.conversation = Conversation.State(
           navigationId: destinationPath.navigationId,
-          userAddress: user?.address,
+          userAddress: address,
           conversation: conversation,
           profile: self.cache.profileByAddress(conversation.peerAddress)
         )
