@@ -131,6 +131,11 @@ struct LensApi {
     _ from: URL
   ) async throws -> Data
   
+  var searchProfiles: @Sendable (
+    _ limit: Int,
+    _ query: String
+  ) async throws -> QueryResult<[Model.Profile]>
+  
   // MARK: API Mutations
   
   var broadcast: @Sendable (

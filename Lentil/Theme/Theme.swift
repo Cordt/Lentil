@@ -9,6 +9,7 @@ import SwiftUI
 struct Theme {
   static let maxPostLength: Int = 256
   static let narrowRadius: CGFloat = 5.0
+  static let defaultRadius: CGFloat = 10.0
   static let wideRadius: CGFloat = 20.0
   static let defaultBorderWidth: CGFloat = 2.0
   

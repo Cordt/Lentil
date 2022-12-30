@@ -161,6 +161,24 @@ query Profiles($request: ProfileQueryRequest!) {
 	}
 }
 
+query Search($request: SearchQueryRequest!) {
+  search(request: $request) {
+    ... on ProfileSearchResult {
+      __typename
+      items {
+        ... on Profile {
+          ...ProfileFields
+        }
+      }
+      pageInfo {
+        prev
+        totalCount
+        next
+      }
+    }
+  }
+}
+
 
 # MARK: Mutations
 

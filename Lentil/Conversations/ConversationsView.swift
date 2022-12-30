@@ -14,6 +14,7 @@ struct Conversations: ReducerProtocol {
     }
     
     var connectionStatus: ConnectionStatus = .notConnected
+    var createConversation: CreateConversation.State?
     var conversations: IdentifiedArrayOf<ConversationRow.State> = []
   }
   
@@ -31,11 +32,15 @@ struct Conversations: ReducerProtocol {
     case connectTapped
     case createMessageTapped
     
+    case setCreateConversation(CreateConversation.State?)
+    case createConversation(CreateConversation.Action)
     case conversation(id: ConversationRow.State.ID, ConversationRow.Action)
   }
   
+  @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.xmtpConnector) var xmtpConnector
+  @Dependency(\.uuid) var uuid
   enum WalletEventsCancellationID {}
   
   var body: some ReducerProtocol<State, Action> {
@@ -126,11 +131,34 @@ struct Conversations: ReducerProtocol {
           return .none
           
         case .createMessageTapped:
+          state.createConversation = .init()
+          return .none
+          
+        case .setCreateConversation(let createConversationState):
+          state.createConversation = createConversationState
+          return .none
+          
+        case .createConversation(let createConversationAction):
+          if case .dismiss = createConversationAction {
+            state.createConversation = nil
+          }
+          if case .dismissAndOpenConversation(let conversation, let userAddress) = createConversationAction {
+            state.createConversation = nil
+            self.navigationApi.append(
+              DestinationPath(
+                navigationId: self.uuid.callAsFunction().uuidString,
+                destination: .conversation(conversation, userAddress)
+              )
+            )
+          }
           return .none
           
         case .conversation:
           return .none
       }
+    }
+    .ifLet(\.createConversation, action: /Action.createConversation) {
+      CreateConversation()
     }
     .forEach(\.conversations, action: /Action.conversation) {
       ConversationRow()
@@ -194,6 +222,18 @@ struct ConversationsView: View {
             .refreshable { await viewStore.send(.didRefresh).finish() }
         }
       }
+      .sheet(
+        unwrapping: viewStore.binding(
+          get: \.createConversation,
+          send: Conversations.Action.setCreateConversation
+        ), content: { _ in
+          IfLetStore(self.store.scope(
+            state: \.createConversation,
+            action: Conversations.Action.createConversation
+          )) { store in
+            CreateConversationView(store: store)
+          }
+      })
       .toolbar {
         ToolbarItem(placement: .principal) {
           Text("Messages")

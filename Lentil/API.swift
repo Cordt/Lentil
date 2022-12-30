@@ -1032,6 +1032,118 @@ public struct ProfileQueryRequest: GraphQLMapConvertible {
   }
 }
 
+public struct SearchQueryRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - limit
+  ///   - cursor
+  ///   - query: The search term
+  ///   - type
+  ///   - customFilters
+  ///   - sources: The App Id
+  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, query: String, type: SearchRequestTypes, customFilters: Swift.Optional<[CustomFiltersTypes]?> = nil, sources: Swift.Optional<[String]?> = nil) {
+    graphQLMap = ["limit": limit, "cursor": cursor, "query": query, "type": type, "customFilters": customFilters, "sources": sources]
+  }
+
+  public var limit: Swift.Optional<String?> {
+    get {
+      return graphQLMap["limit"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "limit")
+    }
+  }
+
+  public var cursor: Swift.Optional<String?> {
+    get {
+      return graphQLMap["cursor"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "cursor")
+    }
+  }
+
+  /// The search term
+  public var query: String {
+    get {
+      return graphQLMap["query"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "query")
+    }
+  }
+
+  public var type: SearchRequestTypes {
+    get {
+      return graphQLMap["type"] as! SearchRequestTypes
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "type")
+    }
+  }
+
+  public var customFilters: Swift.Optional<[CustomFiltersTypes]?> {
+    get {
+      return graphQLMap["customFilters"] as? Swift.Optional<[CustomFiltersTypes]?> ?? Swift.Optional<[CustomFiltersTypes]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "customFilters")
+    }
+  }
+
+  /// The App Id
+  public var sources: Swift.Optional<[String]?> {
+    get {
+      return graphQLMap["sources"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "sources")
+    }
+  }
+}
+
+/// Search request types
+public enum SearchRequestTypes: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case publication
+  case profile
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "PUBLICATION": self = .publication
+      case "PROFILE": self = .profile
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .publication: return "PUBLICATION"
+      case .profile: return "PROFILE"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: SearchRequestTypes, rhs: SearchRequestTypes) -> Bool {
+    switch (lhs, rhs) {
+      case (.publication, .publication): return true
+      case (.profile, .profile): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [SearchRequestTypes] {
+    return [
+      .publication,
+      .profile,
+    ]
+  }
+}
+
 public struct BroadcastRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -5646,6 +5758,296 @@ public final class ProfilesQuery: GraphQLQuery {
             }
             set {
               resultMap += newValue.resultMap
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class SearchQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query Search($request: SearchQueryRequest!) {
+      search(request: $request) {
+        __typename
+        ... on ProfileSearchResult {
+          __typename
+          items {
+            __typename
+            ... on Profile {
+              __typename
+              ...ProfileFields
+            }
+          }
+          pageInfo {
+            __typename
+            prev
+            totalCount
+            next
+          }
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "Search"
+
+  public var queryDocument: String {
+    var document: String = operationDefinition
+    document.append("\n" + ProfileFields.fragmentDefinition)
+    document.append("\n" + MediaFields.fragmentDefinition)
+    return document
+  }
+
+  public var request: SearchQueryRequest
+
+  public init(request: SearchQueryRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("search", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(Search.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(search: Search) {
+      self.init(unsafeResultMap: ["__typename": "Query", "search": search.resultMap])
+    }
+
+    public var search: Search {
+      get {
+        return Search(unsafeResultMap: resultMap["search"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "search")
+      }
+    }
+
+    public struct Search: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["PublicationSearchResult", "ProfileSearchResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLTypeCase(
+            variants: ["ProfileSearchResult": AsProfileSearchResult.selections],
+            default: [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            ]
+          )
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public static func makePublicationSearchResult() -> Search {
+        return Search(unsafeResultMap: ["__typename": "PublicationSearchResult"])
+      }
+
+      public static func makeProfileSearchResult(items: [AsProfileSearchResult.Item], pageInfo: AsProfileSearchResult.PageInfo) -> Search {
+        return Search(unsafeResultMap: ["__typename": "ProfileSearchResult", "items": items.map { (value: AsProfileSearchResult.Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var asProfileSearchResult: AsProfileSearchResult? {
+        get {
+          if !AsProfileSearchResult.possibleTypes.contains(__typename) { return nil }
+          return AsProfileSearchResult(unsafeResultMap: resultMap)
+        }
+        set {
+          guard let newValue = newValue else { return }
+          resultMap = newValue.resultMap
+        }
+      }
+
+      public struct AsProfileSearchResult: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["ProfileSearchResult"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("items", type: .nonNull(.list(.nonNull(.object(Item.selections))))),
+            GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(items: [Item], pageInfo: PageInfo) {
+          self.init(unsafeResultMap: ["__typename": "ProfileSearchResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var items: [Item] {
+          get {
+            return (resultMap["items"] as! [ResultMap]).map { (value: ResultMap) -> Item in Item(unsafeResultMap: value) }
+          }
+          set {
+            resultMap.updateValue(newValue.map { (value: Item) -> ResultMap in value.resultMap }, forKey: "items")
+          }
+        }
+
+        public var pageInfo: PageInfo {
+          get {
+            return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+          }
+        }
+
+        public struct Item: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Profile"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(ProfileFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var profileFields: ProfileFields {
+              get {
+                return ProfileFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+
+        public struct PageInfo: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["PaginatedResultInfo"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("prev", type: .scalar(String.self)),
+              GraphQLField("totalCount", type: .scalar(Int.self)),
+              GraphQLField("next", type: .scalar(String.self)),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(prev: String? = nil, totalCount: Int? = nil, next: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "totalCount": totalCount, "next": next])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// Cursor to query the actual results
+          public var prev: String? {
+            get {
+              return resultMap["prev"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "prev")
+            }
+          }
+
+          /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+          public var totalCount: Int? {
+            get {
+              return resultMap["totalCount"] as? Int
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "totalCount")
+            }
+          }
+
+          /// Cursor to query next results
+          public var next: String? {
+            get {
+              return resultMap["next"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "next")
             }
           }
         }

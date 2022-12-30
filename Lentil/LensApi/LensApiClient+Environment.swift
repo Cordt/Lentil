@@ -181,6 +181,29 @@ extension LensApi: DependencyKey {
       try await URLSession.shared.data(from: url).0
     },
     
+    searchProfiles: { limit, query in
+      try await run(
+        networkClient: .unauthenticated,
+        query: SearchQuery(
+          request: SearchQueryRequest(
+            limit: "\(limit)",
+            query: query,
+            type: .profile
+          )
+        ),
+        cachePolicy: .returnCacheDataAndFetch,
+        mapResult: { data in
+          guard let profileSearchResult = data.search.asProfileSearchResult
+          else { return QueryResult(data: []) }
+          
+          let profiles = profileSearchResult.items.compactMap {
+            Model.Profile.from($0.fragments.profileFields)
+          }
+          return QueryResult(data: profiles)
+        }
+      )
+    },
+    
     broadcast: { id, signature in
       try await run(
         networkClient: .authenticated,
@@ -367,6 +390,7 @@ extension LensApi {
       else if url.absoluteString == "https://lentil-beta" { return UIImage(named: "lentilBeta")!.jpegData(compressionQuality: 0.5)! }
       else { throw ApiError.requestFailed }
     },
+    searchProfiles: { _, _ in QueryResult(data: MockData.mockProfiles) },
     broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
     authenticate: { _, _ in },
     refreshAuthentication: {},
@@ -390,6 +414,7 @@ extension LensApi {
     profile: unimplemented("profile"),
     profiles: unimplemented("profiles"),
     fetchImage: unimplemented("fetchImage"),
+    searchProfiles: unimplemented("searchProfiles"),
     broadcast: unimplemented("broadcast"),
     authenticate: unimplemented("authenticate"),
     refreshAuthentication: unimplemented("refreshAuthentication"),
