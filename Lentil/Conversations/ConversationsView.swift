@@ -10,7 +10,7 @@ import XMTP
 struct Conversations: ReducerProtocol {
   struct State: Equatable {
     enum ConnectionStatus: Equatable {
-      case notConnected, connected, signedIn(XMTP.Client)
+      case notConnected, connected, signedIn
     }
     
     var connectionStatus: ConnectionStatus = .notConnected
@@ -29,7 +29,7 @@ struct Conversations: ReducerProtocol {
     case loadConversations
     case conversationsResult(TaskResult<[XMTPConversation]>)
     case connectTapped
-    case createMessageTapped(XMTP.Client)
+    case createMessageTapped
     
     case conversation(id: ConversationRow.State.ID, ConversationRow.Action)
   }
@@ -81,8 +81,8 @@ struct Conversations: ReducerProtocol {
           
         case .signInTapped:
           return .run { send in
-            let client = try await XMTP.Client.create(account: self.walletConnect.connector())
-            await send(.updateConnectionStatus(.signedIn(client)))
+            await self.xmtpConnector.createClient()
+            await send(.updateConnectionStatus(.signedIn))
             await send(.loadConversations)
           }
           
@@ -95,22 +95,23 @@ struct Conversations: ReducerProtocol {
             case .connected:
               return .none
 
-            case .signedIn(let client):
+            case .signedIn:
               return .task {
                 .conversationsResult(
                   await TaskResult {
-                    await self.xmtpConnector.loadConversations(client)
+                    try await self.xmtpConnector.loadConversations()
                   }
                 )
               }
           }
           
         case .conversationsResult(.success(let conversations)):
-          guard case .signedIn(let client) = state.connectionStatus
+          guard case .signedIn = state.connectionStatus,
+                let address = try? self.xmtpConnector.address()
           else { return .none }
           
           let conversationRows = conversations.map {
-            ConversationRow.State(conversation: $0, userAddress: client.address)
+            ConversationRow.State(conversation: $0, userAddress: address)
           }
           
           state.conversations = IdentifiedArrayOf(uniqueElements: conversationRows)
@@ -200,9 +201,9 @@ struct ConversationsView: View {
         }
         
         ToolbarItem(placement: .navigationBarTrailing) {
-          if case .signedIn(let client) = viewStore.connectionStatus {
+          if case .signedIn = viewStore.connectionStatus {
             Button {
-              viewStore.send(.createMessageTapped(client))
+              viewStore.send(.createMessageTapped)
             } label: {
               Icon.create.view(.xlarge)
                 .foregroundColor(Theme.Color.white)

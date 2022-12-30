@@ -47,6 +47,7 @@
 		3777831728CCA05E00E7E32A /* LentilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777831628CCA05E00E7E32A /* LentilTests.swift */; };
 		3777834328CCD39500E7E32A /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834228CCD39500E7E32A /* API.swift */; };
 		3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777834628CDA27600E7E32A /* LensApiClient.swift */; };
+		3779FC06295F4D4E00D4139C /* XMTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779FC05295F4D4E00D4139C /* XMTPClient.swift */; };
 		37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */; };
 		378AE5AE294FA564001584DD /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE5AD294FA564001584DD /* ImageView.swift */; };
 		37A56518295C3142001A676A /* XMTPConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A56517295C3142001A676A /* XMTPConversation.swift */; };
@@ -151,6 +152,7 @@
 		3777834128CCD35300E7E32A /* schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		3777834228CCD39500E7E32A /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		3777834628CDA27600E7E32A /* LensApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensApiClient.swift; sourceTree = "<group>"; };
+		3779FC05295F4D4E00D4139C /* XMTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPClient.swift; sourceTree = "<group>"; };
 		37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
 		378AE5AD294FA564001584DD /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		37A56517295C3142001A676A /* XMTPConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPConversation.swift; sourceTree = "<group>"; };
@@ -437,6 +439,7 @@
 			isa = PBXGroup;
 			children = (
 				37B7D69729561C4100F8674C /* XMPTApi.swift */,
+				3779FC05295F4D4E00D4139C /* XMTPClient.swift */,
 				37A56517295C3142001A676A /* XMTPConversation.swift */,
 			);
 			path = XMTP;
@@ -744,6 +747,7 @@
 				37D6808F292386B100F31669 /* UINavigationController+BackGesture.swift in Sources */,
 				37C89B6429278535003583E8 /* LentilEnvironment.swift in Sources */,
 				3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */,
+				3779FC06295F4D4E00D4139C /* XMTPClient.swift in Sources */,
 				37A5651E295C9E75001A676A /* WalletConnector+SigningKey.swift in Sources */,
 				37CC0D0229279DC30036C6E9 /* Toast.swift in Sources */,
 				37F71B5028DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift in Sources */,

@@ -9,7 +9,43 @@ import XMTP
 
 
 class XMTPConnector {
-  static func loadConversations(_ client: XMTP.Client) async -> [XMTPConversation] {
+  enum XMTPConnectorError: Error {
+    case clientNotConnected
+  }
+  
+  fileprivate var client: XMTP.Client?
+  static let shared: XMTPConnector = .init()
+  
+  private init() {}
+  
+  func address() throws -> String {
+    guard let client = self.client
+    else { throw XMTPConnectorError.clientNotConnected }
+    
+    return client.address
+  }
+  
+  func createClient() async -> Void {
+    do {
+      self.client = try await XMTP.Client.create(account: WalletConnector.shared)
+    }
+    catch let error {
+      log("Failed to create client for XMTP", level: .error, error: error)
+    }
+  }
+  
+  func createConversation(_ address: String) async throws -> XMTPConversation {
+    guard let client = self.client
+    else { throw XMTPConnectorError.clientNotConnected }
+    
+    let conversation = try await client.conversations.newConversation(with: address)
+    return XMTPConversation.from(conversation)
+  }
+  
+  func loadConversations() async throws -> [XMTPConversation] {
+    guard let client = self.client
+    else { throw XMTPConnectorError.clientNotConnected }
+    
     do {
       return try await client.conversations
         .list()
@@ -32,12 +68,6 @@ class XMTPConnector {
   }
 }
 
-extension XMTP.Client: Equatable {
-  public static func == (lhs: XMTP.Client, rhs: XMTP.Client) -> Bool {
-    lhs.address == rhs.address
-  }
-}
-
 extension XMTP.DecodedMessage: Equatable {
   public static func == (lhs: DecodedMessage, rhs: DecodedMessage) -> Bool {
     lhs.body == rhs.body && lhs.senderAddress == rhs.senderAddress && lhs.sent == rhs.sent
@@ -52,14 +82,20 @@ extension DependencyValues {
 }
 
 struct XMTPConnectorApi {
-  var loadConversations: (_ client: XMTP.Client) async -> [XMTPConversation]
+  var address: () throws -> String
+  var createClient: () async -> Void
+  var createConversation: (_ address: String) async throws -> XMTPConversation
+  var loadConversations: () async throws -> [XMTPConversation]
   var loadMessages: (_ conversation: XMTPConversation) async -> [XMTP.DecodedMessage]
 }
 
 extension XMTPConnectorApi: DependencyKey {
   static var liveValue: XMTPConnectorApi {
     .init(
-      loadConversations: XMTPConnector.loadConversations,
+      address: XMTPConnector.shared.address,
+      createClient: XMTPConnector.shared.createClient,
+      createConversation: XMTPConnector.shared.createConversation,
+      loadConversations: XMTPConnector.shared.loadConversations,
       loadMessages: XMTPConnector.loadMessages
     )
   }
@@ -67,15 +103,21 @@ extension XMTPConnectorApi: DependencyKey {
   #if DEBUG
   static var previewValue: XMTPConnectorApi {
     .init(
-      loadConversations: { _ in MockData.conversations },
+      address: { "0xabcdef" },
+      createClient: { },
+      createConversation: { _ in MockData.conversations[0] },
+      loadConversations: { MockData.conversations },
       loadMessages: { _ in MockData.messages }
     )
   }
   
   static var testValue: XMTPConnectorApi {
     .init(
+      address: unimplemented("address"),
+      createClient: unimplemented("createClient"),
+      createConversation: unimplemented("createConversation"),
       loadConversations: unimplemented("loadConversations"),
-      loadMessages: unimplemented("loadMessages")
+      loadMessages: unimplemented("loadMessagess")
     )
   }
   #endif

@@ -23,8 +23,7 @@ extension WalletConnectorApi: DependencyKey {
       reconnect: WalletConnector.shared.reconnect,
       disconnect: WalletConnector.shared.disconnect,
       sign: WalletConnector.shared.sign,
-      signData: WalletConnector.shared.signData,
-      connector: { WalletConnector.shared }
+      signData: WalletConnector.shared.signData
     )
   }
 }
@@ -43,7 +42,6 @@ struct WalletConnectorApi {
   var disconnect: () -> ()
   var sign: (_ message: String) async throws -> String
   var signData: (_ data: Data) async throws -> Data
-  var connector: () -> WalletConnector
 }
 
 class WalletConnector {
