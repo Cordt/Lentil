@@ -126,7 +126,6 @@ struct Conversations: ReducerProtocol {
             return .none
           
         case .connectTapped:
-          state.connectionStatus = .connected
           self.walletConnect.connect()
           return .none
           
@@ -142,7 +141,7 @@ struct Conversations: ReducerProtocol {
           if case .dismiss = createConversationAction {
             state.createConversation = nil
           }
-          if case .dismissAndOpenConversation(let conversation, let userAddress) = createConversationAction {
+          else if case .dismissAndOpenConversation(let conversation, let userAddress) = createConversationAction {
             state.createConversation = nil
             self.navigationApi.append(
               DestinationPath(

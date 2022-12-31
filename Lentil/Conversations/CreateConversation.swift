@@ -10,12 +10,14 @@ import SwiftUI
 struct CreateConversation: ReducerProtocol {
   struct State: Equatable {
     var searchText: String = ""
+    var searchInFlight: Bool = false
     var searchResult: IdentifiedArrayOf<Model.Profile> = []
   }
   
   enum Action: Equatable {
     case dismiss
     case updateSearchText(String)
+    case startSearch
     case searchedProfilesResult(TaskResult<QueryResult<[Model.Profile]>>)
     case rowTapped(id: Model.Profile.ID)
     case dismissAndOpenConversation(_ conversation: XMTPConversation, _ userAddress: String)
@@ -23,56 +25,75 @@ struct CreateConversation: ReducerProtocol {
   
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.xmtpConnector) var xmtpConnector
+  enum CancelSearchProfilesID {}
   
-  func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
-    switch action {
-      case .dismiss:
-        return .none
-        
-      case .updateSearchText(let searchText):
-        state.searchText = searchText
-        if searchText.count >= 3 {
-          return .task {
-            await .searchedProfilesResult(
+  var body: some ReducerProtocol<State, Action> {
+    Reduce { state, action in
+      switch action {
+        case .dismiss:
+          return .none
+          
+        case .updateSearchText(let searchText):
+          state.searchText = searchText
+          if searchText.count >= 3 {
+            state.searchInFlight = true
+            return .merge(
+              .cancel(id: CancelSearchProfilesID.self),
+              Effect(value: .startSearch)
+            )
+          }
+          else {
+            state.searchResult = []
+            state.searchInFlight = false
+            return .none
+          }
+          
+        case .startSearch:
+          return .task { [searchText = state.searchText] in
+            return await .searchedProfilesResult(
               TaskResult {
                 try await self.lensApi.searchProfiles(10, searchText)
               }
             )
           }
-        }
-        else {
+          .cancellable(id: CancelSearchProfilesID.self, cancelInFlight: true)
+          
+        case .searchedProfilesResult(.success(let result)):
+          state.searchInFlight = false
+          state.searchResult = IdentifiedArrayOf(uniqueElements: result.data)
           return .none
-        }
-        
-      case .searchedProfilesResult(.success(let result)):
-        state.searchResult = IdentifiedArrayOf(uniqueElements: result.data)
-        return .none
-        
-      case .searchedProfilesResult(.failure(let error)):
-        log("Failed to search for profiles with query \(state.searchText)", level: .error, error: error)
-        return .none
-        
-      case .rowTapped(let id):
-        guard let profile = state.searchResult[id: id]
-        else { return .none }
-        
-        state.searchResult = []
-        state.searchText = ""
-        return .run { send in
-          let conversation = try await self.xmtpConnector.createConversation(profile.ownedBy)
-          let address = try self.xmtpConnector.address()
-          await send(.dismissAndOpenConversation(conversation, address))
-        }
-        
-      case .dismissAndOpenConversation:
-        // Handled by parent
-        return .none
-    }
+          
+        case .searchedProfilesResult(.failure(let error)):
+          state.searchInFlight = false
+          log("Failed to search for profiles with query \(state.searchText)", level: .error, error: error)
+          return .none
+          
+        case .rowTapped(let id):
+          guard let profile = state.searchResult[id: id]
+          else { return .none }
+          
+          state.searchResult = []
+          state.searchText = ""
+          return .run { send in
+            let conversation = try await self.xmtpConnector.createConversation(profile.ownedBy)
+            let address = try self.xmtpConnector.address()
+            await send(.dismissAndOpenConversation(conversation, address))
+          }
+          catch: { error, _ in
+            log("Failed to create conversation", level: .error, error: error)
+          }
+          
+        case .dismissAndOpenConversation:
+          // Handled by parent
+          return .none
+      }
+    }._printChanges()
   }
 }
 
 struct CreateConversationView: View {
-  let store: Store<CreateConversation.State, CreateConversation.Action>
+  @FocusState var searchFieldIsFocused: Bool
+  let store: StoreOf<CreateConversation>
   
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -83,29 +104,53 @@ struct CreateConversationView: View {
             Spacer()
           }
           
-          SearchBarView(
-            searchText: viewStore.binding(
-              get: \.searchText,
-              send: CreateConversation.Action.updateSearchText
-            )
-          )
+          ZStack {
+            Rectangle()
+              .foregroundColor(
+                Theme.Color.greyShade3
+                  .opacity(0.12)
+              )
+            HStack {
+              Image(systemName: "magnifyingglass")
+              TextField(
+                "Search for profile handles ...",
+                text: viewStore.binding(
+                  get: \.searchText,
+                  send: CreateConversation.Action.updateSearchText
+                )
+              )
+              .autocorrectionDisabled(true)
+              .textInputAutocapitalization(.never)
+              .focused($searchFieldIsFocused)
+            }
+            .foregroundColor(Theme.Color.greyShade3)
+            .padding(.leading, 10)
+            .onAppear { self.searchFieldIsFocused = true }
+          }
+          .frame(height: 40)
+          .cornerRadius(Theme.defaultRadius)
         }
         .frame(height: 80)
         .padding()
         .background { Theme.Color.greyShade1 }
         
-        ScrollView(axes: .vertical, showsIndicators: false) {
-          VStack {
-            ForEach(viewStore.searchResult) { profile in
-              Button {
-                viewStore.send(.rowTapped(id: profile.id))
-              } label: {
-                ProfileRowView(profile: profile, profileImage: nil)
+        if viewStore.searchInFlight {
+          ProgressView()
+        }
+        else {
+          ScrollView(axes: .vertical, showsIndicators: false) {
+            VStack {
+              ForEach(viewStore.searchResult) { profile in
+                Button {
+                  viewStore.send(.rowTapped(id: profile.id))
+                } label: {
+                  ProfileRowView(profile: profile, profileImage: nil)
+                }
               }
             }
           }
+          .padding(.horizontal)
         }
-        .padding(.horizontal)
         
         Spacer()
       }
@@ -113,29 +158,6 @@ struct CreateConversationView: View {
   }
 }
 
-struct SearchBarView: View {
-  @Binding var searchText: String
-  
-  var body: some View {
-    ZStack {
-      Rectangle()
-        .foregroundColor(
-          Theme.Color.greyShade3
-            .opacity(0.12)
-        )
-      HStack {
-        Image(systemName: "magnifyingglass")
-        TextField("Search for profile handles ...", text: $searchText)
-          .autocorrectionDisabled(true)
-          .textInputAutocapitalization(.never)
-      }
-      .foregroundColor(Theme.Color.greyShade3)
-      .padding(.leading, 10)
-    }
-    .frame(height: 40)
-    .cornerRadius(Theme.defaultRadius)
-  }
-}
 
 struct ProfileRowView: View {
   let profile: Model.Profile

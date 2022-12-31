@@ -191,7 +191,7 @@ extension LensApi: DependencyKey {
             type: .profile
           )
         ),
-        cachePolicy: .returnCacheDataAndFetch,
+        cachePolicy: .returnCacheDataElseFetch,
         mapResult: { data in
           guard let profileSearchResult = data.search.asProfileSearchResult
           else { return QueryResult(data: []) }
@@ -390,7 +390,12 @@ extension LensApi {
       else if url.absoluteString == "https://lentil-beta" { return UIImage(named: "lentilBeta")!.jpegData(compressionQuality: 0.5)! }
       else { throw ApiError.requestFailed }
     },
-    searchProfiles: { _, _ in QueryResult(data: MockData.mockProfiles) },
+    searchProfiles: { _, query in
+      try await Task.sleep(for: .seconds(2))
+      if query.count == 3 { return QueryResult(data: [MockData.mockProfiles[0]]) }
+      else if query.count == 4 { return QueryResult(data: [MockData.mockProfiles[0], MockData.mockProfiles[1]]) }
+      else { return QueryResult(data: MockData.mockProfiles) }
+    },
     broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
     authenticate: { _, _ in },
     refreshAuthentication: {},

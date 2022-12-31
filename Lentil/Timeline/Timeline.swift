@@ -148,10 +148,10 @@ struct Timeline: ReducerProtocol {
     return updatedPosts
   }
   
+  enum CancelFetchPublicationsID {}
+  
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
-      enum CancelFetchPublicationsID {}
-      
       switch action {
         case .timelineAppeared:
           var effects: [EffectTask<Action>] = []
