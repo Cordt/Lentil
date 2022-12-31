@@ -13,11 +13,8 @@ struct Message: ReducerProtocol {
     var from: Conversation.State.From
   }
   
-  enum Action: Equatable {
-  }
-  
-  func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
-  }
+  enum Action: Equatable {}
+  func reduce(into state: inout State, action: Action) -> EffectTask<Action> {}
 }
 
 struct MessageView: View {
@@ -27,19 +24,6 @@ struct MessageView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       switch viewStore.from {
         case .user:
-          Text(viewStore.message.body)
-            .font(style: .body, color: Theme.Color.text)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(10)
-            .background {
-              Rectangle()
-                .fill(Theme.Color.white)
-                .cornerRadius(Theme.wideRadius, corner: .topLeft)
-                .cornerRadius(Theme.wideRadius, corner: .topRight)
-                .cornerRadius(Theme.wideRadius, corner: .bottomRight)
-            }
-          
-        case .peer:
           Text(viewStore.message.body)
             .font(style: .body, color: Theme.Color.white)
             .fixedSize(horizontal: false, vertical: true)
@@ -51,6 +35,19 @@ struct MessageView: View {
                 .cornerRadius(Theme.wideRadius, corner: .topRight)
                 .cornerRadius(Theme.wideRadius, corner: .bottomLeft)
             }
+          
+        case .peer:
+          Text(viewStore.message.body)
+            .font(style: .body, color: Theme.Color.text)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(10)
+            .background {
+              Rectangle()
+                .fill(Theme.Color.white)
+                .cornerRadius(Theme.wideRadius, corner: .topLeft)
+                .cornerRadius(Theme.wideRadius, corner: .topRight)
+                .cornerRadius(Theme.wideRadius, corner: .bottomRight)
+            }
       }
     }
   }
@@ -58,6 +55,7 @@ struct MessageView: View {
 
 #if DEBUG
 struct MessageView_Previews: PreviewProvider {
+  
   static var previews: some View {
     ZStack {
       Theme.lentilGradient()
@@ -90,6 +88,36 @@ struct MessageView_Previews: PreviewProvider {
               initialState: .init(
                 id: "abc-789",
                 message: MockData.messages[2],
+                from: .user
+              ),
+              reducer: Message()
+            )
+          )
+          MessageView(
+            store: .init(
+              initialState: .init(
+                id: "abc-def",
+                message: MockData.messages[3],
+                from: .user
+              ),
+              reducer: Message()
+            )
+          )
+          MessageView(
+            store: .init(
+              initialState: .init(
+                id: "abc-ghi",
+                message: MockData.messages[4],
+                from: .peer
+              ),
+              reducer: Message()
+            )
+          )
+          MessageView(
+            store: .init(
+              initialState: .init(
+                id: "abc-jkl",
+                message: MockData.messages[5],
                 from: .user
               ),
               reducer: Message()

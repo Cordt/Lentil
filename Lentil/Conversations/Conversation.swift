@@ -163,16 +163,16 @@ struct ConversationView: View {
                   ), content: { messageStore in
                     WithViewStore(messageStore, observe: { $0.from }) { messageViewStore in
                       HStack {
-                        if messageViewStore.state == .peer { Spacer() }
+                        if messageViewStore.state == .user { Spacer() }
                         
                         HStack {
-                          if messageViewStore.state == .peer { Spacer() }
-                          MessageView(store: messageStore)
                           if messageViewStore.state == .user { Spacer() }
+                          MessageView(store: messageStore)
+                          if messageViewStore.state == .peer { Spacer() }
                         }
                         .frame(width: geometry.size.width * 0.80)
                         
-                        if messageViewStore.state == .user { Spacer() }
+                        if messageViewStore.state == .peer { Spacer() }
                       }
                       .padding(.horizontal)
                       .padding(.vertical, 5)
@@ -277,7 +277,10 @@ struct ConversationView_Previews: PreviewProvider {
             messages: [
               .init(id: "abc-123-def", message: MockData.messages[0], from: .user),
               .init(id: "abc-456-def", message: MockData.messages[1], from: .peer),
-              .init(id: "abc-789-def", message: MockData.messages[2], from: .user)
+              .init(id: "abc-789-def", message: MockData.messages[2], from: .user),
+              .init(id: "abc-123-ghi", message: MockData.messages[3], from: .user),
+              .init(id: "abc-456-ghi", message: MockData.messages[4], from: .peer),
+              .init(id: "abc-789-ghi", message: MockData.messages[5], from: .user)
             ]
           ),
           reducer: Conversation()
@@ -313,15 +316,30 @@ extension MockData {
       XMTP.DecodedMessage(
         body: "Commerce on the Internet has come to rely almost exclusively on financial institutions serving as trusted third parties to process electronic payments.",
         senderAddress: "0x123456",
-        sent: Date().addingTimeInterval(-60 * 60 * 5)
+        sent: Date().addingTimeInterval(-60 * 60 * 25)
       ),
       XMTP.DecodedMessage(
         body: "While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the trust based model. Completely non-reversible transactions are not really possible, since financial institutions cannot avoid mediating disputes. ",
         senderAddress: "0xabc123def",
-        sent: Date().addingTimeInterval(-60 * 60)
+        sent: Date().addingTimeInterval(-60 * 60 * 5)
       ),
       XMTP.DecodedMessage(
         body: "The cost of mediation increases transaction costs, limiting the minimum practical transaction size and cutting off the possibility for small casual transactions, and there is a broader cost in the loss of ability to make non-reversible payments for nonreversible services.",
+        senderAddress: "0xabc123",
+        sent: Date().addingTimeInterval(-60 * 60)
+      ),
+      XMTP.DecodedMessage(
+        body: "Commerce on the Internet 🥳",
+        senderAddress: "0x123456",
+        sent: Date().addingTimeInterval(-60 * 30)
+      ),
+      XMTP.DecodedMessage(
+        body: "While the system works well enough 🫠",
+        senderAddress: "0xabc123def",
+        sent: Date().addingTimeInterval(-60 * 15)
+      ),
+      XMTP.DecodedMessage(
+        body: "The cost of mediation 😆",
         senderAddress: "0xabc123",
         sent: Date().addingTimeInterval(-60 * 5)
       )
