@@ -84,6 +84,9 @@ struct Conversation: ReducerProtocol {
           var currentDate = Date(timeIntervalSince1970: 0)
           state.messages = IdentifiedArrayOf(
             uniqueElements: messages
+              .sorted { lhs, rhs in
+                lhs.sent < rhs.sent
+              }
               .map {
                 let displayDate = !calendar.isDate(currentDate, inSameDayAs: $0.sent)
                 currentDate = $0.sent
