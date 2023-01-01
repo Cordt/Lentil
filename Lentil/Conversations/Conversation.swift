@@ -48,6 +48,8 @@ struct Conversation: ReducerProtocol {
     case didAppear
     case loadMessages
     case messagesResponse(TaskResult<[XMTP.DecodedMessage]>)
+    case streamMessages
+    case messageResponse(XMTP.DecodedMessage)
     case dismissView
     case updateMessageText(String)
     case sendMessageTapped
@@ -60,6 +62,7 @@ struct Conversation: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   @Dependency(\.xmtpConnector) var xmtpConnector
+  enum CancelMessageSreamID {}
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
@@ -95,6 +98,30 @@ struct Conversation: ReducerProtocol {
                 lhs.message.sent > rhs.message.sent
               }
           )
+          return Effect(value: .streamMessages)
+          
+        case .streamMessages:
+          return .run { [conversation = state.conversation] send in
+            for try await message in conversation.streamMessages() {
+              await send(.messageResponse(message))
+            }
+          }
+          .cancellable(id: CancelMessageSreamID.self)
+          
+        case .messageResponse(let message):
+          guard state.messages.first(where: {
+            $0.message.body == message.body
+            && $0.message.sent == message.sent
+            && $0.message.senderAddress == message.senderAddress
+          }) == nil
+          else { return .none }
+          
+          let messageState = Message.State(
+            id: self.uuid.callAsFunction().uuidString,
+            message: message,
+            from: message.senderAddress == state.userAddress ? .user : .peer
+          )
+          state.messages.insert(messageState, at: 0)
           return .none
           
         case .messagesResponse(.failure(let error)):
@@ -108,7 +135,7 @@ struct Conversation: ReducerProtocol {
               destination: .conversation(state.conversation, state.userAddress)
             )
           )
-          return .none
+          return .cancel(id: CancelMessageSreamID.self)
           
         case .updateMessageText(let message):
           state.messageText = message

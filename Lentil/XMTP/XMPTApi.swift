@@ -65,6 +65,10 @@ class XMTPConnector {
       return []
     }
   }
+  
+  static func streamMessages(for conversation: XMTPConversation) -> AsyncThrowingStream<XMTP.DecodedMessage, Error> {
+    return conversation.streamMessages()
+  }
 }
 
 extension XMTP.DecodedMessage: Equatable {
@@ -86,6 +90,7 @@ struct XMTPConnectorApi {
   var createConversation: (_ address: String) async throws -> XMTPConversation
   var loadConversations: () async throws -> [XMTPConversation]
   var loadMessages: (_ conversation: XMTPConversation) async -> [XMTP.DecodedMessage]
+  var streamMessages: (_ conversation: XMTPConversation) async -> AsyncThrowingStream<XMTP.DecodedMessage, Error>
 }
 
 extension XMTPConnectorApi: DependencyKey {
@@ -95,7 +100,8 @@ extension XMTPConnectorApi: DependencyKey {
       createClient: XMTPConnector.shared.createClient,
       createConversation: XMTPConnector.shared.createConversation,
       loadConversations: XMTPConnector.shared.loadConversations,
-      loadMessages: XMTPConnector.loadMessages
+      loadMessages: XMTPConnector.loadMessages,
+      streamMessages: XMTPConnector.streamMessages
     )
   }
   
@@ -106,7 +112,8 @@ extension XMTPConnectorApi: DependencyKey {
       createClient: { },
       createConversation: { _ in MockData.conversations[0] },
       loadConversations: { MockData.conversations },
-      loadMessages: { _ in MockData.messages }
+      loadMessages: { _ in MockData.messages },
+      streamMessages: { _ in AsyncThrowingStream(unfolding: { nil }) }
     )
   }
   
@@ -116,7 +123,8 @@ extension XMTPConnectorApi: DependencyKey {
       createClient: unimplemented("createClient"),
       createConversation: unimplemented("createConversation"),
       loadConversations: unimplemented("loadConversations"),
-      loadMessages: unimplemented("loadMessagess")
+      loadMessages: unimplemented("loadMessagess"),
+      streamMessages: unimplemented("streamMessages")
     )
   }
   #endif
