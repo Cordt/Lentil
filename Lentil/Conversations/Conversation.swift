@@ -193,21 +193,23 @@ struct ConversationView: View {
             }
             .mirrored()
             
-            VStack {
-              HStack {
+            VStack(spacing: 0) {
+              HStack(alignment: .top) {
                 TextField(
                   "Message",
                   text: viewStore.binding(
                     get: \.messageText,
                     send: Conversation.Action.updateMessageText
-                  )
+                  ),
+                  axis: .vertical
                 )
+                .submitLabel(.return)
+                .lineLimit(1...10)
                 .padding(10)
                 .background {
                   RoundedRectangle(cornerRadius: Theme.wideRadius)
                     .fill(Theme.Color.white)
                 }
-                .padding([.leading, .top, .bottom], 10)
               
                 SendButton(
                   isSending: viewStore.binding(
@@ -215,19 +217,23 @@ struct ConversationView: View {
                     send: Conversation.Action.updateSendingStatus
                   )
                 ) { viewStore.send(.sendMessageTapped) }
+                  .padding(.top, 5)
                 .padding(.trailing, 10)
                 .disabled(viewStore.messageText == "" || viewStore.isSending)
                 .opacity(viewStore.messageText == "" ? 0.75 : 1.0)
               }
-              
-              Spacer()
+              .padding([.leading, .top, .bottom], 10)
             }
             .background {
               Rectangle()
                 .fill(Theme.Color.greyShade1)
             }
-            .ignoresSafeArea()
-            .frame(height: 70)
+            
+            Rectangle()
+              .fill(Theme.Color.greyShade1)
+              .padding(.top, -10)
+              .ignoresSafeArea()
+              .frame(height: 0)
           }
           .task {
             await viewStore.send(.didAppear)
