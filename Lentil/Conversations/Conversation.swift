@@ -300,26 +300,6 @@ struct ConversationView_Previews: PreviewProvider {
 }
 
 extension MockData {
-  static var conversationStubs: [ConversationRow.MessageStub] {
-    [
-      ConversationRow.MessageStub(
-        stub: "Commerce on the Internet has come to rely almost exclusively on financial institutions serving",
-        lastMessage: Date().addingTimeInterval(-60 * 5),
-        from: .peer
-      ),
-      ConversationRow.MessageStub(
-        stub: "While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the",
-        lastMessage: Date().addingTimeInterval(-60 * 60 * 5),
-        from: .user
-      ),
-      ConversationRow.MessageStub(
-        stub: "The cost of mediation increases transaction costs, limiting the minimum practical transaction size and cutting off",
-        lastMessage: Date().addingTimeInterval(-60 * 60 * 24),
-        from: .user
-      ),
-    ]
-  }
-  
   static var messages: [XMTP.DecodedMessage] {
     [
       XMTP.DecodedMessage(

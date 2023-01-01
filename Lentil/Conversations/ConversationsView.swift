@@ -271,18 +271,15 @@ struct MessagesView_Previews: PreviewProvider {
               ConversationRow.State(
                 conversation: MockData.conversations[0],
                 userAddress: "0xabc123",
-                profile: MockData.mockProfiles[0],
-                lastMessage: MockData.conversationStubs[0]
+                profile: MockData.mockProfiles[0]
               ),
               ConversationRow.State(
                 conversation: MockData.conversations[1],
-                userAddress: "0xabc123",
-                lastMessage: MockData.conversationStubs[1]
+                userAddress: "0xabc123"
               ),
               ConversationRow.State(
                 conversation: MockData.conversations[2],
-                userAddress: "0xabc123",
-                lastMessage: MockData.conversationStubs[2]
+                userAddress: "0xabc123"
               ),
             ]
           ),

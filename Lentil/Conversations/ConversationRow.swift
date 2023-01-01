@@ -7,12 +7,6 @@ import XMTP
 
 
 struct ConversationRow: ReducerProtocol {
-  struct MessageStub: Equatable {
-    var stub: String
-    var lastMessage: Date
-    var from: Lentil.Conversation.State.From
-  }
-  
   struct State: Equatable, Identifiable {
     var id: String { self.conversation.topic }
     
@@ -20,14 +14,12 @@ struct ConversationRow: ReducerProtocol {
     var userAddress: String
     var profile: Model.Profile?
     var profilePicture: LentilImage.State?
-    var lastMessage: MessageStub?
     
-    init(conversation: XMTPConversation, userAddress: String, profile: Model.Profile? = nil, lastMessage: MessageStub? = nil) {
+    init(conversation: XMTPConversation, userAddress: String, profile: Model.Profile? = nil) {
       self.conversation = conversation
       self.userAddress = userAddress
       self.profile = profile
       self.profilePicture = nil
-      self.lastMessage = lastMessage
       if let profilePictureUrl = profile?.profilePictureUrl {
         self.profilePicture = .init(
           imageUrl: profilePictureUrl,
@@ -132,33 +124,6 @@ struct ConversationRowView: View {
               Text(viewStore.conversation.peerAddress)
                 .font(style: .bodyBold)
             }
-            
-            if let lastMessage = viewStore.lastMessage {
-              Spacer()
-              
-              Text(age(lastMessage.lastMessage))
-                .font(style: .annotation, color: Theme.Color.greyShade3)
-            }
-          }
-          
-          if let lastMessage = viewStore.lastMessage {
-            switch lastMessage.from {
-              case .user:
-                VStack(alignment: .leading) {
-                  Text("You:")
-                    .font(style: .annotation)
-                  Text(lastMessage.stub)
-                    .font(style: .annotation, color: Theme.Color.greyShade3)
-                }
-              case .peer:
-                Text(lastMessage.stub)
-                  .font(style: .annotation, color: Theme.Color.greyShade3)
-            }
-          }
-          else {
-            Text("No messages in this conversation yet")
-              .font(style: .annotation, color: Theme.Color.greyShade3)
-              .italic()
           }
         }
         .frame(height: 50)
@@ -180,8 +145,7 @@ struct ConversationRowView_Previews: PreviewProvider {
           initialState: .init(
             conversation: MockData.conversations[0],
             userAddress: "0xabc123",
-            profile: MockData.mockProfiles[0],
-            lastMessage: MockData.conversationStubs[0]
+            profile: MockData.mockProfiles[0]
           ),
           reducer: ConversationRow()
         )
@@ -200,8 +164,7 @@ struct ConversationRowView_Previews: PreviewProvider {
         store: .init(
           initialState: .init(
             conversation: MockData.conversations[2],
-            userAddress: "0xabc123",
-            lastMessage: MockData.conversationStubs[2]
+            userAddress: "0xabc123"
           ),
           reducer: ConversationRow()
         )
