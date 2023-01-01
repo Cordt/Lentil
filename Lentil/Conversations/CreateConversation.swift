@@ -12,6 +12,7 @@ struct CreateConversation: ReducerProtocol {
     var searchText: String = ""
     var searchInFlight: Bool = false
     var searchResult: IdentifiedArrayOf<Model.Profile> = []
+    var toast: Toast? = nil
   }
   
   enum Action: Equatable {
@@ -21,6 +22,8 @@ struct CreateConversation: ReducerProtocol {
     case searchedProfilesResult(TaskResult<QueryResult<[Model.Profile]>>)
     case rowTapped(id: Model.Profile.ID)
     case dismissAndOpenConversation(_ conversation: XMTPConversation, _ userAddress: String)
+    case failedToStartConversation
+    case updateToast(Toast?)
   }
   
   @Dependency(\.cache) var cache
@@ -61,7 +64,6 @@ struct CreateConversation: ReducerProtocol {
           
         case .searchedProfilesResult(.success(let result)):
           state.searchInFlight = false
-          
           guard let address = try? self.xmtpConnector.address()
           else { return .none }
           
@@ -81,20 +83,31 @@ struct CreateConversation: ReducerProtocol {
           guard let profile = state.searchResult[id: id]
           else { return .none }
           
-          state.searchResult = []
-          state.searchText = ""
           return .run { send in
             let conversation = try await self.xmtpConnector.createConversation(profile.ownedBy)
             let address = try self.xmtpConnector.address()
             self.cache.updateOrAppendProfile(profile)
             await send(.dismissAndOpenConversation(conversation, address))
           }
-          catch: { error, _ in
+          catch: { error, send in
             log("Failed to create conversation with \(profile.ownedBy)", level: .error, error: error)
+            await send(.failedToStartConversation)
           }
           
         case .dismissAndOpenConversation:
-          // Handled by parent
+          state.searchResult = []
+          state.searchText = ""
+          return .none
+          
+        case .failedToStartConversation:
+          state.toast = Toast(
+            message: "This contact did not join the XMTP network yet.",
+            isErrorMessage: true
+          )
+          return .none
+          
+        case .updateToast(let toast):
+          state.toast = toast
           return .none
       }
     }
@@ -164,6 +177,12 @@ struct CreateConversationView: View {
         
         Spacer()
       }
+      .toastView(
+        toast: viewStore.binding(
+          get: \.toast,
+          send: CreateConversation.Action.updateToast
+        )
+      )
     }
   }
 }

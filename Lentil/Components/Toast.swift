@@ -8,8 +8,11 @@ struct Toast: Equatable {
   enum Duration {
     case short, medium, long
   }
+  
   var message: String
   var duration: Duration = .short
+  var isErrorMessage: Bool = false
+  
   fileprivate var durationTime: Double {
     switch self.duration {
       case .short:  return 2.0
@@ -21,13 +24,14 @@ struct Toast: Equatable {
 
 struct ToastView: View {
   let message: String
+  let isErrorMessage: Bool
   
   var body: some View {
     Text(self.message)
-      .font(style: .body, color: Theme.Color.white)
+      .font(style: self.isErrorMessage ? .bodyBold : .body, color: Theme.Color.white)
       .foregroundColor(Color.black.opacity(0.6))
       .padding()
-      .background(Theme.Color.greyShade3)
+      .background(self.isErrorMessage ? Theme.Color.systemRed.opacity(0.85) : Theme.Color.greyShade3)
       .cornerRadius(8)
       .shadow(color: Theme.Color.shadow, radius: 5, x: 0, y: 2)
       .padding(.horizontal, 20)
@@ -45,7 +49,8 @@ struct ToastModifier: ViewModifier {
         ZStack {
           mainToastView()
             .offset(y: -30)
-        }.animation(.spring(), value: toast)
+        }
+        .animation(.spring(), value: toast)
       )
       .onChange(of: toast) { value in
         showToast()
@@ -56,7 +61,7 @@ struct ToastModifier: ViewModifier {
     if let toast {
       VStack {
         Spacer()
-        ToastView(message: toast.message)
+        ToastView(message: toast.message, isErrorMessage: toast.isErrorMessage)
       }
       .transition(.move(edge: .bottom))
     }
@@ -100,14 +105,26 @@ extension View {
 #if DEBUG
 struct ToastView_Previews: PreviewProvider {
   static var previews: some View {
-    Theme.Color.primary
-      .ignoresSafeArea()
-      .toastView(
-        toast: .constant(
-          Toast(
-            message: "Default Profile could not be loaded. Did you claim your Lens Handle with this wallet?")
+    Group {
+      Theme.Color.primary
+        .ignoresSafeArea()
+        .toastView(
+          toast: .constant(
+            Toast(
+              message: "Default Profile could not be loaded. Did you claim your Lens Handle with this wallet?")
+          )
         )
-      )
+      Theme.Color.primary
+        .ignoresSafeArea()
+        .toastView(
+          toast: .constant(
+            Toast(
+              message: "This contact did not join the XMTP network yet.",
+              isErrorMessage: true
+            )
+          )
+        )
+    }
   }
 }
 #endif

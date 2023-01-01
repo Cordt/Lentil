@@ -42,7 +42,7 @@ extension MockData {
       XMTPConversation(
         peerAddress: "0x123abcdef",
         send: { _ in },
-        topic: "TOPIC",
+        topic: "TOPIC_abc",
         streamMessages: { AsyncThrowingStream(unfolding: { nil })},
         messages: { MockData.messages },
         hash: { _ in }
@@ -50,7 +50,7 @@ extension MockData {
       XMTPConversation(
         peerAddress: "0xabc123def",
         send: { _ in },
-        topic: "TOPIC",
+        topic: "TOPIC_def",
         streamMessages: { AsyncThrowingStream(unfolding: { nil })},
         messages: { MockData.messages },
         hash: { _ in }
@@ -58,7 +58,7 @@ extension MockData {
       XMTPConversation(
         peerAddress: "0x123abc456",
         send: { _ in },
-        topic: "TOPIC",
+        topic: "TOPIC_ghi",
         streamMessages: { AsyncThrowingStream(unfolding: { nil })},
         messages: { MockData.messages },
         hash: { _ in }

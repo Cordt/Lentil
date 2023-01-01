@@ -235,7 +235,8 @@ struct ConversationsView: View {
           )) { store in
             CreateConversationView(store: store)
           }
-      })
+        }
+      )
       .toolbar {
         ToolbarItem(placement: .principal) {
           Text("Messages")
@@ -261,7 +262,7 @@ struct ConversationsView: View {
 }
 
 #if DEBUG
-struct MessagesView_Previews: PreviewProvider {
+struct ConversationsView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationStack {
       ConversationsView(
