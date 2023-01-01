@@ -137,7 +137,7 @@ class WalletConnector {
 }
 
 fileprivate final class WalletConnect {
-  let bridgeUrl = URL(string: "https://safe-walletconnect.safe.global/")!
+  let bridgeUrl = URL(string: "https://bridge.walletconnect.org/")!
   let sessionKey = "walletconnect-session"
   
   var walletEvents: WalletEvents = WalletEvents()

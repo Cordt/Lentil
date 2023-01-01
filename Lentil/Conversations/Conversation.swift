@@ -77,13 +77,18 @@ struct Conversation: ReducerProtocol {
           }
           
         case .messagesResponse(.success(let messages)):
+          let calendar = Calendar.current
+          var currentDate = Date(timeIntervalSince1970: 0)
           state.messages = IdentifiedArrayOf(
             uniqueElements: messages
               .map {
-                Message.State(
+                let displayDate = !calendar.isDate(currentDate, inSameDayAs: $0.sent)
+                currentDate = $0.sent
+                return Message.State(
                   id: self.uuid.callAsFunction().uuidString,
                   message: $0,
-                  from: $0.senderAddress == state.userAddress ? .user : .peer
+                  from: $0.senderAddress == state.userAddress ? .user : .peer,
+                  displayDate: displayDate
                 )
               }
               .sorted { lhs, rhs in
@@ -137,7 +142,7 @@ struct Conversation: ReducerProtocol {
     }
     .ifLet(\.profilePicture, action: /Action.profilePicture) {
       LentilImage()
-    }._printChanges()
+    }
   }
 }
 
@@ -162,21 +167,24 @@ struct ConversationView: View {
                     action: Conversation.Action.message
                   ), content: { messageStore in
                     WithViewStore(messageStore, observe: { $0.from }) { messageViewStore in
-                      HStack {
-                        if messageViewStore.state == .user { Spacer() }
-                        
+                      VStack {
                         HStack {
                           if messageViewStore.state == .user { Spacer() }
-                          MessageView(store: messageStore)
+                          HStack {
+                            if messageViewStore.state == .user { Spacer() }
+                            MessageView(store: messageStore)
+                            if messageViewStore.state == .peer { Spacer() }
+                          }
+                          .frame(width: geometry.size.width * 0.80)
                           if messageViewStore.state == .peer { Spacer() }
                         }
-                        .frame(width: geometry.size.width * 0.80)
+                        .padding(.horizontal)
+                        .padding(.vertical, 5)
+                        .mirrored()
                         
-                        if messageViewStore.state == .peer { Spacer() }
+                        MessageDateView(store: messageStore)
+                          .mirrored()
                       }
-                      .padding(.horizontal)
-                      .padding(.vertical, 5)
-                      .mirrored()
                     }
                   }
                 )
@@ -316,17 +324,17 @@ extension MockData {
       XMTP.DecodedMessage(
         body: "Commerce on the Internet has come to rely almost exclusively on financial institutions serving as trusted third parties to process electronic payments.",
         senderAddress: "0x123456",
-        sent: Date().addingTimeInterval(-60 * 60 * 25)
+        sent: Date().addingTimeInterval(-60 * 60 * 24 * 5)
       ),
       XMTP.DecodedMessage(
         body: "While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the trust based model. Completely non-reversible transactions are not really possible, since financial institutions cannot avoid mediating disputes. ",
         senderAddress: "0xabc123def",
-        sent: Date().addingTimeInterval(-60 * 60 * 5)
+        sent: Date().addingTimeInterval(-60 * 60 * 24 * 2)
       ),
       XMTP.DecodedMessage(
         body: "The cost of mediation increases transaction costs, limiting the minimum practical transaction size and cutting off the possibility for small casual transactions, and there is a broader cost in the loss of ability to make non-reversible payments for nonreversible services.",
         senderAddress: "0xabc123",
-        sent: Date().addingTimeInterval(-60 * 60)
+        sent: Date().addingTimeInterval(-60 * 60 * 24)
       ),
       XMTP.DecodedMessage(
         body: "Commerce on the Internet 🥳",

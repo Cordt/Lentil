@@ -14,7 +14,7 @@ struct ConversationRow: ReducerProtocol {
   }
   
   struct State: Equatable, Identifiable {
-    var id: String { self.conversation.peerAddress }
+    var id: String { self.conversation.topic }
     
     var conversation: XMTPConversation
     var userAddress: String

@@ -11,14 +11,51 @@ struct Message: ReducerProtocol {
     var id: String
     var message: XMTP.DecodedMessage
     var from: Conversation.State.From
+    var displayDate: Bool = false
   }
   
   enum Action: Equatable {}
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {}
 }
 
+struct MessageDateView: View {
+  let store: StoreOf<Message>
+  
+  func label(for date: Date) -> String {
+    let calendar = Calendar.current
+    if calendar.isDateInToday(date) {
+      return "Today"
+    }
+    else if calendar.isDateInYesterday(date) {
+      return "Yesterday"
+    }
+    else {
+      let formatter = DateFormatter()
+      formatter.dateFormat = "E, d MMM yyyy"
+      return formatter.string(from: date)
+    }
+  }
+  
+  var body: some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      if viewStore.displayDate {
+        Text(self.label(for: viewStore.message.sent))
+          .font(style: .bodyBold, color: Theme.Color.text)
+          .padding(.horizontal, 30)
+          .padding(.vertical, 4)
+          .background {
+            RoundedRectangle(cornerRadius: Theme.wideRadius)
+              .fill(Theme.Color.greyShade2.opacity(0.5))
+          }
+          .padding(.top, 20)
+          .padding(.top, 10)
+      }
+    }
+  }
+}
+
 struct MessageView: View {
-  let store: Store<Message.State, Message.Action>
+  let store: StoreOf<Message>
   
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -63,12 +100,24 @@ struct MessageView_Previews: PreviewProvider {
       
       ScrollView {
         LazyVStack {
+          MessageDateView(
+            store: .init(
+              initialState: .init(
+                id: "abc-123",
+                message: MockData.messages[0],
+                from: .user,
+                displayDate: true
+              ),
+              reducer: Message()
+            )
+          )
           MessageView(
             store: .init(
               initialState: .init(
                 id: "abc-123",
                 message: MockData.messages[0],
-                from: .user
+                from: .user,
+                displayDate: true
               ),
               reducer: Message()
             )
@@ -98,7 +147,8 @@ struct MessageView_Previews: PreviewProvider {
               initialState: .init(
                 id: "abc-def",
                 message: MockData.messages[3],
-                from: .user
+                from: .user,
+                displayDate: true
               ),
               reducer: Message()
             )
