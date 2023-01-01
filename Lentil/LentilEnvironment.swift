@@ -2,11 +2,14 @@
 // Created by Laura and Cordt Zermin
 
 import Foundation
+import XMTP
 
 class LentilEnvironment {
   let logLevel: LogLevel
   let baseUrl: String
   let origin: String
+  
+  let xmtpEnvironment: XMTPEnvironment
   
   let infuraUrl: String
   let infuraProjectId: String
@@ -32,6 +35,12 @@ class LentilEnvironment {
     self.logLevel = LogLevel(rawValue: value(for: "LOG_LEVEL").lowercased())!
     self.baseUrl = value(for: "BASE_URL", addingHttps: true)
     self.origin = value(for: "ORIGIN", addingHttps: true)
+    
+    self.xmtpEnvironment = {
+      let env = value(for: "XMTP_ENVIRONMENT")
+      if env == "production" { return .production }
+      else { return .dev }
+    }()
     
     self.infuraUrl = value(for: "INFURA_URL", addingHttps: true)
     self.infuraProjectId = value(for: "INFURA_PROJECT_ID")

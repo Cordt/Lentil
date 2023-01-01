@@ -5,7 +5,6 @@ import IdentifiedCollections
 import Dependencies
 import Foundation
 import SwiftUI
-import XMTP
 
 
 struct NavigationApi {

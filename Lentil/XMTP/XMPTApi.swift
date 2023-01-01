@@ -13,7 +13,7 @@ class XMTPConnector {
     case clientNotConnected
   }
   
-  fileprivate var client: XMTP.Client?
+  fileprivate var client: XMTPClient?
   static let shared: XMTPConnector = .init()
   
   private init() {}
@@ -22,12 +22,12 @@ class XMTPConnector {
     guard let client = self.client
     else { throw XMTPConnectorError.clientNotConnected }
     
-    return client.address
+    return client.address()
   }
   
   func createClient() async -> Void {
     do {
-      self.client = try await XMTP.Client.create(account: WalletConnector.shared)
+      self.client = try await XMTPClient(account: WalletConnector.shared)
     }
     catch let error {
       log("Failed to create client for XMTP", level: .error, error: error)
@@ -38,8 +38,7 @@ class XMTPConnector {
     guard let client = self.client
     else { throw XMTPConnectorError.clientNotConnected }
     
-    let conversation = try await client.conversations.newConversation(with: address)
-    return XMTPConversation.from(conversation)
+    return try await client.newConversation(address)
   }
   
   func loadConversations() async throws -> [XMTPConversation] {
@@ -47,12 +46,12 @@ class XMTPConnector {
     else { throw XMTPConnectorError.clientNotConnected }
     
     do {
-      return try await client.conversations
+      return try await client.conversations()
         .list()
         .map(XMTPConversation.from(_:))
       
     } catch let error {
-      log("Failed to load conversations for \(client.address)", level: .error, error: error)
+      log("Failed to load conversations for \(client.address())", level: .error, error: error)
       return []
     }
   }

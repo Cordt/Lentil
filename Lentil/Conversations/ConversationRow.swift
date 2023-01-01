@@ -3,7 +3,6 @@
 
 import ComposableArchitecture
 import SwiftUI
-import XMTP
 
 
 struct ConversationRow: ReducerProtocol {

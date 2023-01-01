@@ -8,6 +8,8 @@
 BASE_URL = api.lens.dev
 ORIGIN = lentilapp.xyz
 
+XMTP_ENVIRONMENT = production
+
 INFURA_URL = ipfs.infura.io:5001/api/v0/add
 
 LOG_LEVEL = ERROR

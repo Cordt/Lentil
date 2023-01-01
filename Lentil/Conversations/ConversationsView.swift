@@ -4,7 +4,6 @@
 import ComposableArchitecture
 import IdentifiedCollections
 import SwiftUI
-import XMTP
 
 
 struct Conversations: ReducerProtocol {
