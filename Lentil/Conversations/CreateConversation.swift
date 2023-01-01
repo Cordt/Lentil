@@ -60,7 +60,15 @@ struct CreateConversation: ReducerProtocol {
           
         case .searchedProfilesResult(.success(let result)):
           state.searchInFlight = false
-          state.searchResult = IdentifiedArrayOf(uniqueElements: result.data)
+          
+          guard let address = try? self.xmtpConnector.address()
+          else { return .none }
+          
+          state.searchResult = IdentifiedArrayOf(
+            uniqueElements: result
+              .data
+              .filter { $0.ownedBy != address }
+          )
           return .none
           
         case .searchedProfilesResult(.failure(let error)):
@@ -80,14 +88,14 @@ struct CreateConversation: ReducerProtocol {
             await send(.dismissAndOpenConversation(conversation, address))
           }
           catch: { error, _ in
-            log("Failed to create conversation", level: .error, error: error)
+            log("Failed to create conversation with \(profile.ownedBy)", level: .error, error: error)
           }
           
         case .dismissAndOpenConversation:
           // Handled by parent
           return .none
       }
-    }._printChanges()
+    }
   }
 }
 
