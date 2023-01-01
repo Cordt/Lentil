@@ -28,7 +28,6 @@ struct ConversationRow: ReducerProtocol {
       self.profile = profile
       self.profilePicture = nil
       self.lastMessage = lastMessage
-      
       if let profilePictureUrl = profile?.profilePictureUrl {
         self.profilePicture = .init(
           imageUrl: profilePictureUrl,
@@ -39,16 +38,44 @@ struct ConversationRow: ReducerProtocol {
   }
   
   enum Action: Equatable {
+    case didAppear
+    case profilesResponse(TaskResult<QueryResult<[Model.Profile]>>)
     case rowTapped
     case profilePicture(LentilImage.Action)
   }
   
+  @Dependency(\.cache) var cache
+  @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {
+        case .didAppear:
+          if state.profile == nil {
+            return .task { [peerAddress = state.conversation.peerAddress] in
+              await .profilesResponse(
+                TaskResult {
+                  try await self.lensApi.profiles(peerAddress)
+                }
+              )
+            }
+          }
+          else { return .none }
+          
+        case .profilesResponse(.success(let result)):
+          guard let profile = result.data.first
+          else { return .none }
+          
+          self.cache.updateOrAppendProfile(profile)
+          state.profile = profile
+          return .none
+          
+        case .profilesResponse(.failure(let error)):
+          log("Failed to fetch profiles for conversations list", level: .error, error: error)
+          return .none
+          
         case .rowTapped:
           navigationApi.append(
             DestinationPath(
@@ -69,7 +96,7 @@ struct ConversationRow: ReducerProtocol {
 }
 
 struct ConversationRowView: View {
-  let store: Store<ConversationRow.State, ConversationRow.Action>
+  let store: StoreOf<ConversationRow>
   
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -139,6 +166,7 @@ struct ConversationRowView: View {
         Spacer()
       }
       .onTapGesture { viewStore.send(.rowTapped) }
+      .onAppear { viewStore.send(.didAppear) }
     }
   }
 }

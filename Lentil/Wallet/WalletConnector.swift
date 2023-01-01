@@ -109,8 +109,6 @@ class WalletConnector {
     Task { @MainActor in
       self.open(url: deepLink)
     }
-    
-    try await Task.sleep(for: .seconds(1))
   }
   
   private func deepLink(for url: URL) -> URL? {

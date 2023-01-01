@@ -97,7 +97,8 @@ struct Conversation: ReducerProtocol {
           )
           return .none
           
-        case .messagesResponse(.failure):
+        case .messagesResponse(.failure(let error)):
+          log("Failed to load messages", level: .error, error: error)
           return .none
           
         case .dismissView:

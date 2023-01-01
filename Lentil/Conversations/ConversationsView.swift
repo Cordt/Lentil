@@ -37,6 +37,7 @@ struct Conversations: ReducerProtocol {
     case conversation(id: ConversationRow.State.ID, ConversationRow.Action)
   }
   
+  @Dependency(\.cache) var cache
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.xmtpConnector) var xmtpConnector
@@ -116,14 +117,16 @@ struct Conversations: ReducerProtocol {
           else { return .none }
           
           let conversationRows = conversations.map {
-            ConversationRow.State(conversation: $0, userAddress: address)
+            let profile = self.cache.profileByAddress($0.peerAddress)
+            return ConversationRow.State(conversation: $0, userAddress: address, profile: profile)
           }
           
           state.conversations = IdentifiedArrayOf(uniqueElements: conversationRows)
           return .none
           
-        case .conversationsResult(.failure):
-            return .none
+        case .conversationsResult(.failure(let error)):
+          log("Failed to load conversations", level: .error, error: error)
+          return .none
           
         case .connectTapped:
           self.walletConnect.connect()

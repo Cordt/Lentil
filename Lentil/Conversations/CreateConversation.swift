@@ -23,6 +23,7 @@ struct CreateConversation: ReducerProtocol {
     case dismissAndOpenConversation(_ conversation: XMTPConversation, _ userAddress: String)
   }
   
+  @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.xmtpConnector) var xmtpConnector
   enum CancelSearchProfilesID {}
@@ -85,6 +86,7 @@ struct CreateConversation: ReducerProtocol {
           return .run { send in
             let conversation = try await self.xmtpConnector.createConversation(profile.ownedBy)
             let address = try self.xmtpConnector.address()
+            self.cache.updateOrAppendProfile(profile)
             await send(.dismissAndOpenConversation(conversation, address))
           }
           catch: { error, _ in
