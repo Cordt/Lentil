@@ -234,7 +234,7 @@ struct ConversationView: View {
                   axis: .vertical
                 )
                 .submitLabel(.return)
-                .lineLimit(1...10)
+                .lineLimit(1...5)
                 .padding(10)
                 .background {
                   RoundedRectangle(cornerRadius: Theme.wideRadius)
