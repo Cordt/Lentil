@@ -94,22 +94,39 @@ struct PostView: View {
         if viewStore.typename != .comment { Divider() }
       }
       .padding(viewStore.typename != .comment ? [.leading, .trailing, .top] : [])
-      .confirmationDialog(
-        title: { Text("Publication by @\($0.profileHandle)") },
-        titleVisibility: .visible,
-        unwrapping: viewStore.binding(
-          get: \.post.mirrorConfirmationDialogue,
-          send: { Post.Action.post(action: .mirrorConfirmationSet($0)) }
-        ),
-        actions: { confirmationState in
-          Button { viewStore.send(.post(action: confirmationState.action)) } label: {
-            Text("Mirror")
-          }
-        },
-        message: { _ in Text("Do you want to mirror this publication?") }
-      )
+      .mirrorConfirmationDialogue(store: self.store)
       .onAppear { viewStore.send(.didAppear) }
       .id(viewStore.id)
+    }
+  }
+}
+
+extension View {
+  func mirrorConfirmationDialogue(store: StoreOf<Post>) -> some View {
+    self.modifier(MirrorConfirmationDialogue(store: store))
+  }
+}
+
+struct MirrorConfirmationDialogue: ViewModifier {
+  let store: StoreOf<Post>
+  
+  func body(content: Content) -> some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      content
+        .confirmationDialog(
+          title: { Text("Publication by @\($0.profileHandle)") },
+          titleVisibility: .visible,
+          unwrapping: viewStore.binding(
+            get: \.post.mirrorConfirmationDialogue,
+            send: { Post.Action.post(action: .mirrorConfirmationSet($0)) }
+          ),
+          actions: { confirmationState in
+            Button { viewStore.send(.post(action: confirmationState.action)) } label: {
+              Text("Mirror")
+            }
+          },
+          message: { _ in Text("Do you want to mirror this publication?") }
+        )
     }
   }
 }

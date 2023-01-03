@@ -55,6 +55,7 @@ struct PostDetailView: View {
         .padding()
       }
       .padding(.top, 1)
+      .mirrorConfirmationDialogue(store: self.store)
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           BackButton { viewStore.send(.dismissView) }
