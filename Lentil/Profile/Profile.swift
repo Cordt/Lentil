@@ -8,8 +8,8 @@ import SwiftUI
 
 struct Profile: ReducerProtocol {
   struct State: Equatable, Identifiable {
+    var id: String { self.profile.id }
     var navigationId: String
-    var id: String { self.navigationId }
     
     var profile: Model.Profile
     var posts: IdentifiedArrayOf<Post.State>
@@ -81,7 +81,7 @@ struct Profile: ReducerProtocol {
         case .dismissView:
           self.navigationApi.remove(
             DestinationPath(
-              navigationId: state.id,
+              navigationId: state.navigationId,
               destination: .profile(state.profile.id)
             )
           )

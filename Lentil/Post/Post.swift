@@ -21,8 +21,8 @@ struct Post: ReducerProtocol {
       }
     }
     
+    var id: String { self.post.id }
     var navigationId: String
-    var id: String { self.navigationId }
     var post: Publication.State
     var typename: Typename
     var comments: IdentifiedArrayOf<Post.State> = []
@@ -69,7 +69,7 @@ struct Post: ReducerProtocol {
         case .dismissView:
           self.navigationApi.remove(
             DestinationPath(
-              navigationId: state.id,
+              navigationId: state.navigationId,
               destination: .publication(state.post.id)
             )
           )

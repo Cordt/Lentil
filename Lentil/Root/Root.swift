@@ -254,12 +254,12 @@ struct Root: ReducerProtocol {
           
         case .removePath(let destinationPath):
           switch destinationPath.destination {
-            case .publication:
-              state.posts.remove(id: destinationPath.navigationId)
-              state.comments.remove(id: destinationPath.navigationId)
+            case .publication(let elementId):
+              state.posts.remove(id: elementId)
+              state.comments.remove(id: elementId)
               
-            case .profile:
-              state.profiles.remove(id: destinationPath.navigationId)
+            case .profile(let elementId):
+              state.profiles.remove(id: elementId)
               
             case .createPublication:
               state.createPublication = nil

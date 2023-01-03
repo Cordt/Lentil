@@ -22,9 +22,9 @@ struct DestinationPath: Identifiable, Equatable, Hashable {
     case createPublication(_ reason: CreatePublication.State.Reason)
     case imageDetail(_ imageUrl: URL)
   }
+  var id: String { self.navigationId }
   var navigationId: String
   var destination: Destination
-  var id: String { self.navigationId }
 }
 
 fileprivate class Navigation {

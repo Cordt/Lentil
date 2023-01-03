@@ -42,38 +42,38 @@ struct RootView: View {
           .toolbarBackground(.visible, for: .navigationBar)
           .navigationDestination(for: DestinationPath.self) { destinationPath in
             switch destinationPath.destination {
-              case .publication:
-                if viewStore.posts[id: destinationPath.navigationId] != nil {
+              case .publication(let elementId):
+                if viewStore.posts[id: elementId] != nil {
                   let store: Store<Post.State?, Post.Action> = self.store.scope(
                     state: {
-                      guard let postState = $0.posts[id: destinationPath.navigationId]
+                      guard let postState = $0.posts[id: elementId]
                       else { return nil }
                       return postState
                     },
-                    action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
+                    action: { Root.Action.post(id: elementId, action: $0) }
                   )
                   IfLetStore(store, then: PostDetailView.init)
                 }
-                else if viewStore.comments[id: destinationPath.navigationId] != nil {
+                else if viewStore.comments[id: elementId] != nil {
                   let store: Store<Post.State?, Post.Action> = self.store.scope(
                     state: {
-                      guard let commentState = $0.comments[id: destinationPath.navigationId]
+                      guard let commentState = $0.comments[id: elementId]
                       else { return nil }
                       return commentState
                     },
-                    action: { Root.Action.comment(id: destinationPath.navigationId, action: $0) }
+                    action: { Root.Action.comment(id: elementId, action: $0) }
                   )
                   IfLetStore(store, then: PostDetailView.init)
                 }
                 
-              case .profile:
+              case .profile(let elementId):
                 let store: Store<Profile.State?, Profile.Action> = self.store.scope(
                   state: {
-                    guard let profileState = $0.profiles[id: destinationPath.navigationId]
+                    guard let profileState = $0.profiles[id: elementId]
                     else { return nil }
                     return profileState
                   },
-                  action: { Root.Action.profile(id: destinationPath.navigationId, action: $0) }
+                  action: { Root.Action.profile(id: elementId, action: $0) }
                 )
                 IfLetStore(store, then: ProfileView.init)
                 
