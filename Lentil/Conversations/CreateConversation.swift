@@ -102,6 +102,7 @@ struct CreateConversation: ReducerProtocol {
         case .failedToStartConversation:
           state.toast = Toast(
             message: "This contact did not join the XMTP network yet.",
+            duration: .long,
             isErrorMessage: true
           )
           return .none
