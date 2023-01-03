@@ -23,7 +23,7 @@ final class RootTests: XCTestCase {
     store.dependencies.profileStorageApi.load = { UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
     store.dependencies.lensApi.verify = {
       try await clock.sleep(for: .seconds(1))
-      return PaginatedResult(data: true)
+      return true
     }
     store.dependencies.withRandomNumberGenerator = WithRandomNumberGenerator(PredictableNumberGenerator())
     store.dependencies.continuousClock = clock
@@ -32,7 +32,7 @@ final class RootTests: XCTestCase {
     await store.receive(.startTimer)
     await store.receive(.checkAuthenticationStatus)
     await clock.advance(by: .seconds(1))
-    await store.receive(.refreshTokenResponse(PaginatedResult(data: true)))
+    await store.receive(.refreshTokenResponse(true))
     await clock.advance(by: .seconds(0.5))
     await store.receive(.switchProgressLabel) {
       $0.loadingText = Root.loadingTexts[1]
@@ -57,7 +57,7 @@ final class RootTests: XCTestCase {
     store.dependencies.profileStorageApi.load = { UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
     store.dependencies.lensApi.verify = {
       try await clock.sleep(for: .seconds(1))
-      return PaginatedResult(data: false)
+      return false
     }
     store.dependencies.lensApi.refreshAuthentication = { /* Success */ }
     store.dependencies.withRandomNumberGenerator = WithRandomNumberGenerator(PredictableNumberGenerator())
@@ -67,7 +67,7 @@ final class RootTests: XCTestCase {
     await store.receive(.startTimer)
     await store.receive(.checkAuthenticationStatus)
     await clock.advance(by: .seconds(1))
-    await store.receive(.refreshTokenResponse(PaginatedResult(data: false)))
+    await store.receive(.refreshTokenResponse(false))
     await clock.advance(by: .seconds(0.5))
     await store.receive(.switchProgressLabel) {
       $0.loadingText = Root.loadingTexts[1]
@@ -99,7 +99,7 @@ final class RootTests: XCTestCase {
     store.dependencies.cache.clearCache = { cacheCleared = true }
     store.dependencies.lensApi.verify = {
       try await clock.sleep(for: .seconds(1))
-      return PaginatedResult(data: false)
+      return false
     }
     store.dependencies.lensApi.refreshAuthentication = { /* Failure */ throw ApiError.unauthenticated }
     store.dependencies.profileStorageApi.load = { UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
@@ -109,7 +109,7 @@ final class RootTests: XCTestCase {
     await store.receive(.startTimer)
     await store.receive(.checkAuthenticationStatus)
     await clock.advance(by: .seconds(1))
-    await store.receive(.refreshTokenResponse(PaginatedResult(data: false)))
+    await store.receive(.refreshTokenResponse(false))
     await clock.advance(by: .seconds(0.5))
     await store.receive(.switchProgressLabel) {
       $0.loadingText = Root.loadingTexts[1]
@@ -144,7 +144,7 @@ final class RootTests: XCTestCase {
     store.dependencies.uuid = .incrementing
     
     store.dependencies.cache.updateOrAppendPublication = { _ in }
-    store.dependencies.lensApi.publication = { _ in PaginatedResult(data: publication) }
+    store.dependencies.lensApi.publication = { _ in publication }
     
     await store.send(.createPublication(.dismissView("abc-def"))) {
       $0.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
@@ -172,7 +172,7 @@ final class RootTests: XCTestCase {
     store.dependencies.uuid = .incrementing
     
     store.dependencies.cache.updateOrAppendPublication = { _ in }
-    store.dependencies.lensApi.publication = { _ in PaginatedResult(data: nil) }
+    store.dependencies.lensApi.publication = { _ in nil }
     
     await store.send(.createPublication(.dismissView("abc-def"))) {
       $0.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
