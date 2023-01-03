@@ -33,7 +33,7 @@ struct Post: ReducerProtocol {
     var mirrorer: String? {
       guard case let .mirror(mirroringProfile) = self.post.publication.typename
       else { return nil }
-      return mirroringProfile?.name ?? mirroringProfile?.handle
+      return mirroringProfile.name ?? mirroringProfile.handle
     }
     
   }

@@ -148,11 +148,10 @@ struct Timeline: ReducerProtocol {
     updatedPosts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
     return updatedPosts
   }
+  enum CancelFetchPublicationsID {}
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
-      enum CancelFetchPublicationsID {}
-      
       switch action {
         case .timelineAppeared:
           var effects: [EffectTask<Action>] = []
@@ -198,7 +197,6 @@ struct Timeline: ReducerProtocol {
           state.loadingInFlight = true
           return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
             if let id {
-              
               let feed = try await lensApi.feed(40, cursorFeed.next, id, id)
               let exploration = try await lensApi.explorePublications(10, cursorExplore.next, .topCommented, [.post, .comment, .mirror], id)
               await send(
