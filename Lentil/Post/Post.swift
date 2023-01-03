@@ -42,7 +42,7 @@ struct Post: ReducerProtocol {
     case didAppear
     case dismissView
     case fetchComments
-    case commentsResponse(TaskResult<QueryResult<[Model.Publication]>>)
+    case commentsResponse(TaskResult<PaginatedResult<[Model.Publication]>>)
     
     case post(action: Publication.Action)
     case comment(id: String, action: Post.Action)

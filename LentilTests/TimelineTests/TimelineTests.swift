@@ -19,7 +19,7 @@ final class TimelineTests: XCTestCase {
     
     store.dependencies.cache.updateOrAppendPublication = { _ in }
     store.dependencies.cache.updateOrAppendProfile = { _ in }
-    store.dependencies.lensApi.explorePublications = { _, _, _, _, _ in QueryResult(data: explorePublications, cursorToNext: "cursor") }
+    store.dependencies.lensApi.explorePublications = { _, _, _, _, _ in PaginatedResult(data: explorePublications, cursorToNext: "cursor") }
     store.dependencies.profileStorageApi.load = { nil }
     
     await store.send(.timelineAppeared)
@@ -51,15 +51,15 @@ final class TimelineTests: XCTestCase {
     store.dependencies.cache.updateOrAppendProfile = { _ in }
     store.dependencies.lensApi.defaultProfile = { _ in
       try await clock.sleep(for: .seconds(1))
-      return QueryResult(data: MockData.mockProfiles[0])
+      return PaginatedResult(data: MockData.mockProfiles[0])
     }
     store.dependencies.lensApi.explorePublications = { _, _, _, _, _ in
       try await clock.sleep(for: .seconds(1))
-      return QueryResult(data: [explorePublications], cursorToNext: "cursorExplore")
+      return PaginatedResult(data: [explorePublications], cursorToNext: "cursorExplore")
     }
     store.dependencies.lensApi.feed = { _, _, _, _ in
       try await clock.sleep(for: .seconds(1))
-      return QueryResult(data: [feedPublications], cursorToNext: "cursorFeed")
+      return PaginatedResult(data: [feedPublications], cursorToNext: "cursorFeed")
     }
     store.dependencies.profileStorageApi.load = { MockData.mockUserProfile }
     

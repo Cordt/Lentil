@@ -37,7 +37,7 @@ struct Root: ReducerProtocol {
     case switchProgressLabel
     
     case checkAuthenticationStatus
-    case refreshTokenResponse(QueryResult<Bool>)
+    case refreshTokenResponse(Bool)
     
     case rootScreenAppeared
     case rootScreenDisappeared
@@ -69,7 +69,7 @@ struct Root: ReducerProtocol {
         do {
           var attempts = 5
           while attempts > 0 {
-            if let publication = try await self.lensApi.publication(txHash).data {
+            if let publication = try await self.lensApi.publication(txHash) {
               return .timelineAction(.publicationResponse(publication))
             }
             try await self.clock.sleep(for: .seconds(5))
@@ -156,7 +156,7 @@ struct Root: ReducerProtocol {
           }
           
         case .refreshTokenResponse(let tokenIsValid):
-          if tokenIsValid.data {
+          if tokenIsValid {
             // Valid tokens and profile available, open app
             return .run { send in
               try await self.clock.sleep(for: .seconds(1))

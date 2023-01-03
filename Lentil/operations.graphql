@@ -158,6 +158,11 @@ query Profiles($request: ProfileQueryRequest!) {
 		items {
 			...ProfileFields
 		}
+		pageInfo {
+			prev
+			next
+			totalCount
+		}
 	}
 }
 

@@ -72,7 +72,7 @@ struct Publication: ReducerProtocol {
     
     case mirrorConfirmationSet(State.MirrorConfirmationDialogue?)
     case mirrorConfirmationConfirmed
-    case mirrorResult(TaskResult<MutationResult<Result<RelayerResult, RelayErrorReasons>>>)
+    case mirrorResult(TaskResult<Result<RelayerResult, RelayErrorReasons>>)
     case mirrorSuccess(_ txnHash: String)
     
     case remoteProfilePicture(LentilImage.Action)
@@ -158,7 +158,7 @@ struct Publication: ReducerProtocol {
           }
           
         case .mirrorResult(.success(let result)):
-          switch result.data {
+          switch result {
             case .success(let relayerResult):
               log("Successfully mirrored publication", level: .info)
               return Effect(value: .mirrorSuccess(relayerResult.txnHash))

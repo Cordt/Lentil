@@ -25,8 +25,8 @@ extension LensApi {
     networkClient: NetworkClient = .unauthenticated,
     query: Query,
     cachePolicy: CachePolicy = .fetchIgnoringCacheData,
-    mapResult: @escaping (Query.Data) throws -> QueryResult<Output>
-  ) async throws -> QueryResult<Output> {
+    mapResult: @escaping (Query.Data) throws -> Output
+  ) async throws -> Output {
     try await runRefreshing(networkClient: networkClient) {
       try await withCheckedThrowingContinuation { continuation in
         networkClient.client.fetch(
@@ -47,8 +47,8 @@ extension LensApi {
   static func run<Mutation: GraphQLMutation, Output: Equatable>(
     networkClient: NetworkClient = .unauthenticated,
     mutation: Mutation,
-    mapResult: @escaping (Mutation.Data) throws -> MutationResult<Output>
-  ) async throws -> MutationResult<Output> {
+    mapResult: @escaping (Mutation.Data) throws -> Output
+  ) async throws -> Output {
     try await self.runRefreshing(networkClient: networkClient) {
       try await withCheckedThrowingContinuation { continuation in
         networkClient.client.perform(
@@ -100,8 +100,8 @@ extension LensApi {
   
   fileprivate static func runRefreshing<Output: Equatable>(
     networkClient: NetworkClient,
-    _ work: () async throws -> QueryResult<Output>
-  ) async throws -> QueryResult<Output> {
+    _ work: () async throws -> PaginatedResult<Output>
+  ) async throws -> PaginatedResult<Output> {
     do {
       return try await work()
     } catch ApiError.unauthenticated {
@@ -120,8 +120,8 @@ extension LensApi {
   
   fileprivate static func runRefreshing<Output: Equatable>(
     networkClient: NetworkClient,
-    _ work: () async throws -> MutationResult<Output>
-  ) async throws -> MutationResult<Output> {
+    _ work: () async throws -> Output
+  ) async throws -> Output {
     do {
       return try await work()
     } catch ApiError.unauthenticated {

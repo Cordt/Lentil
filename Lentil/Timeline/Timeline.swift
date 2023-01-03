@@ -14,8 +14,8 @@ struct Timeline: ReducerProtocol {
     var userProfile: UserProfile? = nil
     var posts: IdentifiedArrayOf<Post.State> = []
     var scrollPosition: ScrollPosition?
-    var cursorFeed: String?
-    var cursorExplore: String?
+    var cursorFeed: Cursor = .init()
+    var cursorExplore: Cursor = .init()
     var isIndexing: Toast? = nil
     var loadingInFlight: Bool = false
     
@@ -26,8 +26,8 @@ struct Timeline: ReducerProtocol {
   enum Action: Equatable {
     struct PublicationsResponse: Equatable {
       let publications: [Model.Publication]
-      let cursorExplore: String?
-      let cursorFeed: String?
+      let cursorExplore: Cursor
+      let cursorFeed: Cursor
     }
     
     case timelineAppeared
@@ -113,6 +113,7 @@ struct Timeline: ReducerProtocol {
       .forEach { commentState in
         if case .comment(let parent) = commentState.post.publication.typename {
           guard let parent else { return }
+          
           parentPublications.append(parent)
           if let postState = updatedPosts.first(where: { $0.post.publication.id == parent.id }) {
             updatedPosts[id: postState.id]?.comments = [commentState]
@@ -162,8 +163,8 @@ struct Timeline: ReducerProtocol {
           
         case .refreshFeed:
           state.loadingInFlight = false
-          state.cursorFeed = nil
-          state.cursorExplore = nil
+          state.cursorFeed = .init(prev: nil, next: nil)
+          state.cursorExplore = .init(prev: nil, next: nil)
           return .concatenate(
             .cancel(id: CancelFetchPublicationsID.self),
             .init(value: .fetchPublications)
@@ -176,7 +177,7 @@ struct Timeline: ReducerProtocol {
           return .task {
             await .defaultProfileResponse(
               TaskResult {
-                try await lensApi.defaultProfile(userProfile.address).data
+                try await lensApi.defaultProfile(userProfile.address)
               }
             )
           }
@@ -191,32 +192,33 @@ struct Timeline: ReducerProtocol {
           return .none
           
         case .fetchPublications:
-          guard !state.loadingInFlight
+          guard !state.loadingInFlight, !state.cursorExplore.exhausted, !state.cursorFeed.exhausted
           else { return .none }
           
           state.loadingInFlight = true
           return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
             if let id {
-              let feed = try await lensApi.feed(40, cursorFeed, id, id)
-              let exploration = try await lensApi.explorePublications(10, cursorExplore, .latest, [.post, .comment, .mirror], id)
+              
+              let feed = try await lensApi.feed(40, cursorFeed.next, id, id)
+              let exploration = try await lensApi.explorePublications(10, cursorExplore.next, .topCommented, [.post, .comment, .mirror], id)
               await send(
                 .publicationsResponse(
                   Action.PublicationsResponse(
                     publications: feed.data + exploration.data,
-                    cursorExplore: exploration.cursorToNext,
-                    cursorFeed: feed.cursorToNext
+                    cursorExplore: exploration.cursor,
+                    cursorFeed: feed.cursor
                   )
                 )
               )
             }
             else {
-              let exploration = try await lensApi.explorePublications(50, cursorExplore, .latest, [.post, .comment, .mirror], nil)
+              let exploration = try await lensApi.explorePublications(50, cursorExplore.next, .topCommented, [.post, .comment, .mirror], nil)
               await send(
                 .publicationsResponse(
                   Action.PublicationsResponse(
                     publications: exploration.data,
-                    cursorExplore: exploration.cursorToNext,
-                    cursorFeed: nil
+                    cursorExplore: exploration.cursor,
+                    cursorFeed: .init()
                   )
                 )
               )

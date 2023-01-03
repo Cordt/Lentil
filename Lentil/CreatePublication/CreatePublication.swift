@@ -39,7 +39,7 @@ struct CreatePublication: ReducerProtocol {
     case discardAndDismiss
     case cancelAlertDismissed
     case createPublication
-    case createPublicationResponse(TaskResult<MutationResult<Result<RelayerResult, RelayErrorReasons>>>)
+    case createPublicationResponse(TaskResult<Result<RelayerResult, RelayErrorReasons>>)
     
     case photoSelectionTapped(PhotosPickerItem?)
     case photoSelected(TaskResult<UIImage>)
@@ -150,7 +150,7 @@ struct CreatePublication: ReducerProtocol {
         }
         
       case .createPublicationResponse(.success(let result)):
-        switch result.data {
+        switch result {
           case .success(let relayerResult):
             state.publicationText = ""
             state.isPosting = false
