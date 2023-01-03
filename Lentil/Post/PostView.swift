@@ -64,7 +64,7 @@ struct PostView: View {
             Rectangle()
               .fill(Color.white)
               .frame(width: 35)
-              .padding(.top, 12)
+              .padding(.top, 14)
               .padding(.leading, -45)
               .onTapGesture { viewStore.send(.postTapped) }
             
