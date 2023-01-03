@@ -40,6 +40,8 @@
 		3758528D293281FD0017A415 /* NavigationApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3758528C293281FD0017A415 /* NavigationApi.swift */; };
 		375B4D7B2953A8B700E99E0A /* ScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375B4D7A2953A8B700E99E0A /* ScrollView.swift */; };
 		376C5D262964C160000BD962 /* PublicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5D252964C160000BD962 /* PublicationTests.swift */; };
+		376C5D292964CCBA000BD962 /* GiphyUISDK in Frameworks */ = {isa = PBXBuildFile; productRef = 376C5D282964CCBA000BD962 /* GiphyUISDK */; };
+		376C5D2C2964CCCC000BD962 /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 376C5D2B2964CCCC000BD962 /* libwebp */; };
 		376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* ProfileModel.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
@@ -195,8 +197,10 @@
 				37E5C4ED29481B6A005B3979 /* Cache in Frameworks */,
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
 				370ABF01292A847F005B8E11 /* Alamofire in Frameworks */,
+				376C5D2C2964CCCC000BD962 /* libwebp in Frameworks */,
 				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
 				3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */,
+				376C5D292964CCBA000BD962 /* GiphyUISDK in Frameworks */,
 				373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
@@ -554,6 +558,8 @@
 				370ABF00292A847F005B8E11 /* Alamofire */,
 				373DAF1E29305C3700648C8E /* SwiftUINavigation */,
 				37E5C4EC29481B6A005B3979 /* Cache */,
+				376C5D282964CCBA000BD962 /* GiphyUISDK */,
+				376C5D2B2964CCCC000BD962 /* libwebp */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -616,6 +622,8 @@
 				370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				373DAF1D29305C3700648C8E /* XCRemoteSwiftPackageReference "swiftui-navigation" */,
 				37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */,
+				376C5D272964CCBA000BD962 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */,
+				376C5D2A2964CCCC000BD962 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -1061,6 +1069,22 @@
 				minimumVersion = 7.31.1;
 			};
 		};
+		376C5D272964CCBA000BD962 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Giphy/giphy-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.1;
+			};
+		};
+		376C5D2A2964CCCC000BD962 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/libwebp-Xcode";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
 		37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
@@ -1112,6 +1136,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
+		};
+		376C5D282964CCBA000BD962 /* GiphyUISDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 376C5D272964CCBA000BD962 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */;
+			productName = GiphyUISDK;
+		};
+		376C5D2B2964CCCC000BD962 /* libwebp */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 376C5D2A2964CCCC000BD962 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */;
+			productName = libwebp;
 		};
 		37D1236928F70EC90037A4A7 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
