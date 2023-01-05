@@ -45,6 +45,7 @@
 		376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* ProfileModel.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		377487952966D95F00B19322 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 377487942966D95F00B19322 /* SDWebImageSwiftUI */; };
+		37748797296700CD00B19322 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 37748796296700CD00B19322 /* SDWebImageSwiftUI */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
 		3777830828CCA05D00E7E32A /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830728CCA05D00E7E32A /* RootView.swift */; };
 		3777830A28CCA05E00E7E32A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3777830928CCA05E00E7E32A /* Assets.xcassets */; };
@@ -212,6 +213,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				37748797296700CD00B19322 /* SDWebImageSwiftUI in Frameworks */,
 				372D1782294B043A008D2BEF /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -581,6 +583,7 @@
 			name = LentilTests;
 			packageProductDependencies = (
 				372D1781294B043A008D2BEF /* Sentry */,
+				37748796296700CD00B19322 /* SDWebImageSwiftUI */,
 			);
 			productName = LentilTests;
 			productReference = 3777831228CCA05E00E7E32A /* LentilTests.xctest */;
@@ -1156,6 +1159,11 @@
 			productName = libwebp;
 		};
 		377487942966D95F00B19322 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 377487932966D95E00B19322 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+		37748796296700CD00B19322 /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 377487932966D95E00B19322 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
