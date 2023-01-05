@@ -87,8 +87,8 @@ struct RootView: View {
                 )
                 
               case .imageDetail:
-                if let image = viewStore.imageDetail {
-                  ImageView(image: image) {
+                if let imageURL = viewStore.imageDetail {
+                  ImageView(url: imageURL) {
                     self.navigationApi.remove(destinationPath)
                   }
                 }

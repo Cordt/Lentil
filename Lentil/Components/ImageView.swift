@@ -2,20 +2,28 @@
 // Created by Laura and Cordt Zermin
 
 import SwiftUI
+import SDWebImageSwiftUI
 import UIKit
 
 
 struct ImageView: View {
-  var image: Image
+  var url: URL
   var dismiss: () -> Void
   
   var body: some View {
     GeometryReader { proxy in
-      self.image
+      WebImage(url: self.url)
         .resizable()
+        .placeholder {
+          Rectangle()
+            .foregroundColor(Theme.Color.greyShade1)
+        }
+        .indicator(.activity)
+        .transition(.fade(duration: 0.5))
         .scaledToFit()
         .frame(width: proxy.size.width, height: proxy.size.height)
         .modifier(ImageModifier(contentSize: CGSize(width: proxy.size.width, height: proxy.size.height)))
+        
     }
     .padding(.top, 1)
     .toolbar {
@@ -157,9 +165,9 @@ struct PinchToZoom: ViewModifier {
 struct ImageView_Previews: PreviewProvider {
   static var previews: some View {
     Group {
-      NavigationStack {ImageView(image: Image("crete")) {} }
-      NavigationStack {ImageView(image: Image("lentilBeta")) {} }
-      NavigationStack {ImageView(image: Image("munich")) {} }
+      NavigationStack {ImageView(url: URL(string: "https://feed-picture")!) {} }
+      NavigationStack {ImageView(url: URL(string: "https://cover-picture")!) {} }
+      NavigationStack {ImageView(url: URL(string: "https://crete")!) {} }
     }
   }
 }

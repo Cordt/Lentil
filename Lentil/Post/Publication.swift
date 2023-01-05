@@ -53,13 +53,13 @@ struct Publication: ReducerProtocol {
         self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(publication.profile.handle))
       }
       if publication.media.count > 0 {
-        let imageStates = publication.media
-          .map { LentilImage.State(imageUrl: $0.url, kind: .feed) }
-        var uniqueImageStates: [LentilImage.State] = []
-        imageStates.forEach {
-          if !uniqueImageStates.contains($0) { uniqueImageStates.append($0) }
-        }
-        self.remotePublicationImages = .init(images: IdentifiedArrayOf(uniqueElements: uniqueImageStates))
+        self.remotePublicationImages = .init(
+          images: IdentifiedArrayOf(
+            uniqueElements: publication.media
+              .enumerated()
+              .map { MultiImage.LentilImage(id: $0.offset, url: $0.element.url) }
+          )
+        )
       }
     }
   }
