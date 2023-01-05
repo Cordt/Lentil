@@ -15,7 +15,6 @@ struct Publication: ReducerProtocol {
     
     var id: String { self.publication.id }
     var publication: Model.Publication
-    var remoteProfilePicture: LentilImage.State?
     var remotePublicationImages: MultiImage.State?
     var publicationImageHeight: CGFloat {
       guard let count = self.remotePublicationImages?.images.count
@@ -45,13 +44,9 @@ struct Publication: ReducerProtocol {
     
     init(publication: Model.Publication) {
       self.publication = publication
-      self.remoteProfilePicture = nil
       self.remotePublicationImages = nil
       self.mirrorConfirmationDialogue = nil
       
-      if let profilePictureUrl = publication.profile.profilePictureUrl {
-        self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(publication.profile.handle))
-      }
       if publication.media.count > 0 {
         self.remotePublicationImages = .init(
           images: IdentifiedArrayOf(
@@ -75,7 +70,6 @@ struct Publication: ReducerProtocol {
     case mirrorResult(TaskResult<Result<RelayerResult, RelayErrorReasons>>)
     case mirrorSuccess(_ txnHash: String)
     
-    case remoteProfilePicture(LentilImage.Action)
     case remotePublicationImages(MultiImage.Action)
   }
   
@@ -174,13 +168,7 @@ struct Publication: ReducerProtocol {
           
         case .mirrorSuccess:
           return .none
-       
-        case .remoteProfilePicture:
-          return .none
       }
-    }
-    .ifLet(\.remoteProfilePicture, action: /Action.remoteProfilePicture) {
-      LentilImage()
     }
     .ifLet(\.remotePublicationImages, action: /Action.remotePublicationImages) {
       MultiImage()

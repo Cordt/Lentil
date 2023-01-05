@@ -65,7 +65,6 @@
 		37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* LentilButton.swift */; };
 		37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */; };
 		37C5178E291EA986002D2B6D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C5178D291EA986002D2B6D /* ProfileView.swift */; };
-		37C51793291F518C002D2B6D /* LentilImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C51792291F518C002D2B6D /* LentilImage.swift */; };
 		37C54C59292B12A0006E8DBA /* InfuraApiClient+Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C58292B12A0006E8DBA /* InfuraApiClient+Environment.swift */; };
 		37C54C5C292B1ECC006E8DBA /* CreatePublicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C5B292B1ECC006E8DBA /* CreatePublicationView.swift */; };
 		37C54C5E292B20B4006E8DBA /* CreatePublication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C54C5D292B20B4006E8DBA /* CreatePublication.swift */; };
@@ -161,7 +160,6 @@
 		37BE767028FAA73800282ED0 /* LentilButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilButton.swift; sourceTree = "<group>"; };
 		37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithLens.swift; sourceTree = "<group>"; };
 		37C5178D291EA986002D2B6D /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		37C51792291F518C002D2B6D /* LentilImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilImage.swift; sourceTree = "<group>"; };
 		37C54C57292B0E46006E8DBA /* Secrets-Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Secrets-Development.xcconfig"; path = "Lentil/Secrets-Development.xcconfig"; sourceTree = SOURCE_ROOT; };
 		37C54C58292B12A0006E8DBA /* InfuraApiClient+Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InfuraApiClient+Environment.swift"; sourceTree = "<group>"; };
 		37C54C5B292B1ECC006E8DBA /* CreatePublicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePublicationView.swift; sourceTree = "<group>"; };
@@ -467,7 +465,6 @@
 			children = (
 				378AE5AD294FA564001584DD /* ImageView.swift */,
 				37BE767028FAA73800282ED0 /* LentilButton.swift */,
-				37C51792291F518C002D2B6D /* LentilImage.swift */,
 				372D1791294B808E008D2BEF /* MultiImageView.swift */,
 				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 				37CC0D0129279DC30036C6E9 /* Toast.swift */,
@@ -713,7 +710,6 @@
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
 				37C54C5C292B1ECC006E8DBA /* CreatePublicationView.swift in Sources */,
 				3758528D293281FD0017A415 /* NavigationApi.swift in Sources */,
-				37C51793291F518C002D2B6D /* LentilImage.swift in Sources */,
 				37D6808F292386B100F31669 /* UINavigationController+BackGesture.swift in Sources */,
 				37C89B6429278535003583E8 /* LentilEnvironment.swift in Sources */,
 				3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */,

@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import SDWebImageSwiftUI
 import SwiftUINavigation
 import SwiftUI
 
@@ -45,21 +46,24 @@ struct TimelineView: View {
               Button {
                 viewStore.send(.ownProfileTapped)
               } label: {
-                IfLetStore(
-                  self.store.scope(
-                    state: \.showProfile?.remoteProfilePicture,
-                    action: { Timeline.Action.showProfile(.remoteProfilePicture($0)) }
-                  ),
-                  then: {
-                    LentilImageView(store: $0)
-                      .frame(width: 32, height: 32)
-                      .clipShape(Circle())
-                  },
-                  else: {
-                    profileGradient(from: userProfile.handle)
-                      .frame(width: 32, height: 32)
-                  }
-                )
+                EmptyView()
+                if let url = viewStore.showProfile?.profile.profilePictureUrl {
+                  WebImage(url: url)
+                    .resizable()
+                    .placeholder {
+                      profileGradient(from: userProfile.handle)
+                    }
+                    .indicator(.activity)
+                    .transition(.fade(duration: 0.5))
+                    .scaledToFill()
+                    .frame(width: 32, height: 32)
+                    .clipShape(Circle())
+                }
+                else {
+                  profileGradient(from: userProfile.handle)
+                    .frame(width: 32, height: 32)
+                    .clipShape(Circle())
+                }
               }
             }
             else {
