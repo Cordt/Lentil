@@ -156,8 +156,8 @@ struct MultiImageView_Previews: PreviewProvider {
             initialState: .init(
               images: [
                 MultiImage.LentilImage(id: 0, url: URL(string: "https://feed-picture")!),
-                MultiImage.LentilImage(id: 0, url: URL(string: "https://cover-picture")!),
-                MultiImage.LentilImage(id: 0, url: URL(string: "https://crete")!)
+                MultiImage.LentilImage(id: 1, url: URL(string: "https://cover-picture")!),
+                MultiImage.LentilImage(id: 2, url: URL(string: "https://crete")!)
               ]
             ),
             reducer: MultiImage()

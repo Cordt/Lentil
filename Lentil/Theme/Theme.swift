@@ -155,6 +155,7 @@ enum Icon {
   case location, lens
   case follow, collection
   case times
+  case otter
   
   enum FontSize {
     case `default`, large, xlarge
@@ -188,6 +189,7 @@ enum Icon {
       case .follow:       return ""
       case .collection:   return ""
       case .times:        return ""
+      case .otter:        return ""
     }
   }
   

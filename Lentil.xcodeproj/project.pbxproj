@@ -46,6 +46,7 @@
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
 		377487952966D95F00B19322 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 377487942966D95F00B19322 /* SDWebImageSwiftUI */; };
 		37748797296700CD00B19322 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 37748796296700CD00B19322 /* SDWebImageSwiftUI */; };
+		3774879A2967105E00B19322 /* SelectGifView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377487992967105E00B19322 /* SelectGifView.swift */; };
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
 		3777830828CCA05D00E7E32A /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830728CCA05D00E7E32A /* RootView.swift */; };
 		3777830A28CCA05E00E7E32A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3777830928CCA05E00E7E32A /* Assets.xcassets */; };
@@ -137,6 +138,7 @@
 		376C5D252964C160000BD962 /* PublicationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationTests.swift; sourceTree = "<group>"; };
 		376C5ED528D4253F00BA908A /* ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModel.swift; sourceTree = "<group>"; };
 		376C5ED728D4266100BA908A /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
+		377487992967105E00B19322 /* SelectGifView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectGifView.swift; sourceTree = "<group>"; };
 		3777830228CCA05D00E7E32A /* Lentil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lentil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3777830528CCA05D00E7E32A /* LentilApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilApp.swift; sourceTree = "<group>"; };
 		3777830728CCA05D00E7E32A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -331,6 +333,16 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		377487982967104400B19322 /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				378AE5AD294FA564001584DD /* ImageView.swift */,
+				372D1791294B808E008D2BEF /* MultiImageView.swift */,
+				377487992967105E00B19322 /* SelectGifView.swift */,
+			);
+			path = Media;
+			sourceTree = "<group>";
+		};
 		377782F928CCA05D00E7E32A = {
 			isa = PBXGroup;
 			children = (
@@ -465,9 +477,8 @@
 		37C5178F291F5142002D2B6D /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				378AE5AD294FA564001584DD /* ImageView.swift */,
+				377487982967104400B19322 /* Media */,
 				37BE767028FAA73800282ED0 /* LentilButton.swift */,
-				372D1791294B808E008D2BEF /* MultiImageView.swift */,
 				37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */,
 				37CC0D0129279DC30036C6E9 /* Toast.swift */,
 			);
@@ -713,6 +724,7 @@
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
 				37C54C5C292B1ECC006E8DBA /* CreatePublicationView.swift in Sources */,
 				3758528D293281FD0017A415 /* NavigationApi.swift in Sources */,
+				3774879A2967105E00B19322 /* SelectGifView.swift in Sources */,
 				37D6808F292386B100F31669 /* UINavigationController+BackGesture.swift in Sources */,
 				37C89B6429278535003583E8 /* LentilEnvironment.swift in Sources */,
 				3777834728CDA27600E7E32A /* LensApiClient.swift in Sources */,
