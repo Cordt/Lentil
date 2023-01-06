@@ -19,12 +19,10 @@ extension LensApi: DependencyKey {
       try await run(
         query: ChallengeQuery(request: .init(address: address)),
         mapResult: { data in
-          
-              Challenge(
-                message: data.challenge.text,
-                expires: Date().addingTimeInterval(60 * 5)
-              )
-          
+          Challenge(
+            message: data.challenge.text,
+            expires: Date().addingTimeInterval(60 * 5)
+          )
         }
       )
     },
@@ -33,25 +31,17 @@ extension LensApi: DependencyKey {
       let accessToken = try AuthTokenStorage.load(token: .access)
       return try await run(
         query: VerifyQuery(request: VerifyRequest(accessToken: accessToken)),
-        mapResult: { data in
-          data.verify
-          
-        }
+        mapResult: { $0.verify }
       )
     },
     
     publication: { txHash in
       try await run(
         query: PublicationQuery(
-          request: PublicationQueryRequest(
-            txHash: txHash
-          )
+          request: PublicationQueryRequest(txHash: txHash)
         ),
         cachePolicy: .fetchIgnoringCacheData,
-        mapResult: { data in
-          Model.Publication.publication(from: data.publication)
-          
-        }
+        mapResult: { Model.Publication.publication(from: $0.publication) }
       )
     },
     
@@ -343,7 +333,7 @@ extension LensApi: DependencyKey {
     }
   )
 }
-  
+
 #if DEBUG
 import UIKit
 import XCTestDynamicOverlay
