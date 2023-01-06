@@ -381,7 +381,7 @@ extension LensApi {
     commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
     defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
     profile: { _ in QueryResult(data: MockData.mockProfiles[0]) },
-    profiles: { _ in QueryResult(data: MockData.mockProfiles) },
+    profiles: { _ in QueryResult(data: [MockData.mockProfiles.randomElement()!]) },
     fetchImage: { url in
       if url.absoluteString == "https://profile-picture" { return UIImage(named: "cryptopunk1")!.jpegData(compressionQuality: 0.5)! }
       else if url.absoluteString == "https://cover-picture" { return UIImage(named: "munich")!.jpegData(compressionQuality: 0.5)! }

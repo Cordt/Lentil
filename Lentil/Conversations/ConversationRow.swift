@@ -3,20 +3,41 @@
 
 import ComposableArchitecture
 import SwiftUI
+import XMTP
 
 
 struct ConversationRow: ReducerProtocol {
   struct State: Equatable, Identifiable {
+    struct Stub: Equatable {
+      enum From { case user, peer }
+      var body: String
+      var sent: String
+      var from: From
+      
+      init(message: DecodedMessage, from: From) {
+        self.body = message.body
+        self.sent = age(message.sent)
+        self.from = from
+      }
+    }
+    
     var id: String { self.conversation.topic }
     
     var conversation: XMTPConversation
     var userAddress: String
+    var lastMessage: Stub?
     var profile: Model.Profile?
     var profilePicture: LentilImage.State?
     
-    init(conversation: XMTPConversation, userAddress: String, profile: Model.Profile? = nil) {
+    init(
+      conversation: XMTPConversation,
+      userAddress: String,
+      lastMessage: Stub? = nil,
+      profile: Model.Profile? = nil
+    ) {
       self.conversation = conversation
       self.userAddress = userAddress
+      self.lastMessage = lastMessage
       self.profile = profile
       self.profilePicture = nil
       if let profilePictureUrl = profile?.profilePictureUrl {
@@ -123,6 +144,33 @@ struct ConversationRowView: View {
               Text(viewStore.conversation.peerAddress)
                 .font(style: .bodyBold)
             }
+            
+            if let lastMessage = viewStore.lastMessage {
+              Spacer()
+              
+              Text(lastMessage.sent)
+                .font(style: .annotation, color: Theme.Color.greyShade3)
+            }
+          }
+          
+          if let lastMessage = viewStore.lastMessage {
+            switch lastMessage.from {
+              case .user:
+                VStack(alignment: .leading) {
+                  Text("You:")
+                    .font(style: .annotation)
+                  Text(lastMessage.body)
+                    .font(style: .annotation, color: Theme.Color.greyShade3)
+                }
+              case .peer:
+                Text(lastMessage.body)
+                  .font(style: .annotation, color: Theme.Color.greyShade3)
+            }
+          }
+          else {
+            Text("No messages in this conversation yet")
+              .font(style: .annotation, color: Theme.Color.greyShade3)
+              .italic()
           }
         }
         .frame(height: 50)
@@ -144,6 +192,7 @@ struct ConversationRowView_Previews: PreviewProvider {
           initialState: .init(
             conversation: MockData.conversations[0],
             userAddress: "0xabc123",
+            lastMessage: .init(message: MockData.messages[0], from: .user),
             profile: MockData.mockProfiles[0]
           ),
           reducer: ConversationRow()
@@ -163,7 +212,8 @@ struct ConversationRowView_Previews: PreviewProvider {
         store: .init(
           initialState: .init(
             conversation: MockData.conversations[2],
-            userAddress: "0xabc123"
+            userAddress: "0xabc123",
+            lastMessage: .init(message: MockData.messages[2], from: .peer)
           ),
           reducer: ConversationRow()
         )
