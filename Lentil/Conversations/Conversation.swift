@@ -46,6 +46,7 @@ struct Conversation: ReducerProtocol {
   
   enum Action: Equatable {
     case didAppear
+    case didTapProfile
     case loadMessages
     case messagesResponse(TaskResult<[XMTP.DecodedMessage]>)
     case streamMessages
@@ -69,6 +70,18 @@ struct Conversation: ReducerProtocol {
       switch action {
         case .didAppear:
           return Effect(value: .loadMessages)
+          
+        case .didTapProfile:
+          guard let profile = state.profile
+          else { return .none }
+          
+          navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              destination: .profile(profile.id)
+            )
+          )
+          return .none
           
         case .loadMessages:
           return .task { [conversation = state.conversation] in
@@ -291,10 +304,12 @@ struct ConversationView: View {
               LentilImageView(store: $0)
                 .frame(width: 32, height: 32)
                 .clipShape(Circle())
+                .onTapGesture { viewStore.send(.didTapProfile) }
             },
             else: {
               profileGradient(from: viewStore.profile?.handle ?? viewStore.conversation.peerAddress)
                 .frame(width: 32, height: 32)
+                .onTapGesture { viewStore.send(.didTapProfile) }
             }
           )
         }

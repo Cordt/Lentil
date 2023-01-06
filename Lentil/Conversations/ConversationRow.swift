@@ -53,6 +53,7 @@ struct ConversationRow: ReducerProtocol {
     case didAppear
     case profilesResponse(TaskResult<QueryResult<[Model.Profile]>>)
     case rowTapped
+    case didTapProfile
     case profilePicture(LentilImage.Action)
   }
   
@@ -97,6 +98,18 @@ struct ConversationRow: ReducerProtocol {
           )
           return .none
           
+        case .didTapProfile:
+          guard let profile = state.profile
+          else { return .none }
+          
+          navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              destination: .profile(profile.id)
+            )
+          )
+          return .none
+          
         case .profilePicture:
           return .none
       }
@@ -122,11 +135,13 @@ struct ConversationRowView: View {
             LentilImageView(store: $0)
               .frame(width: 40, height: 40)
               .clipShape(Circle())
+              .onTapGesture { viewStore.send(.didTapProfile) }
           },
           else: {
             profileGradient(from: viewStore.profile?.handle ?? viewStore.conversation.peerAddress)
               .frame(width: 40, height: 40)
               .clipShape(Circle())
+              .onTapGesture { viewStore.send(.didTapProfile) }
           }
         )
         
