@@ -28,7 +28,7 @@ struct Conversations: ReducerProtocol {
     case loadConversations
     case conversationsResult(TaskResult<[ConversationRow.State]>)
     case connectTapped
-    case createMessageTapped
+    case createConversationTapped
     
     case setCreateConversation(CreateConversation.State?)
     case createConversation(CreateConversation.Action)
@@ -106,35 +106,46 @@ struct Conversations: ReducerProtocol {
               
               return .task {
                 let conversations = try await self.xmtpConnector.loadConversations()
-                var conversationRows: [ConversationRow.State] = []
+                var conversationRows: [(ConversationRow.State, Date)] = []
                 for conversation in conversations {
                   let profile = self.cache.profileByAddress(conversation.peerAddress)
                   var messages = try await conversation.messages()
                   messages.sort { $0.sent < $1.sent }
 
                   let lastMessage: ConversationRow.State.Stub?
+                  let messageDate: Date
                   if let message = messages.first {
                     lastMessage = ConversationRow.State.Stub(
                       message: message,
                       from: message.senderAddress == address ? .user : .peer
                     )
+                    messageDate = message.sent
                   }
                   else {
                     lastMessage = nil
+                    messageDate = Date(timeIntervalSince1970: 0)
                   }
 
                   conversationRows.append(
-                    ConversationRow.State(
+                    (
+                      ConversationRow.State(
                       conversation: conversation,
                       userAddress: address,
                       lastMessage: lastMessage,
                       profile: profile
+                      ),
+                      messageDate
                     )
+                    
                   )
                 }
                 
+                let sortedConversationRows = conversationRows
+                  .sorted { $0.1 > $1.1 }
+                  .map { $0.0 }
+                
                 return .conversationsResult(
-                  await TaskResult { [conversationRows = conversationRows] in
+                  await TaskResult { [conversationRows = sortedConversationRows] in
                     conversationRows
                   }
                 )
@@ -153,7 +164,7 @@ struct Conversations: ReducerProtocol {
           self.walletConnect.connect()
           return .none
           
-        case .createMessageTapped:
+        case .createConversationTapped:
           state.createConversation = .init()
           return .none
           
@@ -163,18 +174,25 @@ struct Conversations: ReducerProtocol {
           
         case .createConversation(let createConversationAction):
           if case .dismiss = createConversationAction {
-            state.createConversation = nil
+            return Effect(value: .setCreateConversation(nil))
           }
           else if case .dismissAndOpenConversation(let conversation, let userAddress) = createConversationAction {
-            state.createConversation = nil
-            self.navigationApi.append(
-              DestinationPath(
-                navigationId: self.uuid.callAsFunction().uuidString,
-                destination: .conversation(conversation, userAddress)
-              )
+            return .merge(
+              .fireAndForget { [conversation = conversation, userAddress = userAddress] in
+                try await Task.sleep(for: .seconds(1))
+                self.navigationApi.append(
+                  DestinationPath(
+                    navigationId: self.uuid.callAsFunction().uuidString,
+                    destination: .conversation(conversation, userAddress)
+                  )
+                )
+              },
+              Effect(value: .setCreateConversation(nil))
             )
           }
-          return .none
+          else {
+            return .none
+          }
           
         case .conversation:
           return .none

@@ -83,7 +83,7 @@ struct ConversationsView: View {
         ToolbarItem(placement: .navigationBarTrailing) {
           if case .signedIn = viewStore.connectionStatus {
             Button {
-              viewStore.send(.createMessageTapped)
+              viewStore.send(.createConversationTapped)
             } label: {
               Icon.create.view(.xlarge)
                 .foregroundColor(Theme.Color.white)
