@@ -34,11 +34,11 @@ class XMTPConnector {
     }
   }
   
-  func createConversation(_ address: String) async throws -> XMTPConversation {
+  func createConversation(_ peerAddress: String, _ conversationID: XMTPClient.ConversationID) async throws -> XMTPConversation {
     guard let client = self.client
     else { throw XMTPConnectorError.clientNotConnected }
     
-    return try await client.newConversation(address)
+    return try await client.newConversation(peerAddress, conversationID)
   }
   
   func loadConversations() async throws -> [XMTPConversation] {
@@ -87,7 +87,7 @@ extension DependencyValues {
 struct XMTPConnectorApi {
   var address: () throws -> String
   var createClient: () async -> Void
-  var createConversation: (_ address: String) async throws -> XMTPConversation
+  var createConversation: (_ peerAddress: String, _ conversationID: XMTPClient.ConversationID) async throws -> XMTPConversation
   var loadConversations: () async throws -> [XMTPConversation]
   var loadMessages: (_ conversation: XMTPConversation) async -> [XMTP.DecodedMessage]
   var streamMessages: (_ conversation: XMTPConversation) async -> AsyncThrowingStream<XMTP.DecodedMessage, Error>
@@ -110,7 +110,7 @@ extension XMTPConnectorApi: DependencyKey {
     .init(
       address: { "0xabcdef" },
       createClient: { },
-      createConversation: { _ in MockData.conversations[0] },
+      createConversation: { _, _ in MockData.conversations[0] },
       loadConversations: { MockData.conversations },
       loadMessages: { _ in MockData.messages },
       streamMessages: { _ in AsyncThrowingStream(unfolding: { nil }) }

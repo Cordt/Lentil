@@ -94,6 +94,17 @@ extension UIImage {
   }
 }
 
+// MARK: Numbers
+
+func hexToDecimal(_ hexString: String) -> UInt64? {
+  if hexString.count > 2, hexString[0..<2] == "0x" {
+    return UInt64(hexString.dropFirst(2), radix: 16)
+  }
+  else {
+    return UInt64(hexString, radix: 16)
+  }
+}
+
 
 // MARK: Date conversion
 

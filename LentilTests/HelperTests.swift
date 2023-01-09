@@ -30,4 +30,27 @@ final class HelperTests: XCTestCase {
     
     XCTAssertNotEqual(age(fiveDaysAgo), "5 days")
   }
+  
+  func testHexIsCalculated() {
+    let firstWOPrefix = "0"
+    let first = "0x0"
+    let secondWOPrefix = "f"
+    let second = "0xf"
+    let thirdWOPrefix = "ef"
+    let third = "0xef"
+    let fourthWOPrefix = "e5ff"
+    let fourth = "0xe5ff"
+    let fifthWOPrefix = ""
+    let fifth = "xxxe5ff"
+    XCTAssertEqual(hexToDecimal(firstWOPrefix), 0)
+    XCTAssertEqual(hexToDecimal(first), 0)
+    XCTAssertEqual(hexToDecimal(secondWOPrefix), 15)
+    XCTAssertEqual(hexToDecimal(second), 15)
+    XCTAssertEqual(hexToDecimal(thirdWOPrefix), 239)
+    XCTAssertEqual(hexToDecimal(third), 239)
+    XCTAssertEqual(hexToDecimal(fourthWOPrefix), 58879)
+    XCTAssertEqual(hexToDecimal(fourth), 58879)
+    XCTAssertEqual(hexToDecimal(fifthWOPrefix), nil)
+    XCTAssertEqual(hexToDecimal(fifth), nil)
+  }
 }

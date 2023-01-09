@@ -28,6 +28,7 @@ struct CreateConversation: ReducerProtocol {
   
   @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.profileStorageApi) var profileStorageApi
   @Dependency(\.xmtpConnector) var xmtpConnector
   enum CancelSearchProfilesID {}
   
@@ -80,17 +81,21 @@ struct CreateConversation: ReducerProtocol {
           return .none
           
         case .rowTapped(let id):
-          guard let profile = state.searchResult[id: id]
+          guard let peerProfile = state.searchResult[id: id],
+                let userProfile = profileStorageApi.load()
           else { return .none }
           
           return .run { send in
-            let conversation = try await self.xmtpConnector.createConversation(profile.ownedBy)
+            let conversation = try await self.xmtpConnector.createConversation(
+              peerProfile.ownedBy,
+              .lens(peerProfile.id, userProfile.id)
+            )
             let address = try self.xmtpConnector.address()
-            self.cache.updateOrAppendProfile(profile)
+            self.cache.updateOrAppendProfile(peerProfile)
             await send(.dismissAndOpenConversation(conversation, address))
           }
           catch: { error, send in
-            log("Failed to create conversation with \(profile.ownedBy)", level: .error, error: error)
+            log("Failed to create conversation with \(peerProfile.ownedBy)", level: .error, error: error)
             await send(.failedToStartConversation)
           }
           
