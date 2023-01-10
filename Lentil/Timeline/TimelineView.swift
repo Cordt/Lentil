@@ -124,7 +124,7 @@ struct TimelineView: View {
           }
         }
         .refreshable { await viewStore.send(.refreshFeed).finish() }
-        .task { viewStore.send(.timelineAppeared) }
+        .onAppear { viewStore.send(.timelineAppeared) }
       }
     }
   }
