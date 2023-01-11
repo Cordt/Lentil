@@ -4,7 +4,6 @@
 import Dependencies
 import Foundation
 import UIKit
-import XCTestDynamicOverlay
 import XMTP
 
 
@@ -104,8 +103,12 @@ extension XMTPConnectorApi: DependencyKey {
       streamMessages: XMTPConnector.streamMessages
     )
   }
+}
   
-  #if DEBUG
+#if DEBUG
+import XCTestDynamicOverlay
+
+extension XMTPConnectorApi {
   static var previewValue: XMTPConnectorApi {
     .init(
       address: { "0xabcdef" },
@@ -127,5 +130,5 @@ extension XMTPConnectorApi: DependencyKey {
       streamMessages: unimplemented("streamMessages")
     )
   }
-  #endif
 }
+#endif

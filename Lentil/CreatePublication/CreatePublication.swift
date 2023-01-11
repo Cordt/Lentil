@@ -49,7 +49,7 @@ struct CreatePublication: ReducerProtocol {
   @Dependency(\.infuraApi) var infuraApi
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi
-  @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.uuid) var uuid
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
@@ -91,7 +91,7 @@ struct CreatePublication: ReducerProtocol {
         
       case .createPublication:
         guard state.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) != "",
-              let userProfile = self.profileStorageApi.load()
+              let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
         else { return .none}
         
         state.isPosting = true

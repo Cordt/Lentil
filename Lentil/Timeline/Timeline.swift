@@ -58,7 +58,7 @@ struct Timeline: ReducerProtocol {
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi
-  @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.uuid) var uuid
   
   func fetchPublications(from response: Action.PublicationsResponse, updating posts: IdentifiedArrayOf<Post.State>) -> IdentifiedArrayOf<Post.State> {
@@ -155,7 +155,7 @@ struct Timeline: ReducerProtocol {
       switch action {
         case .timelineAppeared:
           var effects: [EffectTask<Action>] = []
-          state.userProfile = profileStorageApi.load()
+          state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
           if state.userProfile != nil && state.showProfile == nil { effects.append(Effect(value: .fetchDefaultProfile)) }
           if state.posts.count == 0 { effects.append(Effect(value: .refreshFeed)) }
           return .merge(effects)
@@ -330,7 +330,7 @@ struct Timeline: ReducerProtocol {
         case .connectWallet(let walletConnectAction):
           switch walletConnectAction {
             case .defaultProfileResponse(let defaultProfile):
-              state.userProfile = profileStorageApi.load()
+              state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
               state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
               self.cache.updateOrAppendProfile(defaultProfile)
               return .none

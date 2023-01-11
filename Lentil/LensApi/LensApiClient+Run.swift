@@ -111,7 +111,7 @@ extension LensApi {
       }
       catch let error {
         try AuthTokenStorage.delete()
-        ProfileStorage.remove()
+        DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
       }
@@ -131,7 +131,7 @@ extension LensApi {
       }
       catch let error {
         try AuthTokenStorage.delete()
-        ProfileStorage.remove()
+        DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
       }
@@ -151,7 +151,7 @@ extension LensApi {
       }
       catch let error {
         try AuthTokenStorage.delete()
-        ProfileStorage.remove()
+        DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
       }

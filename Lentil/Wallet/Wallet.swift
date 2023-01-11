@@ -33,7 +33,7 @@ struct Wallet: ReducerProtocol {
   
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   enum WalletEventsCancellationID {}
   
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
@@ -130,7 +130,7 @@ struct Wallet: ReducerProtocol {
         do {
           guard let address = state.address else { return .none }
           let userProfile = UserProfile(id: defaultProfile.id, handle: defaultProfile.handle, name: defaultProfile.name, address: address)
-          try self.profileStorageApi.store(userProfile)
+          try self.defaultsStorageApi.store(userProfile)
           
           state.connectionStatus = .authenticated
           

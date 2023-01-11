@@ -28,7 +28,7 @@ struct CreateConversation: ReducerProtocol {
   
   @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.xmtpConnector) var xmtpConnector
   enum CancelSearchProfilesID {}
   
@@ -82,7 +82,7 @@ struct CreateConversation: ReducerProtocol {
           
         case .rowTapped(let id):
           guard let peerProfile = state.searchResult[id: id],
-                let userProfile = profileStorageApi.load()
+                let userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
           else { return .none }
           
           return .run { send in

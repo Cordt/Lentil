@@ -52,7 +52,7 @@ struct Post: ReducerProtocol {
   
   @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
@@ -79,7 +79,7 @@ struct Post: ReducerProtocol {
           return .task { [publication = state.post.publication] in
             await .commentsResponse(
               TaskResult {
-                let userProfile = self.profileStorageApi.load()
+                let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
                 return try await lensApi.commentsOfPublication(publication, userProfile?.id)
               }
             )

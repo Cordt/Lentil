@@ -52,6 +52,7 @@
 		3779FC08295F73B900D4139C /* CreateConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779FC07295F73B900D4139C /* CreateConversation.swift */; };
 		37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */; };
 		378AE5AE294FA564001584DD /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE5AD294FA564001584DD /* ImageView.swift */; };
+		37946CAA296EB783008F849E /* DefaultsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37946CA9296EB783008F849E /* DefaultsStorage.swift */; };
 		37A56518295C3142001A676A /* XMTPConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A56517295C3142001A676A /* XMTPConversation.swift */; };
 		37A5651A295C5866001A676A /* XMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 37A56519295C5866001A676A /* XMTP */; };
 		37A5651E295C9E75001A676A /* WalletConnector+SigningKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */; };
@@ -159,6 +160,7 @@
 		3779FC07295F73B900D4139C /* CreateConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateConversation.swift; sourceTree = "<group>"; };
 		37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
 		378AE5AD294FA564001584DD /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
+		37946CA9296EB783008F849E /* DefaultsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsStorage.swift; sourceTree = "<group>"; };
 		37A56517295C3142001A676A /* XMTPConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPConversation.swift; sourceTree = "<group>"; };
 		37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletConnector+SigningKey.swift"; sourceTree = "<group>"; };
 		37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataModel.swift; sourceTree = "<group>"; };
@@ -378,6 +380,7 @@
 				37C5178F291F5142002D2B6D /* Components */,
 				37B7D6992957055B00F8674C /* Conversations */,
 				37C54C5A292B1EB7006E8DBA /* CreatePublication */,
+				37946CA8296EB15C008F849E /* DefatultsStorage */,
 				37557A2429274510005524C5 /* Helper */,
 				370ABEFC292A83AE005B8E11 /* InfuraApi */,
 				37BBB12D28F2737600A6D202 /* LensApi */,
@@ -414,13 +417,20 @@
 				37B7D6902956074300F8674C /* PostTests */,
 				372D1793294B8972008D2BEF /* ProfileTests */,
 				372D178B294B3282008D2BEF /* TimelineTests */,
-				37BBB13228F3B41700A6D202 /* LensApiTests */,
 				3777831628CCA05E00E7E32A /* LentilTests.swift */,
 				372248CB28DADE3C0066BCE5 /* HelperTests.swift */,
 				372D1787294B0771008D2BEF /* RootTests.swift */,
 				372D1789294B0E41008D2BEF /* TestHelper.swift */,
 			);
 			path = LentilTests;
+			sourceTree = "<group>";
+		};
+		37946CA8296EB15C008F849E /* DefatultsStorage */ = {
+			isa = PBXGroup;
+			children = (
+				37946CA9296EB783008F849E /* DefaultsStorage.swift */,
+			);
+			path = DefatultsStorage;
 			sourceTree = "<group>";
 		};
 		37A7A6F7293C53E500964768 /* Cache */ = {
@@ -475,13 +485,6 @@
 				37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */,
 			);
 			path = LensApi;
-			sourceTree = "<group>";
-		};
-		37BBB13228F3B41700A6D202 /* LensApiTests */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = LensApiTests;
 			sourceTree = "<group>";
 		};
 		37BBB13528F3BA0500A6D202 /* Frameworks */ = {
@@ -789,6 +792,7 @@
 				377487A229686DA300B19322 /* Conversations.swift in Sources */,
 				37A7A6F9293C53F100964768 /* Cache.swift in Sources */,
 				37C54C67292C8932006E8DBA /* File+Image.swift in Sources */,
+				37946CAA296EB783008F849E /* DefaultsStorage.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
 				37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */,
 			);

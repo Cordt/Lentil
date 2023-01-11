@@ -64,7 +64,7 @@ struct Root: ReducerProtocol {
   @Dependency(\.cache) var cache
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.withRandomNumberGenerator) var randomNumberGenerator
   private enum TimerID {}
@@ -200,7 +200,7 @@ struct Root: ReducerProtocol {
             // Verify that both access token and user are available
             if try self.authTokenApi.checkFor(.access),
                try self.authTokenApi.checkFor(.refresh),
-               self.profileStorageApi.load() != nil {
+               self.defaultsStorageApi.load(UserProfile.self) != nil {
               
               // Verify that the access token is still valid
               return .run { send in
@@ -210,7 +210,7 @@ struct Root: ReducerProtocol {
             }
             else {
               try self.authTokenApi.delete()
-              self.profileStorageApi.remove()
+              self.defaultsStorageApi.remove(UserProfile.self)
               self.cache.clearCache()
               
               // No valid tokens or profile available, open app
@@ -243,7 +243,7 @@ struct Root: ReducerProtocol {
               
             } catch: { error, send in
               try? self.authTokenApi.delete()
-              self.profileStorageApi.remove()
+              self.defaultsStorageApi.remove(UserProfile.self)
               self.cache.clearCache()
               log("Failed to refresh token, logging user out", level: .debug, error: error)
               try? await self.clock.sleep(for: .seconds(1))

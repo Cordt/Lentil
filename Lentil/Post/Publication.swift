@@ -81,7 +81,7 @@ struct Publication: ReducerProtocol {
   
   @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.profileStorageApi) var profileStorageApi
+  @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
@@ -101,7 +101,7 @@ struct Publication: ReducerProtocol {
           return .none
           
         case .toggleReaction:
-          guard let userProfile = self.profileStorageApi.load()
+          guard let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
           else { return .none }
           
           if state.publication.upvotedByUser {
@@ -122,7 +122,7 @@ struct Publication: ReducerProtocol {
           }
           
         case .commentTapped:
-          guard self.profileStorageApi.load() != nil
+          guard self.defaultsStorageApi.load(UserProfile.self) != nil
           else { return .none }
           
           self.navigationApi.append(
@@ -134,7 +134,7 @@ struct Publication: ReducerProtocol {
           return .none
           
         case .mirrorTapped:
-          guard self.profileStorageApi.load() != nil
+          guard self.defaultsStorageApi.load(UserProfile.self) != nil
           else { return .none }
           
           state.mirrorConfirmationDialogue = State.MirrorConfirmationDialogue(
@@ -148,7 +148,7 @@ struct Publication: ReducerProtocol {
           return .none
           
         case .mirrorConfirmationConfirmed:
-          guard let user = self.profileStorageApi.load()
+          guard let user = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
           else { return .none }
           
           return .task { [publicationId = state.publication.id] in
