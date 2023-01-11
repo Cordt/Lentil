@@ -2,7 +2,9 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import IdentifiedCollections
 import SwiftUI
+
 
 struct Root: ReducerProtocol {
   static let loadingTexts = [
@@ -27,11 +29,11 @@ struct Root: ReducerProtocol {
     var timelineState: Timeline.State = .init()
     var conversationsState: Conversations.State = .init()
     
-    var posts: IdentifiedArrayOf<Post.State> = []
-    var comments: IdentifiedArrayOf<Post.State> = []
-    var profiles: IdentifiedArrayOf<Profile.State> = []
+    var posts: IdentifiedArray = IdentifiedArrayOf(id: \Post.State.navigationId)
+    var comments: IdentifiedArray = IdentifiedArrayOf(id: \Post.State.navigationId)
+    var profiles: IdentifiedArray = IdentifiedArrayOf(id: \Profile.State.navigationId)
     var createPublication: CreatePublication.State?
-    var imageDetail: Image?
+    var imageDetail: URL?
     var conversation: Conversation.State?
   }
   
@@ -43,7 +45,7 @@ struct Root: ReducerProtocol {
     case switchProgressLabel
     
     case checkAuthenticationStatus
-    case refreshTokenResponse(QueryResult<Bool>)
+    case refreshTokenResponse(Bool)
     
     case rootAppeared
     case rootDisappeared
@@ -77,7 +79,7 @@ struct Root: ReducerProtocol {
         do {
           var attempts = 5
           while attempts > 0 {
-            if let publication = try await self.lensApi.publication(txHash).data {
+            if let publication = try await self.lensApi.publication(txHash) {
               return .timelineAction(.publicationResponse(publication))
             }
             try await self.clock.sleep(for: .seconds(5))
@@ -97,60 +99,60 @@ struct Root: ReducerProtocol {
     }
   }
   
-  func handleNavigationDestination(_ destinationPath: DestinationPath, state: inout State) {
+  func handleAddPath(state: inout State, _ destinationPath: DestinationPath) -> EffectTask<Action> {
     switch destinationPath.destination {
       case .publication(let elementId):
         guard let publication = self.cache.publication(elementId)
-        else {
-          self.navigationApi.remove(destinationPath)
-          return
-        }
+        else { return .none }
         
         switch publication.typename {
           case .post:
-            let postState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .post)
-            state.posts.updateOrAppend(postState)
+            state.posts.updateOrAppend(
+              Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .post)
+            )
           case .comment:
-            let commentState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .comment)
-            state.comments.updateOrAppend(commentState)
+            state.comments.updateOrAppend(
+              Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .comment)
+            )
           case .mirror:
-            let mirrorState = Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .mirror)
-            state.posts.updateOrAppend(mirrorState)
+            state.posts.updateOrAppend(
+              Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .mirror)
+            )
+            return .none
         }
         
       case .profile(let elementId):
-        guard let profile = self.cache.profileById(elementId)
-        else {
-          self.navigationApi.remove(destinationPath)
-          return
-        }
-        
-        let profileState = Profile.State(navigationId: destinationPath.navigationId, profile: profile)
-        state.profiles.updateOrAppend(profileState)
+        guard let profile = self.cache.profile(elementId)
+        else { return .none }
+        state.profiles.updateOrAppend(
+          Profile.State(navigationId: destinationPath.navigationId, profile: profile)
+        )
         
       case .createPublication(let reason):
         state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)
         
       case .imageDetail(let url):
-        guard let medium = self.cache.medium(url.absoluteString),
-              case .image = medium.mediaType,
-              let imageData = self.cache.mediumData(url.absoluteString)?.data,
-              let uiImage = imageData.image(for: .feed, and: .display)
-        else {
-          self.navigationApi.remove(destinationPath)
-          return
-        }
-        
-        state.imageDetail = Image(uiImage: uiImage)
-        
-      case .conversation(let conversation, let userAddress):
-        state.conversation = Conversation.State(
-          navigationId: destinationPath.navigationId,
-          userAddress: userAddress,
-          conversation: conversation,
-          profile: self.cache.profileByAddress(conversation.peerAddress)
-        )
+        state.imageDetail = url
     }
+    return .none
+  }
+  
+  func handleRemovePath(state: inout State, _ destinationPath: DestinationPath) -> EffectTask<Action> {
+    switch destinationPath.destination {
+      case .publication:
+        state.posts.remove(id: destinationPath.id)
+        state.comments.remove(id: destinationPath.id)
+        
+      case .profile:
+        state.profiles.remove(id: destinationPath.id)
+        
+      case .createPublication:
+        state.createPublication = nil
+        
+      case .imageDetail:
+        state.imageDetail = nil
+    }
+    return .none
   }
   
   var body: some ReducerProtocol<State, Action> {
@@ -228,7 +230,7 @@ struct Root: ReducerProtocol {
           }
           
         case .refreshTokenResponse(let tokenIsValid):
-          if tokenIsValid.data {
+          if tokenIsValid {
             // Valid tokens and profile available, open app
             return .run { send in
               try await self.clock.sleep(for: .seconds(1))
@@ -254,7 +256,7 @@ struct Root: ReducerProtocol {
         case .rootAppeared:
           return .run { send in
             do {
-              for try await event in self.navigationApi.eventStream {
+              for try await event in self.navigationApi.eventStream() {
                 switch event {
                   case .append(let destinationPath):
                     await send(.addPath(destinationPath))
@@ -285,31 +287,13 @@ struct Root: ReducerProtocol {
           }
           
         case .conversationsAction:
-          return .none
-          
-        case .addPath(let destinationPath):
-          self.handleNavigationDestination(destinationPath, state: &state)
-          return .none
+          return self.handleAddPath(state: &state, destinationPath)
           
         case .removePath(let destinationPath):
-          switch destinationPath.destination {
-            case .publication:
-              state.posts.remove(id: destinationPath.navigationId)
-              state.comments.remove(id: destinationPath.navigationId)
-              
-            case .profile:
-              state.profiles.remove(id: destinationPath.navigationId)
-              
-            case .createPublication:
-              state.createPublication = nil
-              
-            case .imageDetail:
-              state.imageDetail = nil
+          return self.handleRemovePath(state: &state, destinationPath)
               
             case .conversation:
               state.conversation = nil
-          }
-          return .none
           
         case .post, .comment, .profile, .conversation:
           return .none
@@ -337,6 +321,5 @@ struct Root: ReducerProtocol {
     }
     .ifLet(\.conversation, action: /Action.conversation) {
       Conversation()
-    }
   }
 }

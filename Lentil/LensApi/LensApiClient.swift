@@ -33,13 +33,15 @@ class Network {
   }()
 }
 
-struct QueryResult<Result: Equatable>: Equatable {
-  var data: Result
-  var cursorToNext: String?
+struct Cursor: Equatable {
+  var prev: String?
+  var next: String?
+  var exhausted: Bool { self.prev != nil && next == nil }
 }
 
-struct MutationResult<Result: Equatable>: Equatable {  
+struct PaginatedResult<Result: Equatable>: Equatable {
   var data: Result
+  var cursor: Cursor
 }
 
 extension RelayErrorReasons: Error {}
@@ -78,14 +80,14 @@ struct LensApi {
   
   var authenticationChallenge: @Sendable (
     _ address: String
-  ) async throws -> QueryResult<Challenge>
+  ) async throws -> Challenge
   
   var verify: @Sendable (
-  ) async throws -> QueryResult<Bool>
+  ) async throws -> Bool
   
   var publication: @Sendable (
     _ txHash: String
-  ) async throws -> QueryResult<Model.Publication?>
+  ) async throws -> Model.Publication?
   
   var publications: @Sendable (
     _ limit: Int,
@@ -93,7 +95,7 @@ struct LensApi {
     _ profileId: String,
     _ publicationTypes: [PublicationTypes],
     _ reactionsForProfile: String?
-  ) async throws -> QueryResult<[Model.Publication]>
+  ) async throws -> PaginatedResult<[Model.Publication]>
   
   var explorePublications: @Sendable (
     _ limit: Int,
@@ -101,31 +103,31 @@ struct LensApi {
     _ sortCriteria: PublicationSortCriteria,
     _ publicationTypes: [PublicationTypes],
     _ reactionsForProfile: String?
-  ) async throws -> QueryResult<[Model.Publication]>
+  ) async throws -> PaginatedResult<[Model.Publication]>
   
   var feed: @Sendable (
     _ limit: Int,
     _ cursor: String?,
     _ profileId: String,
     _ reactionsForProfile: String?
-  ) async throws -> QueryResult<[Model.Publication]>
+  ) async throws -> PaginatedResult<[Model.Publication]>
   
   var commentsOfPublication: @Sendable (
     _ publication: Model.Publication,
     _ reactionsForProfile: String?
-  ) async throws -> QueryResult<[Model.Publication]>
+  ) async throws -> PaginatedResult<[Model.Publication]>
   
   var defaultProfile: @Sendable (
     _ ethereumAddress: String
-  ) async throws -> QueryResult<Model.Profile>
+  ) async throws -> Model.Profile
   
   var profile: @Sendable (
     _ forHandle: String
-  ) async throws -> QueryResult<Model.Profile?>
+  ) async throws -> Model.Profile?
   
   var profiles: @Sendable (
     _ ownedBy: String
-  ) async throws -> QueryResult<[Model.Profile]>
+  ) async throws -> PaginatedResult<[Model.Profile]>
   
   var fetchImage: @Sendable (
     _ from: URL
@@ -141,7 +143,7 @@ struct LensApi {
   var broadcast: @Sendable (
     _ broadcastId: String,
     _ signature: String
-  ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
+  ) async throws -> Result<RelayerResult, RelayErrorReasons>
   
   var authenticate: @Sendable (
     _ address: String,
@@ -154,13 +156,13 @@ struct LensApi {
   var createPost: @Sendable (
     _ profileId: String,
     _ contentUri: String
-  ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
+  ) async throws -> Result<RelayerResult, RelayErrorReasons>
   
   var createComment: @Sendable (
     _ profileId: String,
     _ publicationId: String,
     _ contentUri: String
-  ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
+  ) async throws -> Result<RelayerResult, RelayErrorReasons>
   
   var addReaction: @Sendable (
     _ profileId: String,
@@ -177,9 +179,9 @@ struct LensApi {
   var createMirror: @Sendable (
     _ profileId: String,
     _ publicationId: String
-  ) async throws -> MutationResult<Result<RelayerResult, RelayErrorReasons>>
+  ) async throws -> Result<RelayerResult, RelayErrorReasons>
   
   var getDefaultProfileTypedData: @Sendable (
     _ profileId: String
-  ) async throws -> MutationResult<TypedDataResult>
+  ) async throws -> TypedDataResult
 }

@@ -3,12 +3,35 @@
 
 import ComposableArchitecture
 import PhotosUI
+import SDWebImageSwiftUI
 import SwiftUI
 
 
 struct CreatePublicationView: View {
   @FocusState private var textFieldIsFocused: Bool
   let store: Store<CreatePublication.State, CreatePublication.Action>
+  
+  @ViewBuilder
+  func thumbnail(size: CGSize, _ rezisableImage: () -> some View, action: @escaping () -> Void) -> some View {
+    ZStack(alignment: .topTrailing) {
+      rezisableImage()
+        .aspectRatio(contentMode: .fill)
+        .frame(width: size.width, height: size.height)
+        .clipped()
+        .padding(.vertical)
+      
+      Button {
+        action()
+      } label: {
+        Icon.times.view(.large)
+          .foregroundColor(Theme.Color.white)
+      }
+      .frame(width: 25, height: 25)
+      .background(Theme.Color.primary)
+      .clipShape(Circle())
+      .offset(x: 10, y: 5)
+    }
+  }
   
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -32,41 +55,46 @@ struct CreatePublicationView: View {
             
             Spacer()
             
-            if let image = viewStore.selectedPhoto {
-              ZStack(alignment: .topTrailing) {
-                Image(uiImage: image)
-                  .resizable()
-                  .aspectRatio(contentMode: .fill)
-                  .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.35)
-                  .clipped()
-                  .padding(.vertical)
-                
-                Button {
+            HStack(spacing: 20) {
+              if let image = viewStore.selectedPhoto {
+                self.thumbnail(size: CGSizeMake(geometry.size.width * 0.50 - 10, geometry.size.height * 0.35)) {
+                  Image(uiImage: image).resizable()
+                } action: {
                   viewStore.send(.deleteImageTapped)
-                } label: {
-                  Icon.times.view(.large)
-                    .foregroundColor(Theme.Color.white)
                 }
-                .frame(width: 25, height: 25)
-                .background(Theme.Color.primary)
-                .clipShape(Circle())
-                .offset(x: 10, y: 5)
               }
-              .disabled(viewStore.isPosting)
-              .opacity(viewStore.isPosting ? 0.5 : 1.0)
+              if let selectedGif = viewStore.selectedGif {
+                self.thumbnail(size: CGSizeMake(geometry.size.width * 0.50 - 10, geometry.size.height * 0.35)) {
+                  WebImage(url: selectedGif.previewURL).resizable()
+                } action: {
+                  viewStore.send(.deleteGifTapped)
+                }
+              }
             }
+            .disabled(viewStore.isPosting)
+            .opacity(viewStore.isPosting ? 0.5 : 1.0)
             
-            PhotosPicker(
-              selection: viewStore.binding(
-                get: \.photoPickerItem,
-                send: CreatePublication.Action.photoSelectionTapped
-              ),
-              matching: .images,
-              photoLibrary: .shared()) {
-                Image(systemName: "photo")
+            HStack {
+              PhotosPicker(
+                selection: viewStore.binding(
+                  get: \.photoPickerItem,
+                  send: CreatePublication.Action.photoSelectionTapped
+                ),
+                matching: .images,
+                photoLibrary: .shared()) {
+                  Image(systemName: "photo")
+                }
+                .disabled(viewStore.selectedPhoto != nil || viewStore.isPosting)
+                
+              Button {
+                viewStore.send(.selectGifTapped)
+              } label: {
+                Icon.otter.view(.xlarge)
               }
-              .disabled(viewStore.selectedPhoto != nil || viewStore.isPosting)
-              .opacity(viewStore.isPosting ? 0.5 : 1.0)
+              .disabled(viewStore.selectedGif != nil || viewStore.isPosting)
+
+            }
+            .opacity(viewStore.isPosting ? 0.5 : 1.0)
           }
         }
         
@@ -100,6 +128,21 @@ struct CreatePublicationView: View {
       .alert(
         self.store.scope(state: \.cancelAlert),
         dismiss: .cancelAlertDismissed
+      )
+      .fullScreenCover(
+        unwrapping: viewStore.binding(
+          get: \.selectGif,
+          send: CreatePublication.Action.setSelectGif
+        ),
+        content: { _ in
+          IfLetStore(
+            self.store.scope(
+              state: \.selectGif,
+              action: CreatePublication.Action.selectGif
+            )) { store in
+              SelectGifView(store: store)
+            }
+        }
       )
       .accentColor(Theme.Color.primary)
       .onAppear { self.textFieldIsFocused = true }

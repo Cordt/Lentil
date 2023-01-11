@@ -19,12 +19,9 @@ extension LensApi: DependencyKey {
       try await run(
         query: ChallengeQuery(request: .init(address: address)),
         mapResult: { data in
-          QueryResult(
-            data:
-              Challenge(
-                message: data.challenge.text,
-                expires: Date().addingTimeInterval(60 * 5)
-              )
+          Challenge(
+            message: data.challenge.text,
+            expires: Date().addingTimeInterval(60 * 5)
           )
         }
       )
@@ -34,27 +31,17 @@ extension LensApi: DependencyKey {
       let accessToken = try AuthTokenStorage.load(token: .access)
       return try await run(
         query: VerifyQuery(request: VerifyRequest(accessToken: accessToken)),
-        mapResult: { data in
-          QueryResult(
-            data: data.verify
-          )
-        }
+        mapResult: { $0.verify }
       )
     },
     
     publication: { txHash in
       try await run(
         query: PublicationQuery(
-          request: PublicationQueryRequest(
-            txHash: txHash
-          )
+          request: PublicationQueryRequest(txHash: txHash)
         ),
         cachePolicy: .fetchIgnoringCacheData,
-        mapResult: { data in
-          QueryResult(
-            data: Model.Publication.publication(from: data.publication)
-          )
-        }
+        mapResult: { Model.Publication.publication(from: $0.publication) }
       )
     },
     
@@ -73,9 +60,9 @@ extension LensApi: DependencyKey {
         ),
         cachePolicy: .fetchIgnoringCacheData,
         mapResult: { data in
-          QueryResult(
+          PaginatedResult(
             data: data.publications.items.compactMap { Model.Publication.publication(from: $0) },
-            cursorToNext: data.publications.pageInfo.next
+            cursor: .init(prev: data.publications.pageInfo.prev, next: data.publications.pageInfo.next)
           )
         }
       )
@@ -96,9 +83,9 @@ extension LensApi: DependencyKey {
         ),
         cachePolicy: .default,
         mapResult: { data in
-          QueryResult(
+          PaginatedResult(
             data: data.explorePublications.items.compactMap { Model.Publication.publication(from: $0) },
-            cursorToNext: data.explorePublications.pageInfo.next
+            cursor: .init(prev: data.explorePublications.pageInfo.prev, next: data.explorePublications.pageInfo.next)
           )
         }
       )
@@ -118,7 +105,10 @@ extension LensApi: DependencyKey {
         ),
         cachePolicy: .default,
         mapResult: { data in
-          QueryResult(data: data.feed.items.compactMap { Model.Publication.publication(from: $0) })
+          PaginatedResult(
+            data: data.feed.items.compactMap { Model.Publication.publication(from: $0) },
+            cursor: .init(prev: data.feed.pageInfo.prev, next: data.feed.pageInfo.next)
+          )
         }
       )
     },
@@ -134,10 +124,11 @@ extension LensApi: DependencyKey {
           reactionRequest: reactionFieldRequest
         ),
         mapResult: { data in
-          QueryResult(
+          PaginatedResult(
             data: data.publications.items.compactMap {
               Model.Publication.publication(from: $0, child: publication)
-            }
+            },
+            cursor: .init(prev: data.publications.pageInfo.prev, next: data.publications.pageInfo.next)
           )
         }
       )
@@ -153,7 +144,7 @@ extension LensApi: DependencyKey {
         mapResult: { data in
           guard let profileFields = data.defaultProfile?.fragments.profileFields
           else { throw ApiError.requestFailed }
-          return QueryResult(data: Model.Profile.from(profileFields))
+          return Model.Profile.from(profileFields)
         }
       )
     },
@@ -162,8 +153,8 @@ extension LensApi: DependencyKey {
       try await run(
         query: ProfileQuery(request: SingleProfileQueryRequest(handle: forHandle)),
         mapResult: { data in
-          guard let profileFields = data.profile?.fragments.profileFields else { return QueryResult(data: nil) }
-          return QueryResult(data: Model.Profile.from(profileFields))
+          guard let profileFields = data.profile?.fragments.profileFields else { return nil }
+          return Model.Profile.from(profileFields)
         }
       )
     },
@@ -172,7 +163,10 @@ extension LensApi: DependencyKey {
       try await run(
         query: ProfilesQuery(request: ProfileQueryRequest(ownedBy: [ownedBy])),
         mapResult: { data in
-          QueryResult(data: Model.Profile.from(data.profiles))
+          PaginatedResult(
+            data: Model.Profile.from(data.profiles),
+            cursor: .init(prev: data.profiles.pageInfo.prev, next: data.profiles.pageInfo.next)
+          )
         }
       )
     },
@@ -215,13 +209,13 @@ extension LensApi: DependencyKey {
         ),
         mapResult: { data in
           if let result = data.broadcast.asRelayerResult {
-            return MutationResult(data: .success(RelayerResult(txnHash: result.txHash, txnId: result.txId)))
+            return .success(RelayerResult(txnHash: result.txHash, txnId: result.txId))
           }
           else if let error = data.broadcast.asRelayError {
-            return MutationResult(data: .failure(error.reason))
+            return .failure(error.reason)
           }
           else {
-            return MutationResult(data: .failure(.__unknown("[ERROR] Received unexpected failure from Broadcast")))
+            return .failure(.__unknown("[ERROR] Received unexpected failure from Broadcast"))
           }
         }
       )
@@ -261,13 +255,13 @@ extension LensApi: DependencyKey {
         ),
         mapResult: { data in
           if let result = data.createPostViaDispatcher.asRelayerResult {
-            return MutationResult(data: .success(RelayerResult(txnHash: result.txHash, txnId: result.txId)))
+            return .success(RelayerResult(txnHash: result.txHash, txnId: result.txId))
           }
           else if let error = data.createPostViaDispatcher.asRelayError {
-            return MutationResult(data: .failure(error.reason))
+            return .failure(error.reason)
           }
           else {
-            return MutationResult(data: .failure(.__unknown("Received unexpected failure from CreatePostViaDispatcher")))
+            return .failure(.__unknown("Received unexpected failure from CreatePostViaDispatcher"))
           }
         }
       )
@@ -287,13 +281,13 @@ extension LensApi: DependencyKey {
         ),
         mapResult: { data in
           if let result = data.createCommentViaDispatcher.asRelayerResult {
-            return MutationResult(data: .success(RelayerResult(txnHash: result.txHash, txnId: result.txId)))
+            return .success(RelayerResult(txnHash: result.txHash, txnId: result.txId))
           }
           else if let error = data.createCommentViaDispatcher.asRelayError {
-            return MutationResult(data: .failure(error.reason))
+            return .failure(error.reason)
           }
           else {
-            return MutationResult(data: .failure(.__unknown("Received unexpected failure from CreatePostViaDispatcher")))
+            return .failure(.__unknown("Received unexpected failure from CreatePostViaDispatcher"))
           }
         }
       )
@@ -325,13 +319,13 @@ extension LensApi: DependencyKey {
         ),
         mapResult: { data in
           if let result = data.createMirrorViaDispatcher.asRelayerResult {
-            return MutationResult(data: .success(RelayerResult(txnHash: result.txHash, txnId: result.txId)))
+            return .success(RelayerResult(txnHash: result.txHash, txnId: result.txId))
           }
           else if let error = data.createMirrorViaDispatcher.asRelayError {
-            return MutationResult(data: .failure(error.reason))
+            return .failure(error.reason)
           }
           else {
-            return MutationResult(data: .failure(.__unknown("Received unexpected failure from CreateMirrorViaDispatcher")))
+            return .failure(.__unknown("Received unexpected failure from CreateMirrorViaDispatcher"))
           }
         }
       )
@@ -352,19 +346,17 @@ extension LensApi: DependencyKey {
             from: data.createSetDefaultProfileTypedData.typedData.jsonObject,
             for: .setDefaultProfile
           )
-          return MutationResult(
-            data: TypedDataResult(
-              id: typedDataId,
-              expires: expiresAt,
-              typedData: typedData
-            )
+          return TypedDataResult(
+            id: typedDataId,
+            expires: expiresAt,
+            typedData: typedData
           )
         }
       )
     }
   )
 }
-  
+
 #if DEBUG
 import UIKit
 import XCTestDynamicOverlay
@@ -372,16 +364,16 @@ import XCTestDynamicOverlay
 
 extension LensApi {
   static let previewValue = LensApi(
-    authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
-    verify: { QueryResult(data: true) },
-    publication: { _ in QueryResult(data: MockData.mockPublications[0]) },
-    publications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
-    explorePublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
-    feed: { _, _, _, _ in QueryResult(data: MockData.mockPublications) },
-    commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
-    defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
-    profile: { _ in QueryResult(data: MockData.mockProfiles[0]) },
-    profiles: { _ in QueryResult(data: [MockData.mockProfiles.randomElement()!]) },
+    authenticationChallenge: { _ in Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5)) },
+    verify: { true },
+    publication: { _ in MockData.mockPublications[0] },
+    publications: { _, _, _, _, _ in PaginatedResult(data: MockData.mockPublications, cursor: .init()) },
+    explorePublications: { _, _, _, _, _ in PaginatedResult(data: MockData.mockPublications, cursor: .init()) },
+    feed: { _, _, _, _ in PaginatedResult(data: MockData.mockPublications, cursor: .init()) },
+    commentsOfPublication: { _, _ in PaginatedResult(data: MockData.mockComments, cursor: .init()) },
+    defaultProfile: { _ in MockData.mockProfiles[2] },
+    profile: { _ in MockData.mockProfiles[0] },
+    profiles: { _ in PaginatedResult(data: MockData.mockProfiles, cursor: .init()) },
     fetchImage: { url in
       if url.absoluteString == "https://profile-picture" { return UIImage(named: "cryptopunk1")!.jpegData(compressionQuality: 0.5)! }
       else if url.absoluteString == "https://cover-picture" { return UIImage(named: "munich")!.jpegData(compressionQuality: 0.5)! }
@@ -396,15 +388,14 @@ extension LensApi {
       else if query.count == 4 { return QueryResult(data: [MockData.mockProfiles[0], MockData.mockProfiles[1]]) }
       else { return QueryResult(data: MockData.mockProfiles) }
     },
-    broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
     authenticate: { _, _ in },
     refreshAuthentication: {},
-    createPost: { _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
-    createComment: { _, _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
+    createPost: { _, _ in .success(RelayerResult(txnHash: "abc", txnId: "123")) },
+    createComment: { _, _, _ in .success(RelayerResult(txnHash: "abc", txnId: "123")) },
     addReaction: { _, _, _ in },
     removeReaction: { _, _, _ in },
-    createMirror: { _, _ in MutationResult(data: .success(RelayerResult(txnHash: "abc", txnId: "123"))) },
-    getDefaultProfileTypedData: { _ in MutationResult(data: TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData)) }
+    createMirror: { _, _ in .success(RelayerResult(txnHash: "abc", txnId: "123")) },
+    getDefaultProfileTypedData: { _ in TypedDataResult(id: "abc", expires: Date().addingTimeInterval(60 * 60), typedData: mockTypedData) }
   )
   
   static var testValue = LensApi(

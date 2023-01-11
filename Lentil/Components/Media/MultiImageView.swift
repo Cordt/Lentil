@@ -2,17 +2,22 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import SDWebImageSwiftUI
 import SwiftUI
 
 
 struct MultiImage: ReducerProtocol {
+  struct LentilImage: Equatable, Identifiable {
+    var id: Int
+    var url: URL
+  }
+  
   struct State: Equatable {
-    var images: IdentifiedArrayOf<LentilImage.State>
+    var images: IdentifiedArrayOf<LentilImage>
   }
   
   enum Action: Equatable {
-    case imageTapped(LentilImage.State.ID)
-    case image(LentilImage.State.ID, LentilImage.Action)
+    case imageTapped(LentilImage.ID)
   }
   
   @Dependency(\.navigationApi) var navigationApi
@@ -22,23 +27,17 @@ struct MultiImage: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .imageTapped(let id):
-          guard let imageState = state.images[id: id]
+          guard let image = state.images[id: id]
           else { return .none}
           
           self.navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .imageDetail(imageState.imageUrl)
+              destination: .imageDetail(image.url)
             )
           )
           return .none
-          
-        case .image:
-          return .none
       }
-    }
-    .forEach(\.images, action: /Action.image) {
-      LentilImage()
     }
   }
 }
@@ -48,22 +47,23 @@ struct MultiImageView: View {
     
   @ViewBuilder
   func image(
-    imageId: String,
-    statePath: @escaping (MultiImage.State) -> LentilImage.State,
-    actionPath: @escaping (LentilImage.Action) -> MultiImage.Action,
+    imageID: Int,
     dimensions: CGSize
   ) -> some View {
-    WithViewStore(self.store, observe: { $0 }) { viewStore in
-      LentilImageView(
-        store: self.store.scope(
-          state: statePath,
-          action: actionPath
-        )
-      )
-      .frame(width: dimensions.width, height: dimensions.height)
-      .clipped()
-      .contentShape(Rectangle().inset(by: 20))
-      .onTapGesture { viewStore.send(.imageTapped(imageId)) }
+    WithViewStore(self.store, observe: { $0.images[imageID] }) { viewStore in
+      WebImage(url: viewStore.url)
+        .resizable()
+        .placeholder {
+          Rectangle()
+            .foregroundColor(Theme.Color.greyShade1)
+        }
+        .indicator(.activity)
+        .transition(.fade(duration: 0.5))
+        .scaledToFill()
+        .frame(width: dimensions.width, height: dimensions.height)
+        .clipped()
+        .contentShape(Rectangle().inset(by: 20))
+        .onTapGesture { viewStore.send(.imageTapped(viewStore.id)) }
     }
   }
   
@@ -73,9 +73,7 @@ struct MultiImageView: View {
         case 1:
           GeometryReader { geometry in
             self.image(
-              imageId: viewStore.images[0].id,
-              statePath: \.images[0],
-              actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
+              imageID: 0,
               dimensions: geometry.size
             )
           }
@@ -83,16 +81,12 @@ struct MultiImageView: View {
           GeometryReader { geometry in
             HStack {
               self.image(
-                imageId: viewStore.images[0].id,
-                statePath: \.images[0],
-                actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
+                imageID: 0,
                 dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height)
               )
               
               self.image(
-                imageId: viewStore.images[1].id,
-                statePath: \.images[1],
-                actionPath: { MultiImage.Action.image(viewStore.images[1].id, $0) },
+                imageID: 1,
                 dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height)
               )
             }
@@ -102,24 +96,18 @@ struct MultiImageView: View {
             VStack {
               HStack {
                 self.image(
-                  imageId: viewStore.images[0].id,
-                  statePath: \.images[0],
-                  actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
+                  imageID: 0,
                   dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 3.0)
                 )
                 
                 self.image(
-                  imageId: viewStore.images[1].id,
-                  statePath: \.images[1],
-                  actionPath: { MultiImage.Action.image(viewStore.images[1].id, $0) },
+                  imageID: 1,
                   dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 3.0)
                 )
               }
               
               self.image(
-                imageId: viewStore.images[2].id,
-                statePath: \.images[2],
-                actionPath: { MultiImage.Action.image(viewStore.images[2].id, $0) },
+                imageID: 2,
                 dimensions: CGSize(width: geometry.size.width, height: geometry.size.height / 3.0 * 2.0)
               )
             }
@@ -129,31 +117,23 @@ struct MultiImageView: View {
             VStack {
               HStack {
                 self.image(
-                  imageId: viewStore.images[0].id,
-                  statePath: \.images[0],
-                  actionPath: { MultiImage.Action.image(viewStore.images[0].id, $0) },
+                  imageID: 0,
                   dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 2.0)
                 )
                 
                 self.image(
-                  imageId: viewStore.images[1].id,
-                  statePath: \.images[1],
-                  actionPath: { MultiImage.Action.image(viewStore.images[1].id, $0) },
+                  imageID: 1,
                   dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 2.0)
                 )
               }
               HStack {
                 self.image(
-                  imageId: viewStore.images[2].id,
-                  statePath: \.images[2],
-                  actionPath: { MultiImage.Action.image(viewStore.images[2].id, $0) },
+                  imageID: 2,
                   dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 2.0)
                 )
                 
                 self.image(
-                  imageId: viewStore.images[3].id,
-                  statePath: \.images[3],
-                  actionPath: { MultiImage.Action.image(viewStore.images[3].id, $0) },
+                  imageID: 3,
                   dimensions: CGSize(width: max(geometry.size.width * 0.5 - 4, 0) , height: geometry.size.height / 2.0)
                 )
               }
@@ -165,3 +145,26 @@ struct MultiImageView: View {
     }
   }
 }
+
+#if DEBUG
+struct MultiImageView_Previews: PreviewProvider {
+  static var previews: some View {
+    NavigationStack {
+      VStack {
+        MultiImageView(
+          store: .init(
+            initialState: .init(
+              images: [
+                MultiImage.LentilImage(id: 0, url: URL(string: "https://feed-picture")!),
+                MultiImage.LentilImage(id: 1, url: URL(string: "https://cover-picture")!),
+                MultiImage.LentilImage(id: 2, url: URL(string: "https://crete")!)
+              ]
+            ),
+            reducer: MultiImage()
+          )
+        )
+      }
+    }
+  }
+}
+#endif

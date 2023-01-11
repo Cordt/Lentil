@@ -5622,6 +5622,12 @@ public final class ProfilesQuery: GraphQLQuery {
           __typename
           ...ProfileFields
         }
+        pageInfo {
+          __typename
+          prev
+          next
+          totalCount
+        }
       }
     }
     """
@@ -5680,6 +5686,7 @@ public final class ProfilesQuery: GraphQLQuery {
         return [
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
           GraphQLField("items", type: .nonNull(.list(.nonNull(.object(Item.selections))))),
+          GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
         ]
       }
 
@@ -5689,8 +5696,8 @@ public final class ProfilesQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(items: [Item]) {
-        self.init(unsafeResultMap: ["__typename": "PaginatedProfileResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }])
+      public init(items: [Item], pageInfo: PageInfo) {
+        self.init(unsafeResultMap: ["__typename": "PaginatedProfileResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
       }
 
       public var __typename: String {
@@ -5708,6 +5715,15 @@ public final class ProfilesQuery: GraphQLQuery {
         }
         set {
           resultMap.updateValue(newValue.map { (value: Item) -> ResultMap in value.resultMap }, forKey: "items")
+        }
+      }
+
+      public var pageInfo: PageInfo {
+        get {
+          return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
         }
       }
 
@@ -5759,6 +5775,68 @@ public final class ProfilesQuery: GraphQLQuery {
             set {
               resultMap += newValue.resultMap
             }
+          }
+        }
+      }
+
+      public struct PageInfo: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PaginatedResultInfo"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("prev", type: .scalar(String.self)),
+            GraphQLField("next", type: .scalar(String.self)),
+            GraphQLField("totalCount", type: .scalar(Int.self)),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(prev: String? = nil, next: String? = nil, totalCount: Int? = nil) {
+          self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Cursor to query the actual results
+        public var prev: String? {
+          get {
+            return resultMap["prev"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "prev")
+          }
+        }
+
+        /// Cursor to query next results
+        public var next: String? {
+          get {
+            return resultMap["next"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "next")
+          }
+        }
+
+        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        public var totalCount: Int? {
+          get {
+            return resultMap["totalCount"] as? Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "totalCount")
           }
         }
       }

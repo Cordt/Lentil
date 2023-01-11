@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import SDWebImageSwiftUI
 import SwiftUI
 
 
@@ -83,27 +84,28 @@ fileprivate struct PostProfilePicture: View {
   var body: some View {
     WithViewStore(
       self.store,
-      observe: { $0.publication.profile.handle }
+      observe: { $0.publication.profile }
     ) { viewStore in
       Button {
         viewStore.send(.userProfileTapped)
       } label: {
-        IfLetStore(
-          self.store.scope(
-            state: \.remoteProfilePicture,
-            action: Publication.Action.remoteProfilePicture
-          ),
-          then: {
-            LentilImageView(store: $0)
-              .frame(width: 40, height: 40)
-              .clipShape(Circle())
-          },
-          else: {
-            profileGradient(from: viewStore.state)
-              .frame(width: 40, height: 40)
-              .clipShape(Circle())
-          }
-        )
+        if let url = viewStore.profilePictureUrl {
+          WebImage(url: url)
+            .resizable()
+            .placeholder {
+              profileGradient(from: viewStore.handle)
+            }
+            .indicator(.activity)
+            .transition(.fade(duration: 0.5))
+            .scaledToFill()
+            .frame(width: 40, height: 40)
+            .clipShape(Circle())
+        }
+        else {
+          profileGradient(from: viewStore.handle)
+            .frame(width: 40, height: 40)
+            .clipShape(Circle())
+        }
       }
     }
   }

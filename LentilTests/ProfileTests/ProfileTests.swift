@@ -19,7 +19,7 @@ final class ProfileTests: XCTestCase {
     
     store.dependencies.cache.updateOrAppendPublication = { _ in }
     store.dependencies.cache.updateOrAppendProfile = { _ in }
-    store.dependencies.lensApi.publications = { _, _, _, _, _ in QueryResult(data: publications) }
+    store.dependencies.lensApi.publications = { _, _, _, _, _ in PaginatedResult(data: publications, cursor: .init()) }
     
     await store.send(.didAppear)
     await store.receive(.fetchPublications)

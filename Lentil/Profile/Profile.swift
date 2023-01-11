@@ -8,8 +8,8 @@ import SwiftUI
 
 struct Profile: ReducerProtocol {
   struct State: Equatable, Identifiable {
+    var id: String { self.profile.id }
     var navigationId: String
-    var id: String { self.navigationId }
     
     var profile: Model.Profile
     var posts: IdentifiedArrayOf<Post.State>
@@ -33,9 +33,6 @@ struct Profile: ReducerProtocol {
       return locationAttribute.value
     }
     
-    var remoteCoverPicture: LentilImage.State?
-    var remoteProfilePicture: LentilImage.State?
-    
     var coverOffset: CGFloat = 0.0
     var profileDetailHidden: Bool {
       self.coverOffset <= -100
@@ -46,23 +43,12 @@ struct Profile: ReducerProtocol {
       self.profile = profile
       self.posts = []
       self.cursorPublications = nil
-      self.remoteCoverPicture = nil
-      self.remoteProfilePicture = nil
-      
-      if let coverPictureUrl = profile.coverPictureUrl {
-        self.remoteCoverPicture = .init(imageUrl: coverPictureUrl, kind: .cover)
-      }
-      if let profilePictureUrl = profile.profilePictureUrl {
-        self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(profile.handle))
-      }
     }
   }
   
   indirect enum Action: Equatable {
     case dismissView
     case didAppear
-    case remoteCoverPicture(LentilImage.Action)
-    case remoteProfilePicture(LentilImage.Action)
     case fetchPublications
     case publicationsResponse(TaskResult<[Model.Publication]>)
     case scrollPositionChanged(CGPoint)
@@ -81,7 +67,7 @@ struct Profile: ReducerProtocol {
         case .dismissView:
           self.navigationApi.remove(
             DestinationPath(
-              navigationId: state.id,
+              navigationId: state.navigationId,
               destination: .profile(state.profile.id)
             )
           )
@@ -132,9 +118,6 @@ struct Profile: ReducerProtocol {
           log("Failed to load publications for profile", level: .error, error: error)
           return .none
           
-        case .remoteCoverPicture, .remoteProfilePicture:
-          return .none
-          
         case .scrollPositionChanged(let position):
           state.coverOffset = min(max(position.y, -200), 0)
           return .none
@@ -142,12 +125,6 @@ struct Profile: ReducerProtocol {
         case .post:
           return .none
       }
-    }
-    .ifLet(\.remoteCoverPicture, action: /Action.remoteCoverPicture) {
-      LentilImage()
-    }
-    .ifLet(\.remoteProfilePicture, action: /Action.remoteProfilePicture) {
-      LentilImage()
     }
     .forEach(\.posts, action: /Action.post) {
       Post()

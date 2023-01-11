@@ -5,10 +5,11 @@ import IdentifiedCollections
 import Dependencies
 import Foundation
 import SwiftUI
+import XCTestDynamicOverlay
 
 
 struct NavigationApi {
-  var eventStream: NavigationEvents
+  var eventStream: () -> NavigationEvents
   var pathBinding: () -> Binding<IdentifiedArrayOf<DestinationPath>>
   var append: (DestinationPath) -> ()
   var remove: (DestinationPath) -> ()
@@ -24,9 +25,9 @@ struct DestinationPath: Identifiable, Equatable, Hashable {
     
     case conversation(_ conversation: XMTPConversation, _ userAddress: String)
   }
+  var id: String { self.navigationId }
   var navigationId: String
   var destination: Destination
-  var id: String { self.navigationId }
 }
 
 fileprivate class Navigation {
@@ -36,6 +37,10 @@ fileprivate class Navigation {
   
   private init() {
     self.eventStream = NavigationEvents()
+  }
+  
+  func events() -> NavigationEvents {
+    self.eventStream
   }
   
   func pathBinding() -> Binding<IdentifiedArrayOf<DestinationPath>> {
@@ -90,7 +95,7 @@ extension DependencyValues {
 extension NavigationApi: DependencyKey {
   static var liveValue: NavigationApi {
     NavigationApi(
-      eventStream: Navigation.shared.eventStream,
+      eventStream: Navigation.shared.events,
       pathBinding: Navigation.shared.pathBinding,
       append: Navigation.shared.append,
       remove: Navigation.shared.remove
@@ -101,10 +106,10 @@ extension NavigationApi: DependencyKey {
 #if DEBUG
 extension NavigationApi {
   static var testValue = NavigationApi(
-    eventStream: Navigation.shared.eventStream,
-    pathBinding: Navigation.shared.pathBinding,
-    append: Navigation.shared.append,
-    remove: Navigation.shared.remove
+    eventStream: unimplemented("eventStream"),
+    pathBinding: unimplemented("pathBinding"),
+    append: unimplemented("append"),
+    remove: unimplemented("remove")
   )
 }
 #endif

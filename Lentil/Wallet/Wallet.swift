@@ -84,7 +84,7 @@ struct Wallet: ReducerProtocol {
         return .task {
           await .challengeResponse(
             TaskResult {
-              try await lensApi.authenticationChallenge(address).data
+              try await lensApi.authenticationChallenge(address)
             }
           )
         }
@@ -118,7 +118,7 @@ struct Wallet: ReducerProtocol {
         guard let address = state.address else { return .none }
         
         return .run { send in
-          let defaultProfile = try await lensApi.defaultProfile(address).data
+          let defaultProfile = try await lensApi.defaultProfile(address)
           await send(.defaultProfileResponse(defaultProfile))
           
         } catch: { error, send in

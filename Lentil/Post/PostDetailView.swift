@@ -6,7 +6,7 @@ import SwiftUI
 
 
 struct PostDetailView: View {
-  let store: Store<Post.State, Post.Action>
+  let store: StoreOf<Post>
   
   var body: some View {
     WithViewStore(self.store, observe: { $0.post }) { viewStore in
@@ -55,6 +55,7 @@ struct PostDetailView: View {
         .padding()
       }
       .padding(.top, 1)
+      .mirrorConfirmationDialogue(store: self.store)
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           BackButton { viewStore.send(.dismissView) }

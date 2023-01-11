@@ -142,13 +142,16 @@ extension Model.Publication {
   }
   
   private static func publication(from mirror: MirrorFields, reaction: ReactionTypes?) -> Self? {
+    let mirrorId: String
     let profileFields: ProfileFields
     let publicationStatsFields: PublicationStatsFields
     if let mirroredPost = mirror.mirrorOf.asPost {
+      mirrorId = mirroredPost.fragments.postFields.id
       profileFields = mirroredPost.fragments.postFields.profile.fragments.profileFields
       publicationStatsFields = mirroredPost.fragments.postFields.stats.fragments.publicationStatsFields
     }
     else if let mirroredComment = mirror.mirrorOf.asComment {
+      mirrorId = mirroredComment.fragments.commentFields.fragments.commentBaseFields.id
       profileFields = mirroredComment.fragments.commentFields.fragments.commentBaseFields.profile.fragments.profileFields
       publicationStatsFields = mirroredComment.fragments.commentFields.fragments.commentBaseFields.stats.fragments.publicationStatsFields
     }
@@ -165,7 +168,7 @@ extension Model.Publication {
     let publicationAuthorProfile = Model.Profile.from(profileFields)
     
     return mirrorFrom(
-      id: mirror.fragments.mirrorBaseFields.id,
+      id: mirrorId,
       mirror: mirroringProfile,
       publication: publicationAuthorProfile,
       content: content,

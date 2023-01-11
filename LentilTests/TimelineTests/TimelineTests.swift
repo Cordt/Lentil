@@ -19,7 +19,7 @@ final class TimelineTests: XCTestCase {
     
     store.dependencies.cache.updateOrAppendPublication = { _ in }
     store.dependencies.cache.updateOrAppendProfile = { _ in }
-    store.dependencies.lensApi.explorePublications = { _, _, _, _, _ in QueryResult(data: explorePublications, cursorToNext: "cursor") }
+    store.dependencies.lensApi.explorePublications = { _, _, _, _, _ in PaginatedResult(data: explorePublications, cursor: .init(next: "cursor")) }
     store.dependencies.profileStorageApi.load = { nil }
     
     await store.send(.timelineAppeared)
@@ -27,13 +27,13 @@ final class TimelineTests: XCTestCase {
     await store.receive(.fetchPublications) {
       $0.loadingInFlight = true
     }
-    await store.receive(.publicationsResponse(.init(publications: explorePublications, cursorExplore: "cursor", cursorFeed: nil))) {
+    await store.receive(.publicationsResponse(.init(publications: explorePublications, cursorExplore: .init(next: "cursor"), cursorFeed: .init()))) {
       $0.posts.append(Post.State(
         navigationId: "00000000-0000-0000-0000-000000000000",
         post: .init(publication: explorePublications.first!),
         typename: .post
       ))
-      $0.cursorExplore = "cursor"
+      $0.cursorExplore = .init(next: "cursor")
       $0.loadingInFlight = false
     }
   }
@@ -51,15 +51,15 @@ final class TimelineTests: XCTestCase {
     store.dependencies.cache.updateOrAppendProfile = { _ in }
     store.dependencies.lensApi.defaultProfile = { _ in
       try await clock.sleep(for: .seconds(1))
-      return QueryResult(data: MockData.mockProfiles[0])
+      return MockData.mockProfiles[0]
     }
     store.dependencies.lensApi.explorePublications = { _, _, _, _, _ in
       try await clock.sleep(for: .seconds(1))
-      return QueryResult(data: [explorePublications], cursorToNext: "cursorExplore")
+      return PaginatedResult(data: [explorePublications], cursor: .init(next: "cursor explore"))
     }
     store.dependencies.lensApi.feed = { _, _, _, _ in
       try await clock.sleep(for: .seconds(1))
-      return QueryResult(data: [feedPublications], cursorToNext: "cursorFeed")
+      return PaginatedResult(data: [feedPublications], cursor: .init(next: "cursor feed"))
     }
     store.dependencies.profileStorageApi.load = { MockData.mockUserProfile }
     
@@ -79,7 +79,15 @@ final class TimelineTests: XCTestCase {
       )
     }
     await clock.advance(by: .seconds(2))
-    await store.receive(.publicationsResponse(.init(publications: [feedPublications, explorePublications], cursorExplore: "cursorExplore", cursorFeed: "cursorFeed"))) {
+    await store.receive(
+      .publicationsResponse(
+        .init(
+          publications: [feedPublications, explorePublications],
+          cursorExplore: .init(next: "cursor explore"),
+          cursorFeed: .init(next: "cursor feed")
+        )
+      )
+    ) {
       $0.posts.append(Post.State(
         navigationId: "00000000-0000-0000-0000-000000000001",
         post: .init(publication: feedPublications),
@@ -90,8 +98,8 @@ final class TimelineTests: XCTestCase {
         post: .init(publication: explorePublications),
         typename: .post
       ))
-      $0.cursorExplore = "cursorExplore"
-      $0.cursorFeed = "cursorFeed"
+      $0.cursorExplore = .init(next: "cursor explore")
+      $0.cursorFeed = .init(next: "cursor feed")
       $0.loadingInFlight = false
     }
   }

@@ -9,7 +9,7 @@ struct Model {
     indirect enum Typename: Equatable {
       case post
       case comment(of: Publication?)
-      case mirror(by: Profile?)
+      case mirror(by: Profile)
     }
     
     let id: String

@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import SDWebImageSwiftUI
 import SwiftUI
 
 
@@ -24,21 +25,24 @@ struct ProfileView: View {
   func cover(width: CGFloat, height: CGFloat) -> some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       ZStack(alignment: .bottomLeading) {
-        IfLetStore(
-          self.store.scope(
-            state: \.remoteCoverPicture,
-            action: Profile.Action.remoteCoverPicture
-          ),
-          then: {
-            LentilImageView(store: $0)
-              .frame(width: width, height: height)
-              .clipped()
-          },
-          else: {
+        if let url = viewStore.profile.coverPictureUrl {
+          WebImage(url: url)
+            .resizable()
+            .placeholder {
+              Rectangle()
+              .foregroundColor(Theme.Color.greyShade1)
+            }
+            .indicator(.activity)
+            .transition(.fade(duration: 0.5))
+            .scaledToFill()
+            .frame(width: width, height: height)
+            .clipped()
+        }
+        else {
             Theme.lentilGradient()
-              .frame(width: width, height: height)
-          }
-        )
+            .frame(width: width, height: height)
+        }
+        
         HStack {
           if let twitter = viewStore.twitterURL {
             self.linkIcon(icon: Icon.twitter, url: twitter)
@@ -53,6 +57,29 @@ struct ProfileView: View {
     }
   }
   
+  @ViewBuilder
+  func profilePicture() -> some View {
+    WithViewStore(self.store, observe: { $0.profile }) { viewStore in
+      if let url = viewStore.profilePictureUrl {
+        WebImage(url: url)
+          .resizable()
+          .placeholder {
+            profileGradient(from: viewStore.handle)
+          }
+          .indicator(.activity)
+          .transition(.fade(duration: 0.5))
+          .scaledToFill()
+      }
+      else {
+        profileGradient(from: viewStore.handle)
+      }
+    }
+    .frame(width: 112, height: 112)
+    .clipShape(Circle())
+    .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
+    .offset(y: 64)
+  }
+  
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       GeometryReader { geometry in
@@ -60,28 +87,9 @@ struct ProfileView: View {
           ZStack(alignment: .bottomTrailing) {
             self.cover(width: geometry.size.width, height: 300)
             
-            IfLetStore(
-              self.store.scope(
-                state: \.remoteProfilePicture,
-                action: Profile.Action.remoteProfilePicture
-              ),
-              then: {
-                LentilImageView(store: $0)
-                  .frame(width: 112, height: 112)
-                  .clipShape(Circle())
-                  .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
-                  .offset(y: 64)
-              },
-              else: {
-                profileGradient(from: viewStore.profile.handle)
-                  .frame(width: 112, height: 112)
-                  .clipShape(Circle())
-                  .overlay(Circle().strokeBorder(Theme.Color.white, lineWidth: 1.0))
-                  .offset(y: 64)
-              }
-            )
-            .opacity(viewStore.profileDetailHidden ? 0.0 : 1.0)
-            .padding(.trailing)
+            self.profilePicture()
+              .opacity(viewStore.profileDetailHidden ? 0.0 : 1.0)
+              .padding(.trailing)
           }
           .padding(.top, viewStore.coverOffset)
           

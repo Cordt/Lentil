@@ -18,6 +18,8 @@ class LentilEnvironment {
   let lentilAppId: String
   let lentilIconIPFSUrl: String
   
+  let giphyApiKey: String
+  
   let sentryDsn: String
   
   #if DEBUG
@@ -48,6 +50,8 @@ class LentilEnvironment {
     
     self.lentilAppId = "lentil"
     self.lentilIconIPFSUrl = "ipfs://" + value(for: "LENTIL_CID")
+    
+    self.giphyApiKey = value(for: "GIPHY_API_KEY")
     
     self.sentryDsn = "\(value(for: "SENTRY_DSN_KEY_1"))@\(value(for: "SENTRY_DSN_KEY_2")).ingest.sentry.io/\(value(for: "SENTRY_DSN_PROJECT_ID"))"
     

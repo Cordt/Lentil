@@ -14,29 +14,29 @@ struct RootView: View {
   let store: Store<Root.State, Root.Action>
   
   @ViewBuilder
-  func destinationHandler(_ destinationPath: DestinationPath) -> some View {
+  func handle(_ destinationPath: DestinationPath) -> some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       switch destinationPath.destination {
         case .publication:
-          if viewStore.posts[id: destinationPath.navigationId] != nil {
+          if viewStore.posts[id: destinationPath.id] != nil {
             let store: Store<Post.State?, Post.Action> = self.store.scope(
               state: {
-                guard let postState = $0.posts[id: destinationPath.navigationId]
+                guard let postState = $0.posts[id: destinationPath.id]
                 else { return nil }
                 return postState
               },
-              action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
+              action: { Root.Action.post(id: destinationPath.id, action: $0) }
             )
             IfLetStore(store, then: PostDetailView.init)
           }
-          else if viewStore.comments[id: destinationPath.navigationId] != nil {
+          else if viewStore.comments[id: destinationPath.id] != nil {
             let store: Store<Post.State?, Post.Action> = self.store.scope(
               state: {
-                guard let commentState = $0.comments[id: destinationPath.navigationId]
+                guard let commentState = $0.comments[id: destinationPath.id]
                 else { return nil }
                 return commentState
               },
-              action: { Root.Action.comment(id: destinationPath.navigationId, action: $0) }
+              action: { Root.Action.comment(id: destinationPath.id, action: $0) }
             )
             IfLetStore(store, then: PostDetailView.init)
           }
@@ -44,11 +44,11 @@ struct RootView: View {
         case .profile:
           let store: Store<Profile.State?, Profile.Action> = self.store.scope(
             state: {
-              guard let profileState = $0.profiles[id: destinationPath.navigationId]
+              guard let profileState = $0.profiles[id: destinationPath.id]
               else { return nil }
               return profileState
             },
-            action: { Root.Action.profile(id: destinationPath.navigationId, action: $0) }
+            action: { Root.Action.profile(id: destinationPath.id, action: $0) }
           )
           IfLetStore(store, then: ProfileView.init)
           
@@ -62,8 +62,8 @@ struct RootView: View {
           )
           
         case .imageDetail:
-          if let image = viewStore.imageDetail {
-            ImageView(image: image) {
+          if let imageURL = viewStore.imageDetail {
+            ImageView(url: imageURL) {
               self.navigationApi.remove(destinationPath)
             }
           }
@@ -78,6 +78,36 @@ struct RootView: View {
           )
       }
     }
+  }
+  
+  var body: some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      if viewStore.isLoading {
+        ZStack {
+          Theme.Color.primary
+            .ignoresSafeArea()
+          
+          VStack {
+            Text("lentil")
+              .font(highlight: .largeTitle, color: Theme.Color.white)
+            ProgressView(viewStore.loadingText)
+              .transition(.scale)
+          }
+        }
+        .onAppear { viewStore.send(.loadingScreenAppeared) }
+        .onDisappear { viewStore.send(.loadingScreenDisappeared) }
+      }
+      else {
+        NavigationStack(path: self.navigationApi.pathBinding()) {
+          TimelineView(
+            store: self.store.scope(
+              state: \.timelineState,
+              action: Root.Action.timelineAction
+            )
+          )
+          .toolbarBackground(Theme.Color.primary, for: .navigationBar)
+          .toolbarBackground(.visible, for: .navigationBar)
+          .navigationDestination(for: DestinationPath.self, destination: self.handle)
   }
   
   var body: some View {

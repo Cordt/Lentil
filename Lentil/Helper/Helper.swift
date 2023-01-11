@@ -24,7 +24,12 @@ extension View{
 
 // MARK: Image rendering
 
-fileprivate func data(from image: UIImage, for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> Data? {
+struct StoredImage {
+  enum Kind: Equatable { case profile(_ handle: String), feed, cover }
+  enum Resolution: Equatable { case display, storage }
+}
+
+fileprivate func data(from image: UIImage, for kind: StoredImage.Kind, and resolution: StoredImage.Resolution) -> Data? {
   let imageDimension: CGFloat
   switch kind {
     case .profile:
@@ -49,13 +54,13 @@ fileprivate func data(from image: UIImage, for kind: LentilImage.Kind, and resol
 }
 
 extension Data {
-  func imageData(for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> Data? {
+  func imageData(for kind: StoredImage.Kind, and resolution: StoredImage.Resolution) -> Data? {
     guard let image = UIImage(data: self)
     else { return nil}
     return data(from: image, for: kind, and: resolution)
   }
   
-  func image(for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> UIImage? {
+  func image(for kind: StoredImage.Kind, and resolution: StoredImage.Resolution) -> UIImage? {
     guard let imageData = self.imageData(for: kind, and: resolution)
     else { return nil }
     return UIImage(data: imageData)
@@ -83,11 +88,11 @@ extension UIImage {
     }
   }
   
-  func imageData(for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> Data? {
+  func imageData(for kind: StoredImage.Kind, and resolution: StoredImage.Resolution) -> Data? {
     data(from: self, for: kind, and: resolution)
   }
   
-  func image(for kind: LentilImage.Kind, and resolution: LentilImage.Resolution) -> UIImage? {
+  func image(for kind: StoredImage.Kind, and resolution: StoredImage.Resolution) -> UIImage? {
     guard let imageData = data(from: self, for: kind, and: resolution)
     else { return nil }
     return UIImage(data: imageData)

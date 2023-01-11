@@ -21,8 +21,8 @@ struct Post: ReducerProtocol {
       }
     }
     
+    var id: String { self.post.id }
     var navigationId: String
-    var id: String { self.navigationId }
     var post: Publication.State
     var typename: Typename
     var comments: IdentifiedArrayOf<Post.State> = []
@@ -33,7 +33,7 @@ struct Post: ReducerProtocol {
     var mirrorer: String? {
       guard case let .mirror(mirroringProfile) = self.post.publication.typename
       else { return nil }
-      return mirroringProfile?.name ?? mirroringProfile?.handle
+      return mirroringProfile.name ?? mirroringProfile.handle
     }
     
   }
@@ -42,7 +42,7 @@ struct Post: ReducerProtocol {
     case didAppear
     case dismissView
     case fetchComments
-    case commentsResponse(TaskResult<QueryResult<[Model.Publication]>>)
+    case commentsResponse(TaskResult<PaginatedResult<[Model.Publication]>>)
     
     case post(action: Publication.Action)
     case comment(id: String, action: Post.Action)
@@ -69,7 +69,7 @@ struct Post: ReducerProtocol {
         case .dismissView:
           self.navigationApi.remove(
             DestinationPath(
-              navigationId: state.id,
+              navigationId: state.navigationId,
               destination: .publication(state.post.id)
             )
           )

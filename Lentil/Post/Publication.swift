@@ -15,7 +15,6 @@ struct Publication: ReducerProtocol {
     
     var id: String { self.publication.id }
     var publication: Model.Publication
-    var remoteProfilePicture: LentilImage.State?
     var remotePublicationImages: MultiImage.State?
     var publicationImageHeight: CGFloat {
       guard let count = self.remotePublicationImages?.images.count
@@ -45,21 +44,17 @@ struct Publication: ReducerProtocol {
     
     init(publication: Model.Publication) {
       self.publication = publication
-      self.remoteProfilePicture = nil
       self.remotePublicationImages = nil
       self.mirrorConfirmationDialogue = nil
       
-      if let profilePictureUrl = publication.profile.profilePictureUrl {
-        self.remoteProfilePicture = .init(imageUrl: profilePictureUrl, kind: .profile(publication.profile.handle))
-      }
       if publication.media.count > 0 {
-        let imageStates = publication.media
-          .map { LentilImage.State(imageUrl: $0.url, kind: .feed) }
-        var uniqueImageStates: [LentilImage.State] = []
-        imageStates.forEach {
-          if !uniqueImageStates.contains($0) { uniqueImageStates.append($0) }
-        }
-        self.remotePublicationImages = .init(images: IdentifiedArrayOf(uniqueElements: uniqueImageStates))
+        self.remotePublicationImages = .init(
+          images: IdentifiedArrayOf(
+            uniqueElements: publication.media
+              .enumerated()
+              .map { MultiImage.LentilImage(id: $0.offset, url: $0.element.url) }
+          )
+        )
       }
     }
   }
@@ -72,10 +67,9 @@ struct Publication: ReducerProtocol {
     
     case mirrorConfirmationSet(State.MirrorConfirmationDialogue?)
     case mirrorConfirmationConfirmed
-    case mirrorResult(TaskResult<MutationResult<Result<RelayerResult, RelayErrorReasons>>>)
+    case mirrorResult(TaskResult<Result<RelayerResult, RelayErrorReasons>>)
     case mirrorSuccess(_ txnHash: String)
     
-    case remoteProfilePicture(LentilImage.Action)
     case remotePublicationImages(MultiImage.Action)
   }
   
@@ -158,7 +152,7 @@ struct Publication: ReducerProtocol {
           }
           
         case .mirrorResult(.success(let result)):
-          switch result.data {
+          switch result {
             case .success(let relayerResult):
               log("Successfully mirrored publication", level: .info)
               return Effect(value: .mirrorSuccess(relayerResult.txnHash))
@@ -174,13 +168,7 @@ struct Publication: ReducerProtocol {
           
         case .mirrorSuccess:
           return .none
-       
-        case .remoteProfilePicture:
-          return .none
       }
-    }
-    .ifLet(\.remoteProfilePicture, action: /Action.remoteProfilePicture) {
-      LentilImage()
     }
     .ifLet(\.remotePublicationImages, action: /Action.remotePublicationImages) {
       MultiImage()
