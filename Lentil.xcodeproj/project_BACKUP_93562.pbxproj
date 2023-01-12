@@ -10,8 +10,6 @@
 		3704F6B329220FDD00AAF569 /* WalletConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3704F6B229220FDD00AAF569 /* WalletConnector.swift */; };
 		370ABEFE292A83C8005B8E11 /* InfuraApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ABEFD292A83C8005B8E11 /* InfuraApiClient.swift */; };
 		370ABF01292A847F005B8E11 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 370ABF00292A847F005B8E11 /* Alamofire */; };
-		370C54B1296EE06B0016E4A7 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 377487942966D95F00B19322 /* SDWebImageSwiftUI */; };
-		370C54B4296EE0EF0016E4A7 /* XMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 370C54B3296EE0EF0016E4A7 /* XMTP */; };
 		370D8E8E291F8C3B004A091F /* DMSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E88291F8C3B004A091F /* DMSans-Medium.ttf */; };
 		370D8E8F291F8C3B004A091F /* DMSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E89291F8C3B004A091F /* DMSans-Bold.ttf */; };
 		370D8E90291F8C3B004A091F /* DMSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E8A291F8C3B004A091F /* DMSans-Italic.ttf */; };
@@ -45,9 +43,13 @@
 		376C5D2C2964CCCC000BD962 /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 376C5D2B2964CCCC000BD962 /* libwebp */; };
 		376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED528D4253F00BA908A /* ProfileModel.swift */; };
 		376C5ED828D4266100BA908A /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C5ED728D4266100BA908A /* PostView.swift */; };
+<<<<<<< HEAD
+		377487A229686DA300B19322 /* Conversations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377487A129686DA300B19322 /* Conversations.swift */; };
+=======
+		377487952966D95F00B19322 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 377487942966D95F00B19322 /* SDWebImageSwiftUI */; };
 		37748797296700CD00B19322 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 37748796296700CD00B19322 /* SDWebImageSwiftUI */; };
 		3774879A2967105E00B19322 /* SelectGifView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377487992967105E00B19322 /* SelectGifView.swift */; };
-		377487A229686DA300B19322 /* Conversations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377487A129686DA300B19322 /* Conversations.swift */; };
+>>>>>>> main
 		3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830528CCA05D00E7E32A /* LentilApp.swift */; };
 		3777830828CCA05D00E7E32A /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3777830728CCA05D00E7E32A /* RootView.swift */; };
 		3777830A28CCA05E00E7E32A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3777830928CCA05E00E7E32A /* Assets.xcassets */; };
@@ -61,12 +63,12 @@
 		378AE5AE294FA564001584DD /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE5AD294FA564001584DD /* ImageView.swift */; };
 		37946CAA296EB783008F849E /* DefaultsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37946CA9296EB783008F849E /* DefaultsStorage.swift */; };
 		37A56518295C3142001A676A /* XMTPConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A56517295C3142001A676A /* XMTPConversation.swift */; };
-		37A5651A295C5866001A676A /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		37A5651A295C5866001A676A /* XMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 37A56519295C5866001A676A /* XMTP */; };
 		37A5651E295C9E75001A676A /* WalletConnector+SigningKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */; };
 		37A7A6F6293C4DAB00964768 /* MediaDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */; };
 		37A7A6F9293C53F100964768 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F8293C53F100964768 /* Cache.swift */; };
 		37B7D6922956075500F8674C /* PostTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D6912956075500F8674C /* PostTests.swift */; };
-		37B7D69529561A6E00F8674C /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		37B7D69529561A6E00F8674C /* XMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 37B7D69429561A6E00F8674C /* XMTP */; };
 		37B7D69829561C4100F8674C /* XMPTApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D69729561C4100F8674C /* XMPTApi.swift */; };
 		37B7D69B2957058900F8674C /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D69A2957058900F8674C /* ConversationsView.swift */; };
 		37B7D69D2957116100F8674C /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D69C2957116100F8674C /* Conversation.swift */; };
@@ -151,8 +153,11 @@
 		376C5D252964C160000BD962 /* PublicationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationTests.swift; sourceTree = "<group>"; };
 		376C5ED528D4253F00BA908A /* ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModel.swift; sourceTree = "<group>"; };
 		376C5ED728D4266100BA908A /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
-		377487992967105E00B19322 /* SelectGifView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectGifView.swift; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		377487A129686DA300B19322 /* Conversations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversations.swift; sourceTree = "<group>"; };
+=======
+		377487992967105E00B19322 /* SelectGifView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectGifView.swift; sourceTree = "<group>"; };
+>>>>>>> main
 		3777830228CCA05D00E7E32A /* Lentil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lentil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3777830528CCA05D00E7E32A /* LentilApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilApp.swift; sourceTree = "<group>"; };
 		3777830728CCA05D00E7E32A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -220,18 +225,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				370C54B1296EE06B0016E4A7 /* SDWebImageSwiftUI in Frameworks */,
+				377487952966D95F00B19322 /* SDWebImageSwiftUI in Frameworks */,
 				37E5C4ED29481B6A005B3979 /* Cache in Frameworks */,
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
 				370ABF01292A847F005B8E11 /* Alamofire in Frameworks */,
-				37B7D69529561A6E00F8674C /* (null) in Frameworks */,
+<<<<<<< HEAD
+				37B7D69529561A6E00F8674C /* XMTP in Frameworks */,
+				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
+=======
 				376C5D2C2964CCCC000BD962 /* libwebp in Frameworks */,
 				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
+				3704F6B6292288E900AAF569 /* WalletConnectSwift in Frameworks */,
 				376C5D292964CCBA000BD962 /* GiphyUISDK in Frameworks */,
+>>>>>>> main
 				373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
-				370C54B4296EE0EF0016E4A7 /* XMTP in Frameworks */,
 				37557A23292744FB005524C5 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -242,7 +251,7 @@
 			files = (
 				37748797296700CD00B19322 /* SDWebImageSwiftUI in Frameworks */,
 				372D1782294B043A008D2BEF /* Sentry in Frameworks */,
-				37A5651A295C5866001A676A /* (null) in Frameworks */,
+				37A5651A295C5866001A676A /* XMTP in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -622,10 +631,13 @@
 				370ABF00292A847F005B8E11 /* Alamofire */,
 				373DAF1E29305C3700648C8E /* SwiftUINavigation */,
 				37E5C4EC29481B6A005B3979 /* Cache */,
+<<<<<<< HEAD
+				37B7D69429561A6E00F8674C /* XMTP */,
+=======
 				376C5D282964CCBA000BD962 /* GiphyUISDK */,
 				376C5D2B2964CCCC000BD962 /* libwebp */,
 				377487942966D95F00B19322 /* SDWebImageSwiftUI */,
-				370C54B3296EE0EF0016E4A7 /* XMTP */,
+>>>>>>> main
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -647,7 +659,11 @@
 			name = LentilTests;
 			packageProductDependencies = (
 				372D1781294B043A008D2BEF /* Sentry */,
+<<<<<<< HEAD
+				37A56519295C5866001A676A /* XMTP */,
+=======
 				37748796296700CD00B19322 /* SDWebImageSwiftUI */,
+>>>>>>> main
 			);
 			productName = LentilTests;
 			productReference = 3777831228CCA05E00E7E32A /* LentilTests.xctest */;
@@ -688,10 +704,13 @@
 				370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				373DAF1D29305C3700648C8E /* XCRemoteSwiftPackageReference "swiftui-navigation" */,
 				37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */,
+<<<<<<< HEAD
+				37B7D69329561A6E00F8674C /* XCRemoteSwiftPackageReference "xmtp-ios" */,
+=======
 				376C5D272964CCBA000BD962 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */,
 				376C5D2A2964CCCC000BD962 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */,
 				377487932966D95E00B19322 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
-				370C54B2296EE0EE0016E4A7 /* XCRemoteSwiftPackageReference "xmtp-ios" */,
+>>>>>>> main
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -973,7 +992,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Dev";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+<<<<<<< HEAD
 				CURRENT_PROJECT_VERSION = 1;
+=======
+				CURRENT_PROJECT_VERSION = 11;
+>>>>>>> main
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
@@ -1010,7 +1033,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+<<<<<<< HEAD
 				CURRENT_PROJECT_VERSION = 1;
+=======
+				CURRENT_PROJECT_VERSION = 11;
+>>>>>>> main
 				DEVELOPMENT_ASSET_PATHS = "\"Lentil/Preview Content\"";
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
 				ENABLE_PREVIEWS = YES;
@@ -1124,14 +1151,6 @@
 				minimumVersion = 5.6.2;
 			};
 		};
-		370C54B2296EE0EE0016E4A7 /* XCRemoteSwiftPackageReference "xmtp-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/xmtp/xmtp-ios.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		373DAF1D29305C3700648C8E /* XCRemoteSwiftPackageReference "swiftui-navigation" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swiftui-navigation.git";
@@ -1148,6 +1167,14 @@
 				minimumVersion = 7.31.1;
 			};
 		};
+<<<<<<< HEAD
+		37B7D69329561A6E00F8674C /* XCRemoteSwiftPackageReference "xmtp-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/xmtp/xmtp-ios.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+=======
 		376C5D272964CCBA000BD962 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Giphy/giphy-ios-sdk";
@@ -1170,6 +1197,7 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.2.2;
+>>>>>>> main
 			};
 		};
 		37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
@@ -1204,11 +1232,6 @@
 			package = 370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
 		};
-		370C54B3296EE0EF0016E4A7 /* XMTP */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 370C54B2296EE0EE0016E4A7 /* XCRemoteSwiftPackageReference "xmtp-ios" */;
-			productName = XMTP;
-		};
 		372D1781294B043A008D2BEF /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
@@ -1224,6 +1247,17 @@
 			package = 37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
 		};
+<<<<<<< HEAD
+		37A56519295C5866001A676A /* XMTP */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37B7D69329561A6E00F8674C /* XCRemoteSwiftPackageReference "xmtp-ios" */;
+			productName = XMTP;
+		};
+		37B7D69429561A6E00F8674C /* XMTP */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37B7D69329561A6E00F8674C /* XCRemoteSwiftPackageReference "xmtp-ios" */;
+			productName = XMTP;
+=======
 		376C5D282964CCBA000BD962 /* GiphyUISDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 376C5D272964CCBA000BD962 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */;
@@ -1243,6 +1277,7 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 377487932966D95E00B19322 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+>>>>>>> main
 		};
 		37D1236928F70EC90037A4A7 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;

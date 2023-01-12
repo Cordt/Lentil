@@ -3,6 +3,7 @@
 
 import ComposableArchitecture
 import IdentifiedCollections
+import SDWebImageSwiftUI
 import SwiftUI
 import XMTP
 
@@ -17,7 +18,7 @@ struct Conversation: ReducerProtocol {
     var userAddress: String
     var conversation: XMTPConversation
     var profile: Model.Profile?
-    var profilePicture: LentilImage.State? = nil
+    var profilePictureURL: URL? = nil
     var messages: IdentifiedArrayOf<Message.State>
     var messageText: String = ""
     var isSending: Bool = false
@@ -34,13 +35,7 @@ struct Conversation: ReducerProtocol {
       self.conversation = conversation
       self.profile = profile
       self.messages = IdentifiedArrayOf(uniqueElements: messages)
-      
-      if let profilePictureUrl = profile?.profilePictureUrl {
-        self.profilePicture = .init(
-          imageUrl: profilePictureUrl,
-          kind: .profile(profile?.handle ?? conversation.peerAddress)
-        )
-      }
+      self.profilePictureURL = profile?.profilePictureUrl
     }
   }
   
@@ -56,7 +51,6 @@ struct Conversation: ReducerProtocol {
     case sendMessageTapped
     case sendMessageResult
     case updateSendingStatus(Bool)
-    case profilePicture(LentilImage.Action)
     case message(Message.State.ID, Message.Action)
   }
   
@@ -179,13 +173,7 @@ struct Conversation: ReducerProtocol {
         case .updateSendingStatus(let active):
           state.isSending = active
           return .none
-          
-        case .profilePicture:
-          return .none
       }
-    }
-    .ifLet(\.profilePicture, action: /Action.profilePicture) {
-      LentilImage()
     }
   }
 }
@@ -295,23 +283,25 @@ struct ConversationView: View {
         }
         
         ToolbarItem(placement: .navigationBarTrailing) {
-          IfLetStore(
-            self.store.scope(
-              state: \.profilePicture,
-              action: Conversation.Action.profilePicture
-            ),
-            then: {
-              LentilImageView(store: $0)
-                .frame(width: 32, height: 32)
-                .clipShape(Circle())
-                .onTapGesture { viewStore.send(.didTapProfile) }
-            },
-            else: {
-              profileGradient(from: viewStore.profile?.handle ?? viewStore.conversation.peerAddress)
-                .frame(width: 32, height: 32)
-                .onTapGesture { viewStore.send(.didTapProfile) }
-            }
-          )
+          if let url = viewStore.profilePictureURL {
+            WebImage(url: url)
+              .resizable()
+              .placeholder {
+                profileGradient(from: viewStore.profile?.handle ?? viewStore.conversation.peerAddress)
+              }
+              .indicator(.activity)
+              .transition(.fade(duration: 0.5))
+              .scaledToFill()
+              .frame(width: 32, height: 32)
+              .clipShape(Circle())
+              .onTapGesture { viewStore.send(.didTapProfile) }
+          }
+          else {
+            profileGradient(from: viewStore.profile?.handle ?? viewStore.conversation.peerAddress)
+              .frame(width: 32, height: 32)
+              .clipShape(Circle())
+              .onTapGesture { viewStore.send(.didTapProfile) }
+          }
         }
       }
       .toolbar(.hidden, for: .tabBar)

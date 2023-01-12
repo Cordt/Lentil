@@ -45,7 +45,6 @@ struct TimelineView: View {
               Button {
                 viewStore.send(.ownProfileTapped)
               } label: {
-                EmptyView()
                 if let url = viewStore.showProfile?.profile.profilePictureUrl {
                   WebImage(url: url)
                     .resizable()

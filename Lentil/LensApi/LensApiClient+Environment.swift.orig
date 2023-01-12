@@ -188,12 +188,35 @@ extension LensApi: DependencyKey {
         cachePolicy: .returnCacheDataElseFetch,
         mapResult: { data in
           guard let profileSearchResult = data.search.asProfileSearchResult
-          else { return PaginatedResult(data: [], cursor: .init()) }
+          else { return QueryResult(data: []) }
           
           let profiles = profileSearchResult.items.compactMap {
             Model.Profile.from($0.fragments.profileFields)
           }
-          return PaginatedResult(data: profiles, cursor: .init(prev: profileSearchResult.pageInfo.prev, next: profileSearchResult.pageInfo.next))
+          return QueryResult(data: profiles)
+        }
+      )
+    },
+    
+    broadcast: { id, signature in
+      try await run(
+        networkClient: .authenticated,
+        mutation: BroadcastMutation(
+          request: BroadcastRequest(
+            id: id,
+            signature: signature
+          )
+        ),
+        mapResult: { data in
+          if let result = data.broadcast.asRelayerResult {
+            return .success(RelayerResult(txnHash: result.txHash, txnId: result.txId))
+          }
+          else if let error = data.broadcast.asRelayError {
+            return .failure(error.reason)
+          }
+          else {
+            return .failure(.__unknown("[ERROR] Received unexpected failure from Broadcast"))
+          }
         }
       )
     },
@@ -341,6 +364,18 @@ import XCTestDynamicOverlay
 
 extension LensApi {
   static let previewValue = LensApi(
+<<<<<<< HEAD
+    authenticationChallenge: { _ in QueryResult(data: Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5))) },
+    verify: { QueryResult(data: true) },
+    publication: { _ in QueryResult(data: MockData.mockPublications[0]) },
+    publications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    explorePublications: { _, _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    feed: { _, _, _, _ in QueryResult(data: MockData.mockPublications) },
+    commentsOfPublication: { _, _ in QueryResult(data: MockData.mockComments) },
+    defaultProfile: { _ in QueryResult(data: MockData.mockProfiles[2]) },
+    profile: { _ in QueryResult(data: MockData.mockProfiles[0]) },
+    profiles: { _ in QueryResult(data: [MockData.mockProfiles.randomElement()!]) },
+=======
     authenticationChallenge: { _ in Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5)) },
     verify: { true },
     publication: { _ in MockData.mockPublications[0] },
@@ -351,6 +386,7 @@ extension LensApi {
     defaultProfile: { _ in MockData.mockProfiles[2] },
     profile: { _ in MockData.mockProfiles[0] },
     profiles: { _ in PaginatedResult(data: MockData.mockProfiles, cursor: .init()) },
+>>>>>>> main
     fetchImage: { url in
       if url.absoluteString == "https://profile-picture" { return UIImage(named: "cryptopunk1")!.jpegData(compressionQuality: 0.5)! }
       else if url.absoluteString == "https://cover-picture" { return UIImage(named: "munich")!.jpegData(compressionQuality: 0.5)! }
@@ -359,12 +395,17 @@ extension LensApi {
       else if url.absoluteString == "https://lentil-beta" { return UIImage(named: "lentilBeta")!.jpegData(compressionQuality: 0.5)! }
       else { throw ApiError.requestFailed }
     },
+<<<<<<< HEAD
     searchProfiles: { _, query in
       try await Task.sleep(for: .seconds(2))
-      if query.count == 3 { return PaginatedResult(data: [MockData.mockProfiles[0]], cursor: .init()) }
-      else if query.count == 4 { return PaginatedResult(data: [MockData.mockProfiles[0], MockData.mockProfiles[1]], cursor: .init()) }
-      else { return PaginatedResult(data: MockData.mockProfiles, cursor: .init()) }
+      if query.count == 3 { return QueryResult(data: [MockData.mockProfiles[0]]) }
+      else if query.count == 4 { return QueryResult(data: [MockData.mockProfiles[0], MockData.mockProfiles[1]]) }
+      else { return QueryResult(data: MockData.mockProfiles) }
     },
+    broadcast: { _, _ in MutationResult(data: .success(.init(txnHash: "abc", txnId: "def"))) },
+=======
+    broadcast: { _, _ in .success(.init(txnHash: "abc", txnId: "def")) },
+>>>>>>> main
     authenticate: { _, _ in },
     refreshAuthentication: {},
     createPost: { _, _ in .success(RelayerResult(txnHash: "abc", txnId: "123")) },
@@ -388,6 +429,7 @@ extension LensApi {
     profiles: unimplemented("profiles"),
     fetchImage: unimplemented("fetchImage"),
     searchProfiles: unimplemented("searchProfiles"),
+    broadcast: unimplemented("broadcast"),
     authenticate: unimplemented("authenticate"),
     refreshAuthentication: unimplemented("refreshAuthentication"),
     createPost: unimplemented("createPost"),

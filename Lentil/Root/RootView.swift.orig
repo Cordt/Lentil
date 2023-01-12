@@ -14,6 +14,31 @@ struct RootView: View {
   let store: Store<Root.State, Root.Action>
   
   @ViewBuilder
+<<<<<<< HEAD
+  func destinationHandler(_ destinationPath: DestinationPath) -> some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      switch destinationPath.destination {
+        case .publication:
+          if viewStore.posts[id: destinationPath.navigationId] != nil {
+            let store: Store<Post.State?, Post.Action> = self.store.scope(
+              state: {
+                guard let postState = $0.posts[id: destinationPath.navigationId]
+                else { return nil }
+                return postState
+              },
+              action: { Root.Action.post(id: destinationPath.navigationId, action: $0) }
+            )
+            IfLetStore(store, then: PostDetailView.init)
+          }
+          else if viewStore.comments[id: destinationPath.navigationId] != nil {
+            let store: Store<Post.State?, Post.Action> = self.store.scope(
+              state: {
+                guard let commentState = $0.comments[id: destinationPath.navigationId]
+                else { return nil }
+                return commentState
+              },
+              action: { Root.Action.comment(id: destinationPath.navigationId, action: $0) }
+=======
   func handle(_ destinationPath: DestinationPath) -> some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       switch destinationPath.destination {
@@ -37,6 +62,7 @@ struct RootView: View {
                 return commentState
               },
               action: { Root.Action.comment(id: destinationPath.id, action: $0) }
+>>>>>>> main
             )
             IfLetStore(store, then: PostDetailView.init)
           }
@@ -44,11 +70,19 @@ struct RootView: View {
         case .profile:
           let store: Store<Profile.State?, Profile.Action> = self.store.scope(
             state: {
+<<<<<<< HEAD
+              guard let profileState = $0.profiles[id: destinationPath.navigationId]
+              else { return nil }
+              return profileState
+            },
+            action: { Root.Action.profile(id: destinationPath.navigationId, action: $0) }
+=======
               guard let profileState = $0.profiles[id: destinationPath.id]
               else { return nil }
               return profileState
             },
             action: { Root.Action.profile(id: destinationPath.id, action: $0) }
+>>>>>>> main
           )
           IfLetStore(store, then: ProfileView.init)
           
@@ -62,8 +96,9 @@ struct RootView: View {
           )
           
         case .imageDetail:
-          if let imageURL = viewStore.imageDetail {
-            ImageView(url: imageURL) {
+<<<<<<< HEAD
+          if let image = viewStore.imageDetail {
+            ImageView(image: image) {
               self.navigationApi.remove(destinationPath)
             }
           }
@@ -76,6 +111,13 @@ struct RootView: View {
             ),
             then: ConversationView.init
           )
+=======
+          if let imageURL = viewStore.imageDetail {
+            ImageView(url: imageURL) {
+              self.navigationApi.remove(destinationPath)
+            }
+          }
+>>>>>>> main
       }
     }
   }
@@ -106,9 +148,10 @@ struct RootView: View {
                 action: Root.Action.timelineAction
               )
             )
+<<<<<<< HEAD
             .toolbarBackground(Theme.Color.primary, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .navigationDestination(for: DestinationPath.self, destination: self.handle)
+            .navigationDestination(for: DestinationPath.self, destination: self.destinationHandler)
           }
           .tabItem { Label("Feed", systemImage: "house") }
           .tag(Root.State.TabDestination.feed)
@@ -122,10 +165,16 @@ struct RootView: View {
             )
             .toolbarBackground(Theme.Color.primary, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .navigationDestination(for: DestinationPath.self, destination: self.handle)
+            .navigationDestination(for: DestinationPath.self, destination: self.destinationHandler)
           }
           .tabItem { Label("Messages", systemImage: "envelope") }
           .tag(Root.State.TabDestination.messages)
+=======
+          )
+          .toolbarBackground(Theme.Color.primary, for: .navigationBar)
+          .toolbarBackground(.visible, for: .navigationBar)
+          .navigationDestination(for: DestinationPath.self, destination: self.handle)
+>>>>>>> main
         }
         .tint(Theme.Color.primary)
         .onAppear { viewStore.send(.rootAppeared) }

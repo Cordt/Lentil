@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<<<<<<< HEAD
+	<key>XMTP_ENVIRONMENT</key>
+	<string>$(XMTP_ENVIRONMENT)</string>
+=======
+	<key>GIPHY_API_KEY</key>
+	<string>$(GIPHY_API_KEY)</string>
+>>>>>>> main
+	<key>SENTRY_DSN_PROJECT_ID</key>
+	<string>$(SENTRY_DSN_PROJECT_ID)</string>
+	<key>SENTRY_DSN_KEY_1</key>
+	<string>$(SENTRY_DSN_KEY_1)</string>
+	<key>SENTRY_DSN_KEY_2</key>
+	<string>$(SENTRY_DSN_KEY_2)</string>
+	<key>LENTIL_CID</key>
+	<string>$(LENTIL_CID)</string>
+	<key>TEST_WALLET_ADDRESS</key>
+	<string>$(TEST_WALLET_ADDRESS)</string>
+	<key>INFURA_URL</key>
+	<string>$(INFURA_URL)</string>
+	<key>LOG_LEVEL</key>
+	<string>$(LOG_LEVEL)</string>
+	<key>BASE_URL</key>
+	<string>$(BASE_URL)</string>
+	<key>ORIGIN</key>
+	<string>$(ORIGIN)</string>
+	<key>INFURA_API_SECRET_KEY</key>
+	<string>$(INFURA_API_SECRET_KEY)</string>
+	<key>INFURA_PROJECT_ID</key>
+	<string>$(INFURA_PROJECT_ID)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Righteous-Regular.ttf</string>
+		<string>DMSans-BoldItalic.ttf</string>
+		<string>DMSans-Bold.ttf</string>
+		<string>DMSans-MediumItalic.ttf</string>
+		<string>DMSans-Medium.ttf</string>
+		<string>DMSans-Regular.ttf</string>
+		<string>DMSans-Italic.ttf</string>
+		<string>la-brands-400.ttf</string>
+		<string>la-regular-400.ttf</string>
+		<string>la-solid-900.ttf</string>
+	</array>
+</dict>
+</plist>

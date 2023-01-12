@@ -19,7 +19,7 @@ struct CreateConversation: ReducerProtocol {
     case dismiss
     case updateSearchText(String)
     case startSearch
-    case searchedProfilesResult(TaskResult<QueryResult<[Model.Profile]>>)
+    case searchedProfilesResult(TaskResult<PaginatedResult<[Model.Profile]>>)
     case rowTapped(id: Model.Profile.ID)
     case dismissAndOpenConversation(_ conversation: XMTPConversation, _ userAddress: String)
     case failedToStartConversation

@@ -150,8 +150,6 @@ struct Timeline: ReducerProtocol {
   }
   enum CancelFetchPublicationsID {}
   
-  enum CancelFetchPublicationsID {}
-  
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {

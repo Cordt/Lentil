@@ -136,15 +136,11 @@ struct LensApi {
   var searchProfiles: @Sendable (
     _ limit: Int,
     _ query: String
-  ) async throws -> QueryResult<[Model.Profile]>
+  ) async throws -> PaginatedResult<[Model.Profile]>
+ 
   
   // MARK: API Mutations
-  
-  var broadcast: @Sendable (
-    _ broadcastId: String,
-    _ signature: String
-  ) async throws -> Result<RelayerResult, RelayErrorReasons>
-  
+ 
   var authenticate: @Sendable (
     _ address: String,
     _ signature: String

@@ -2,6 +2,7 @@
 // Created by Laura and Cordt Zermin
 
 import ComposableArchitecture
+import SDWebImageSwiftUI
 import SwiftUI
 import XMTP
 
@@ -27,7 +28,7 @@ struct ConversationRow: ReducerProtocol {
     var userAddress: String
     var lastMessage: Stub?
     var profile: Model.Profile?
-    var profilePicture: LentilImage.State?
+    var profilePictureURL: URL?
     
     init(
       conversation: XMTPConversation,
@@ -39,22 +40,15 @@ struct ConversationRow: ReducerProtocol {
       self.userAddress = userAddress
       self.lastMessage = lastMessage
       self.profile = profile
-      self.profilePicture = nil
-      if let profilePictureUrl = profile?.profilePictureUrl {
-        self.profilePicture = .init(
-          imageUrl: profilePictureUrl,
-          kind: .profile(profile?.handle ?? conversation.peerAddress)
-        )
-      }
+      self.profilePictureURL = profile?.profilePictureUrl
     }
   }
   
   enum Action: Equatable {
     case didAppear
-    case profilesResponse(TaskResult<QueryResult<[Model.Profile]>>)
+    case profilesResponse(TaskResult<PaginatedResult<[Model.Profile]>>)
     case rowTapped
     case didTapProfile
-    case profilePicture(LentilImage.Action)
   }
   
   @Dependency(\.cache) var cache
@@ -109,13 +103,7 @@ struct ConversationRow: ReducerProtocol {
             )
           )
           return .none
-          
-        case .profilePicture:
-          return .none
       }
-    }
-    .ifLet(\.profilePicture, action: /Action.profilePicture) {
-      LentilImage()
     }
   }
 }
@@ -126,24 +114,25 @@ struct ConversationRowView: View {
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       HStack {
-        IfLetStore(
-          self.store.scope(
-            state: \.profilePicture,
-            action: ConversationRow.Action.profilePicture
-          ),
-          then: {
-            LentilImageView(store: $0)
-              .frame(width: 40, height: 40)
-              .clipShape(Circle())
-              .onTapGesture { viewStore.send(.didTapProfile) }
-          },
-          else: {
-            profileGradient(from: viewStore.profile?.handle ?? viewStore.conversation.peerAddress)
-              .frame(width: 40, height: 40)
-              .clipShape(Circle())
-              .onTapGesture { viewStore.send(.didTapProfile) }
-          }
-        )
+        if let url = viewStore.profilePictureURL {
+          WebImage(url: url)
+            .resizable()
+            .placeholder {
+              profileGradient(from: viewStore.profile?.handle ?? viewStore.conversation.peerAddress)
+            }
+            .indicator(.activity)
+            .transition(.fade(duration: 0.5))
+            .scaledToFill()
+            .frame(width: 32, height: 32)
+            .clipShape(Circle())
+            .onTapGesture { viewStore.send(.didTapProfile) }
+        }
+        else {
+          profileGradient(from: viewStore.profile?.handle ?? viewStore.conversation.peerAddress)
+            .frame(width: 32, height: 32)
+            .clipShape(Circle())
+            .onTapGesture { viewStore.send(.didTapProfile) }
+        }
         
         VStack(alignment: .leading) {
           HStack {
