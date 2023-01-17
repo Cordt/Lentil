@@ -20,7 +20,7 @@ final class RootTests: XCTestCase {
     
     store.dependencies.authTokenApi.checkFor = { _ in true }
     store.dependencies.authTokenApi.load = { _ in "token" }
-    store.dependencies.profileStorageApi.load = { UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
+    store.dependencies.defaultsStorageApi.load = { _ in UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
     store.dependencies.lensApi.verify = {
       try await clock.sleep(for: .seconds(1))
       return true
@@ -54,7 +54,7 @@ final class RootTests: XCTestCase {
     
     store.dependencies.authTokenApi.checkFor = { _ in true }
     store.dependencies.authTokenApi.load = { _ in "token" }
-    store.dependencies.profileStorageApi.load = { UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
+    store.dependencies.defaultsStorageApi.load = { _ in UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
     store.dependencies.lensApi.verify = {
       try await clock.sleep(for: .seconds(1))
       return false
@@ -102,8 +102,8 @@ final class RootTests: XCTestCase {
       return false
     }
     store.dependencies.lensApi.refreshAuthentication = { /* Failure */ throw ApiError.unauthenticated }
-    store.dependencies.profileStorageApi.load = { UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
-    store.dependencies.profileStorageApi.remove = { userDeleted = true }
+    store.dependencies.defaultsStorageApi.load = { _ in UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
+    store.dependencies.defaultsStorageApi.remove = { _ in userDeleted = true }
     
     await store.send(.loadingScreenAppeared)
     await store.receive(.startTimer)
@@ -130,6 +130,8 @@ final class RootTests: XCTestCase {
       reducer: Root()
     )
     
+    store.dependencies.navigationApi.eventStream = { NavigationEvents() }
+    
     await store.send(.rootAppeared)
     await store.send(.rootDisappeared)
   }
@@ -145,6 +147,7 @@ final class RootTests: XCTestCase {
     
     store.dependencies.cache.updateOrAppendPublication = { _ in }
     store.dependencies.lensApi.publication = { _ in publication }
+    store.dependencies.navigationApi.remove = { _ in }
     
     await store.send(.createPublication(.dismissView("abc-def"))) {
       $0.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
@@ -173,6 +176,7 @@ final class RootTests: XCTestCase {
     
     store.dependencies.cache.updateOrAppendPublication = { _ in }
     store.dependencies.lensApi.publication = { _ in nil }
+    store.dependencies.navigationApi.remove = { _ in }
     
     await store.send(.createPublication(.dismissView("abc-def"))) {
       $0.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)

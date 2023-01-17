@@ -51,9 +51,11 @@ struct Conversation: ReducerProtocol {
     case sendMessageTapped
     case sendMessageResult
     case updateSendingStatus(Bool)
+    case updateReadStatus(Message.State.ID?)
     case message(Message.State.ID, Message.Action)
   }
   
+  @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   @Dependency(\.xmtpConnector) var xmtpConnector
@@ -108,7 +110,10 @@ struct Conversation: ReducerProtocol {
                 lhs.message.sent > rhs.message.sent
               }
           )
-          return Effect(value: .streamMessages)
+          return .merge(
+            Effect(value: .updateReadStatus(state.messages.first?.id)),
+            Effect(value: .streamMessages)
+          )
           
         case .streamMessages:
           return .run { [conversation = state.conversation] send in
@@ -132,7 +137,7 @@ struct Conversation: ReducerProtocol {
             from: message.senderAddress == state.userAddress ? .user : .peer
           )
           state.messages.insert(messageState, at: 0)
-          return .none
+          return Effect(value: .updateReadStatus(messageState.id))
           
         case .messagesResponse(.failure(let error)):
           log("Failed to load messages", level: .error, error: error)
@@ -172,6 +177,21 @@ struct Conversation: ReducerProtocol {
           
         case .updateSendingStatus(let active):
           state.isSending = active
+          return .none
+          
+        case .updateReadStatus(let id):
+          guard let id,
+                var latestRead = self.defaultsStorageApi.load(ConversationsLatestRead.self) as? ConversationsLatestRead,
+                let messageSent = state.messages[id: id]?.message.sent
+          else { return .none }
+          
+          do {
+            latestRead.updateLatestReadMessageDate(for: state.conversation, with: messageSent)
+            try self.defaultsStorageApi.store(latestRead)
+          }
+          catch let error {
+            log("Failed to store updated last message in Defaults", level: .error, error: error)
+          }
           return .none
       }
     }
@@ -350,7 +370,7 @@ extension MockData {
       ),
       XMTP.DecodedMessage(
         body: "While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the trust based model. Completely non-reversible transactions are not really possible, since financial institutions cannot avoid mediating disputes. ",
-        senderAddress: "0xabc123def",
+        senderAddress: "0x123abcdef",
         sent: Date().addingTimeInterval(-60 * 60 * 24 * 2)
       ),
       XMTP.DecodedMessage(

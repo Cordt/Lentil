@@ -15,8 +15,8 @@ struct DefaultsStorage {
     UserDefaults.standard.set(encodedItem, forKey: key)
   }
   
-  static func load<Item: DefaultsStorable>(item: Item.Type, for key: String) -> Item? {
-    guard let encodedItem = UserDefaults.standard.object(forKey: key) as? Data
+  static func load<Item: DefaultsStorable>(item: Item.Type) -> Item? {
+    guard let encodedItem = UserDefaults.standard.object(forKey: Item.profileKey) as? Data
     else { return nil }
     
     do {
@@ -49,7 +49,7 @@ extension DependencyValues {
 extension DefaultsStorageApi: DependencyKey {
   static let liveValue = DefaultsStorageApi(
     store: { try DefaultsStorage.store(item: $0, for: type(of: $0).profileKey) },
-    load: { DefaultsStorage.load(item: $0, for: $0.profileKey) },
+    load: { DefaultsStorage.load(item: $0) },
     remove: { DefaultsStorage.remove(for: $0.profileKey) }
   )
 }

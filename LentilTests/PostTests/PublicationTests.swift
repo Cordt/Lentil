@@ -24,7 +24,7 @@ final class PublicationTests: XCTestCase {
     )
     
     store.dependencies.lensApi.createMirror = { _, _ in mirrorResult }
-    store.dependencies.profileStorageApi.load = { MockData.mockUserProfile }
+    store.dependencies.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
     
     await store.send(.post(action: .mirrorTapped)) {
       $0.post.mirrorConfirmationDialogue = .init(
@@ -49,7 +49,7 @@ final class PublicationTests: XCTestCase {
       reducer: Post()
     )
     
-    store.dependencies.profileStorageApi.load = { nil }
+    store.dependencies.defaultsStorageApi.load = { _ in nil }
     
     await store.send(.post(action: .mirrorTapped))
     // Nothing else should happen

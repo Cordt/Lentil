@@ -129,10 +129,10 @@ struct Conversations: ReducerProtocol {
                   conversationRows.append(
                     (
                       ConversationRow.State(
-                      conversation: conversation,
-                      userAddress: address,
-                      lastMessage: lastMessage,
-                      profile: profile
+                        conversation: conversation,
+                        userAddress: address,
+                        lastMessage: lastMessage,
+                        profile: profile
                       ),
                       messageDate
                     )

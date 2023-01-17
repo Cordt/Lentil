@@ -20,7 +20,7 @@ final class TimelineTests: XCTestCase {
     store.dependencies.cache.updateOrAppendPublication = { _ in }
     store.dependencies.cache.updateOrAppendProfile = { _ in }
     store.dependencies.lensApi.explorePublications = { _, _, _, _, _ in PaginatedResult(data: explorePublications, cursor: .init(next: "cursor")) }
-    store.dependencies.profileStorageApi.load = { nil }
+    store.dependencies.defaultsStorageApi.load = { _ in nil }
     
     await store.send(.timelineAppeared)
     await store.receive(.refreshFeed)
@@ -61,7 +61,7 @@ final class TimelineTests: XCTestCase {
       try await clock.sleep(for: .seconds(1))
       return PaginatedResult(data: [feedPublications], cursor: .init(next: "cursor feed"))
     }
-    store.dependencies.profileStorageApi.load = { MockData.mockUserProfile }
+    store.dependencies.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
     
     await store.send(.timelineAppeared) {
       $0.userProfile = MockData.mockUserProfile
@@ -118,7 +118,7 @@ final class TimelineTests: XCTestCase {
     store.dependencies.uuid = .incrementing
     
     store.dependencies.cache.updateOrAppendProfile = { _ in }
-    store.dependencies.profileStorageApi.load = { MockData.mockUserProfile }
+    store.dependencies.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
     
     await store.send(.connectWallet(.defaultProfileResponse(MockData.mockProfiles[0]))) {
       $0.userProfile = MockData.mockUserProfile
