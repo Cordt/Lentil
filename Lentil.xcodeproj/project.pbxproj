@@ -18,6 +18,8 @@
 		370D8E91291F8C3B004A091F /* DMSans-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E8B291F8C3B004A091F /* DMSans-MediumItalic.ttf */; };
 		370D8E92291F8C3B004A091F /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E8C291F8C3B004A091F /* DMSans-Regular.ttf */; };
 		370D8E93291F8C3B004A091F /* DMSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E8D291F8C3B004A091F /* DMSans-BoldItalic.ttf */; };
+		370ED770297D8FAE006D15C5 /* NotificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ED76F297D8FAE006D15C5 /* NotificationModel.swift */; };
+		370ED772297D953B006D15C5 /* LensApiClient+NotificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ED771297D953B006D15C5 /* LensApiClient+NotificationModel.swift */; };
 		372248C628DABA5E0066BCE5 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248C528DABA5E0066BCE5 /* Post.swift */; };
 		372248CC28DADE3C0066BCE5 /* HelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248CB28DADE3C0066BCE5 /* HelperTests.swift */; };
 		372248CE28DAF38D0066BCE5 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248CD28DAF38D0066BCE5 /* PostDetailView.swift */; };
@@ -132,6 +134,8 @@
 		370D8E8B291F8C3B004A091F /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		370D8E8C291F8C3B004A091F /* DMSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-Regular.ttf"; sourceTree = "<group>"; };
 		370D8E8D291F8C3B004A091F /* DMSans-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-BoldItalic.ttf"; sourceTree = "<group>"; };
+		370ED76F297D8FAE006D15C5 /* NotificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModel.swift; sourceTree = "<group>"; };
+		370ED771297D953B006D15C5 /* LensApiClient+NotificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+NotificationModel.swift"; sourceTree = "<group>"; };
 		372248C528DABA5E0066BCE5 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		372248CB28DADE3C0066BCE5 /* HelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperTests.swift; sourceTree = "<group>"; };
 		372248CD28DAF38D0066BCE5 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
@@ -369,9 +373,10 @@
 			isa = PBXGroup;
 			children = (
 				37CC0CFD292793930036C6E9 /* MediaModel.swift */,
+				37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */,
+				370ED76F297D8FAE006D15C5 /* NotificationModel.swift */,
 				37CDEB0D28D03146009B2B7E /* PublicationModel.swift */,
 				376C5ED528D4253F00BA908A /* ProfileModel.swift */,
-				37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -522,6 +527,7 @@
 				37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */,
 				37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */,
 				37CC0CFF292796780036C6E9 /* LensApiClient+MediaModel.swift */,
+				370ED771297D953B006D15C5 /* LensApiClient+NotificationModel.swift */,
 				373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */,
 				37F71B4F28DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift */,
 				37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */,
@@ -795,6 +801,7 @@
 				3777830828CCA05D00E7E32A /* RootView.swift in Sources */,
 				37CDEB0E28D03146009B2B7E /* PublicationModel.swift in Sources */,
 				37DB471D2924D7DA00DE9EB3 /* UserProfile.swift in Sources */,
+				370ED770297D8FAE006D15C5 /* NotificationModel.swift in Sources */,
 				376C5ED828D4266100BA908A /* PostView.swift in Sources */,
 				37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */,
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
@@ -808,6 +815,7 @@
 				37A5651E295C9E75001A676A /* WalletConnector+SigningKey.swift in Sources */,
 				37CC0D0229279DC30036C6E9 /* Toast.swift in Sources */,
 				37C6E1E6296FF8AB00891FED /* LastMessage.swift in Sources */,
+				370ED772297D953B006D15C5 /* LensApiClient+NotificationModel.swift in Sources */,
 				37F71B5028DF34E400F6D9B1 /* LensApiClient+PublicationModel.swift in Sources */,
 				372248DA28DB479D0066BCE5 /* TimelineView.swift in Sources */,
 				37C54C59292B12A0006E8DBA /* InfuraApiClient+Environment.swift in Sources */,

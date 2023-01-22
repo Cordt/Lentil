@@ -19,7 +19,7 @@ struct Timeline: ReducerProtocol {
     var isIndexing: Toast? = nil
     var loadingInFlight: Bool = false
     
-    var connectWallet: Wallet.State? = nil
+    var connectWallet: WalletConnection.State? = nil
     var showProfile: Profile.State? = nil
   }
   
@@ -42,14 +42,14 @@ struct Timeline: ReducerProtocol {
     case updateIndexingToast(Toast?)
     
     case connectWalletTapped
-    case setConnectWallet(Wallet.State?)
+    case setConnectWallet(WalletConnection.State?)
     case ownProfileTapped
     case lentilButtonTapped
     case createPublicationTapped
     case scrollAnimationFinished
     case scrollAnimationFinishedResult
     
-    case connectWallet(Wallet.Action)
+    case connectWallet(WalletConnection.Action)
     case showProfile(Profile.Action)
     case post(id: Post.State.ID, action: Post.Action)
   }
@@ -356,7 +356,7 @@ struct Timeline: ReducerProtocol {
       }
     }
     .ifLet(\.connectWallet, action: /Action.connectWallet) {
-      Wallet()
+      WalletConnection()
     }
     .ifLet(\.showProfile, action: /Action.showProfile) {
       Profile()

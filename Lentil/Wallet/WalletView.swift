@@ -7,9 +7,9 @@ import SwiftUI
 
 struct WalletView: View {
   @Environment(\.dismiss) var dismiss
-  let store: Store<Wallet.State, Wallet.Action>
+  let store: Store<WalletConnection.State, WalletConnection.Action>
   
-  func step(state: Wallet.ConnectionState) -> String {
+  func step(state: WalletConnection.ConnectionState) -> String {
     switch state {
       case .notConnected: return "1/3"
       case .connected:    return "2/3"
@@ -17,7 +17,7 @@ struct WalletView: View {
     }
   }
   
-  func title(state: Wallet.ConnectionState) -> String {
+  func title(state: WalletConnection.ConnectionState) -> String {
     switch state {
       case .notConnected: return "Connect your Wallet"
       case .connected:    return "Sign in"
@@ -25,7 +25,7 @@ struct WalletView: View {
     }
   }
   
-  func body(state: Wallet.ConnectionState) -> String {
+  func body(state: WalletConnection.ConnectionState) -> String {
     switch state {
       case .notConnected: return "You need to connect your wallet and Lens handle to Lentil in order to interact with content on Lentil.\n\nDon't have access to Lens yet? Reach out to them to get yourself a Lens handle!"
       case .connected:    return "Sign in with Lens to interact with content on Lentil.\n\nDon’t have access to Lens yet? Reach out to them to get yourself a Lens handle!"
@@ -79,7 +79,7 @@ struct WalletView: View {
       .toastView(
         toast: viewStore.binding(
           get: \.errorMessage,
-          send: { Wallet.Action.errorMessageUpdated($0) }
+          send: { WalletConnection.Action.errorMessageUpdated($0) }
         )
       )
       .toolbar {
@@ -119,8 +119,8 @@ struct WalletConnectView_Previews: PreviewProvider {
     NavigationStack {
       WalletView(
         store: .init(
-          initialState: Wallet.State(connectionStatus: .notConnected),
-          reducer: Wallet()
+          initialState: WalletConnection.State(connectionStatus: .notConnected),
+          reducer: WalletConnection()
         )
       )
     }

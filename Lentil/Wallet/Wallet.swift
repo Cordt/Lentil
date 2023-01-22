@@ -5,7 +5,7 @@ import ComposableArchitecture
 import Foundation
 
 
-struct Wallet: ReducerProtocol {
+struct WalletConnection: ReducerProtocol {
   enum ConnectionState: Equatable {
     case notConnected, connected(_ address: String), authenticated
   }

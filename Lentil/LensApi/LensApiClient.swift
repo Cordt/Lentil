@@ -137,6 +137,12 @@ struct LensApi {
     _ limit: Int,
     _ query: String
   ) async throws -> PaginatedResult<[Model.Profile]>
+  
+  var notifications: @Sendable (
+    _ profileID: String,
+    _ limit: Int,
+    _ cursor: String?
+  ) async throws -> PaginatedResult<[Model.Notification]>
  
   
   // MARK: API Mutations

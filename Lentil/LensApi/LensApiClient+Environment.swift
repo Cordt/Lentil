@@ -198,6 +198,20 @@ extension LensApi: DependencyKey {
       )
     },
     
+    notifications: { profileID, limit, cursor in
+      try await run(
+        networkClient: .authenticated,
+        query: NotificationsQuery(
+          request: .init(limit: "\(limit)", cursor: cursor, profileId: profileID)
+        ),
+        mapResult: { data in
+          let notifications = data.result.items.compactMap(Model.Notification.from)
+          let pageInfo = data.result.pageInfo.fragments.commonPaginatedResultInfo
+          return PaginatedResult(data: notifications, cursor: .init(prev: pageInfo.prev, next: pageInfo.next))
+        }
+      )
+    },
+    
     authenticate: { address, signature in
       try await run(
         mutation: AuthenticateMutation(request: SignedAuthChallenge(address: address, signature: signature)),
@@ -365,6 +379,7 @@ extension LensApi {
       else if query.count == 4 { return PaginatedResult(data: [MockData.mockProfiles[0], MockData.mockProfiles[1]], cursor: .init()) }
       else { return PaginatedResult(data: MockData.mockProfiles, cursor: .init()) }
     },
+    notifications: { _, _, _ in PaginatedResult(data: MockData.mockNotifications, cursor: .init()) },
     authenticate: { _, _ in },
     refreshAuthentication: {},
     createPost: { _, _ in .success(RelayerResult(txnHash: "abc", txnId: "123")) },
@@ -388,6 +403,7 @@ extension LensApi {
     profiles: unimplemented("profiles"),
     fetchImage: unimplemented("fetchImage"),
     searchProfiles: unimplemented("searchProfiles"),
+    notifications: unimplemented("notifications"),
     authenticate: unimplemented("authenticate"),
     refreshAuthentication: unimplemented("refreshAuthentication"),
     createPost: unimplemented("createPost"),
