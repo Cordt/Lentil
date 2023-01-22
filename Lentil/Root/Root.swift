@@ -32,6 +32,7 @@ struct Root: ReducerProtocol {
     var posts: IdentifiedArray = IdentifiedArrayOf(id: \Post.State.navigationId)
     var comments: IdentifiedArray = IdentifiedArrayOf(id: \Post.State.navigationId)
     var profiles: IdentifiedArray = IdentifiedArrayOf(id: \Profile.State.navigationId)
+    var showNotifications: Notifications.State?
     var createPublication: CreatePublication.State?
     var imageDetail: URL?
     var conversation: Conversation.State?
@@ -58,6 +59,7 @@ struct Root: ReducerProtocol {
     case post(id: Post.State.ID, action: Post.Action)
     case comment(id: Post.State.ID, action: Post.Action)
     case profile(id: Profile.State.ID, action: Profile.Action)
+    case showNotifications(Notifications.Action)
     case createPublication(CreatePublication.Action)
     case conversation(Conversation.Action)
   }
@@ -128,6 +130,9 @@ struct Root: ReducerProtocol {
           Profile.State(navigationId: destinationPath.navigationId, profile: profile)
         )
         
+      case .showNotifications:
+        state.showNotifications = Notifications.State()
+        
       case .createPublication(let reason):
         state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)
         
@@ -153,6 +158,9 @@ struct Root: ReducerProtocol {
         
       case .profile:
         state.profiles.remove(id: destinationPath.id)
+        
+      case .showNotifications:
+        state.showNotifications = nil
         
       case .createPublication:
         state.createPublication = nil

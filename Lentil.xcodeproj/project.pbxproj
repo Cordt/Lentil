@@ -20,6 +20,10 @@
 		370D8E93291F8C3B004A091F /* DMSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 370D8E8D291F8C3B004A091F /* DMSans-BoldItalic.ttf */; };
 		370ED770297D8FAE006D15C5 /* NotificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ED76F297D8FAE006D15C5 /* NotificationModel.swift */; };
 		370ED772297D953B006D15C5 /* LensApiClient+NotificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ED771297D953B006D15C5 /* LensApiClient+NotificationModel.swift */; };
+		370ED775297DA9AB006D15C5 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ED774297DA9AB006D15C5 /* Notifications.swift */; };
+		370ED777297DA9F1006D15C5 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ED776297DA9F1006D15C5 /* NotificationsView.swift */; };
+		370ED779297DAC0E006D15C5 /* NotificationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ED778297DAC0E006D15C5 /* NotificationRowView.swift */; };
+		370ED77B297DAC2A006D15C5 /* NotificationRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370ED77A297DAC2A006D15C5 /* NotificationRow.swift */; };
 		372248C628DABA5E0066BCE5 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248C528DABA5E0066BCE5 /* Post.swift */; };
 		372248CC28DADE3C0066BCE5 /* HelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248CB28DADE3C0066BCE5 /* HelperTests.swift */; };
 		372248CE28DAF38D0066BCE5 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372248CD28DAF38D0066BCE5 /* PostDetailView.swift */; };
@@ -136,6 +140,10 @@
 		370D8E8D291F8C3B004A091F /* DMSans-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		370ED76F297D8FAE006D15C5 /* NotificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModel.swift; sourceTree = "<group>"; };
 		370ED771297D953B006D15C5 /* LensApiClient+NotificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+NotificationModel.swift"; sourceTree = "<group>"; };
+		370ED774297DA9AB006D15C5 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
+		370ED776297DA9F1006D15C5 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		370ED778297DAC0E006D15C5 /* NotificationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRowView.swift; sourceTree = "<group>"; };
+		370ED77A297DAC2A006D15C5 /* NotificationRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRow.swift; sourceTree = "<group>"; };
 		372248C528DABA5E0066BCE5 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		372248CB28DADE3C0066BCE5 /* HelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperTests.swift; sourceTree = "<group>"; };
 		372248CD28DAF38D0066BCE5 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
@@ -293,6 +301,17 @@
 			path = DMSans;
 			sourceTree = "<group>";
 		};
+		370ED773297DA99A006D15C5 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				370ED774297DA9AB006D15C5 /* Notifications.swift */,
+				370ED776297DA9F1006D15C5 /* NotificationsView.swift */,
+				370ED77A297DAC2A006D15C5 /* NotificationRow.swift */,
+				370ED778297DAC0E006D15C5 /* NotificationRowView.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 		372248C428DABA3E0066BCE5 /* Post */ = {
 			isa = PBXGroup;
 			children = (
@@ -430,6 +449,7 @@
 				37BBB12D28F2737600A6D202 /* LensApi */,
 				37C54C63292C7EBD006E8DBA /* LensMetadata */,
 				376C5ED428D4245500BA908A /* Models */,
+				370ED773297DA99A006D15C5 /* Notifications */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
 				37F37F5E2926044A00469E21 /* Root */,
@@ -789,6 +809,7 @@
 				37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */,
 				37B7D6A129589E7800F8674C /* MessageView.swift in Sources */,
 				372248C628DABA5E0066BCE5 /* Post.swift in Sources */,
+				370ED779297DAC0E006D15C5 /* NotificationRowView.swift in Sources */,
 				372248DC28DB47A80066BCE5 /* Timeline.swift in Sources */,
 				378AE5AE294FA564001584DD /* ImageView.swift in Sources */,
 				37B7D69829561C4100F8674C /* XMPTApi.swift in Sources */,
@@ -823,10 +844,13 @@
 				3779FC08295F73B900D4139C /* CreateConversation.swift in Sources */,
 				37C54C6B292C897C006E8DBA /* File+Publication.swift in Sources */,
 				37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */,
+				370ED77B297DAC2A006D15C5 /* NotificationRow.swift in Sources */,
 				37B7D69F295711ED00F8674C /* ConversationRow.swift in Sources */,
 				376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */,
 				37B7D69D2957116100F8674C /* Conversation.swift in Sources */,
+				370ED777297DA9F1006D15C5 /* NotificationsView.swift in Sources */,
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
+				370ED775297DA9AB006D15C5 /* Notifications.swift in Sources */,
 				37F71B5628DF4D6400F6D9B1 /* Publication.swift in Sources */,
 				37CC0CFE292793930036C6E9 /* MediaModel.swift in Sources */,
 				37C54C65292C7EE6006E8DBA /* Metadata.swift in Sources */,

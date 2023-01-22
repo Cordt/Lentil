@@ -25,6 +25,9 @@ extension Theme {
     static let secondary: SwiftUI.Color =      SwiftUI.Color(red: 157/255, green: 86/255, blue: 175/255)
     static let tertiary: SwiftUI.Color =       SwiftUI.Color(red: 251/255, green: 4/255, blue: 108/255)
     static let contrast: SwiftUI.Color =       SwiftUI.Color(red: 45/255, green: 41/255, blue: 76/255)
+    static let mirror: SwiftUI.Color =         SwiftUI.Color(red: 246/255, green: 210/255, blue: 105/255)
+    static let mention: SwiftUI.Color =        SwiftUI.Color(red: 255/255, green: 165/255, blue: 58/255)
+    static let follow: SwiftUI.Color =         SwiftUI.Color(red: 52/255, green: 199/255, blue: 89/255)
     static let lensGreen: SwiftUI.Color =      SwiftUI.Color(red: 0/255, green: 80/255, blue: 30/255)
     static let lensLightGreen: SwiftUI.Color = SwiftUI.Color(red: 171/255, green: 254/255, blue: 44/255)
     static let systemRed: SwiftUI.Color =      SwiftUI.Color(red: 255/255, green: 59/255, blue: 48/255)
@@ -153,11 +156,11 @@ extension View {
 
 enum Icon {
   case back, notification, settings, share, link, add, create
-  case heart, heartFilled, comment, mirror, collect
+  case heart, heartFilled, comment, mirror, collect, mention
   case twitter, website, nft
   case location, lens
   case follow, collection
-  case times
+  case times, bell
   case feed, messages
   case otter
   
@@ -186,6 +189,7 @@ enum Icon {
       case .comment:      return ""
       case .mirror:       return ""
       case .collect:      return ""
+      case .mention:      return "@"
       case .twitter:      return ""
       case .website:      return ""
       case .nft:          return ""
@@ -194,6 +198,7 @@ enum Icon {
       case .follow:       return ""
       case .collection:   return ""
       case .times:        return ""
+      case .bell:         return ""
       case .feed:         return ""
       case .otter:        return ""
       case .messages:     return ""

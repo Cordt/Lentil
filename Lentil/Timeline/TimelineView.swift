@@ -84,11 +84,20 @@ struct TimelineView: View {
           
           if viewStore.userProfile != nil {
             ToolbarItem(placement: .navigationBarTrailing) {
-              Button {
-                viewStore.send(.createPublicationTapped)
-              } label: {
-                Icon.add.view(.xlarge)
-                  .foregroundColor(Theme.Color.white)
+              HStack {
+                Button {
+                  viewStore.send(.createPublicationTapped)
+                } label: {
+                  Icon.add.view(.xlarge)
+                    .foregroundColor(Theme.Color.white)
+                }
+                
+                Button {
+                  viewStore.send(.showNotificationsTapped)
+                } label: {
+                  Icon.bell.view(.xlarge)
+                    .foregroundColor(Theme.Color.white)
+                }
               }
             }
           }

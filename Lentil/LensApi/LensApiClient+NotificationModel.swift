@@ -8,7 +8,7 @@ extension Model.Notification {
     let notificationID: String
     let event: Event
     let createdAt: Date
-    let profile: Model.Profile?
+    let profile: Model.Profile
     
     if let typedNotification = notification.asNewCollectNotification {
       notificationID = typedNotification.notificationId
@@ -63,10 +63,11 @@ extension Model.Notification {
       guard let date = date(from: typedNotification.fragments.newFollowerNotificationFields.createdAt)
       else { return nil }
       createdAt = date
-      profile = nil
       
-      // FIXME: Insert profile ID
+      return nil
+      // FIXME: Insert profile handle/name and fetch profile
       event = .followed("")
+//      profile = nil
     }
     else if let typedNotification = notification.asNewMentionNotification {
       notificationID = typedNotification.notificationId
