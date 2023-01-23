@@ -73,6 +73,7 @@
 		37A5651E295C9E75001A676A /* WalletConnector+SigningKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */; };
 		37A7A6F6293C4DAB00964768 /* MediaDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */; };
 		37A7A6F9293C53F100964768 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F8293C53F100964768 /* Cache.swift */; };
+		37A7B663297F1C7000A8D1B7 /* WalletConnectSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 37A7B662297F1C7000A8D1B7 /* WalletConnectSwift */; };
 		37A8B54E297746AD00790526 /* ConversationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A8B54D297746AD00790526 /* ConversationTests.swift */; };
 		37B7D6922956075500F8674C /* PostTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D6912956075500F8674C /* PostTests.swift */; };
 		37B7D69529561A6E00F8674C /* (null) in Frameworks */ = {isa = PBXBuildFile; };
@@ -250,6 +251,7 @@
 				376C5D292964CCBA000BD962 /* GiphyUISDK in Frameworks */,
 				373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
+				37A7B663297F1C7000A8D1B7 /* WalletConnectSwift in Frameworks */,
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
 				370C54B4296EE0EF0016E4A7 /* XMTP in Frameworks */,
 				37557A23292744FB005524C5 /* Sentry in Frameworks */,
@@ -672,6 +674,7 @@
 				376C5D2B2964CCCC000BD962 /* libwebp */,
 				377487942966D95F00B19322 /* SDWebImageSwiftUI */,
 				370C54B3296EE0EF0016E4A7 /* XMTP */,
+				37A7B662297F1C7000A8D1B7 /* WalletConnectSwift */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -739,6 +742,7 @@
 				376C5D2A2964CCCC000BD962 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */,
 				377487932966D95E00B19322 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				370C54B2296EE0EE0016E4A7 /* XCRemoteSwiftPackageReference "xmtp-ios" */,
+				37A7B661297F1C7000A8D1B7 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -1185,8 +1189,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/xmtp/xmtp-ios.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = revision;
+				revision = f6509c75eabcadebe92a7f2068cc077b4f574095;
 			};
 		};
 		373DAF1D29305C3700648C8E /* XCRemoteSwiftPackageReference "swiftui-navigation" */ = {
@@ -1227,6 +1231,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.2.2;
+			};
+		};
+		37A7B661297F1C7000A8D1B7 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WalletConnect/WalletConnectSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.0;
 			};
 		};
 		37D1236828F70EC90037A4A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
@@ -1305,6 +1317,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 377487932966D95E00B19322 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		37A7B662297F1C7000A8D1B7 /* WalletConnectSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37A7B661297F1C7000A8D1B7 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */;
+			productName = WalletConnectSwift;
 		};
 		37D1236928F70EC90037A4A7 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;

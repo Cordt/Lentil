@@ -72,7 +72,7 @@ class XMTPConnector {
 
 extension XMTP.DecodedMessage: Equatable {
   public static func == (lhs: DecodedMessage, rhs: DecodedMessage) -> Bool {
-    lhs.body == rhs.body && lhs.senderAddress == rhs.senderAddress && lhs.sent == rhs.sent
+    lhs.bodyText == rhs.bodyText && lhs.senderAddress == rhs.senderAddress && lhs.sent == rhs.sent
   }
 }
 

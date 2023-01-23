@@ -15,7 +15,7 @@ struct ConversationRow: ReducerProtocol {
       var from: From
       
       init(message: DecodedMessage, from: From) {
-        self.body = message.body
+        self.body = message.bodyText
         self.sent = message.sent
         self.from = from
       }

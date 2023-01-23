@@ -61,7 +61,7 @@ struct MessageView: View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       switch viewStore.from {
         case .user:
-          Text(viewStore.message.body)
+          Text(viewStore.message.bodyText)
             .font(style: .body, color: Theme.Color.white)
             .fixedSize(horizontal: false, vertical: true)
             .padding(10)
@@ -74,7 +74,7 @@ struct MessageView: View {
             }
           
         case .peer:
-          Text(viewStore.message.body)
+          Text(viewStore.message.bodyText)
             .font(style: .body, color: Theme.Color.text)
             .fixedSize(horizontal: false, vertical: true)
             .padding(10)

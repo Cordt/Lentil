@@ -125,7 +125,7 @@ struct Conversation: ReducerProtocol {
           
         case .messageResponse(let message):
           guard state.messages.first(where: {
-            $0.message.body == message.body
+            $0.message.bodyText == message.bodyText
             && $0.message.sent == message.sent
             && $0.message.senderAddress == message.senderAddress
           }) == nil
@@ -363,32 +363,32 @@ struct ConversationView_Previews: PreviewProvider {
 extension MockData {
   static var messages: [XMTP.DecodedMessage] {
     [
-      XMTP.DecodedMessage(
+      XMTP.DecodedMessage.preview(
         body: "Commerce on the Internet has come to rely almost exclusively on financial institutions serving as trusted third parties to process electronic payments.",
         senderAddress: "0x123456",
         sent: Date().addingTimeInterval(-60 * 60 * 24 * 5)
       ),
-      XMTP.DecodedMessage(
+      XMTP.DecodedMessage.preview(
         body: "While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the trust based model. Completely non-reversible transactions are not really possible, since financial institutions cannot avoid mediating disputes. ",
         senderAddress: "0x123abcdef",
         sent: Date().addingTimeInterval(-60 * 60 * 24 * 2)
       ),
-      XMTP.DecodedMessage(
+      XMTP.DecodedMessage.preview(
         body: "The cost of mediation increases transaction costs, limiting the minimum practical transaction size and cutting off the possibility for small casual transactions, and there is a broader cost in the loss of ability to make non-reversible payments for nonreversible services.",
         senderAddress: "0xabc123",
         sent: Date().addingTimeInterval(-60 * 60 * 24)
       ),
-      XMTP.DecodedMessage(
+      XMTP.DecodedMessage.preview(
         body: "Commerce on the Internet 🥳",
         senderAddress: "0x123456",
         sent: Date().addingTimeInterval(-60 * 30)
       ),
-      XMTP.DecodedMessage(
+      XMTP.DecodedMessage.preview(
         body: "While the system works well enough 🫠",
         senderAddress: "0xabc123def",
         sent: Date().addingTimeInterval(-60 * 15)
       ),
-      XMTP.DecodedMessage(
+      XMTP.DecodedMessage.preview(
         body: "The cost of mediation 😆",
         senderAddress: "0xabc123",
         sent: Date().addingTimeInterval(-60 * 5)

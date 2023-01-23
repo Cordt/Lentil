@@ -4,6 +4,12 @@
 import Foundation
 import XMTP
 
+extension XMTP.DecodedMessage {
+  var bodyText: String {
+    return try! self.content()
+  }
+}
+
 
 struct XMTPConversation: Hashable, Equatable, Identifiable {
   var id: String { self.peerAddress }
@@ -26,10 +32,10 @@ struct XMTPConversation: Hashable, Equatable, Identifiable {
     .init(
       peerAddress: conversation.peerAddress,
       conversationID: conversation.conversationID,
-      send: conversation.send(text:),
+      send: { try await conversation.send(text: $0) },
       topic: conversation.topic,
       streamMessages: conversation.streamMessages,
-      messages: conversation.messages,
+      messages: { try await conversation.messages() },
       hash: conversation.hash(into:)
     )
   }
