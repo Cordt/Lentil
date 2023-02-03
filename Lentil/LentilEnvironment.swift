@@ -5,6 +5,8 @@ import Foundation
 import XMTP
 
 class LentilEnvironment {
+  let bundleIdentifier: String
+  
   let logLevel: LogLevel
   let baseUrl: String
   let origin: String
@@ -33,6 +35,8 @@ class LentilEnvironment {
       let valueString = (Bundle.main.object(forInfoDictionaryKey: key) as? String)!
       return addingHttps ? "https://" + valueString : valueString
     }
+    
+    self.bundleIdentifier = Bundle.main.bundleIdentifier!
     
     self.logLevel = LogLevel(rawValue: value(for: "LOG_LEVEL").lowercased())!
     self.baseUrl = value(for: "BASE_URL", addingHttps: true)

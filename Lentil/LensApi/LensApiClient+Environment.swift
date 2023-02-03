@@ -28,7 +28,7 @@ extension LensApi: DependencyKey {
     },
     
     verify: {
-      let accessToken = try AuthTokenStorage.load(token: .access)
+      let accessToken = try KeychainStorage.shared.get(storable: AccessToken.access)
       return try await run(
         query: VerifyQuery(request: VerifyRequest(accessToken: accessToken)),
         mapResult: { $0.verify }
@@ -216,19 +216,19 @@ extension LensApi: DependencyKey {
       try await run(
         mutation: AuthenticateMutation(request: SignedAuthChallenge(address: address, signature: signature)),
         mapResult: { data in
-          try AuthTokenStorage.store(token: .access, key: data.authenticate.accessToken)
-          try AuthTokenStorage.store(token: .refresh, key: data.authenticate.refreshToken)
+          try KeychainStorage.shared.store(string: data.authenticate.accessToken, for: AccessToken.access)
+          try KeychainStorage.shared.store(string: data.authenticate.refreshToken, for: AccessToken.refresh)
         }
       )
     },
     
     refreshAuthentication: {
-      let refreshToken = try AuthTokenStorage.load(token: .refresh)
+      let refreshToken = try KeychainStorage.shared.get(storable: AccessToken.refresh)
       try await run(
         mutation: RefreshMutation(request: RefreshRequest(refreshToken: refreshToken)),
         mapResult: { data in
-          try AuthTokenStorage.store(token: .access, key: data.refresh.accessToken)
-          try AuthTokenStorage.store(token: .refresh, key: data.refresh.refreshToken)
+          try KeychainStorage.shared.store(string: data.refresh.accessToken, for: AccessToken.access)
+          try KeychainStorage.shared.store(string: data.refresh.refreshToken, for: AccessToken.refresh)
         }
       )
     },

@@ -64,7 +64,7 @@ struct Root: ReducerProtocol {
     case conversation(Conversation.Action)
   }
   
-  @Dependency(\.authTokenApi) var authTokenApi
+  @Dependency(\.keychainApi) var keychainApi
   @Dependency(\.cache) var cache
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
@@ -190,8 +190,8 @@ struct Root: ReducerProtocol {
             $0.next(upperBound: UInt8(state.loadingText.count) - 1)
           })
           return .merge(
-            Effect(value: .startTimer),
-            Effect(value: .checkAuthenticationStatus)
+            EffectTask(value: .startTimer),
+            EffectTask(value: .checkAuthenticationStatus)
           )
           
         case .hideLoadingScreen:
@@ -219,8 +219,8 @@ struct Root: ReducerProtocol {
         case .checkAuthenticationStatus:
           do {
             // Verify that both access token and user are available
-            if try self.authTokenApi.checkFor(.access),
-               try self.authTokenApi.checkFor(.refresh),
+            if self.keychainApi.checkFor(AccessToken.access),
+               self.keychainApi.checkFor(AccessToken.refresh),
                self.defaultsStorageApi.load(UserProfile.self) != nil {
               
               // Verify that the access token is still valid
@@ -230,7 +230,8 @@ struct Root: ReducerProtocol {
               }
             }
             else {
-              try self.authTokenApi.delete()
+              try self.keychainApi.delete(AccessToken.access)
+              try self.keychainApi.delete(AccessToken.refresh)
               self.defaultsStorageApi.remove(UserProfile.self)
               self.cache.clearCache()
               
@@ -263,7 +264,8 @@ struct Root: ReducerProtocol {
               await send(.hideLoadingScreen)
               
             } catch: { error, send in
-              try? self.authTokenApi.delete()
+              try? self.keychainApi.delete(AccessToken.access)
+              try? self.keychainApi.delete(AccessToken.refresh)
               self.defaultsStorageApi.remove(UserProfile.self)
               self.cache.clearCache()
               log("Failed to refresh token, logging user out", level: .debug, error: error)

@@ -110,7 +110,8 @@ extension LensApi {
         return try await work()
       }
       catch let error {
-        try AuthTokenStorage.delete()
+        try KeychainStorage.shared.delete(storable: AccessToken.access)
+        try KeychainStorage.shared.delete(storable: AccessToken.refresh)
         DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
@@ -130,7 +131,8 @@ extension LensApi {
         return try await work()
       }
       catch let error {
-        try AuthTokenStorage.delete()
+        try KeychainStorage.shared.delete(storable: AccessToken.access)
+        try KeychainStorage.shared.delete(storable: AccessToken.refresh)
         DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
@@ -150,7 +152,8 @@ extension LensApi {
         try await work()
       }
       catch let error {
-        try AuthTokenStorage.delete()
+        try KeychainStorage.shared.delete(storable: AccessToken.access)
+        try KeychainStorage.shared.delete(storable: AccessToken.refresh)
         DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
@@ -162,15 +165,15 @@ extension LensApi {
     networkClient: NetworkClient
   ) async throws {
     log("Trying to refresh access token", level: .info)
-    let refreshToken = try AuthTokenStorage.load(token: .refresh)
+    let refreshToken = try KeychainStorage.shared.get(storable: AccessToken.refresh)
     try await withCheckedThrowingContinuation { continuation in
       networkClient.client.perform(
         mutation: RefreshMutation(request: RefreshRequest(refreshToken: refreshToken)),
         queue: self.queue
       ) { result in
         transform(continuation: continuation, result: result) { data in
-          try AuthTokenStorage.store(token: .access, key: data.refresh.accessToken)
-          try AuthTokenStorage.store(token: .refresh, key: data.refresh.refreshToken)
+          try KeychainStorage.shared.store(string: data.refresh.accessToken, for: AccessToken.access)
+          try KeychainStorage.shared.store(string: data.refresh.refreshToken, for: AccessToken.refresh)
         }
       }
     }

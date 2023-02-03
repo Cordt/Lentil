@@ -46,6 +46,8 @@
 		37557A23292744FB005524C5 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 37557A22292744FB005524C5 /* Sentry */; };
 		3758528D293281FD0017A415 /* NavigationApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3758528C293281FD0017A415 /* NavigationApi.swift */; };
 		375B4D7B2953A8B700E99E0A /* ScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375B4D7A2953A8B700E99E0A /* ScrollView.swift */; };
+		375FB534298BE168008A4BD3 /* XMTPPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375FB533298BE168008A4BD3 /* XMTPPersistence.swift */; };
+		375FB537298BE2E8008A4BD3 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 375FB536298BE2E8008A4BD3 /* KeychainAccess */; };
 		3763EBD42977302D00DEA42A /* ConversationRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3763EBD32977302D00DEA42A /* ConversationRowTests.swift */; };
 		3763EBD62977318900DEA42A /* ConversationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3763EBD52977318900DEA42A /* ConversationRowView.swift */; };
 		3763EBD82977366C00DEA42A /* XMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 3763EBD72977366C00DEA42A /* XMTP */; };
@@ -85,8 +87,7 @@
 		37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */; };
 		37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */; };
 		37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */; };
-		37BBBAFE2901292900E74462 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBBAFD2901292900E74462 /* Keychain.swift */; };
-		37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */; };
+		37BBBAFE2901292900E74462 /* KeychainApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BBBAFD2901292900E74462 /* KeychainApi.swift */; };
 		37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767028FAA73800282ED0 /* LentilButton.swift */; };
 		37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */; };
 		37C5178E291EA986002D2B6D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C5178D291EA986002D2B6D /* ProfileView.swift */; };
@@ -165,6 +166,7 @@
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		3758528C293281FD0017A415 /* NavigationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationApi.swift; sourceTree = "<group>"; };
 		375B4D7A2953A8B700E99E0A /* ScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollView.swift; sourceTree = "<group>"; };
+		375FB533298BE168008A4BD3 /* XMTPPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPPersistence.swift; sourceTree = "<group>"; };
 		3763EBD32977302D00DEA42A /* ConversationRowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRowTests.swift; sourceTree = "<group>"; };
 		3763EBD52977318900DEA42A /* ConversationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRowView.swift; sourceTree = "<group>"; };
 		376C5D252964C160000BD962 /* PublicationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationTests.swift; sourceTree = "<group>"; };
@@ -202,8 +204,7 @@
 		37BBB12928F271F100A6D202 /* LensApiClient+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Run.swift"; sourceTree = "<group>"; };
 		37BBB12B28F2731E00A6D202 /* LensApiClient+Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Environment.swift"; sourceTree = "<group>"; };
 		37BBB12E28F2A9E200A6D202 /* LensApiClient+Interceptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+Interceptors.swift"; sourceTree = "<group>"; };
-		37BBBAFD2901292900E74462 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
-		37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenStorage.swift; sourceTree = "<group>"; };
+		37BBBAFD2901292900E74462 /* KeychainApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainApi.swift; sourceTree = "<group>"; };
 		37BE767028FAA73800282ED0 /* LentilButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LentilButton.swift; sourceTree = "<group>"; };
 		37BE767328FAB6CB00282ED0 /* SignInWithLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithLens.swift; sourceTree = "<group>"; };
 		37C5178D291EA986002D2B6D /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -255,6 +256,7 @@
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
 				370C54B4296EE0EF0016E4A7 /* XMTP in Frameworks */,
 				37557A23292744FB005524C5 /* Sentry in Frameworks */,
+				375FB537298BE2E8008A4BD3 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,6 +383,14 @@
 			path = Helper;
 			sourceTree = "<group>";
 		};
+		375FB532298BE101008A4BD3 /* Keychain */ = {
+			isa = PBXGroup;
+			children = (
+				37BBBAFD2901292900E74462 /* KeychainApi.swift */,
+			);
+			path = Keychain;
+			sourceTree = "<group>";
+		};
 		3763EBD22977301400DEA42A /* ConversationsTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -440,7 +450,6 @@
 				37C54C57292B0E46006E8DBA /* Secrets-Development.xcconfig */,
 				37C54C61292B423E006E8DBA /* Secrets-Production.xcconfig */,
 				372248CF28DAF4B80066BCE5 /* Assets */,
-				37CF6E1728FA620D0035A7CF /* AuthToken */,
 				37A7A6F7293C53E500964768 /* Cache */,
 				37C5178F291F5142002D2B6D /* Components */,
 				37B7D6992957055B00F8674C /* Conversations */,
@@ -448,6 +457,7 @@
 				37946CA8296EB15C008F849E /* DefatultsStorage */,
 				37557A2429274510005524C5 /* Helper */,
 				370ABEFC292A83AE005B8E11 /* InfuraApi */,
+				375FB532298BE101008A4BD3 /* Keychain */,
 				37BBB12D28F2737600A6D202 /* LensApi */,
 				37C54C63292C7EBD006E8DBA /* LensMetadata */,
 				376C5ED428D4245500BA908A /* Models */,
@@ -523,6 +533,7 @@
 				37B7D69729561C4100F8674C /* XMPTApi.swift */,
 				3779FC05295F4D4E00D4139C /* XMTPClient.swift */,
 				37A56517295C3142001A676A /* XMTPConversation.swift */,
+				375FB533298BE168008A4BD3 /* XMTPPersistence.swift */,
 			);
 			path = XMTP;
 			sourceTree = "<group>";
@@ -605,15 +616,6 @@
 			path = LensMetadata;
 			sourceTree = "<group>";
 		};
-		37CF6E1728FA620D0035A7CF /* AuthToken */ = {
-			isa = PBXGroup;
-			children = (
-				37BE766E28FA63A600282ED0 /* AuthTokenStorage.swift */,
-				37BBBAFD2901292900E74462 /* Keychain.swift */,
-			);
-			path = AuthToken;
-			sourceTree = "<group>";
-		};
 		37F37F5E2926044A00469E21 /* Root */ = {
 			isa = PBXGroup;
 			children = (
@@ -675,6 +677,7 @@
 				377487942966D95F00B19322 /* SDWebImageSwiftUI */,
 				370C54B3296EE0EF0016E4A7 /* XMTP */,
 				37A7B662297F1C7000A8D1B7 /* WalletConnectSwift */,
+				375FB536298BE2E8008A4BD3 /* KeychainAccess */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -743,6 +746,7 @@
 				377487932966D95E00B19322 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				370C54B2296EE0EE0016E4A7 /* XCRemoteSwiftPackageReference "xmtp-ios" */,
 				37A7B661297F1C7000A8D1B7 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */,
+				375FB535298BE2E8008A4BD3 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -821,7 +825,7 @@
 				373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */,
 				372248D828DB46890066BCE5 /* Root.swift in Sources */,
 				372248CE28DAF38D0066BCE5 /* PostDetailView.swift in Sources */,
-				37BBBAFE2901292900E74462 /* Keychain.swift in Sources */,
+				37BBBAFE2901292900E74462 /* KeychainApi.swift in Sources */,
 				375B4D7B2953A8B700E99E0A /* ScrollView.swift in Sources */,
 				3777830828CCA05D00E7E32A /* RootView.swift in Sources */,
 				37CDEB0E28D03146009B2B7E /* PublicationModel.swift in Sources */,
@@ -880,7 +884,7 @@
 				37C54C67292C8932006E8DBA /* File+Image.swift in Sources */,
 				37946CAA296EB783008F849E /* DefaultsStorage.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
-				37BE766F28FA63A600282ED0 /* AuthTokenStorage.swift in Sources */,
+				375FB534298BE168008A4BD3 /* XMTPPersistence.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1189,8 +1193,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/xmtp/xmtp-ios.git";
 			requirement = {
-				kind = revision;
-				revision = f6509c75eabcadebe92a7f2068cc077b4f574095;
+				branch = main;
+				kind = branch;
 			};
 		};
 		373DAF1D29305C3700648C8E /* XCRemoteSwiftPackageReference "swiftui-navigation" */ = {
@@ -1207,6 +1211,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 7.31.1;
+			};
+		};
+		375FB535298BE2E8008A4BD3 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.2.2;
 			};
 		};
 		376C5D272964CCBA000BD962 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */ = {
@@ -1246,7 +1258,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.48.1;
+				minimumVersion = 0.50.1;
 			};
 		};
 		37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
@@ -1292,6 +1304,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
+		};
+		375FB536298BE2E8008A4BD3 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 375FB535298BE2E8008A4BD3 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 		3763EBD72977366C00DEA42A /* XMTP */ = {
 			isa = XCSwiftPackageProductDependency;

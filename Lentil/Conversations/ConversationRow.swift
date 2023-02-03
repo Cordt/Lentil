@@ -72,7 +72,7 @@ struct ConversationRow: ReducerProtocol {
               }
             )
           }
-          effects.append(Effect(value: .loadLatestMessages))
+          effects.append(EffectTask(value: .loadLatestMessages))
           return .merge(effects)
           
         case .loadLatestMessages:

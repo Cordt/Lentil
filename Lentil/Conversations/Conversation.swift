@@ -65,7 +65,7 @@ struct Conversation: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          return Effect(value: .loadMessages)
+          return EffectTask(value: .loadMessages)
           
         case .didTapProfile:
           guard let profile = state.profile
@@ -111,8 +111,8 @@ struct Conversation: ReducerProtocol {
               }
           )
           return .merge(
-            Effect(value: .updateReadStatus(state.messages.first?.id)),
-            Effect(value: .streamMessages)
+            EffectTask(value: .updateReadStatus(state.messages.first?.id)),
+            EffectTask(value: .streamMessages)
           )
           
         case .streamMessages:
@@ -137,7 +137,7 @@ struct Conversation: ReducerProtocol {
             from: message.senderAddress == state.userAddress ? .user : .peer
           )
           state.messages.insert(messageState, at: 0)
-          return Effect(value: .updateReadStatus(messageState.id))
+          return EffectTask(value: .updateReadStatus(messageState.id))
           
         case .messagesResponse(.failure(let error)):
           log("Failed to load messages", level: .error, error: error)
@@ -173,7 +173,7 @@ struct Conversation: ReducerProtocol {
         case .sendMessageResult:
           state.messageText = ""
           state.isSending = false
-          return Effect(value: .loadMessages)
+          return EffectTask(value: .loadMessages)
           
         case .updateSendingStatus(let active):
           state.isSending = active

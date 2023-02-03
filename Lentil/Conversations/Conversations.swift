@@ -46,10 +46,10 @@ struct Conversations: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear, .didRefresh:
-          return Effect(value: .loadConversations)
+          return EffectTask(value: .loadConversations)
           
         case .walletConnectDidAppear:
-          return Effect(value: .listenOnWallet)
+          return EffectTask(value: .listenOnWallet)
           
         case .walletConnectDidDisappear:
           self.walletConnect.disconnect()
@@ -174,7 +174,7 @@ struct Conversations: ReducerProtocol {
           
         case .createConversation(let createConversationAction):
           if case .dismiss = createConversationAction {
-            return Effect(value: .setCreateConversation(nil))
+            return EffectTask(value: .setCreateConversation(nil))
           }
           else if case .dismissAndOpenConversation(let conversation, let userAddress) = createConversationAction {
             return .merge(
@@ -187,7 +187,7 @@ struct Conversations: ReducerProtocol {
                   )
                 )
               },
-              Effect(value: .setCreateConversation(nil))
+              EffectTask(value: .setCreateConversation(nil))
             )
           }
           else {

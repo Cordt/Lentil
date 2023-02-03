@@ -155,7 +155,7 @@ struct Publication: ReducerProtocol {
           switch result {
             case .success(let relayerResult):
               log("Successfully mirrored publication", level: .info)
-              return Effect(value: .mirrorSuccess(relayerResult.txnHash))
+              return EffectTask(value: .mirrorSuccess(relayerResult.txnHash))
               
             case .failure(let relayerError):
               log("Failed to mirror publication", level: .error, error: relayerError)
