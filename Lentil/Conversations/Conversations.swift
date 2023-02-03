@@ -93,7 +93,13 @@ struct Conversations: ReducerProtocol {
         case .loadConversations:
           switch state.connectionStatus {
             case .notConnected:
-              self.walletConnect.reconnect()
+              if self.xmtpConnector.tryLoadCLient() {
+                state.connectionStatus = .signedIn
+                return EffectTask(value: .loadConversations)
+              }
+              else {
+                self.walletConnect.reconnect()
+              }
               return .none
               
             case .connected:

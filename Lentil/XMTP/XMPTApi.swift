@@ -24,6 +24,24 @@ class XMTPConnector {
     return client.address()
   }
   
+  func tryLoadCLient() -> Bool {
+    do {
+      if KeychainStorage.shared.checkForData(storable: XMTPSession.current) {
+        let bundle = try KeychainStorage.shared.getData(storable: XMTPSession.current)
+        self.client = try XMTPClient(serializedKeyBundle: bundle)
+        return true
+      }
+      else {
+        log("No Keychain Bundle stored for XMTP", level: .info)
+        return false
+      }
+    }
+    catch let error {
+      log("Failed to create client from Keychain Bundle for XMTP", level: .error, error: error)
+      return false
+    }
+  }
+  
   func createClient() async -> Void {
     do {
       self.client = try await XMTPClient(account: WalletConnector.shared)
@@ -85,6 +103,7 @@ extension DependencyValues {
 
 struct XMTPConnectorApi {
   var address: () throws -> String
+  var tryLoadCLient: () -> Bool
   var createClient: () async -> Void
   var createConversation: (_ peerAddress: String, _ conversationID: XMTPClient.ConversationID) async throws -> XMTPConversation
   var loadConversations: () async throws -> [XMTPConversation]
@@ -96,6 +115,7 @@ extension XMTPConnectorApi: DependencyKey {
   static var liveValue: XMTPConnectorApi {
     .init(
       address: XMTPConnector.shared.address,
+      tryLoadCLient: XMTPConnector.shared.tryLoadCLient,
       createClient: XMTPConnector.shared.createClient,
       createConversation: XMTPConnector.shared.createConversation,
       loadConversations: XMTPConnector.shared.loadConversations,
@@ -112,6 +132,7 @@ extension XMTPConnectorApi {
   static var previewValue: XMTPConnectorApi {
     .init(
       address: { "0xabcdef" },
+      tryLoadCLient: { true },
       createClient: { },
       createConversation: { _, _ in MockData.conversations[0] },
       loadConversations: { MockData.conversations },
@@ -123,6 +144,7 @@ extension XMTPConnectorApi {
   static var testValue: XMTPConnectorApi {
     .init(
       address: unimplemented("address"),
+      tryLoadCLient: unimplemented("tryLoadClient"),
       createClient: unimplemented("createClient"),
       createConversation: unimplemented("createConversation"),
       loadConversations: unimplemented("loadConversations"),

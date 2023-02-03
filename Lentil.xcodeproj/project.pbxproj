@@ -46,8 +46,9 @@
 		37557A23292744FB005524C5 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 37557A22292744FB005524C5 /* Sentry */; };
 		3758528D293281FD0017A415 /* NavigationApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3758528C293281FD0017A415 /* NavigationApi.swift */; };
 		375B4D7B2953A8B700E99E0A /* ScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375B4D7A2953A8B700E99E0A /* ScrollView.swift */; };
-		375FB534298BE168008A4BD3 /* XMTPPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375FB533298BE168008A4BD3 /* XMTPPersistence.swift */; };
 		375FB537298BE2E8008A4BD3 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 375FB536298BE2E8008A4BD3 /* KeychainAccess */; };
+		375FB539298D2CD0008A4BD3 /* AccessToken+KeychainStorable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375FB538298D2CD0008A4BD3 /* AccessToken+KeychainStorable.swift */; };
+		375FB53B298D2CF6008A4BD3 /* XMTPSession+KeychainStorable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375FB53A298D2CF6008A4BD3 /* XMTPSession+KeychainStorable.swift */; };
 		3763EBD42977302D00DEA42A /* ConversationRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3763EBD32977302D00DEA42A /* ConversationRowTests.swift */; };
 		3763EBD62977318900DEA42A /* ConversationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3763EBD52977318900DEA42A /* ConversationRowView.swift */; };
 		3763EBD82977366C00DEA42A /* XMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 3763EBD72977366C00DEA42A /* XMTP */; };
@@ -166,7 +167,8 @@
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		3758528C293281FD0017A415 /* NavigationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationApi.swift; sourceTree = "<group>"; };
 		375B4D7A2953A8B700E99E0A /* ScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollView.swift; sourceTree = "<group>"; };
-		375FB533298BE168008A4BD3 /* XMTPPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPPersistence.swift; sourceTree = "<group>"; };
+		375FB538298D2CD0008A4BD3 /* AccessToken+KeychainStorable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccessToken+KeychainStorable.swift"; sourceTree = "<group>"; };
+		375FB53A298D2CF6008A4BD3 /* XMTPSession+KeychainStorable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XMTPSession+KeychainStorable.swift"; sourceTree = "<group>"; };
 		3763EBD32977302D00DEA42A /* ConversationRowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRowTests.swift; sourceTree = "<group>"; };
 		3763EBD52977318900DEA42A /* ConversationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRowView.swift; sourceTree = "<group>"; };
 		376C5D252964C160000BD962 /* PublicationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationTests.swift; sourceTree = "<group>"; };
@@ -387,6 +389,8 @@
 			isa = PBXGroup;
 			children = (
 				37BBBAFD2901292900E74462 /* KeychainApi.swift */,
+				375FB538298D2CD0008A4BD3 /* AccessToken+KeychainStorable.swift */,
+				375FB53A298D2CF6008A4BD3 /* XMTPSession+KeychainStorable.swift */,
 			);
 			path = Keychain;
 			sourceTree = "<group>";
@@ -533,7 +537,6 @@
 				37B7D69729561C4100F8674C /* XMPTApi.swift */,
 				3779FC05295F4D4E00D4139C /* XMTPClient.swift */,
 				37A56517295C3142001A676A /* XMTPConversation.swift */,
-				375FB533298BE168008A4BD3 /* XMTPPersistence.swift */,
 			);
 			path = XMTP;
 			sourceTree = "<group>";
@@ -852,6 +855,7 @@
 				3779FC08295F73B900D4139C /* CreateConversation.swift in Sources */,
 				37C54C6B292C897C006E8DBA /* File+Publication.swift in Sources */,
 				37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */,
+				375FB53B298D2CF6008A4BD3 /* XMTPSession+KeychainStorable.swift in Sources */,
 				370ED77B297DAC2A006D15C5 /* NotificationRow.swift in Sources */,
 				37B7D69F295711ED00F8674C /* ConversationRow.swift in Sources */,
 				376C5ED628D4253F00BA908A /* ProfileModel.swift in Sources */,
@@ -875,6 +879,7 @@
 				37A7A6F6293C4DAB00964768 /* MediaDataModel.swift in Sources */,
 				37CDEB1028D0322F009B2B7E /* Helper.swift in Sources */,
 				37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */,
+				375FB539298D2CD0008A4BD3 /* AccessToken+KeychainStorable.swift in Sources */,
 				37F71B4E28DE940300F6D9B1 /* PostStatsView.swift in Sources */,
 				372D1792294B808E008D2BEF /* MultiImageView.swift in Sources */,
 				37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */,
@@ -884,7 +889,6 @@
 				37C54C67292C8932006E8DBA /* File+Image.swift in Sources */,
 				37946CAA296EB783008F849E /* DefaultsStorage.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
-				375FB534298BE168008A4BD3 /* XMTPPersistence.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -45,6 +45,26 @@ class XMTPClient {
     let options = XMTP.ClientOptions(api: .init(env: LentilEnvironment.shared.xmtpEnvironment))
     let client = try await XMTP.Client.create(account: account, options: options)
     
+    // Store Key Bundle in Keychain
+    let serializedBundle = try client.privateKeyBundle.serializedData()
+    try KeychainStorage.shared.storeData(data: serializedBundle, for: XMTPSession.current)
+    
+    self.client = client
+    self.address = { client.address }
+    self.conversations = { client.conversations }
+    self.newConversation = { peerAddress, conversationID in
+      log("Creating conversation with Conversation ID: \(conversationID.build()?.conversationID ?? "none")", level: .info)
+      let conversation = try await client.conversations.newConversation(with: peerAddress, context: conversationID.build())
+      return XMTPConversation.from(conversation)
+    }
+    self.contacts = { client.contacts }
+    self.environment = { client.environment }
+  }
+  
+  init(serializedKeyBundle: Data) throws {
+    let bundle = try PrivateKeyBundle(serializedData: serializedKeyBundle)
+    let client = try XMTP.Client.from(bundle: bundle)
+    
     self.client = client
     self.address = { client.address }
     self.conversations = { client.conversations }
