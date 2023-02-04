@@ -10,7 +10,6 @@ import SwiftUI
 
 
 struct RootView: View {
-  @Dependency(\.navigationApi) var navigationApi
   let store: Store<Root.State, Root.Action>
   
   @ViewBuilder
@@ -73,7 +72,7 @@ struct RootView: View {
         case .imageDetail:
           if let imageURL = viewStore.imageDetail {
             ImageView(url: imageURL) {
-              self.navigationApi.remove(destinationPath)
+              viewStore.send(.dismissImageDetail(destinationPath))
             }
           }
           
@@ -108,7 +107,7 @@ struct RootView: View {
       }
       else {
         TabView {
-          NavigationStack(path: self.navigationApi.pathBinding()) {
+          NavigationStack(path: Navigation.shared.pathBinding()) {
             TimelineView(
               store: self.store.scope(
                 state: \.timelineState,
@@ -122,7 +121,7 @@ struct RootView: View {
           .tabItem { Label("Feed", systemImage: "house") }
           .tag(Root.State.TabDestination.feed)
           
-          NavigationStack(path: self.navigationApi.pathBinding()) {
+          NavigationStack(path: Navigation.shared.pathBinding()) {
             ConversationsView(
               store: self.store.scope(
                 state: \.conversationsState,

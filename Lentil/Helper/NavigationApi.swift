@@ -31,7 +31,7 @@ struct DestinationPath: Identifiable, Equatable, Hashable {
   var destination: Destination
 }
 
-fileprivate class Navigation {
+class Navigation {
   static let shared = Navigation()
   var eventStream: NavigationEvents
   var path: IdentifiedArrayOf<DestinationPath> = []

@@ -44,6 +44,7 @@ struct Root: ReducerProtocol {
     case loadingScreenDisappeared
     case startTimer
     case switchProgressLabel
+    case dismissImageDetail(DestinationPath)
     
     case checkAuthenticationStatus
     case refreshTokenResponse(Bool)
@@ -214,6 +215,10 @@ struct Root: ReducerProtocol {
           let itemNumber = (state.currentText + 1) % Root.loadingTexts.count
           state.currentText += 1
           state.loadingText = Root.loadingTexts[itemNumber]
+          return .none
+          
+        case .dismissImageDetail(let destinationPath):
+          self.navigationApi.remove(destinationPath)
           return .none
           
         case .checkAuthenticationStatus:

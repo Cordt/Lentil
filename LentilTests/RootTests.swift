@@ -12,21 +12,22 @@ final class RootTests: XCTestCase {
   override func tearDownWithError() throws {}
   
   func testValidatesTokenAndOpensApp() async throws {
+    let clock = TestClock()
     let store = TestStore(
       initialState: Root.State(timelineState: .init()),
       reducer: Root()
-    )
-    let clock = TestClock()
-    
-    store.dependencies.authTokenApi.checkFor = { _ in true }
-    store.dependencies.authTokenApi.load = { _ in "token" }
-    store.dependencies.defaultsStorageApi.load = { _ in UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
-    store.dependencies.lensApi.verify = {
-      try await clock.sleep(for: .seconds(1))
-      return true
+    ) {
+      $0.defaultsStorageApi.load = { _ in UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
+      $0.keychainApi.checkFor = { _ in true }
+      $0.keychainApi.get = { _ in "token" }
+      $0.lensApi.verify = {
+        try await clock.sleep(for: .seconds(1))
+        return true
+      }
+      
+      $0.withRandomNumberGenerator = WithRandomNumberGenerator(PredictableNumberGenerator())
+      $0.continuousClock = clock
     }
-    store.dependencies.withRandomNumberGenerator = WithRandomNumberGenerator(PredictableNumberGenerator())
-    store.dependencies.continuousClock = clock
     
     await store.send(.loadingScreenAppeared)
     await store.receive(.startTimer)
@@ -52,8 +53,8 @@ final class RootTests: XCTestCase {
     )
     let clock = TestClock()
     
-    store.dependencies.authTokenApi.checkFor = { _ in true }
-    store.dependencies.authTokenApi.load = { _ in "token" }
+    store.dependencies.keychainApi.checkFor = { _ in true }
+    store.dependencies.keychainApi.get = { _ in "token" }
     store.dependencies.defaultsStorageApi.load = { _ in UserProfile(id: "abc", handle: "@Cordt", address: "0x123") }
     store.dependencies.lensApi.verify = {
       try await clock.sleep(for: .seconds(1))
@@ -93,9 +94,9 @@ final class RootTests: XCTestCase {
     store.dependencies.withRandomNumberGenerator = WithRandomNumberGenerator(PredictableNumberGenerator())
     store.dependencies.continuousClock = clock
     
-    store.dependencies.authTokenApi.checkFor = { _ in true }
-    store.dependencies.authTokenApi.load = { _ in "token" }
-    store.dependencies.authTokenApi.delete = { tokensDeleted = true }
+    store.dependencies.keychainApi.checkFor = { _ in true }
+    store.dependencies.keychainApi.get = { _ in "token" }
+    store.dependencies.keychainApi.delete = { _ in tokensDeleted = true }
     store.dependencies.cache.clearCache = { cacheCleared = true }
     store.dependencies.lensApi.verify = {
       try await clock.sleep(for: .seconds(1))

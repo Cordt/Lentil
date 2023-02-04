@@ -45,7 +45,13 @@ struct Conversations: ReducerProtocol {
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {
-        case .didAppear, .didRefresh:
+        case .didAppear:
+          if self.xmtpConnector.tryLoadCLient() {
+            state.connectionStatus = .signedIn
+          }
+          return EffectTask(value: .loadConversations)
+          
+        case .didRefresh:
           return EffectTask(value: .loadConversations)
           
         case .walletConnectDidAppear:
@@ -93,13 +99,7 @@ struct Conversations: ReducerProtocol {
         case .loadConversations:
           switch state.connectionStatus {
             case .notConnected:
-              if self.xmtpConnector.tryLoadCLient() {
-                state.connectionStatus = .signedIn
-                return EffectTask(value: .loadConversations)
-              }
-              else {
-                self.walletConnect.reconnect()
-              }
+              self.walletConnect.reconnect()
               return .none
               
             case .connected:
@@ -120,7 +120,7 @@ struct Conversations: ReducerProtocol {
 
                   let lastMessage: ConversationRow.State.Stub?
                   let messageDate: Date
-                  if let message = messages.first {
+                  if let message = messages.last {
                     lastMessage = ConversationRow.State.Stub(
                       message: message,
                       from: message.senderAddress == address ? .user : .peer

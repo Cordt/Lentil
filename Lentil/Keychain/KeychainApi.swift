@@ -104,7 +104,7 @@ extension KeychainApi {
   static let testValue = KeychainApi(
     store: unimplemented("store"),
     storeData: unimplemented("storeData"),
-    get: unimplemented("load"),
+    get: unimplemented("get"),
     getData: unimplemented("getData"),
     checkFor: unimplemented("checkFor"),
     checkForData: unimplemented("checkForData"),
