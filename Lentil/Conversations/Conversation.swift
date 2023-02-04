@@ -22,6 +22,7 @@ struct Conversation: ReducerProtocol {
     var messages: IdentifiedArrayOf<Message.State>
     var messageText: String = ""
     var isSending: Bool = false
+    @BindingState var messageFieldIsFocused: Bool = false
     
     init(
       navigationId: String,
@@ -39,9 +40,10 @@ struct Conversation: ReducerProtocol {
     }
   }
   
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
     case didAppear
     case didTapProfile
+    case didTapMessages
     case loadMessages
     case messagesResponse(TaskResult<[XMTP.DecodedMessage]>)
     case streamMessages
@@ -53,6 +55,8 @@ struct Conversation: ReducerProtocol {
     case updateSendingStatus(Bool)
     case updateReadStatus(Message.State.ID?)
     case message(Message.State.ID, Message.Action)
+    
+    case binding(BindingAction<State>)
   }
   
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
@@ -62,9 +66,12 @@ struct Conversation: ReducerProtocol {
   enum CancelMessageSreamID {}
   
   var body: some ReducerProtocol<State, Action> {
+    BindingReducer()
+    
     Reduce { state, action in
       switch action {
         case .didAppear:
+          state.messageFieldIsFocused = true
           return EffectTask(value: .loadMessages)
           
         case .didTapProfile:
@@ -77,6 +84,10 @@ struct Conversation: ReducerProtocol {
               destination: .profile(profile.id)
             )
           )
+          return .none
+          
+        case .didTapMessages:
+          state.messageFieldIsFocused = false
           return .none
           
         case .loadMessages:
@@ -193,12 +204,16 @@ struct Conversation: ReducerProtocol {
             log("Failed to store updated last message in Defaults", level: .error, error: error)
           }
           return .none
+          
+        case .binding:
+          return .none
       }
     }
   }
 }
 
 struct ConversationView: View {
+  @FocusState private var messageFieldIsFocused: Bool
   let store: Store<Conversation.State, Conversation.Action>
   
   var body: some View {
@@ -243,6 +258,9 @@ struct ConversationView: View {
               }
             }
             .mirrored()
+            .onTapGesture {
+              viewStore.send(.didTapMessages)
+            }
             
             VStack(spacing: 0) {
               HStack(alignment: .top) {
@@ -256,6 +274,7 @@ struct ConversationView: View {
                 )
                 .submitLabel(.return)
                 .lineLimit(1...5)
+                .focused(self.$messageFieldIsFocused)
                 .padding(10)
                 .background {
                   RoundedRectangle(cornerRadius: Theme.wideRadius)
@@ -330,6 +349,7 @@ struct ConversationView: View {
       .navigationBarTitleDisplayMode(.inline)
       .navigationBarBackButtonHidden(true)
       .tint(Theme.Color.primary)
+      .synchronize(viewStore.binding(\.$messageFieldIsFocused), self.$messageFieldIsFocused)
     }
   }
 }
