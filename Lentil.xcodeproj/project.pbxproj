@@ -72,6 +72,7 @@
 		3779FC08295F73B900D4139C /* CreateConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779FC07295F73B900D4139C /* CreateConversation.swift */; };
 		37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */; };
 		378AE5AE294FA564001584DD /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE5AD294FA564001584DD /* ImageView.swift */; };
+		378EC03E298EC32600FE68F5 /* ConversationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EC03D298EC32600FE68F5 /* ConversationsTests.swift */; };
 		37946CAA296EB783008F849E /* DefaultsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37946CA9296EB783008F849E /* DefaultsStorage.swift */; };
 		37A56518295C3142001A676A /* XMTPConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A56517295C3142001A676A /* XMTPConversation.swift */; };
 		37A5651E295C9E75001A676A /* WalletConnector+SigningKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */; };
@@ -193,6 +194,7 @@
 		3779FC07295F73B900D4139C /* CreateConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateConversation.swift; sourceTree = "<group>"; };
 		37849D6429069DFE003FC409 /* LensApiClient+TypedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LensApiClient+TypedData.swift"; sourceTree = "<group>"; };
 		378AE5AD294FA564001584DD /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
+		378EC03D298EC32600FE68F5 /* ConversationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsTests.swift; sourceTree = "<group>"; };
 		37946CA9296EB783008F849E /* DefaultsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsStorage.swift; sourceTree = "<group>"; };
 		37A56517295C3142001A676A /* XMTPConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPConversation.swift; sourceTree = "<group>"; };
 		37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletConnector+SigningKey.swift"; sourceTree = "<group>"; };
@@ -402,6 +404,7 @@
 			children = (
 				3763EBD32977302D00DEA42A /* ConversationRowTests.swift */,
 				37A8B54D297746AD00790526 /* ConversationTests.swift */,
+				378EC03D298EC32600FE68F5 /* ConversationsTests.swift */,
 			);
 			path = ConversationsTests;
 			sourceTree = "<group>";
@@ -901,6 +904,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3777831728CCA05E00E7E32A /* LentilTests.swift in Sources */,
+				378EC03E298EC32600FE68F5 /* ConversationsTests.swift in Sources */,
 				3763EBD42977302D00DEA42A /* ConversationRowTests.swift in Sources */,
 				37A8B54E297746AD00790526 /* ConversationTests.swift in Sources */,
 				372D1788294B0771008D2BEF /* RootTests.swift in Sources */,
@@ -1065,7 +1069,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.3;
+				MARKETING_VERSION = 0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "xyz.lentilapp.Lentil-Dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1102,7 +1106,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.3;
+				MARKETING_VERSION = 0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = xyz.lentilapp.Lentil;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1118,7 +1122,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G9B9Z38Z32;
@@ -1139,7 +1142,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G9B9Z38Z32;

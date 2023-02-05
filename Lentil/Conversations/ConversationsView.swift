@@ -26,7 +26,6 @@ struct ConversationsView: View {
               }
             }
             .padding(.horizontal, 60)
-            .onAppear { viewStore.send(.walletConnectDidAppear) }
             
           case .connected:
             VStack(spacing: 30) {

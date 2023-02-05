@@ -19,7 +19,6 @@ struct Conversations: ReducerProtocol {
   enum Action: Equatable {
     case didAppear
     case didRefresh
-    case walletConnectDidAppear
     case walletConnectDidDisappear
     case didDisappear
     case listenOnWallet
@@ -53,9 +52,6 @@ struct Conversations: ReducerProtocol {
           
         case .didRefresh:
           return EffectTask(value: .loadConversations)
-          
-        case .walletConnectDidAppear:
-          return EffectTask(value: .listenOnWallet)
           
         case .walletConnectDidDisappear:
           self.walletConnect.disconnect()
@@ -99,7 +95,6 @@ struct Conversations: ReducerProtocol {
         case .loadConversations:
           switch state.connectionStatus {
             case .notConnected:
-              self.walletConnect.reconnect()
               return .none
               
             case .connected:
@@ -167,8 +162,10 @@ struct Conversations: ReducerProtocol {
           return .none
           
         case .connectTapped:
-          self.walletConnect.connect()
-          return .none
+          return .merge(
+            EffectTask(value: .listenOnWallet),
+            .fireAndForget { self.walletConnect.connect() }
+          )
           
         case .createConversationTapped:
           state.createConversation = .init()

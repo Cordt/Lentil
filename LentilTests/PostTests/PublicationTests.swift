@@ -47,9 +47,9 @@ final class PublicationTests: XCTestCase {
         typename: .post
       ),
       reducer: Post()
-    )
-    
-    store.dependencies.defaultsStorageApi.load = { _ in nil }
+    ) {
+      $0.defaultsStorageApi.load = { _ in nil }
+    }
     
     await store.send(.post(action: .mirrorTapped))
     // Nothing else should happen

@@ -20,7 +20,7 @@ struct DestinationPath: Identifiable, Equatable, Hashable {
   enum  Destination: Equatable, Hashable {
     case publication(_ elementId: String)
     case profile(_ elementId: String)
-    case showNotifications
+//    case showNotifications
     case createPublication(_ reason: CreatePublication.State.Reason)
     case imageDetail(_ imageUrl: URL)
     

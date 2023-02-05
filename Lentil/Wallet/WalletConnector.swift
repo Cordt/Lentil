@@ -138,7 +138,7 @@ fileprivate final class WalletConnect {
   let bridgeUrl = URL(string: "https://bridge.walletconnect.org/")!
   let sessionKey = "walletconnect-session"
   
-  var walletEvents: WalletEvents = WalletEvents()
+  let walletEvents: WalletEvents
   var session: Session?
   var client: Client?
   var wcurl: WCURL?
@@ -151,7 +151,9 @@ fileprivate final class WalletConnect {
   
   static let shared: WalletConnect = WalletConnect()
   
-  private init() {}
+  private init() {
+    self.walletEvents = WalletEvents()
+  }
   
   
   func connect(title: String, description: String, clientUrl: URL, icons: [URL] = []) throws -> String {

@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Sentry
 import SwiftUI
 import UIKit
+import XCTestDynamicOverlay
+
 
 @main
 struct LentilApp: App {
@@ -26,12 +28,14 @@ struct LentilApp: App {
   
   var body: some Scene {
     WindowGroup {
-      RootView(
-        store: Store(
-          initialState: Root.State(),
-          reducer: Root()
+      if !_XCTIsTesting {
+        RootView(
+          store: Store(
+            initialState: Root.State(),
+            reducer: Root()
+          )
         )
-      )
+      }
     }
   }
 }
