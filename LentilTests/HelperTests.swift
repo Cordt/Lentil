@@ -53,4 +53,15 @@ final class HelperTests: XCTestCase {
     XCTAssertEqual(hexToDecimal(fifthWOPrefix), nil)
     XCTAssertEqual(hexToDecimal(fifth), nil)
   }
+  
+  func testLensDMConversationIDsAreCalculated() {
+    XCTAssertEqual(XMTPClient.ConversationID.lens("0x3fc0", "0x2f").build()?.conversationID, "lens.dev/dm/0x2f-0x3fc0")
+    XCTAssertEqual(XMTPClient.ConversationID.lens("0x3fc0", "0x4fad").build()?.conversationID, "lens.dev/dm/0x3fc0-0x4fad")
+    XCTAssertEqual(XMTPClient.ConversationID.lens("0x3fc0", "0x62fa").build()?.conversationID, "lens.dev/dm/0x3fc0-0x62fa")
+    XCTAssertEqual(XMTPClient.ConversationID.lens("0x3fc0", "0x62fa").build()?.conversationID, "lens.dev/dm/0x3fc0-0x62fa")
+    XCTAssertEqual(XMTPClient.ConversationID.lens("0x3fc0", "0x605c").build()?.conversationID, "lens.dev/dm/0x3fc0-0x605c")
+    XCTAssertEqual(XMTPClient.ConversationID.lens("0x3fc0", "0x15").build()?.conversationID, "lens.dev/dm/0x15-0x3fc0")
+    XCTAssertEqual(XMTPClient.ConversationID.lens("0x3fc0", "0x06").build()?.conversationID, "lens.dev/dm/0x06-0x3fc0")
+    XCTAssertEqual(XMTPClient.ConversationID.lens("0x3fc0", "0x638a").build()?.conversationID, "lens.dev/dm/0x3fc0-0x638a")
+  }
 }

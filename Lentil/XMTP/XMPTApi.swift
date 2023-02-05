@@ -24,7 +24,7 @@ class XMTPConnector {
     return client.address()
   }
   
-  func tryLoadCLient() -> Bool {
+  func tryLoadClient() -> Bool {
     do {
       if KeychainStorage.shared.checkForData(storable: XMTPSession.current) {
         let bundle = try KeychainStorage.shared.getData(storable: XMTPSession.current)
@@ -48,6 +48,16 @@ class XMTPConnector {
     }
     catch let error {
       log("Failed to create client for XMTP", level: .error, error: error)
+    }
+  }
+  
+  func disconnect() {
+    do {
+      try KeychainStorage.shared.delete(storable: XMTPSession.current)
+      self.client = nil
+    }
+    catch let error {
+      log("Failed to disconnect XMTP client", level: .error, error: error)
     }
   }
   
@@ -105,6 +115,7 @@ struct XMTPConnectorApi {
   var address: () throws -> String
   var tryLoadCLient: () -> Bool
   var createClient: () async -> Void
+  var disconnect: () throws -> Void
   var createConversation: (_ peerAddress: String, _ conversationID: XMTPClient.ConversationID) async throws -> XMTPConversation
   var loadConversations: () async throws -> [XMTPConversation]
   var loadMessages: (_ conversation: XMTPConversation) async -> [XMTP.DecodedMessage]
@@ -115,8 +126,9 @@ extension XMTPConnectorApi: DependencyKey {
   static var liveValue: XMTPConnectorApi {
     .init(
       address: XMTPConnector.shared.address,
-      tryLoadCLient: XMTPConnector.shared.tryLoadCLient,
+      tryLoadCLient: XMTPConnector.shared.tryLoadClient,
       createClient: XMTPConnector.shared.createClient,
+      disconnect: XMTPConnector.shared.disconnect,
       createConversation: XMTPConnector.shared.createConversation,
       loadConversations: XMTPConnector.shared.loadConversations,
       loadMessages: XMTPConnector.loadMessages,
@@ -134,6 +146,7 @@ extension XMTPConnectorApi {
       address: { "0xabcdef" },
       tryLoadCLient: { true },
       createClient: { },
+      disconnect: {  },
       createConversation: { _, _ in MockData.conversations[0] },
       loadConversations: { MockData.conversations },
       loadMessages: { _ in MockData.messages },
@@ -146,6 +159,7 @@ extension XMTPConnectorApi {
       address: unimplemented("address"),
       tryLoadCLient: unimplemented("tryLoadClient"),
       createClient: unimplemented("createClient"),
+      disconnect: unimplemented("disconnect"),
       createConversation: unimplemented("createConversation"),
       loadConversations: unimplemented("loadConversations"),
       loadMessages: unimplemented("loadMessagess"),

@@ -28,6 +28,7 @@ struct Conversations: ReducerProtocol {
     case conversationsResult(TaskResult<[ConversationRow.State]>)
     case connectTapped
     case createConversationTapped
+    case logout
     
     case setCreateConversation(CreateConversation.State?)
     case createConversation(CreateConversation.Action)
@@ -45,9 +46,6 @@ struct Conversations: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          if self.xmtpConnector.tryLoadCLient() {
-            state.connectionStatus = .signedIn
-          }
           return EffectTask(value: .loadConversations)
           
         case .didRefresh:
@@ -95,14 +93,19 @@ struct Conversations: ReducerProtocol {
         case .loadConversations:
           switch state.connectionStatus {
             case .notConnected:
-              return .none
+              if self.xmtpConnector.tryLoadCLient() {
+                state.connectionStatus = .signedIn
+                return EffectTask(value: .loadConversations)
+              }
+              else {
+                return .none
+              }
               
             case .connected:
               return .none
               
             case .signedIn:
-              guard case .signedIn = state.connectionStatus,
-                    let address = try? self.xmtpConnector.address()
+              guard let address = try? self.xmtpConnector.address()
               else { return .none }
               
               return .task {
@@ -169,6 +172,11 @@ struct Conversations: ReducerProtocol {
           
         case .createConversationTapped:
           state.createConversation = .init()
+          return .none
+          
+        case .logout:
+          state.connectionStatus = .notConnected
+          try? self.xmtpConnector.disconnect()
           return .none
           
         case .setCreateConversation(let createConversationState):

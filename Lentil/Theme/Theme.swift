@@ -155,7 +155,7 @@ extension View {
 // MARK: Line Aweseome Icons
 
 enum Icon {
-  case back, notification, settings, share, link, add, create
+  case back, notification, settings, share, link, add, create, logout
   case heart, heartFilled, comment, mirror, collect, mention
   case twitter, website, nft
   case location, lens
@@ -184,6 +184,7 @@ enum Icon {
       case .link:         return ""
       case .add:          return ""
       case .create:       return ""
+      case .logout:       return ""
       case .heart:        return ""
       case .heartFilled:  return ""
       case .comment:      return ""

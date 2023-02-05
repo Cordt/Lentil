@@ -74,6 +74,17 @@ struct ConversationsView: View {
         }
       )
       .toolbar {
+        ToolbarItem(placement: .navigationBarLeading) {
+          if case .signedIn = viewStore.connectionStatus {
+            Button {
+              viewStore.send(.logout)
+            } label: {
+              Icon.logout.view(.xlarge)
+                .foregroundColor(Theme.Color.white)
+            }
+          }
+        }
+        
         ToolbarItem(placement: .principal) {
           Text("Messages")
             .font(style: .largeHeadline, color: Theme.Color.white)

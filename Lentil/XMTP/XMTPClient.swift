@@ -22,8 +22,8 @@ class XMTPClient {
             return nil
           }
           let suffix = peerProfileIDParsed < userProfileIDParsed
-          ? "/\(peerProfileIDParsed)-\(userProfileIDParsed)"
-          : "/\(peerProfileIDParsed)-\(userProfileIDParsed)"
+          ? "/\(peerProfileID)-\(userProfileID)"
+          : "/\(userProfileID)-\(peerProfileID)"
           switch LentilEnvironment.shared.xmtpEnvironment {
             case .local:      return InvitationV1.Context(conversationID: "lens.local/dm\(suffix)")
             case .dev:        return InvitationV1.Context(conversationID: "lens.dev/dm\(suffix)")
@@ -53,8 +53,8 @@ class XMTPClient {
     self.address = { client.address }
     self.conversations = { client.conversations }
     self.newConversation = { peerAddress, conversationID in
-      log("Creating conversation with Conversation ID: \(conversationID.build()?.conversationID ?? "none")", level: .info)
       let conversation = try await client.conversations.newConversation(with: peerAddress, context: conversationID.build())
+      log("Created conversation with Conversation ID and topic: \(conversationID.build()?.conversationID ?? "none"), \(conversation.topic)", level: .info)
       return XMTPConversation.from(conversation)
     }
     self.contacts = { client.contacts }
@@ -62,15 +62,16 @@ class XMTPClient {
   }
   
   init(serializedKeyBundle: Data) throws {
+    let options = XMTP.ClientOptions(api: .init(env: LentilEnvironment.shared.xmtpEnvironment))
     let bundle = try PrivateKeyBundle(serializedData: serializedKeyBundle)
-    let client = try XMTP.Client.from(bundle: bundle)
+    let client = try XMTP.Client.from(bundle: bundle, options: options)
     
     self.client = client
     self.address = { client.address }
     self.conversations = { client.conversations }
     self.newConversation = { peerAddress, conversationID in
-      log("Creating conversation with Conversation ID: \(conversationID.build()?.conversationID ?? "none")", level: .info)
       let conversation = try await client.conversations.newConversation(with: peerAddress, context: conversationID.build())
+      log("Created conversation with Conversation ID and topic: \(conversationID.build()?.conversationID ?? "none"), \(conversation.topic)", level: .info)
       return XMTPConversation.from(conversation)
     }
     self.contacts = { client.contacts }
