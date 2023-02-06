@@ -44,6 +44,7 @@
 		373624D2298E4239004FB582 /* Synchronize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373624D1298E4239004FB582 /* Synchronize.swift */; };
 		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
 		373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */ = {isa = PBXBuildFile; productRef = 373DAF1E29305C3700648C8E /* SwiftUINavigation */; };
+		373DE1182990DB4500E67E45 /* CreateConversationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373DE1172990DB4500E67E45 /* CreateConversationTests.swift */; };
 		37557A23292744FB005524C5 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 37557A22292744FB005524C5 /* Sentry */; };
 		3758528D293281FD0017A415 /* NavigationApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3758528C293281FD0017A415 /* NavigationApi.swift */; };
 		375B4D7B2953A8B700E99E0A /* ScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375B4D7A2953A8B700E99E0A /* ScrollView.swift */; };
@@ -168,6 +169,7 @@
 		373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+ProfileModel.swift"; sourceTree = "<group>"; };
 		373624D1298E4239004FB582 /* Synchronize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
+		373DE1172990DB4500E67E45 /* CreateConversationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateConversationTests.swift; sourceTree = "<group>"; };
 		3758528C293281FD0017A415 /* NavigationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationApi.swift; sourceTree = "<group>"; };
 		375B4D7A2953A8B700E99E0A /* ScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollView.swift; sourceTree = "<group>"; };
 		375FB538298D2CD0008A4BD3 /* AccessToken+KeychainStorable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccessToken+KeychainStorable.swift"; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 				3763EBD32977302D00DEA42A /* ConversationRowTests.swift */,
 				37A8B54D297746AD00790526 /* ConversationTests.swift */,
 				378EC03D298EC32600FE68F5 /* ConversationsTests.swift */,
+				373DE1172990DB4500E67E45 /* CreateConversationTests.swift */,
 			);
 			path = ConversationsTests;
 			sourceTree = "<group>";
@@ -905,6 +908,7 @@
 			files = (
 				3777831728CCA05E00E7E32A /* LentilTests.swift in Sources */,
 				378EC03E298EC32600FE68F5 /* ConversationsTests.swift in Sources */,
+				373DE1182990DB4500E67E45 /* CreateConversationTests.swift in Sources */,
 				3763EBD42977302D00DEA42A /* ConversationRowTests.swift in Sources */,
 				37A8B54E297746AD00790526 /* ConversationTests.swift in Sources */,
 				372D1788294B0771008D2BEF /* RootTests.swift in Sources */,
