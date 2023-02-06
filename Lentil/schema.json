@@ -1126,6 +1126,22 @@
             "deprecationReason": null
           },
           {
+            "name": "isIDKitPhoneVerified",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "internalPublicationFilter",
             "description": null,
             "args": [
@@ -1455,6 +1471,45 @@
               "kind": "SCALAR",
               "name": "Void",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cur",
+            "description": null,
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "CurRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                }
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -1860,6 +1915,34 @@
                 "name": "Boolean",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isDataAvailability",
+            "description": "Indicates if the publication is data availability post",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "dataAvailabilityProofs",
+            "description": "The data availability proofs you can fetch from",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -4575,9 +4658,17 @@
             "description": "The optional token ID(s) to check for ownership",
             "args": [],
             "type": {
-              "kind": "SCALAR",
-              "name": "TokenId",
-              "ofType": null
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "TokenId",
+                  "ofType": null
+                }
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -4877,7 +4968,7 @@
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "ProfileId",
+              "name": "InternalPublicationId",
               "ofType": null
             },
             "isDeprecated": false,
@@ -5358,6 +5449,12 @@
             "deprecationReason": null
           },
           {
+            "name": "AaveFeeCollectModule",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "RevertCollectModule",
             "description": null,
             "isDeprecated": false,
@@ -5365,6 +5462,18 @@
           },
           {
             "name": "FreeCollectModule",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MultirecipientFeeCollectModule",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ERC4626FeeCollectModule",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -6403,8 +6512,28 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "ENUM",
-              "name": "DecryptFailReason",
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "DecryptFailReason",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "extraDetails",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "isDeprecated": false,
@@ -6480,6 +6609,12 @@
           },
           {
             "name": "COLLECT_NOT_FINALISED_ON_CHAIN",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "CAN_NOT_DECRYPT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -6668,6 +6803,34 @@
                 "name": "Boolean",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isDataAvailability",
+            "description": "Indicates if the publication is data availability post",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "dataAvailabilityProofs",
+            "description": "The data availability proofs you can fetch from",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -7113,6 +7276,34 @@
             "deprecationReason": null
           },
           {
+            "name": "isDataAvailability",
+            "description": "Indicates if the publication is data availability post",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "dataAvailabilityProofs",
+            "description": "The data availability proofs you can fetch from",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "mirrorOf",
             "description": "The mirror publication",
             "args": [],
@@ -7327,15 +7518,15 @@
           },
           {
             "name": "totalCount",
-            "description": "The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts",
+            "description": "The total number of entities the pagination iterates over. If its null then its not been worked out due to it being an expensive query and not really needed for the client. All main counters are in counter tables to allow them to be faster fetching.",
             "args": [],
             "type": {
               "kind": "SCALAR",
               "name": "Int",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Total counts is expensive and in dynamic nature of queries it slows stuff down. Most the time you do not need this you can just use the `next` property to see if there is more data. This will be removed soon. The only use case anyone is using this right now is on notification query, this should be changed to query the notifications and cache the last notification id. You can then keep checking if the id changes you know more notifications."
           }
         ],
         "inputFields": null,
@@ -8388,7 +8579,7 @@
                 }
               }
             },
-            "defaultValue": "[POST, COMMENT, MIRROR, COLLECT_POST, COLLECT_COMMENT, REACTION_POST, REACTION_COMMENT]"
+            "defaultValue": "[POST, COMMENT, MIRROR, COLLECT_POST, COLLECT_COMMENT]"
           },
           {
             "name": "sources",
@@ -12046,16 +12237,6 @@
             "defaultValue": "[]"
           },
           {
-            "name": "metadata",
-            "description": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "PublicationMetadataFilters",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
             "name": "customFilters",
             "description": null,
             "type": {
@@ -15281,6 +15462,31 @@
         "possibleTypes": null
       },
       {
+        "kind": "INPUT_OBJECT",
+        "name": "CurRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "secret",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "Mutation",
         "description": null,
@@ -15618,6 +15824,37 @@
               "ofType": {
                 "kind": "OBJECT",
                 "name": "CreateToggleFollowBroadcastItemResult",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createAttachMediaData",
+            "description": null,
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "PublicMediaRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PublicMediaResults",
                 "ofType": null
               }
             },
@@ -16063,37 +16300,6 @@
             "deprecationReason": null
           },
           {
-            "name": "createAttachMediaData",
-            "description": null,
-            "args": [
-              {
-                "name": "request",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "PublicMediaRequest",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null
-              }
-            ],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "PublicMediaResults",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "claim",
             "description": null,
             "args": [
@@ -16118,6 +16324,37 @@
               "ofType": {
                 "kind": "UNION",
                 "name": "RelayResult",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "idKitPhoneVerifyWebhook",
+            "description": null,
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "IdKitPhoneVerifyWebhookRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "IdKitPhoneVerifyWebhookResultStatusType",
                 "ofType": null
               }
             },
@@ -16375,6 +16612,33 @@
                   "ofType": {
                     "kind": "INPUT_OBJECT",
                     "name": "AchRequest",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Void",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "hel",
+            "description": null,
+            "args": [
+              {
+                "name": "request",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "HelRequest",
                     "ofType": null
                   }
                 },
@@ -18799,6 +19063,189 @@
       },
       {
         "kind": "OBJECT",
+        "name": "PublicMediaResults",
+        "description": "The response to upload the attached file",
+        "fields": [
+          {
+            "name": "signedUrl",
+            "description": "Signed url to push the file",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "media",
+            "description": "ipfs uri to add on the metadata",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "MediaOutput",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "MediaOutput",
+        "description": "Media object output",
+        "fields": [
+          {
+            "name": "item",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Url",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "type",
+            "description": "This is the mime type of media",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "MimeType",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "altTag",
+            "description": "The alt tags for accessibility",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cover",
+            "description": "The cover for any video or audio you attached",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Url",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "source",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "PublicationMediaSource",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "PublicMediaRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "itemCid",
+            "description": "Pre calculated cid of the file to push",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "IfpsCid",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "type",
+            "description": "This is the mime type of media",
+            "type": {
+              "kind": "SCALAR",
+              "name": "MimeType",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "altTag",
+            "description": "The alt tags for accessibility",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "cover",
+            "description": "The cover for any video or audio you attached",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Url",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
+        "name": "IfpsCid",
+        "description": "IfpsCid scalar type",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "CreateCollectBroadcastItemResult",
         "description": "The broadcast item",
         "fields": [
@@ -20841,11 +21288,19 @@
             "name": "tokenIds",
             "description": "The optional token ID(s) to check for ownership",
             "type": {
-              "kind": "SCALAR",
-              "name": "TokenId",
-              "ofType": null
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "TokenId",
+                  "ofType": null
+                }
+              }
             },
-            "defaultValue": null
+            "defaultValue": "[]"
           }
         ],
         "interfaces": null,
@@ -21019,7 +21474,7 @@
             "description": "The publication id that has to be collected to unlock content",
             "type": {
               "kind": "SCALAR",
-              "name": "ProfileId",
+              "name": "InternalPublicationId",
               "ofType": null
             },
             "defaultValue": null
@@ -21990,189 +22445,6 @@
         "possibleTypes": null
       },
       {
-        "kind": "OBJECT",
-        "name": "PublicMediaResults",
-        "description": "The response to upload the attached file",
-        "fields": [
-          {
-            "name": "signedUrl",
-            "description": "Signed url to push the file",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "media",
-            "description": "ipfs uri to add on the metadata",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "MediaOutput",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "MediaOutput",
-        "description": "Media object output",
-        "fields": [
-          {
-            "name": "item",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Url",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "type",
-            "description": "This is the mime type of media",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "MimeType",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "altTag",
-            "description": "The alt tags for accessibility",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "cover",
-            "description": "The cover for any video or audio you attached",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "Url",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "source",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "ENUM",
-              "name": "PublicationMediaSource",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "INPUT_OBJECT",
-        "name": "PublicMediaRequest",
-        "description": null,
-        "fields": null,
-        "inputFields": [
-          {
-            "name": "itemCid",
-            "description": "Pre calculated cid of the file to push",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "IfpsCid",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "type",
-            "description": "This is the mime type of media",
-            "type": {
-              "kind": "SCALAR",
-              "name": "MimeType",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "altTag",
-            "description": "The alt tags for accessibility",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "cover",
-            "description": "The cover for any video or audio you attached",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Url",
-              "ofType": null
-            },
-            "defaultValue": null
-          }
-        ],
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "SCALAR",
-        "name": "IfpsCid",
-        "description": "IfpsCid scalar type",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "ClaimHandleRequest",
         "description": null,
@@ -22221,6 +22493,140 @@
         "inputFields": null,
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "IdKitPhoneVerifyWebhookResultStatusType",
+        "description": "The verify webhook result status type",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "SUCCESS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ALREADY_VERIFIED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "IdKitPhoneVerifyWebhookRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "sharedSecret",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "worldcoin",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "WorldcoinPhoneVerifyWebhookRequest",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "WorldcoinPhoneVerifyWebhookRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "nullifierHash",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "signalType",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "WorldcoinPhoneVerifyType",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "signal",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "EthereumAddress",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "WorldcoinPhoneVerifyType",
+        "description": "The worldcoin signal type",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "PHONE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ORB",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -23261,6 +23667,59 @@
           },
           {
             "name": "overrideAlreadyClaimed",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "HelRequest",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "secret",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "handle",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Handle",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "remove",
             "description": null,
             "type": {
               "kind": "NON_NULL",

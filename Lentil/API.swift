@@ -1978,7 +1978,7 @@ public struct NftOwnershipInput: GraphQLMapConvertible {
   ///   - chainId: The NFT chain id
   ///   - contractType: The unlocker contract type
   ///   - tokenIds: The optional token ID(s) to check for ownership
-  public init(contractAddress: String, chainId: String, contractType: ContractType, tokenIds: Swift.Optional<String?> = nil) {
+  public init(contractAddress: String, chainId: String, contractType: ContractType, tokenIds: Swift.Optional<[String]?> = nil) {
     graphQLMap = ["contractAddress": contractAddress, "chainID": chainId, "contractType": contractType, "tokenIds": tokenIds]
   }
 
@@ -2013,9 +2013,9 @@ public struct NftOwnershipInput: GraphQLMapConvertible {
   }
 
   /// The optional token ID(s) to check for ownership
-  public var tokenIds: Swift.Optional<String?> {
+  public var tokenIds: Swift.Optional<[String]?> {
     get {
-      return graphQLMap["tokenIds"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+      return graphQLMap["tokenIds"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
     }
     set {
       graphQLMap.updateValue(newValue, forKey: "tokenIds")
@@ -2708,8 +2708,11 @@ public enum CollectModules: RawRepresentable, Equatable, Hashable, CaseIterable,
   case feeCollectModule
   case limitedTimedFeeCollectModule
   case timedFeeCollectModule
+  case aaveFeeCollectModule
   case revertCollectModule
   case freeCollectModule
+  case multirecipientFeeCollectModule
+  case erc4626FeeCollectModule
   case unknownCollectModule
   /// Auto generated constant for unknown enum values
   case __unknown(RawValue)
@@ -2720,8 +2723,11 @@ public enum CollectModules: RawRepresentable, Equatable, Hashable, CaseIterable,
       case "FeeCollectModule": self = .feeCollectModule
       case "LimitedTimedFeeCollectModule": self = .limitedTimedFeeCollectModule
       case "TimedFeeCollectModule": self = .timedFeeCollectModule
+      case "AaveFeeCollectModule": self = .aaveFeeCollectModule
       case "RevertCollectModule": self = .revertCollectModule
       case "FreeCollectModule": self = .freeCollectModule
+      case "MultirecipientFeeCollectModule": self = .multirecipientFeeCollectModule
+      case "ERC4626FeeCollectModule": self = .erc4626FeeCollectModule
       case "UnknownCollectModule": self = .unknownCollectModule
       default: self = .__unknown(rawValue)
     }
@@ -2733,8 +2739,11 @@ public enum CollectModules: RawRepresentable, Equatable, Hashable, CaseIterable,
       case .feeCollectModule: return "FeeCollectModule"
       case .limitedTimedFeeCollectModule: return "LimitedTimedFeeCollectModule"
       case .timedFeeCollectModule: return "TimedFeeCollectModule"
+      case .aaveFeeCollectModule: return "AaveFeeCollectModule"
       case .revertCollectModule: return "RevertCollectModule"
       case .freeCollectModule: return "FreeCollectModule"
+      case .multirecipientFeeCollectModule: return "MultirecipientFeeCollectModule"
+      case .erc4626FeeCollectModule: return "ERC4626FeeCollectModule"
       case .unknownCollectModule: return "UnknownCollectModule"
       case .__unknown(let value): return value
     }
@@ -2746,8 +2755,11 @@ public enum CollectModules: RawRepresentable, Equatable, Hashable, CaseIterable,
       case (.feeCollectModule, .feeCollectModule): return true
       case (.limitedTimedFeeCollectModule, .limitedTimedFeeCollectModule): return true
       case (.timedFeeCollectModule, .timedFeeCollectModule): return true
+      case (.aaveFeeCollectModule, .aaveFeeCollectModule): return true
       case (.revertCollectModule, .revertCollectModule): return true
       case (.freeCollectModule, .freeCollectModule): return true
+      case (.multirecipientFeeCollectModule, .multirecipientFeeCollectModule): return true
+      case (.erc4626FeeCollectModule, .erc4626FeeCollectModule): return true
       case (.unknownCollectModule, .unknownCollectModule): return true
       case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
       default: return false
@@ -2760,8 +2772,11 @@ public enum CollectModules: RawRepresentable, Equatable, Hashable, CaseIterable,
       .feeCollectModule,
       .limitedTimedFeeCollectModule,
       .timedFeeCollectModule,
+      .aaveFeeCollectModule,
       .revertCollectModule,
       .freeCollectModule,
+      .multirecipientFeeCollectModule,
+      .erc4626FeeCollectModule,
       .unknownCollectModule,
     ]
   }
@@ -3403,7 +3418,8 @@ public final class ExplorePublicationsQuery: GraphQLQuery {
           }
         }
 
-        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        /// The total number of entities the pagination iterates over. If its null then its not been worked out due to it being an expensive query and not really needed for the client. All main counters are in counter tables to allow them to be faster fetching.
+        @available(*, deprecated, message: "Total counts is expensive and in dynamic nature of queries it slows stuff down. Most the time you do not need this you can just use the `next` property to see if there is more data. This will be removed soon. The only use case anyone is using this right now is on notification query, this should be changed to query the notifications and cache the last notification id. You can then keep checking if the id changes you know more notifications.")
         public var totalCount: Int? {
           get {
             return resultMap["totalCount"] as? Int
@@ -4262,7 +4278,8 @@ public final class FeedQuery: GraphQLQuery {
           }
         }
 
-        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        /// The total number of entities the pagination iterates over. If its null then its not been worked out due to it being an expensive query and not really needed for the client. All main counters are in counter tables to allow them to be faster fetching.
+        @available(*, deprecated, message: "Total counts is expensive and in dynamic nature of queries it slows stuff down. Most the time you do not need this you can just use the `next` property to see if there is more data. This will be removed soon. The only use case anyone is using this right now is on notification query, this should be changed to query the notifications and cache the last notification id. You can then keep checking if the id changes you know more notifications.")
         public var totalCount: Int? {
           get {
             return resultMap["totalCount"] as? Int
@@ -4721,7 +4738,8 @@ public final class PublicationsQuery: GraphQLQuery {
           }
         }
 
-        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        /// The total number of entities the pagination iterates over. If its null then its not been worked out due to it being an expensive query and not really needed for the client. All main counters are in counter tables to allow them to be faster fetching.
+        @available(*, deprecated, message: "Total counts is expensive and in dynamic nature of queries it slows stuff down. Most the time you do not need this you can just use the `next` property to see if there is more data. This will be removed soon. The only use case anyone is using this right now is on notification query, this should be changed to query the notifications and cache the last notification id. You can then keep checking if the id changes you know more notifications.")
         public var totalCount: Int? {
           get {
             return resultMap["totalCount"] as? Int
@@ -5371,7 +5389,8 @@ public final class WhoReactedPublicationQuery: GraphQLQuery {
           }
         }
 
-        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        /// The total number of entities the pagination iterates over. If its null then its not been worked out due to it being an expensive query and not really needed for the client. All main counters are in counter tables to allow them to be faster fetching.
+        @available(*, deprecated, message: "Total counts is expensive and in dynamic nature of queries it slows stuff down. Most the time you do not need this you can just use the `next` property to see if there is more data. This will be removed soon. The only use case anyone is using this right now is on notification query, this should be changed to query the notifications and cache the last notification id. You can then keep checking if the id changes you know more notifications.")
         public var totalCount: Int? {
           get {
             return resultMap["totalCount"] as? Int
@@ -5830,7 +5849,8 @@ public final class ProfilesQuery: GraphQLQuery {
           }
         }
 
-        /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+        /// The total number of entities the pagination iterates over. If its null then its not been worked out due to it being an expensive query and not really needed for the client. All main counters are in counter tables to allow them to be faster fetching.
+        @available(*, deprecated, message: "Total counts is expensive and in dynamic nature of queries it slows stuff down. Most the time you do not need this you can just use the `next` property to see if there is more data. This will be removed soon. The only use case anyone is using this right now is on notification query, this should be changed to query the notifications and cache the last notification id. You can then keep checking if the id changes you know more notifications.")
         public var totalCount: Int? {
           get {
             return resultMap["totalCount"] as? Int
@@ -6109,7 +6129,8 @@ public final class SearchQuery: GraphQLQuery {
             }
           }
 
-          /// The total number of entities the pagination iterates over. If null it means it can not work it out due to dynamic or aggregated query e.g. For a query that requests all nfts with more than 10 likes, this field gives the total amount of nfts with more than 10 likes, not the total amount of nfts
+          /// The total number of entities the pagination iterates over. If its null then its not been worked out due to it being an expensive query and not really needed for the client. All main counters are in counter tables to allow them to be faster fetching.
+          @available(*, deprecated, message: "Total counts is expensive and in dynamic nature of queries it slows stuff down. Most the time you do not need this you can just use the `next` property to see if there is more data. This will be removed soon. The only use case anyone is using this right now is on notification query, this should be changed to query the notifications and cache the last notification id. You can then keep checking if the id changes you know more notifications.")
           public var totalCount: Int? {
             get {
               return resultMap["totalCount"] as? Int
