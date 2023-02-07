@@ -1953,7 +1953,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Wallet",
+              "name": "UserWallet",
               "ofType": null
             },
             "isDeprecated": true,
@@ -6351,7 +6351,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "Wallet",
+        "name": "UserWallet",
         "description": null,
         "fields": [
           {
@@ -6881,7 +6881,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Wallet",
+              "name": "UserWallet",
               "ofType": null
             },
             "isDeprecated": false,
@@ -9356,7 +9356,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Wallet",
+                "name": "UserWallet",
                 "ofType": null
               }
             },
@@ -11725,7 +11725,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Wallet",
+                "name": "UserWallet",
                 "ofType": null
               }
             },
@@ -11810,7 +11810,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Wallet",
+                "name": "UserWallet",
                 "ofType": null
               }
             },
@@ -13030,7 +13030,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "Wallet",
+                    "name": "UserWallet",
                     "ofType": null
                   }
                 }

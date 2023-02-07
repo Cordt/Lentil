@@ -51,14 +51,14 @@ struct RootView: View {
           )
           IfLetStore(store, then: ProfileView.init)
           
-//        case .showNotifications:
-//          IfLetStore(
-//            self.store.scope(
-//              state: \.showNotifications,
-//              action: Root.Action.showNotifications
-//            ),
-//            then: NotificationsView.init
-//          )
+        case .showNotifications:
+          IfLetStore(
+            self.store.scope(
+              state: \.showNotifications,
+              action: Root.Action.showNotifications
+            ),
+            then: NotificationsView.init
+          )
           
         case .createPublication:
           IfLetStore(

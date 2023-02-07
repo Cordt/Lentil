@@ -45,7 +45,7 @@ struct Timeline: ReducerProtocol {
     case setConnectWallet(WalletConnection.State?)
     case ownProfileTapped
     case lentilButtonTapped
-//    case showNotificationsTapped
+    case showNotificationsTapped
     case createPublicationTapped
     case scrollAnimationFinished
     case scrollAnimationFinishedResult
@@ -309,14 +309,14 @@ struct Timeline: ReducerProtocol {
           state.scrollPosition = .top(topPostID)
           return .none
           
-//        case .showNotificationsTapped:
-//          self.navigationApi.append(
-//            DestinationPath(
-//              navigationId: self.uuid.callAsFunction().uuidString,
-//              destination: .showNotifications
-//            )
-//          )
-//          return .none
+        case .showNotificationsTapped:
+          self.navigationApi.append(
+            DestinationPath(
+              navigationId: self.uuid.callAsFunction().uuidString,
+              destination: .showNotifications
+            )
+          )
+          return .none
           
         case .createPublicationTapped:
           self.navigationApi.append(

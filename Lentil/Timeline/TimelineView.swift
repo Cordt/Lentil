@@ -92,12 +92,12 @@ struct TimelineView: View {
                     .foregroundColor(Theme.Color.white)
                 }
                 
-//                Button {
-//                  viewStore.send(.showNotificationsTapped)
-//                } label: {
-//                  Icon.bell.view(.xlarge)
-//                    .foregroundColor(Theme.Color.white)
-//                }
+                Button {
+                  viewStore.send(.showNotificationsTapped)
+                } label: {
+                  Icon.bell.view(.xlarge)
+                    .foregroundColor(Theme.Color.white)
+                }
               }
             }
           }
