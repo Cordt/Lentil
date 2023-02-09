@@ -18,11 +18,29 @@ struct NotificationsView: View {
             ),
             content: NotificationRowView.init
           )
+          .refreshable { viewStore.send(.didRefresh) }
         }
         .padding()
         .onAppear { viewStore.send(.didAppear) }
-        .refreshable { viewStore.send(.didRefresh) }
       }
+      .toolbar {
+        ToolbarItem(placement: .navigationBarLeading) {
+          HStack {
+            BackButton { viewStore.send(.didDismiss) }
+          }
+        }
+        
+        ToolbarItem(placement: .principal) {
+          Text("Notifications")
+            .font(style: .headline, color: Theme.Color.text)
+        }
+      }
+      .toolbar(.hidden, for: .tabBar)
+      .toolbarBackground(.hidden, for: .navigationBar)
+      .navigationBarBackButtonHidden(true)
+      .navigationBarTitleDisplayMode(.inline)
+      .tint(Theme.Color.white)
+      
     }
   }
 }
@@ -31,21 +49,24 @@ struct NotificationsView: View {
 #if DEBUG
 struct NotificationsView_Previews: PreviewProvider {
   static var previews: some View {
-    NotificationsView(
-      store: .init(
-        initialState: .init(
-          notificationRows: [
-            NotificationRow.State(notification: MockData.mockNotifications[0]),
-            NotificationRow.State(notification: MockData.mockNotifications[1]),
-            NotificationRow.State(notification: MockData.mockNotifications[2]),
-            NotificationRow.State(notification: MockData.mockNotifications[3]),
-            NotificationRow.State(notification: MockData.mockNotifications[4]),
-            NotificationRow.State(notification: MockData.mockNotifications[5]),
-          ]
-        ),
-        reducer: Notifications()
+    NavigationStack {
+      NotificationsView(
+        store: .init(
+          initialState: .init(
+            navigationId: "abc-def",
+            notificationRows: [
+              NotificationRow.State(notification: MockData.mockNotifications[0]),
+              NotificationRow.State(notification: MockData.mockNotifications[1]),
+              NotificationRow.State(notification: MockData.mockNotifications[2]),
+              NotificationRow.State(notification: MockData.mockNotifications[3]),
+              NotificationRow.State(notification: MockData.mockNotifications[4]),
+              NotificationRow.State(notification: MockData.mockNotifications[5]),
+            ]
+          ),
+          reducer: Notifications()
+        )
       )
-    )
+    }
   }
 }
 #endif

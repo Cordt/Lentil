@@ -132,7 +132,7 @@ struct Root: ReducerProtocol {
         )
         
       case .showNotifications:
-        state.showNotifications = Notifications.State()
+        state.showNotifications = Notifications.State(navigationId: destinationPath.navigationId)
         
       case .createPublication(let reason):
         state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)

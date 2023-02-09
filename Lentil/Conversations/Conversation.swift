@@ -63,7 +63,7 @@ struct Conversation: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   @Dependency(\.xmtpConnector) var xmtpConnector
-  enum CancelMessageSreamID {}
+  enum CancelMessageStreamID {}
   
   var body: some ReducerProtocol<State, Action> {
     BindingReducer()
@@ -132,7 +132,7 @@ struct Conversation: ReducerProtocol {
               await send(.messageResponse(message))
             }
           }
-          .cancellable(id: CancelMessageSreamID.self)
+          .cancellable(id: CancelMessageStreamID.self)
           
         case .messageResponse(let message):
           guard state.messages.first(where: {
@@ -161,7 +161,7 @@ struct Conversation: ReducerProtocol {
               destination: .conversation(state.conversation, state.userAddress)
             )
           )
-          return .cancel(id: CancelMessageSreamID.self)
+          return .cancel(id: CancelMessageStreamID.self)
           
         case .updateMessageText(let message):
           state.messageText = message

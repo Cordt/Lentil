@@ -8,6 +8,7 @@ import SwiftUI
 
 struct Notifications: ReducerProtocol {
   struct State: Equatable {
+    var navigationId: String
     var notificationsCursor: Cursor = .init()
     
     var notificationRows: IdentifiedArrayOf<NotificationRow.State> = []
@@ -15,6 +16,7 @@ struct Notifications: ReducerProtocol {
   
   enum Action: Equatable {
     case didAppear
+    case didDismiss
     case didRefresh
     case loadNotifications
     case notificationsResponse(TaskResult<PaginatedResult<[Model.Notification]>>)
@@ -22,14 +24,26 @@ struct Notifications: ReducerProtocol {
     case notificationRowAction(NotificationRow.State.ID, NotificationRow.Action)
   }
   
-  @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
+  @Dependency(\.lensApi) var lensApi
+  @Dependency(\.navigationApi) var navigationApi
+  
+  enum CancelLoadNotificationsID {}
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {
         case .didAppear:
           return .send(.loadNotifications)
+          
+        case .didDismiss:
+          self.navigationApi.remove(
+            DestinationPath(
+              navigationId: state.navigationId,
+              destination: .showNotifications
+            )
+          )
+          return .cancel(id: CancelLoadNotificationsID.self)
           
         case .didRefresh:
           return .send(.loadNotifications)
@@ -45,6 +59,7 @@ struct Notifications: ReducerProtocol {
               }
             )
           }
+          .cancellable(id: CancelLoadNotificationsID.self)
           
         case .notificationsResponse(.success(let result)):
           state.notificationsCursor = result.cursor
