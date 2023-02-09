@@ -46,10 +46,10 @@ struct Conversations: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          return EffectTask(value: .loadConversations)
+          return .send(.loadConversations)
           
         case .didRefresh:
-          return EffectTask(value: .loadConversations)
+          return .send(.loadConversations)
           
         case .walletConnectDidDisappear:
           self.walletConnect.disconnect()
@@ -95,7 +95,7 @@ struct Conversations: ReducerProtocol {
             case .notConnected:
               if self.xmtpConnector.tryLoadCLient() {
                 state.connectionStatus = .signedIn
-                return EffectTask(value: .loadConversations)
+                return .send(.loadConversations)
               }
               else {
                 return .none
@@ -166,7 +166,7 @@ struct Conversations: ReducerProtocol {
           
         case .connectTapped:
           return .merge(
-            EffectTask(value: .listenOnWallet),
+            .send(.listenOnWallet),
             .fireAndForget { self.walletConnect.connect() }
           )
           
@@ -185,7 +185,7 @@ struct Conversations: ReducerProtocol {
           
         case .createConversation(let createConversationAction):
           if case .dismiss = createConversationAction {
-            return EffectTask(value: .setCreateConversation(nil))
+            return .send(.setCreateConversation(nil))
           }
           else if case .dismissAndOpenConversation(let conversation, let userAddress) = createConversationAction {
             return .merge(
@@ -198,7 +198,7 @@ struct Conversations: ReducerProtocol {
                   )
                 )
               },
-              EffectTask(value: .setCreateConversation(nil))
+              .send(.setCreateConversation(nil))
             )
           }
           else {

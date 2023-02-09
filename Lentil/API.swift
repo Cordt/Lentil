@@ -1144,6 +1144,164 @@ public enum SearchRequestTypes: RawRepresentable, Equatable, Hashable, CaseItera
   }
 }
 
+public struct NotificationRequest: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - limit
+  ///   - cursor
+  ///   - profileId: The profile id
+  ///   - notificationTypes: The profile id
+  ///   - sources: The App Id
+  ///   - customFilters
+  public init(limit: Swift.Optional<String?> = nil, cursor: Swift.Optional<String?> = nil, profileId: String, notificationTypes: Swift.Optional<[NotificationTypes]?> = nil, sources: Swift.Optional<[String]?> = nil, customFilters: Swift.Optional<[CustomFiltersTypes]?> = nil) {
+    graphQLMap = ["limit": limit, "cursor": cursor, "profileId": profileId, "notificationTypes": notificationTypes, "sources": sources, "customFilters": customFilters]
+  }
+
+  public var limit: Swift.Optional<String?> {
+    get {
+      return graphQLMap["limit"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "limit")
+    }
+  }
+
+  public var cursor: Swift.Optional<String?> {
+    get {
+      return graphQLMap["cursor"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "cursor")
+    }
+  }
+
+  /// The profile id
+  public var profileId: String {
+    get {
+      return graphQLMap["profileId"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "profileId")
+    }
+  }
+
+  /// The profile id
+  public var notificationTypes: Swift.Optional<[NotificationTypes]?> {
+    get {
+      return graphQLMap["notificationTypes"] as? Swift.Optional<[NotificationTypes]?> ?? Swift.Optional<[NotificationTypes]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "notificationTypes")
+    }
+  }
+
+  /// The App Id
+  public var sources: Swift.Optional<[String]?> {
+    get {
+      return graphQLMap["sources"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "sources")
+    }
+  }
+
+  public var customFilters: Swift.Optional<[CustomFiltersTypes]?> {
+    get {
+      return graphQLMap["customFilters"] as? Swift.Optional<[CustomFiltersTypes]?> ?? Swift.Optional<[CustomFiltersTypes]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "customFilters")
+    }
+  }
+}
+
+/// The notification filter types
+public enum NotificationTypes: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case mirroredPost
+  case mirroredComment
+  case mentionPost
+  case mentionComment
+  case commentedComment
+  case commentedPost
+  case collectedPost
+  case collectedComment
+  case followed
+  case reactionPost
+  case reactionComment
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "MIRRORED_POST": self = .mirroredPost
+      case "MIRRORED_COMMENT": self = .mirroredComment
+      case "MENTION_POST": self = .mentionPost
+      case "MENTION_COMMENT": self = .mentionComment
+      case "COMMENTED_COMMENT": self = .commentedComment
+      case "COMMENTED_POST": self = .commentedPost
+      case "COLLECTED_POST": self = .collectedPost
+      case "COLLECTED_COMMENT": self = .collectedComment
+      case "FOLLOWED": self = .followed
+      case "REACTION_POST": self = .reactionPost
+      case "REACTION_COMMENT": self = .reactionComment
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .mirroredPost: return "MIRRORED_POST"
+      case .mirroredComment: return "MIRRORED_COMMENT"
+      case .mentionPost: return "MENTION_POST"
+      case .mentionComment: return "MENTION_COMMENT"
+      case .commentedComment: return "COMMENTED_COMMENT"
+      case .commentedPost: return "COMMENTED_POST"
+      case .collectedPost: return "COLLECTED_POST"
+      case .collectedComment: return "COLLECTED_COMMENT"
+      case .followed: return "FOLLOWED"
+      case .reactionPost: return "REACTION_POST"
+      case .reactionComment: return "REACTION_COMMENT"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: NotificationTypes, rhs: NotificationTypes) -> Bool {
+    switch (lhs, rhs) {
+      case (.mirroredPost, .mirroredPost): return true
+      case (.mirroredComment, .mirroredComment): return true
+      case (.mentionPost, .mentionPost): return true
+      case (.mentionComment, .mentionComment): return true
+      case (.commentedComment, .commentedComment): return true
+      case (.commentedPost, .commentedPost): return true
+      case (.collectedPost, .collectedPost): return true
+      case (.collectedComment, .collectedComment): return true
+      case (.followed, .followed): return true
+      case (.reactionPost, .reactionPost): return true
+      case (.reactionComment, .reactionComment): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [NotificationTypes] {
+    return [
+      .mirroredPost,
+      .mirroredComment,
+      .mentionPost,
+      .mentionComment,
+      .commentedComment,
+      .commentedPost,
+      .collectedPost,
+      .collectedComment,
+      .followed,
+      .reactionPost,
+      .reactionComment,
+    ]
+  }
+}
+
 public struct BroadcastRequest: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -6155,6 +6313,697 @@ public final class SearchQuery: GraphQLQuery {
   }
 }
 
+public final class NotificationsQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query Notifications($request: NotificationRequest!) {
+      result: notifications(request: $request) {
+        __typename
+        items {
+          __typename
+          ... on NewFollowerNotification {
+            __typename
+            notificationId
+            ...NewFollowerNotificationFields
+          }
+          ... on NewMirrorNotification {
+            __typename
+            notificationId
+            ...NewMirrorNotificationFields
+          }
+          ... on NewCollectNotification {
+            __typename
+            notificationId
+            ...NewCollectNotificationFields
+          }
+          ... on NewCommentNotification {
+            __typename
+            notificationId
+            ...NewCommentNotificationFields
+          }
+          ... on NewMentionNotification {
+            __typename
+            notificationId
+            ...NewMentionNotificationFields
+          }
+          ... on NewReactionNotification {
+            __typename
+            notificationId
+            ...NewReactionNotificationFields
+          }
+        }
+        pageInfo {
+          __typename
+          ...CommonPaginatedResultInfo
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "Notifications"
+
+  public var queryDocument: String {
+    var document: String = operationDefinition
+    document.append("\n" + NewFollowerNotificationFields.fragmentDefinition)
+    document.append("\n" + UserWallet.fragmentDefinition)
+    document.append("\n" + CompactProfile.fragmentDefinition)
+    document.append("\n" + MediaFields.fragmentDefinition)
+    document.append("\n" + NewMirrorNotificationFields.fragmentDefinition)
+    document.append("\n" + CompactPost.fragmentDefinition)
+    document.append("\n" + CompactPublicationStats.fragmentDefinition)
+    document.append("\n" + CompactMetadata.fragmentDefinition)
+    document.append("\n" + ProfileMediaFields.fragmentDefinition)
+    document.append("\n" + CompactComment.fragmentDefinition)
+    document.append("\n" + NewCollectNotificationFields.fragmentDefinition)
+    document.append("\n" + CompactMirror.fragmentDefinition)
+    document.append("\n" + NewCommentNotificationFields.fragmentDefinition)
+    document.append("\n" + CommentWithCommentedPublicationFields.fragmentDefinition)
+    document.append("\n" + NewMentionNotificationFields.fragmentDefinition)
+    document.append("\n" + NewReactionNotificationFields.fragmentDefinition)
+    document.append("\n" + CommonPaginatedResultInfo.fragmentDefinition)
+    return document
+  }
+
+  public var request: NotificationRequest
+
+  public init(request: NotificationRequest) {
+    self.request = request
+  }
+
+  public var variables: GraphQLMap? {
+    return ["request": request]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("notifications", alias: "result", arguments: ["request": GraphQLVariable("request")], type: .nonNull(.object(Result.selections))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(result: Result) {
+      self.init(unsafeResultMap: ["__typename": "Query", "result": result.resultMap])
+    }
+
+    public var result: Result {
+      get {
+        return Result(unsafeResultMap: resultMap["result"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "result")
+      }
+    }
+
+    public struct Result: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["PaginatedNotificationResult"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("items", type: .nonNull(.list(.nonNull(.object(Item.selections))))),
+          GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(items: [Item], pageInfo: PageInfo) {
+        self.init(unsafeResultMap: ["__typename": "PaginatedNotificationResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var items: [Item] {
+        get {
+          return (resultMap["items"] as! [ResultMap]).map { (value: ResultMap) -> Item in Item(unsafeResultMap: value) }
+        }
+        set {
+          resultMap.updateValue(newValue.map { (value: Item) -> ResultMap in value.resultMap }, forKey: "items")
+        }
+      }
+
+      public var pageInfo: PageInfo {
+        get {
+          return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+        }
+      }
+
+      public struct Item: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["NewFollowerNotification", "NewCollectNotification", "NewCommentNotification", "NewMirrorNotification", "NewMentionNotification", "NewReactionNotification"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLTypeCase(
+              variants: ["NewFollowerNotification": AsNewFollowerNotification.selections, "NewMirrorNotification": AsNewMirrorNotification.selections, "NewCollectNotification": AsNewCollectNotification.selections, "NewCommentNotification": AsNewCommentNotification.selections, "NewMentionNotification": AsNewMentionNotification.selections, "NewReactionNotification": AsNewReactionNotification.selections],
+              default: [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              ]
+            )
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var asNewFollowerNotification: AsNewFollowerNotification? {
+          get {
+            if !AsNewFollowerNotification.possibleTypes.contains(__typename) { return nil }
+            return AsNewFollowerNotification(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsNewFollowerNotification: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["NewFollowerNotification"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(NewFollowerNotificationFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var notificationId: String {
+            get {
+              return resultMap["notificationId"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "notificationId")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var newFollowerNotificationFields: NewFollowerNotificationFields {
+              get {
+                return NewFollowerNotificationFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+
+        public var asNewMirrorNotification: AsNewMirrorNotification? {
+          get {
+            if !AsNewMirrorNotification.possibleTypes.contains(__typename) { return nil }
+            return AsNewMirrorNotification(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsNewMirrorNotification: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["NewMirrorNotification"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(NewMirrorNotificationFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var notificationId: String {
+            get {
+              return resultMap["notificationId"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "notificationId")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var newMirrorNotificationFields: NewMirrorNotificationFields {
+              get {
+                return NewMirrorNotificationFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+
+        public var asNewCollectNotification: AsNewCollectNotification? {
+          get {
+            if !AsNewCollectNotification.possibleTypes.contains(__typename) { return nil }
+            return AsNewCollectNotification(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsNewCollectNotification: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["NewCollectNotification"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(NewCollectNotificationFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var notificationId: String {
+            get {
+              return resultMap["notificationId"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "notificationId")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var newCollectNotificationFields: NewCollectNotificationFields {
+              get {
+                return NewCollectNotificationFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+
+        public var asNewCommentNotification: AsNewCommentNotification? {
+          get {
+            if !AsNewCommentNotification.possibleTypes.contains(__typename) { return nil }
+            return AsNewCommentNotification(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsNewCommentNotification: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["NewCommentNotification"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(NewCommentNotificationFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var notificationId: String {
+            get {
+              return resultMap["notificationId"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "notificationId")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var newCommentNotificationFields: NewCommentNotificationFields {
+              get {
+                return NewCommentNotificationFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+
+        public var asNewMentionNotification: AsNewMentionNotification? {
+          get {
+            if !AsNewMentionNotification.possibleTypes.contains(__typename) { return nil }
+            return AsNewMentionNotification(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsNewMentionNotification: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["NewMentionNotification"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(NewMentionNotificationFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var notificationId: String {
+            get {
+              return resultMap["notificationId"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "notificationId")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var newMentionNotificationFields: NewMentionNotificationFields {
+              get {
+                return NewMentionNotificationFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+
+        public var asNewReactionNotification: AsNewReactionNotification? {
+          get {
+            if !AsNewReactionNotification.possibleTypes.contains(__typename) { return nil }
+            return AsNewReactionNotification(unsafeResultMap: resultMap)
+          }
+          set {
+            guard let newValue = newValue else { return }
+            resultMap = newValue.resultMap
+          }
+        }
+
+        public struct AsNewReactionNotification: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["NewReactionNotification"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
+              GraphQLFragmentSpread(NewReactionNotificationFields.self),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var notificationId: String {
+            get {
+              return resultMap["notificationId"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "notificationId")
+            }
+          }
+
+          public var fragments: Fragments {
+            get {
+              return Fragments(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+
+          public struct Fragments {
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public var newReactionNotificationFields: NewReactionNotificationFields {
+              get {
+                return NewReactionNotificationFields(unsafeResultMap: resultMap)
+              }
+              set {
+                resultMap += newValue.resultMap
+              }
+            }
+          }
+        }
+      }
+
+      public struct PageInfo: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PaginatedResultInfo"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLFragmentSpread(CommonPaginatedResultInfo.self),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(prev: String? = nil, next: String? = nil, totalCount: Int? = nil) {
+          self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var fragments: Fragments {
+          get {
+            return Fragments(unsafeResultMap: resultMap)
+          }
+          set {
+            resultMap += newValue.resultMap
+          }
+        }
+
+        public struct Fragments {
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var commonPaginatedResultInfo: CommonPaginatedResultInfo {
+            get {
+              return CommonPaginatedResultInfo(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 public final class BroadcastMutation: GraphQLMutation {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition: String =
@@ -7753,690 +8602,6 @@ public final class CreateSetDefaultProfileTypedDataMutation: GraphQLMutation {
             }
             set {
               resultMap.updateValue(newValue, forKey: "profileId")
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-public final class NotificationsQuery: GraphQLQuery {
-  /// The raw GraphQL definition of this operation.
-  public let operationDefinition: String =
-    """
-    query Notifications {
-      result: notifications(request: {profileId: "0x0f", limit: 10}) {
-        __typename
-        items {
-          __typename
-          ... on NewFollowerNotification {
-            __typename
-            notificationId
-            ...NewFollowerNotificationFields
-          }
-          ... on NewMirrorNotification {
-            __typename
-            notificationId
-            ...NewMirrorNotificationFields
-          }
-          ... on NewCollectNotification {
-            __typename
-            notificationId
-            ...NewCollectNotificationFields
-          }
-          ... on NewCommentNotification {
-            __typename
-            notificationId
-            ...NewCommentNotificationFields
-          }
-          ... on NewMentionNotification {
-            __typename
-            notificationId
-            ...NewMentionNotificationFields
-          }
-          ... on NewReactionNotification {
-            __typename
-            notificationId
-            ...NewReactionNotificationFields
-          }
-        }
-        pageInfo {
-          __typename
-          ...CommonPaginatedResultInfo
-        }
-      }
-    }
-    """
-
-  public let operationName: String = "Notifications"
-
-  public var queryDocument: String {
-    var document: String = operationDefinition
-    document.append("\n" + NewFollowerNotificationFields.fragmentDefinition)
-    document.append("\n" + UserWallet.fragmentDefinition)
-    document.append("\n" + CompactProfile.fragmentDefinition)
-    document.append("\n" + MediaFields.fragmentDefinition)
-    document.append("\n" + NewMirrorNotificationFields.fragmentDefinition)
-    document.append("\n" + CompactPost.fragmentDefinition)
-    document.append("\n" + CompactPublicationStats.fragmentDefinition)
-    document.append("\n" + CompactMetadata.fragmentDefinition)
-    document.append("\n" + ProfileMediaFields.fragmentDefinition)
-    document.append("\n" + CompactComment.fragmentDefinition)
-    document.append("\n" + NewCollectNotificationFields.fragmentDefinition)
-    document.append("\n" + CompactMirror.fragmentDefinition)
-    document.append("\n" + NewCommentNotificationFields.fragmentDefinition)
-    document.append("\n" + CommentWithCommentedPublicationFields.fragmentDefinition)
-    document.append("\n" + NewMentionNotificationFields.fragmentDefinition)
-    document.append("\n" + NewReactionNotificationFields.fragmentDefinition)
-    document.append("\n" + CommonPaginatedResultInfo.fragmentDefinition)
-    return document
-  }
-
-  public init() {
-  }
-
-  public struct Data: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["Query"]
-
-    public static var selections: [GraphQLSelection] {
-      return [
-        GraphQLField("notifications", alias: "result", arguments: ["request": ["profileId": "0x0f", "limit": 10]], type: .nonNull(.object(Result.selections))),
-      ]
-    }
-
-    public private(set) var resultMap: ResultMap
-
-    public init(unsafeResultMap: ResultMap) {
-      self.resultMap = unsafeResultMap
-    }
-
-    public init(result: Result) {
-      self.init(unsafeResultMap: ["__typename": "Query", "result": result.resultMap])
-    }
-
-    public var result: Result {
-      get {
-        return Result(unsafeResultMap: resultMap["result"]! as! ResultMap)
-      }
-      set {
-        resultMap.updateValue(newValue.resultMap, forKey: "result")
-      }
-    }
-
-    public struct Result: GraphQLSelectionSet {
-      public static let possibleTypes: [String] = ["PaginatedNotificationResult"]
-
-      public static var selections: [GraphQLSelection] {
-        return [
-          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("items", type: .nonNull(.list(.nonNull(.object(Item.selections))))),
-          GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
-        ]
-      }
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(items: [Item], pageInfo: PageInfo) {
-        self.init(unsafeResultMap: ["__typename": "PaginatedNotificationResult", "items": items.map { (value: Item) -> ResultMap in value.resultMap }, "pageInfo": pageInfo.resultMap])
-      }
-
-      public var __typename: String {
-        get {
-          return resultMap["__typename"]! as! String
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "__typename")
-        }
-      }
-
-      public var items: [Item] {
-        get {
-          return (resultMap["items"] as! [ResultMap]).map { (value: ResultMap) -> Item in Item(unsafeResultMap: value) }
-        }
-        set {
-          resultMap.updateValue(newValue.map { (value: Item) -> ResultMap in value.resultMap }, forKey: "items")
-        }
-      }
-
-      public var pageInfo: PageInfo {
-        get {
-          return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
-        }
-        set {
-          resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
-        }
-      }
-
-      public struct Item: GraphQLSelectionSet {
-        public static let possibleTypes: [String] = ["NewFollowerNotification", "NewCollectNotification", "NewCommentNotification", "NewMirrorNotification", "NewMentionNotification", "NewReactionNotification"]
-
-        public static var selections: [GraphQLSelection] {
-          return [
-            GraphQLTypeCase(
-              variants: ["NewFollowerNotification": AsNewFollowerNotification.selections, "NewMirrorNotification": AsNewMirrorNotification.selections, "NewCollectNotification": AsNewCollectNotification.selections, "NewCommentNotification": AsNewCommentNotification.selections, "NewMentionNotification": AsNewMentionNotification.selections, "NewReactionNotification": AsNewReactionNotification.selections],
-              default: [
-                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              ]
-            )
-          ]
-        }
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        public var asNewFollowerNotification: AsNewFollowerNotification? {
-          get {
-            if !AsNewFollowerNotification.possibleTypes.contains(__typename) { return nil }
-            return AsNewFollowerNotification(unsafeResultMap: resultMap)
-          }
-          set {
-            guard let newValue = newValue else { return }
-            resultMap = newValue.resultMap
-          }
-        }
-
-        public struct AsNewFollowerNotification: GraphQLSelectionSet {
-          public static let possibleTypes: [String] = ["NewFollowerNotification"]
-
-          public static var selections: [GraphQLSelection] {
-            return [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
-              GraphQLFragmentSpread(NewFollowerNotificationFields.self),
-            ]
-          }
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          public var notificationId: String {
-            get {
-              return resultMap["notificationId"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "notificationId")
-            }
-          }
-
-          public var fragments: Fragments {
-            get {
-              return Fragments(unsafeResultMap: resultMap)
-            }
-            set {
-              resultMap += newValue.resultMap
-            }
-          }
-
-          public struct Fragments {
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public var newFollowerNotificationFields: NewFollowerNotificationFields {
-              get {
-                return NewFollowerNotificationFields(unsafeResultMap: resultMap)
-              }
-              set {
-                resultMap += newValue.resultMap
-              }
-            }
-          }
-        }
-
-        public var asNewMirrorNotification: AsNewMirrorNotification? {
-          get {
-            if !AsNewMirrorNotification.possibleTypes.contains(__typename) { return nil }
-            return AsNewMirrorNotification(unsafeResultMap: resultMap)
-          }
-          set {
-            guard let newValue = newValue else { return }
-            resultMap = newValue.resultMap
-          }
-        }
-
-        public struct AsNewMirrorNotification: GraphQLSelectionSet {
-          public static let possibleTypes: [String] = ["NewMirrorNotification"]
-
-          public static var selections: [GraphQLSelection] {
-            return [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
-              GraphQLFragmentSpread(NewMirrorNotificationFields.self),
-            ]
-          }
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          public var notificationId: String {
-            get {
-              return resultMap["notificationId"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "notificationId")
-            }
-          }
-
-          public var fragments: Fragments {
-            get {
-              return Fragments(unsafeResultMap: resultMap)
-            }
-            set {
-              resultMap += newValue.resultMap
-            }
-          }
-
-          public struct Fragments {
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public var newMirrorNotificationFields: NewMirrorNotificationFields {
-              get {
-                return NewMirrorNotificationFields(unsafeResultMap: resultMap)
-              }
-              set {
-                resultMap += newValue.resultMap
-              }
-            }
-          }
-        }
-
-        public var asNewCollectNotification: AsNewCollectNotification? {
-          get {
-            if !AsNewCollectNotification.possibleTypes.contains(__typename) { return nil }
-            return AsNewCollectNotification(unsafeResultMap: resultMap)
-          }
-          set {
-            guard let newValue = newValue else { return }
-            resultMap = newValue.resultMap
-          }
-        }
-
-        public struct AsNewCollectNotification: GraphQLSelectionSet {
-          public static let possibleTypes: [String] = ["NewCollectNotification"]
-
-          public static var selections: [GraphQLSelection] {
-            return [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
-              GraphQLFragmentSpread(NewCollectNotificationFields.self),
-            ]
-          }
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          public var notificationId: String {
-            get {
-              return resultMap["notificationId"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "notificationId")
-            }
-          }
-
-          public var fragments: Fragments {
-            get {
-              return Fragments(unsafeResultMap: resultMap)
-            }
-            set {
-              resultMap += newValue.resultMap
-            }
-          }
-
-          public struct Fragments {
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public var newCollectNotificationFields: NewCollectNotificationFields {
-              get {
-                return NewCollectNotificationFields(unsafeResultMap: resultMap)
-              }
-              set {
-                resultMap += newValue.resultMap
-              }
-            }
-          }
-        }
-
-        public var asNewCommentNotification: AsNewCommentNotification? {
-          get {
-            if !AsNewCommentNotification.possibleTypes.contains(__typename) { return nil }
-            return AsNewCommentNotification(unsafeResultMap: resultMap)
-          }
-          set {
-            guard let newValue = newValue else { return }
-            resultMap = newValue.resultMap
-          }
-        }
-
-        public struct AsNewCommentNotification: GraphQLSelectionSet {
-          public static let possibleTypes: [String] = ["NewCommentNotification"]
-
-          public static var selections: [GraphQLSelection] {
-            return [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
-              GraphQLFragmentSpread(NewCommentNotificationFields.self),
-            ]
-          }
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          public var notificationId: String {
-            get {
-              return resultMap["notificationId"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "notificationId")
-            }
-          }
-
-          public var fragments: Fragments {
-            get {
-              return Fragments(unsafeResultMap: resultMap)
-            }
-            set {
-              resultMap += newValue.resultMap
-            }
-          }
-
-          public struct Fragments {
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public var newCommentNotificationFields: NewCommentNotificationFields {
-              get {
-                return NewCommentNotificationFields(unsafeResultMap: resultMap)
-              }
-              set {
-                resultMap += newValue.resultMap
-              }
-            }
-          }
-        }
-
-        public var asNewMentionNotification: AsNewMentionNotification? {
-          get {
-            if !AsNewMentionNotification.possibleTypes.contains(__typename) { return nil }
-            return AsNewMentionNotification(unsafeResultMap: resultMap)
-          }
-          set {
-            guard let newValue = newValue else { return }
-            resultMap = newValue.resultMap
-          }
-        }
-
-        public struct AsNewMentionNotification: GraphQLSelectionSet {
-          public static let possibleTypes: [String] = ["NewMentionNotification"]
-
-          public static var selections: [GraphQLSelection] {
-            return [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
-              GraphQLFragmentSpread(NewMentionNotificationFields.self),
-            ]
-          }
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          public var notificationId: String {
-            get {
-              return resultMap["notificationId"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "notificationId")
-            }
-          }
-
-          public var fragments: Fragments {
-            get {
-              return Fragments(unsafeResultMap: resultMap)
-            }
-            set {
-              resultMap += newValue.resultMap
-            }
-          }
-
-          public struct Fragments {
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public var newMentionNotificationFields: NewMentionNotificationFields {
-              get {
-                return NewMentionNotificationFields(unsafeResultMap: resultMap)
-              }
-              set {
-                resultMap += newValue.resultMap
-              }
-            }
-          }
-        }
-
-        public var asNewReactionNotification: AsNewReactionNotification? {
-          get {
-            if !AsNewReactionNotification.possibleTypes.contains(__typename) { return nil }
-            return AsNewReactionNotification(unsafeResultMap: resultMap)
-          }
-          set {
-            guard let newValue = newValue else { return }
-            resultMap = newValue.resultMap
-          }
-        }
-
-        public struct AsNewReactionNotification: GraphQLSelectionSet {
-          public static let possibleTypes: [String] = ["NewReactionNotification"]
-
-          public static var selections: [GraphQLSelection] {
-            return [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("notificationId", type: .nonNull(.scalar(String.self))),
-              GraphQLFragmentSpread(NewReactionNotificationFields.self),
-            ]
-          }
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          public var notificationId: String {
-            get {
-              return resultMap["notificationId"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "notificationId")
-            }
-          }
-
-          public var fragments: Fragments {
-            get {
-              return Fragments(unsafeResultMap: resultMap)
-            }
-            set {
-              resultMap += newValue.resultMap
-            }
-          }
-
-          public struct Fragments {
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public var newReactionNotificationFields: NewReactionNotificationFields {
-              get {
-                return NewReactionNotificationFields(unsafeResultMap: resultMap)
-              }
-              set {
-                resultMap += newValue.resultMap
-              }
-            }
-          }
-        }
-      }
-
-      public struct PageInfo: GraphQLSelectionSet {
-        public static let possibleTypes: [String] = ["PaginatedResultInfo"]
-
-        public static var selections: [GraphQLSelection] {
-          return [
-            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLFragmentSpread(CommonPaginatedResultInfo.self),
-          ]
-        }
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public init(prev: String? = nil, next: String? = nil, totalCount: Int? = nil) {
-          self.init(unsafeResultMap: ["__typename": "PaginatedResultInfo", "prev": prev, "next": next, "totalCount": totalCount])
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        public var fragments: Fragments {
-          get {
-            return Fragments(unsafeResultMap: resultMap)
-          }
-          set {
-            resultMap += newValue.resultMap
-          }
-        }
-
-        public struct Fragments {
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public var commonPaginatedResultInfo: CommonPaginatedResultInfo {
-            get {
-              return CommonPaginatedResultInfo(unsafeResultMap: resultMap)
-            }
-            set {
-              resultMap += newValue.resultMap
             }
           }
         }
@@ -14619,7 +14784,7 @@ public struct NewFollowerNotificationFields: GraphQLFragment {
   }
 
   public struct Wallet: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["UserWallet"]
+    public static let possibleTypes: [String] = ["Wallet"]
 
     public static var selections: [GraphQLSelection] {
       return [
@@ -14758,7 +14923,7 @@ public struct NewCollectNotificationFields: GraphQLFragment {
   }
 
   public struct Wallet: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["UserWallet"]
+    public static let possibleTypes: [String] = ["Wallet"]
 
     public static var selections: [GraphQLSelection] {
       return [
@@ -16602,7 +16767,7 @@ public struct CompactPost: GraphQLFragment {
   }
 
   public struct CollectedBy: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["UserWallet"]
+    public static let possibleTypes: [String] = ["Wallet"]
 
     public static var selections: [GraphQLSelection] {
       return [
@@ -17201,7 +17366,7 @@ public struct CompactComment: GraphQLFragment {
   }
 
   public struct CollectedBy: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["UserWallet"]
+    public static let possibleTypes: [String] = ["Wallet"]
 
     public static var selections: [GraphQLSelection] {
       return [
@@ -17728,7 +17893,7 @@ public struct UserWallet: GraphQLFragment {
   /// The raw GraphQL definition of this fragment.
   public static let fragmentDefinition: String =
     """
-    fragment UserWallet on UserWallet {
+    fragment UserWallet on Wallet {
       __typename
       address
       defaultProfile {
@@ -17738,7 +17903,7 @@ public struct UserWallet: GraphQLFragment {
     }
     """
 
-  public static let possibleTypes: [String] = ["UserWallet"]
+  public static let possibleTypes: [String] = ["Wallet"]
 
   public static var selections: [GraphQLSelection] {
     return [
@@ -17755,7 +17920,7 @@ public struct UserWallet: GraphQLFragment {
   }
 
   public init(address: String, defaultProfile: DefaultProfile? = nil) {
-    self.init(unsafeResultMap: ["__typename": "UserWallet", "address": address, "defaultProfile": defaultProfile.flatMap { (value: DefaultProfile) -> ResultMap in value.resultMap }])
+    self.init(unsafeResultMap: ["__typename": "Wallet", "address": address, "defaultProfile": defaultProfile.flatMap { (value: DefaultProfile) -> ResultMap in value.resultMap }])
   }
 
   public var __typename: String {

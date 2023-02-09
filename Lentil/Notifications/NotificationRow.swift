@@ -5,7 +5,8 @@ import SwiftUI
 
 
 struct NotificationRow: ReducerProtocol {
-  struct State: Equatable {
+  struct State: Equatable, Identifiable {
+    var id: Model.Notification.ID { self.notification.id }
     var notification: Model.Notification
   }
   

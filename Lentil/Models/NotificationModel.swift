@@ -4,7 +4,7 @@ import Foundation
 
 
 extension Model {
-  struct Notification: Equatable {
+  struct Notification: Equatable, Identifiable {
     enum NotificationType: String, Equatable {
       case mirroredPost = "MIRRORED_POST"
       case mirroredComment = "MIRRORED_COMMENT"

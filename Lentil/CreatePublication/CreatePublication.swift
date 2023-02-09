@@ -82,7 +82,7 @@ struct CreatePublication: ReducerProtocol {
           
         case .didTapCancel:
           if state.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-            return EffectTask(value: .discardAndDismiss)
+            return .send(.discardAndDismiss)
           }
           else {
             state.cancelAlert = AlertState(
@@ -96,7 +96,7 @@ struct CreatePublication: ReducerProtocol {
           
         case .discardAndDismiss:
           state.publicationText = ""
-          return EffectTask(value: .dismissView(nil))
+          return .send(.dismissView(nil))
           
         case .cancelAlertDismissed:
           state.cancelAlert = nil
@@ -172,7 +172,7 @@ struct CreatePublication: ReducerProtocol {
               state.publicationText = ""
               state.isPosting = false
               log("Successfully created publication: Hash: \(relayerResult.txnHash), Id: \(relayerResult.txnId)", level: .info)
-              return EffectTask(value: .dismissView(relayerResult.txnHash))
+              return .send(.dismissView(relayerResult.txnHash))
               
             case .failure(let error):
               state.isPosting = false

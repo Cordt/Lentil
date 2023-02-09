@@ -157,8 +157,8 @@ struct Timeline: ReducerProtocol {
         case .timelineAppeared:
           var effects: [EffectTask<Action>] = []
           state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
-          if state.userProfile != nil && state.showProfile == nil { effects.append(EffectTask(value: .fetchDefaultProfile)) }
-          if state.posts.count == 0 { effects.append(EffectTask(value: .refreshFeed)) }
+          if state.userProfile != nil && state.showProfile == nil { effects.append(.send(.fetchDefaultProfile)) }
+          if state.posts.count == 0 { effects.append(.send(.refreshFeed)) }
           return .merge(effects)
           
         case .refreshFeed:

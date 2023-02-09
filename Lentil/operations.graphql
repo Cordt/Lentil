@@ -185,6 +185,44 @@ query Search($request: SearchQueryRequest!) {
   }
 }
 
+query Notifications($request: NotificationRequest!) {
+  result: notifications(request: $request) {
+    items {
+      ... on NewFollowerNotification {
+        notificationId
+        ...NewFollowerNotificationFields
+      }
+
+      ... on NewMirrorNotification {
+        notificationId
+        ...NewMirrorNotificationFields
+      }
+
+      ... on NewCollectNotification {
+        notificationId
+        ...NewCollectNotificationFields
+      }
+
+      ... on NewCommentNotification {
+        notificationId
+        ...NewCommentNotificationFields
+      }
+      
+      ... on NewMentionNotification {
+        notificationId
+        ...NewMentionNotificationFields
+      }
+      ... on NewReactionNotification {
+        notificationId
+        ...NewReactionNotificationFields
+      }
+    }
+    pageInfo {
+      ...CommonPaginatedResultInfo
+    }
+  }
+}
+
 
 # MARK: Mutations
 
@@ -605,46 +643,6 @@ fragment CommentMirrorOfFields on Comment {
   }
 }
 
-
-
-query Notifications {
-  result: notifications(request: { profileId: "0x0f", limit: 10 }) {
-    items {
-      ... on NewFollowerNotification {
-        notificationId
-        ...NewFollowerNotificationFields
-      }
-
-      ... on NewMirrorNotification {
-        notificationId
-        ...NewMirrorNotificationFields
-      }
-
-      ... on NewCollectNotification {
-        notificationId
-        ...NewCollectNotificationFields
-      }
-
-      ... on NewCommentNotification {
-        notificationId
-        ...NewCommentNotificationFields
-      }
-      
-      ... on NewMentionNotification {
-        notificationId
-        ...NewMentionNotificationFields
-      }
-      ... on NewReactionNotification {
-        notificationId
-        ...NewReactionNotificationFields
-      }
-    }
-    pageInfo {
-      ...CommonPaginatedResultInfo
-    }
-  }
-}
-
 fragment CommentWithCommentedPublicationFields on Comment {
   ...CompactComment
   commentOn {
@@ -850,7 +848,7 @@ fragment ProfileMediaFields on ProfileMedia {
   }
 }
 
-fragment UserWallet on UserWallet {
+fragment UserWallet on Wallet {
   address
   defaultProfile {
     ...CompactProfile

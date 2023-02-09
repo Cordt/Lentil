@@ -44,7 +44,7 @@ struct CreateConversation: ReducerProtocol {
             state.searchInFlight = true
             return .merge(
               .cancel(id: CancelSearchProfilesID.self),
-              EffectTask(value: .startSearch)
+              .send(.startSearch)
             )
           }
           else {

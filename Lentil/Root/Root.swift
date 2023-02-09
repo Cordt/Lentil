@@ -191,8 +191,8 @@ struct Root: ReducerProtocol {
             $0.next(upperBound: UInt8(state.loadingText.count) - 1)
           })
           return .merge(
-            EffectTask(value: .startTimer),
-            EffectTask(value: .checkAuthenticationStatus)
+            .send(.startTimer),
+            .send(.checkAuthenticationStatus)
           )
           
         case .hideLoadingScreen:
@@ -321,7 +321,7 @@ struct Root: ReducerProtocol {
         case .removePath(let destinationPath):
           return self.handleRemovePath(state: &state, destinationPath)
           
-        case .post, .comment, .profile, .conversation:
+        case .post, .comment, .profile, .showNotifications, .conversation:
           return .none
           
         case .createPublication(let createPublicationAction):
@@ -344,6 +344,9 @@ struct Root: ReducerProtocol {
     }
     .ifLet(\.createPublication, action: /Action.createPublication) {
       CreatePublication()
+    }
+    .ifLet(\.showNotifications, action: /Action.showNotifications) {
+      Notifications()
     }
     .ifLet(\.conversation, action: /Action.conversation) {
       Conversation()

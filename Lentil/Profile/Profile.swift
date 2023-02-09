@@ -74,7 +74,7 @@ struct Profile: ReducerProtocol {
           return .none
           
         case .didAppear:
-          return EffectTask(value: .fetchPublications)
+          return .send(.fetchPublications)
           
         case .fetchPublications:
           return .task { [id = state.profile.id] in

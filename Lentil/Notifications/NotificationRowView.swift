@@ -79,6 +79,8 @@ struct NotificationRowView: View {
         )
         .font(style: .body)
         .padding(.leading, 35)
+        
+        Divider()
       }
     }
   }
