@@ -40,7 +40,7 @@ struct NotificationsView: View {
       .navigationBarBackButtonHidden(true)
       .navigationBarTitleDisplayMode(.inline)
       .tint(Theme.Color.white)
-      
+      .padding(.top, 1)
     }
   }
 }
