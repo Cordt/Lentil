@@ -23,6 +23,7 @@ struct CreateConversation: ReducerProtocol {
     case rowTapped(id: Model.Profile.ID)
     case dismissAndOpenConversation(_ conversation: XMTPConversation, _ userAddress: String)
     case failedToStartConversation
+    case notLoggedInToLens
     case updateToast(Toast?)
   }
   
@@ -81,8 +82,10 @@ struct CreateConversation: ReducerProtocol {
           return .none
           
         case .rowTapped(let id):
-          guard let peerProfile = state.searchResult[id: id],
-                let userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
+          guard let userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
+          else { return .send(.notLoggedInToLens) }
+          
+          guard let peerProfile = state.searchResult[id: id]
           else { return .none }
           
           return .run { send in
@@ -107,6 +110,14 @@ struct CreateConversation: ReducerProtocol {
         case .failedToStartConversation:
           state.toast = Toast(
             message: "This contact did not join the XMTP network yet.",
+            duration: .long,
+            isErrorMessage: true
+          )
+          return .none
+          
+        case .notLoggedInToLens:
+          state.toast = Toast(
+            message: "You need to log into Lens in order to create a chat with this person. Please do so on the feed tab.",
             duration: .long,
             isErrorMessage: true
           )
