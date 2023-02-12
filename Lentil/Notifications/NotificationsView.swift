@@ -18,11 +18,11 @@ struct NotificationsView: View {
             ),
             content: NotificationRowView.init
           )
-          .refreshable { viewStore.send(.didRefresh) }
         }
         .padding()
         .onAppear { viewStore.send(.didAppear) }
       }
+      .refreshable { await viewStore.send(.didRefresh).finish() }
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           HStack {

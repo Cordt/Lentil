@@ -46,6 +46,7 @@ struct Notifications: ReducerProtocol {
           return .cancel(id: CancelLoadNotificationsID.self)
           
         case .didRefresh:
+          state.notificationsCursor = .init()
           return .send(.loadNotifications)
           
         case .loadNotifications:
@@ -63,7 +64,10 @@ struct Notifications: ReducerProtocol {
           
         case .notificationsResponse(.success(let result)):
           state.notificationsCursor = result.cursor
-          result.data.forEach { state.notificationRows.updateOrAppend(NotificationRow.State(notification: $0)) }
+          var notificationRows = state.notificationRows
+          result.data.forEach { notificationRows.updateOrAppend(NotificationRow.State(notification: $0)) }
+          notificationRows.sort { $0.notification.createdAt > $1.notification.createdAt }
+          state.notificationRows = notificationRows
           return .none
           
         case .notificationsResponse(.failure(let error)):
