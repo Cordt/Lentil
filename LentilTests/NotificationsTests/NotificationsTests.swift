@@ -14,6 +14,7 @@ final class NotificationsTests: XCTestCase {
       reducer: Notifications()
     ) {
       $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
+      $0.defaultsStorageApi.store = { _ in }
       $0.lensApi.notifications = { _, _, _ in notificationsResult }
     }
     
@@ -34,6 +35,7 @@ final class NotificationsTests: XCTestCase {
       reducer: Notifications()
     ) {
       $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
+      $0.defaultsStorageApi.store = { _ in }
       $0.lensApi.notifications = { _, _, _ in notificationsResult }
     }
     
@@ -55,6 +57,7 @@ final class NotificationsTests: XCTestCase {
       initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init(prev: "prev", next: "next")),
       reducer: Notifications()) {
         $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
+        $0.defaultsStorageApi.store = { _ in }
         $0.lensApi.notifications = { _, _, cursor in
           if cursor == "next" {
             return PaginatedResult(data: [MockData.mockNotifications[1]], cursor: .init(prev: "prev", next: "next"))
@@ -84,6 +87,54 @@ final class NotificationsTests: XCTestCase {
       )
       $0.notificationsCursor = .init(prev: "next", next: "nextNext")
     }
+  }
+  
+  func testNotificationsAreOrdered() async throws {
+    let notificationsResponse = PaginatedResult(
+      data: MockData.mockNotifications.shuffled(),
+      cursor: .init()
+    )
+    let store = TestStore(
+      initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init()),
+      reducer: Notifications()) {
+        $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
+        $0.defaultsStorageApi.store = { _ in }
+        $0.lensApi.notifications = { _, _, _ in notificationsResponse }
+      }
+    
+    await store.send(.loadNotifications)
+    await store.receive(.notificationsResponse(.success(notificationsResponse))) {
+      let rows = MockData.mockNotifications.map { notification in
+        NotificationRow.State(notification: notification)
+      }
+      $0.notificationRows = IdentifiedArrayOf(uniqueElements: rows)
+    }
+  }
+  
+  func testLatestReadNotificationIsStored() async throws {
+    let expectation = expectation(description: "Should store latest read notification")
+    
+    let notificationsResponse = PaginatedResult(data: MockData.mockNotifications, cursor: .init())
+    let store = TestStore(
+      initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init()),
+      reducer: Notifications()) {
+        $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
+        $0.defaultsStorageApi.store = { latestRead in
+          XCTAssertNotNil(latestRead as? NotificationsLatestRead)
+          expectation.fulfill()
+        }
+        $0.lensApi.notifications = { _, _, _ in notificationsResponse }
+      }
+    
+    await store.send(.loadNotifications)
+    await store.receive(.notificationsResponse(.success(notificationsResponse))) {
+      let rows = notificationsResponse.data.map { notification in
+        NotificationRow.State(notification: notification)
+      }
+      $0.notificationRows = IdentifiedArrayOf(uniqueElements: rows)
+    }
+    
+    waitForExpectations(timeout: 0.1)
   }
 }
 

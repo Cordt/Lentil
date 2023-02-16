@@ -18,6 +18,7 @@ struct Timeline: ReducerProtocol {
     var cursorExplore: Cursor = .init()
     var isIndexing: Toast? = nil
     var loadingInFlight: Bool = false
+    var unreadNotifications = 0
     
     var connectWallet: WalletConnection.State? = nil
     var showProfile: Profile.State? = nil

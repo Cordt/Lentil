@@ -95,8 +95,19 @@ struct TimelineView: View {
                 Button {
                   viewStore.send(.showNotificationsTapped)
                 } label: {
-                  Icon.bell.view(.xlarge)
-                    .foregroundColor(Theme.Color.white)
+                  ZStack {
+                    Icon.bell.view(.xlarge)
+                      .foregroundColor(Theme.Color.white)
+                    ZStack {
+                      Circle()
+                        .fill(Theme.Color.tertiary)
+                        .frame(width: 12, height: 12)
+                      Text(viewStore.unreadNotifications > 9 ? "9+" : "\(viewStore.unreadNotifications)")
+                        .font(style: .annotationXSmall, color: Theme.Color.white)
+                    }
+                    .offset(x: 12, y: -10)
+                    .opacity(viewStore.unreadNotifications > 0 ? 1.0 : 0)
+                  }
                 }
               }
             }

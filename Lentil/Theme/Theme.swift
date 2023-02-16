@@ -89,7 +89,7 @@ struct PrimaryFont: ViewModifier {
     case largeTitle, title
     case xLargeHeadline, largeHeadline, headline
     case button, label, bodyDetailed, body, bodyBold
-    case annotation, annotationSmall
+    case annotation, annotationSmall, annotationXSmall
   }
   
   private var font: Font {
@@ -106,6 +106,7 @@ struct PrimaryFont: ViewModifier {
       case .bodyBold:         return Font.custom("DMSans-Bold", size: 14, relativeTo: .body)
       case .annotation:       return Font.custom("DMSans-Regular", size: 12, relativeTo: .caption)
       case .annotationSmall:  return Font.custom("DMSans-Regular", size: 11, relativeTo: .caption2)
+      case .annotationXSmall: return Font.custom("DMSans-Bold", size: 9, relativeTo: .caption2)
     }
   }
   

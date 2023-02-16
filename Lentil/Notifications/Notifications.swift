@@ -6,6 +6,13 @@ import IdentifiedCollections
 import SwiftUI
 
 
+struct NotificationsLatestRead: Codable, DefaultsStorable {
+  static var profileKey: String { "notifications-latest-read" }
+  
+  var id: String
+  var createdAt: Date
+}
+
 struct Notifications: ReducerProtocol {
   struct State: Equatable {
     var navigationId: String
@@ -68,6 +75,14 @@ struct Notifications: ReducerProtocol {
           result.data.forEach { notificationRows.updateOrAppend(NotificationRow.State(notification: $0)) }
           notificationRows.sort { $0.notification.createdAt > $1.notification.createdAt }
           state.notificationRows = notificationRows
+          
+          if let latestNotification = notificationRows.first {
+            let latestReadNotification = NotificationsLatestRead(
+              id: latestNotification.id,
+              createdAt: latestNotification.notification.createdAt
+            )
+            try? self.defaultsStorageApi.store(latestReadNotification)
+          }
           return .none
           
         case .notificationsResponse(.failure(let error)):
