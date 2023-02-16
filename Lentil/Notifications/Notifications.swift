@@ -17,6 +17,7 @@ struct Notifications: ReducerProtocol {
   struct State: Equatable {
     var navigationId: String
     var notificationsCursor: Cursor = .init()
+    var isLoading: Bool = false
     
     var notificationRows: IdentifiedArrayOf<NotificationRow.State> = []
   }
@@ -60,6 +61,8 @@ struct Notifications: ReducerProtocol {
           guard let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
           else { return .none }
           
+          state.isLoading = true
+          
           return .task { [cursor = state.notificationsCursor] in
             await .notificationsResponse(
               TaskResult {
@@ -75,6 +78,7 @@ struct Notifications: ReducerProtocol {
           result.data.forEach { notificationRows.updateOrAppend(NotificationRow.State(notification: $0)) }
           notificationRows.sort { $0.notification.createdAt > $1.notification.createdAt }
           state.notificationRows = notificationRows
+          state.isLoading = false
           
           if let latestNotification = notificationRows.first {
             let latestReadNotification = NotificationsLatestRead(
@@ -86,6 +90,7 @@ struct Notifications: ReducerProtocol {
           return .none
           
         case .notificationsResponse(.failure(let error)):
+          state.isLoading = false
           log("Failed to load notifications", level: .error, error: error)
           return .none
           

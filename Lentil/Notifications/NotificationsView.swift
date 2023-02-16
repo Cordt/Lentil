@@ -7,40 +7,52 @@ import SwiftUI
 struct NotificationsView: View {
   let store: StoreOf<Notifications>
   
+  var content: some View {
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
+      if viewStore.isLoading {
+        ProgressView("Loading Notifications")
+          .tint(Theme.Color.text)
+      }
+      else {
+        ScrollView(axes: .vertical, showsIndicators: false) {
+          LazyVStack {
+            ForEachStore(
+              self.store.scope(
+                state: \.notificationRows,
+                action: Notifications.Action.notificationRowAction
+              ),
+              content: NotificationRowView.init
+            )
+          }
+          .padding()
+          .onAppear { viewStore.send(.didAppear) }
+        }
+        .refreshable { await viewStore.send(.didRefresh).finish() }
+      }
+    }
+  }
+  
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
-      ScrollView(axes: .vertical, showsIndicators: false) {
-        LazyVStack {
-          ForEachStore(
-            self.store.scope(
-              state: \.notificationRows,
-              action: Notifications.Action.notificationRowAction
-            ),
-            content: NotificationRowView.init
-          )
-        }
-        .padding()
-        .onAppear { viewStore.send(.didAppear) }
-      }
-      .refreshable { await viewStore.send(.didRefresh).finish() }
-      .toolbar {
-        ToolbarItem(placement: .navigationBarLeading) {
-          HStack {
-            BackButton { viewStore.send(.didDismiss) }
+      self.content
+        .toolbar {
+          ToolbarItem(placement: .navigationBarLeading) {
+            HStack {
+              BackButton { viewStore.send(.didDismiss) }
+            }
+          }
+          
+          ToolbarItem(placement: .principal) {
+            Text("Notifications")
+              .font(style: .headline, color: Theme.Color.text)
           }
         }
-        
-        ToolbarItem(placement: .principal) {
-          Text("Notifications")
-            .font(style: .headline, color: Theme.Color.text)
-        }
-      }
-      .toolbar(.hidden, for: .tabBar)
-      .toolbarBackground(.hidden, for: .navigationBar)
-      .navigationBarBackButtonHidden(true)
-      .navigationBarTitleDisplayMode(.inline)
-      .tint(Theme.Color.white)
-      .padding(.top, 1)
+        .toolbar(.hidden, for: .tabBar)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .tint(Theme.Color.white)
+        .padding(.top, 1)
     }
   }
 }
