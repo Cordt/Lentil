@@ -40,6 +40,9 @@ struct Timeline: ReducerProtocol {
     case publicationsResponse(PublicationsResponse)
     case fetchingFailed
     
+    case loadNotifications
+    case notificationsResponse(TaskResult<PaginatedResult<[Model.Notification]>>)
+    
     case updateIndexingToast(Toast?)
     
     case connectWalletTapped
@@ -160,6 +163,7 @@ struct Timeline: ReducerProtocol {
           state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
           if state.userProfile != nil && state.showProfile == nil { effects.append(.send(.fetchDefaultProfile)) }
           if state.posts.count == 0 { effects.append(.send(.refreshFeed)) }
+          if state.userProfile != nil { effects.append(.send(.loadNotifications)) }
           return .merge(effects)
           
         case .refreshFeed:
@@ -278,6 +282,32 @@ struct Timeline: ReducerProtocol {
           
         case .fetchingFailed:
           state.loadingInFlight = false
+          return .none
+          
+        case .loadNotifications:
+          guard let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
+          else { return .none }
+          
+          return .task {
+            await .notificationsResponse(
+              TaskResult { try await self.lensApi.notifications(userProfile.id, 10, nil) }
+            )
+          }
+          
+        case .notificationsResponse(.success(let result)):
+          let sortedNotificaitons = result.data.sorted { $0.createdAt > $1.createdAt }
+          var unreadNotifications = 0
+          if let latestReadNotification = self.defaultsStorageApi.load(NotificationsLatestRead.self) as? NotificationsLatestRead {
+            for notification in sortedNotificaitons {
+              if latestReadNotification.createdAt < notification.createdAt { unreadNotifications += 1 }
+              else { break }
+            }
+          }
+          state.unreadNotifications = unreadNotifications
+          return .none
+          
+        case .notificationsResponse(.failure(let error)):
+          log("Failed to load notifications", level: .error, error: error)
           return .none
           
         case .updateIndexingToast(let toast):

@@ -61,6 +61,7 @@ final class TimelineTests: XCTestCase {
       try await clock.sleep(for: .seconds(1))
       return PaginatedResult(data: [feedPublications], cursor: .init(next: "cursor feed"))
     }
+    store.dependencies.lensApi.notifications = { _, _, _ in PaginatedResult(data: MockData.mockNotifications, cursor: .init()) }
     store.dependencies.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
     
     await store.send(.timelineAppeared) {
@@ -68,10 +69,12 @@ final class TimelineTests: XCTestCase {
     }
     await store.receive(.fetchDefaultProfile)
     await store.receive(.refreshFeed)
+    await store.receive(.loadNotifications)
     await store.receive(.fetchPublications) {
       $0.loadingInFlight = true
     }
     await clock.advance(by: .seconds(1))
+    await store.receive(.notificationsResponse(.success(PaginatedResult(data: MockData.mockNotifications, cursor: .init()))))
     await store.receive(.defaultProfileResponse(.success(MockData.mockProfiles[0]))) {
       $0.showProfile = Profile.State(
         navigationId: "00000000-0000-0000-0000-000000000000",
@@ -152,6 +155,32 @@ final class TimelineTests: XCTestCase {
       
       $0.posts.append(postState)
       $0.isIndexing = nil
+    }
+  }
+  
+  func testUnreadNotificationsAreCountedCorrectly() async throws {
+    let notificationsReponse = PaginatedResult(data: MockData.mockNotifications, cursor: .init())
+    let store = TestStore(initialState: Timeline.State(), reducer: Timeline()) {
+      $0.lensApi.notifications = { _, _, _ in notificationsReponse }
+      $0.defaultsStorageApi.load = { _ in NotificationsLatestRead(id: "abc-def", createdAt: Date().addingTimeInterval(-60 * 60 * 72)) }
+    }
+    
+    await store.send(.loadNotifications)
+    await store.send(.notificationsResponse(.success(notificationsReponse))) {
+      $0.unreadNotifications = 6
+    }
+  }
+  
+  func testUnreadNotificationsAreCountedCorrectlyAgain() async throws {
+    let notificationsReponse = PaginatedResult(data: MockData.mockNotifications, cursor: .init())
+    let store = TestStore(initialState: Timeline.State(), reducer: Timeline()) {
+      $0.lensApi.notifications = { _, _, _ in notificationsReponse }
+      $0.defaultsStorageApi.load = { _ in NotificationsLatestRead(id: "abc-def", createdAt: Date().addingTimeInterval(-60 * 60 * 6)) }
+    }
+    
+    await store.send(.loadNotifications)
+    await store.send(.notificationsResponse(.success(notificationsReponse))) {
+      $0.unreadNotifications = 4
     }
   }
 }
