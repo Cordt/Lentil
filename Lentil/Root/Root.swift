@@ -82,7 +82,7 @@ struct Root: ReducerProtocol {
         do {
           var attempts = 5
           while attempts > 0 {
-            if let publication = try await self.lensApi.publication(txHash) {
+            if let publication = try await self.lensApi.publicationByHash(txHash) {
               return .timelineAction(.publicationResponse(publication))
             }
             try await self.clock.sleep(for: .seconds(5))

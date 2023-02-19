@@ -32,6 +32,14 @@ extension Model {
             case .mirror:   return "mirror"
           }
         }
+        
+        var elementId: String {
+          switch self {
+            case .post(let elementId):    return elementId
+            case .comment(let elementId): return elementId
+            case .mirror(let elementId):  return elementId
+          }
+        }
       }
       case followed(_ by: String)
       case collected(_ item: Item)

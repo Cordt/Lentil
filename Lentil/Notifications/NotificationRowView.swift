@@ -82,6 +82,9 @@ struct NotificationRowView: View {
         
         Divider()
       }
+      .onTapGesture {
+        viewStore.send(.didTapRow)
+      }
     }
   }
 }

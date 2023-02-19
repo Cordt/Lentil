@@ -85,7 +85,11 @@ struct LensApi {
   var verify: @Sendable (
   ) async throws -> Bool
   
-  var publication: @Sendable (
+  var publicationById: @Sendable (
+    _ id: String
+  ) async throws -> Model.Publication?
+  
+  var publicationByHash: @Sendable (
     _ txHash: String
   ) async throws -> Model.Publication?
   

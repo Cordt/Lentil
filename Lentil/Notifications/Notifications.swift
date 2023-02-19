@@ -94,7 +94,14 @@ struct Notifications: ReducerProtocol {
           log("Failed to load notifications", level: .error, error: error)
           return .none
           
-        case .notificationRowAction:
+          
+        // MARK: Child Reducer Actions
+          
+        case .notificationRowAction(_, let notificationAction):
+          if case .handleFailure(let failure, let error) = notificationAction {
+            // TODO: Add Toast
+            log("Failed to load \(failure.rawValue) from notification.", level: .warn, error: error)
+          }
           return .none
       }
     }

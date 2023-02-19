@@ -35,7 +35,17 @@ extension LensApi: DependencyKey {
       )
     },
     
-    publication: { txHash in
+    publicationById: { id in
+      try await run(
+        query: PublicationQuery(
+          request: PublicationQueryRequest(publicationId: id)
+        ),
+        cachePolicy: .fetchIgnoringCacheData,
+        mapResult: { Model.Publication.publication(from: $0.publication) }
+      )
+    },
+    
+    publicationByHash: { txHash in
       try await run(
         query: PublicationQuery(
           request: PublicationQueryRequest(txHash: txHash)
@@ -357,7 +367,8 @@ extension LensApi {
   static let previewValue = LensApi(
     authenticationChallenge: { _ in Challenge(message: "Sign this message!", expires: Date().addingTimeInterval(60 * 5)) },
     verify: { true },
-    publication: { _ in MockData.mockPublications[0] },
+    publicationById: { _ in MockData.mockPublications[0] },
+    publicationByHash: { _ in MockData.mockPublications[0] },
     publications: { _, _, _, _, _ in PaginatedResult(data: MockData.mockPublications, cursor: .init()) },
     explorePublications: { _, _, _, _, _ in PaginatedResult(data: MockData.mockPublications, cursor: .init()) },
     feed: { _, _, _, _ in PaginatedResult(data: MockData.mockPublications, cursor: .init()) },
@@ -393,7 +404,8 @@ extension LensApi {
   static var testValue = LensApi(
     authenticationChallenge: unimplemented("authenticationChallenge"),
     verify: unimplemented("verify"),
-    publication: unimplemented("publication"),
+    publicationById: unimplemented("publicationById"),
+    publicationByHash: unimplemented("publicationByHash"),
     publications: unimplemented("publications"),
     explorePublications: unimplemented("explorePublications"),
     feed: unimplemented("feed"),
