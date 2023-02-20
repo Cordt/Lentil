@@ -25,7 +25,6 @@ struct NotificationsView: View {
             )
           }
           .padding()
-          .onAppear { viewStore.send(.didAppear) }
         }
         .refreshable { await viewStore.send(.didRefresh).finish() }
       }
@@ -53,6 +52,7 @@ struct NotificationsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .tint(Theme.Color.white)
         .padding(.top, 1)
+        .onAppear { viewStore.send(.didAppear) }
     }
   }
 }
