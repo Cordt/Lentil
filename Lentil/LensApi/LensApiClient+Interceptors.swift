@@ -31,9 +31,7 @@ class NetworkInterceptorProvider: DefaultInterceptorProvider {
     super.init(client: client, store: store)
   }
   
-  override func interceptors<Operation>(
-    for operation: Operation
-  ) -> [ApolloInterceptor] where Operation : GraphQLOperation {
+  override func interceptors<Operation>(for operation: Operation) -> [ApolloInterceptor] where Operation : GraphQLOperation {
     var interceptors = super.interceptors(for: operation)
     // Always add origin
     interceptors.insert(OriginHeaderInterceptor(), at: 0)
@@ -42,6 +40,8 @@ class NetworkInterceptorProvider: DefaultInterceptorProvider {
       interceptors.insert(setupItem.element.interceptor(), at: setupItem.offset + 1)
     }
     
+    // Always add last
+    interceptors.insert(ResponseLoggingInterceptor(), at: interceptors.count)
     return interceptors
   }
 }
@@ -95,7 +95,9 @@ class RequestLoggingInterceptor: ApolloInterceptor {
     response: HTTPResponse<Operation>?,
     completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) where Operation : GraphQLOperation {
       let requestUrl = try? request.toURLRequest().url?.absoluteString.removingPercentEncoding
-      let requestVariables = request.operation.variables
+      let requestVariables = request.operation.variables?.reduce("") { current, next in
+        current + "\tKey:\t\t\(next.key)\n\tValue:\t\(next.value ?? "")\n"
+      }
       let requestHeaders = request.additionalHeaders.reduce("") { current, next in
         current + "\tKey:\t\t\(next.key)\n\tValue:\t\(next.value)\n"
       }
@@ -103,7 +105,7 @@ class RequestLoggingInterceptor: ApolloInterceptor {
       var logMessage = "Running GraphQL operation:"
       logMessage += "\nOperation:\t\(request.operation.operationName)"
       if let requestUrl { logMessage += "\nURL:\t\t\t\t\(requestUrl)" }
-      if let requestVariables { logMessage += "\nVariables:\t\(requestVariables)" }
+      if let requestVariables { logMessage += "\nVariables:\n\(requestVariables)" }
       if request.additionalHeaders.count > 0 { logMessage += "\nHeaders:\n\(requestHeaders)" }
       log(logMessage, level: .info)
       
@@ -113,4 +115,36 @@ class RequestLoggingInterceptor: ApolloInterceptor {
         completion: completion
       )
   }
+}
+
+class ResponseLoggingInterceptor: ApolloInterceptor {
+  func interceptAsync<Operation>(
+    chain: RequestChain,
+    request: HTTPRequest<Operation>,
+    response: HTTPResponse<Operation>?,
+    completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) where Operation : GraphQLOperation {
+      if let response {
+        var logMessage = "Receiving GraphQL response:"
+        logMessage += "\nOperation:\t\(request.operation.operationName)"
+        let responseHeaders = response.httpResponse.allHeaderFields.reduce("") { current, next in
+          current + "\tKey:\t\t\(next.key)\n\tValue:\t\(next.value)\n"
+        }
+        logMessage += "\nResponse Code:\t\(response.httpResponse.statusCode)"
+        logMessage += "\nResponse Headers:\n\(responseHeaders)"
+        if let errors = response.parsedResponse?.errors {
+          let responseErrors = errors.reduce("") { current, next in
+            current + "\tError:\t\t\(next.localizedDescription)\n"
+          }
+          logMessage += "\nResponse Errors:\n\(responseErrors)"
+        }
+        
+        log(logMessage, level: .info)
+      }
+      
+      chain.proceedAsync(
+        request: request,
+        response: response,
+        completion: completion
+      )
+    }
 }

@@ -186,6 +186,7 @@ extension LensApi {
   ) {
     switch result {
       case .success(let apiData):
+        
         guard apiData.errors == nil,
               let data = apiData.data
         else {
