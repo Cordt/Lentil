@@ -105,6 +105,7 @@ extension LensApi: DependencyKey {
       var reactionFieldRequest: ReactionFieldResolverRequest?
       if let profileId = reactionsForProfile { reactionFieldRequest = ReactionFieldResolverRequest(profileId: profileId) }
       return try await run(
+        networkClient: .authenticated,
         query: FeedQuery(
           request: FeedRequest(
             limit: "\(limit)",
