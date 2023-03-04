@@ -73,7 +73,7 @@ struct Publication: ReducerProtocol {
     case remotePublicationImages(MultiImage.Action)
   }
   
-  @Dependency(\.cache) var cache
+  @Dependency(\.cacheOld) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi

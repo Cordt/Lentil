@@ -6,12 +6,12 @@ import Foundation
 import IdentifiedCollections
 
 
-class Cache {
+class CacheOld {
   private var publicationsCache: IdentifiedArrayOf<Model.Publication>
   private var profilesCache: IdentifiedArrayOf<Model.Profile>
   private var mediaCache: IdentifiedArrayOf<Model.Media>
   
-  static var shared = Cache()
+  static var shared = CacheOld()
   private var dataLock: NSLock
   
   private init() {
@@ -57,7 +57,7 @@ class Cache {
   }
 }
 
-struct CacheApi {
+struct CacheApiOld {
   var publication: (_ for: Model.Publication.ID) -> Model.Publication?
   var profileById: (Model.Profile.ID) -> Model.Profile?
   var profileByAddress: (String) -> Model.Profile?
@@ -69,30 +69,30 @@ struct CacheApi {
 }
 
 extension DependencyValues {
-  var cache: CacheApi {
-    get { self[CacheApi.self] }
-    set { self[CacheApi.self] = newValue }
+  var cacheOld: CacheApiOld {
+    get { self[CacheApiOld.self] }
+    set { self[CacheApiOld.self] = newValue }
   }
 }
 
-extension CacheApi: DependencyKey {
-  static let liveValue = CacheApi(
-    publication: Cache.shared.publication,
-    profileById: { Cache.shared.profile($0) },
-    profileByAddress: { Cache.shared.profile(for: $0) },
-    medium: Cache.shared.medium,
-    updateOrAppendPublication: Cache.shared.updateOrAppendPublication,
-    updateOrAppendProfile: Cache.shared.updateOrAppendProfile,
-    updateOrAppendMedia: Cache.shared.updateOrAppendMedia,
-    clearCache: Cache.shared.clearCache
+extension CacheApiOld: DependencyKey {
+  static let liveValue = CacheApiOld(
+    publication: CacheOld.shared.publication,
+    profileById: { CacheOld.shared.profile($0) },
+    profileByAddress: { CacheOld.shared.profile(for: $0) },
+    medium: CacheOld.shared.medium,
+    updateOrAppendPublication: CacheOld.shared.updateOrAppendPublication,
+    updateOrAppendProfile: CacheOld.shared.updateOrAppendProfile,
+    updateOrAppendMedia: CacheOld.shared.updateOrAppendMedia,
+    clearCache: CacheOld.shared.clearCache
   )
 }
 
 #if DEBUG
 import XCTestDynamicOverlay
 
-extension CacheApi {
-  static let previewValue = CacheApi(
+extension CacheApiOld {
+  static let previewValue = CacheApiOld(
     publication: { _ in MockData.mockPublications[0] },
     profileById: { _ in MockData.mockProfiles[0] },
     profileByAddress: { _ in MockData.mockProfiles[0] },
@@ -103,7 +103,7 @@ extension CacheApi {
     clearCache: {}
   )
   
-  static let testValue = CacheApi(
+  static let testValue = CacheApiOld(
     publication: unimplemented("publication"),
     profileById: unimplemented("profileById"),
     profileByAddress: unimplemented("profileByAddress"),

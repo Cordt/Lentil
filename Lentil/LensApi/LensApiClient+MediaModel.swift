@@ -22,7 +22,7 @@ extension Model.Media {
   
   static func media(from: [MetadataOutputFields.Medium]) -> [Model.Media] {
     let mediaModels = from.compactMap(medium(from:))
-    mediaModels.forEach { Cache.shared.updateOrAppendMedia($0) }
+    mediaModels.forEach { CacheOld.shared.updateOrAppendMedia($0) }
     return mediaModels
   }
 }

@@ -66,7 +66,7 @@ struct Root: ReducerProtocol {
   }
   
   @Dependency(\.keychainApi) var keychainApi
-  @Dependency(\.cache) var cache
+  @Dependency(\.cacheOld) var cache
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi

@@ -43,6 +43,7 @@
 		373269C52927D60500B86EA9 /* LensApiClient+ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */; };
 		373624D2298E4239004FB582 /* Synchronize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373624D1298E4239004FB582 /* Synchronize.swift */; };
 		3737037E291FF5770006FB04 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3737037D291FF5770006FB04 /* Righteous-Regular.ttf */; };
+		373AAD3929ABBAB8008A2E4F /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373AAD3829ABBAB8008A2E4F /* Cache.swift */; };
 		373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */ = {isa = PBXBuildFile; productRef = 373DAF1E29305C3700648C8E /* SwiftUINavigation */; };
 		373DE1182990DB4500E67E45 /* CreateConversationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373DE1172990DB4500E67E45 /* CreateConversationTests.swift */; };
 		37557A23292744FB005524C5 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 37557A22292744FB005524C5 /* Sentry */; };
@@ -79,7 +80,7 @@
 		37A56518295C3142001A676A /* XMTPConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A56517295C3142001A676A /* XMTPConversation.swift */; };
 		37A5651E295C9E75001A676A /* WalletConnector+SigningKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */; };
 		37A7A6F6293C4DAB00964768 /* MediaDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */; };
-		37A7A6F9293C53F100964768 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F8293C53F100964768 /* Cache.swift */; };
+		37A7A6F9293C53F100964768 /* CacheOld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F8293C53F100964768 /* CacheOld.swift */; };
 		37A7B663297F1C7000A8D1B7 /* WalletConnectSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 37A7B662297F1C7000A8D1B7 /* WalletConnectSwift */; };
 		37A8B54E297746AD00790526 /* ConversationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A8B54D297746AD00790526 /* ConversationTests.swift */; };
 		37B7D6922956075500F8674C /* PostTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7D6912956075500F8674C /* PostTests.swift */; };
@@ -114,10 +115,15 @@
 		37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236B28F70EC90037A4A7 /* Dependencies */; };
 		37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1236E28F70EE90037A4A7 /* Apollo */; };
 		37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 37D1237028F70EE90037A4A7 /* ApolloWebSocket */; };
+		37D63A4029B129EE0011F8B0 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 37D63A3F29B129EE0011F8B0 /* Realm */; };
+		37D63A4229B129EE0011F8B0 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 37D63A4129B129EE0011F8B0 /* RealmSwift */; };
+		37D63A4629B1E5F30011F8B0 /* RealmPublication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4529B1E5F30011F8B0 /* RealmPublication.swift */; };
+		37D63A4829B1E6320011F8B0 /* RealmProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4729B1E6320011F8B0 /* RealmProfile.swift */; };
+		37D63A4A29B1F1DE0011F8B0 /* CacheDependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4929B1F1DE0011F8B0 /* CacheDependency.swift */; };
+		37D63A4D29B2092C0011F8B0 /* Asynchrone in Frameworks */ = {isa = PBXBuildFile; productRef = 37D63A4C29B2092C0011F8B0 /* Asynchrone */; };
 		37D6808F292386B100F31669 /* UINavigationController+BackGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */; };
 		37D680912924AB3200F31669 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D680902924AB3200F31669 /* Profile.swift */; };
 		37DB471D2924D7DA00DE9EB3 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DB471C2924D7DA00DE9EB3 /* UserProfile.swift */; };
-		37E5C4ED29481B6A005B3979 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = 37E5C4EC29481B6A005B3979 /* Cache */; };
 		37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E5291FBC34003C9E40 /* WalletView.swift */; };
 		37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E7291FBC4E003C9E40 /* Wallet.swift */; };
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
@@ -170,6 +176,7 @@
 		373269C42927D60500B86EA9 /* LensApiClient+ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LensApiClient+ProfileModel.swift"; sourceTree = "<group>"; };
 		373624D1298E4239004FB582 /* Synchronize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
 		3737037D291FF5770006FB04 /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
+		373AAD3829ABBAB8008A2E4F /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		373DE1172990DB4500E67E45 /* CreateConversationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateConversationTests.swift; sourceTree = "<group>"; };
 		3758528C293281FD0017A415 /* NavigationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationApi.swift; sourceTree = "<group>"; };
 		375B4D7A2953A8B700E99E0A /* ScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollView.swift; sourceTree = "<group>"; };
@@ -203,7 +210,7 @@
 		37A56517295C3142001A676A /* XMTPConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPConversation.swift; sourceTree = "<group>"; };
 		37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletConnector+SigningKey.swift"; sourceTree = "<group>"; };
 		37A7A6F5293C4DAB00964768 /* MediaDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataModel.swift; sourceTree = "<group>"; };
-		37A7A6F8293C53F100964768 /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
+		37A7A6F8293C53F100964768 /* CacheOld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheOld.swift; sourceTree = "<group>"; };
 		37A8B54D297746AD00790526 /* ConversationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTests.swift; sourceTree = "<group>"; };
 		37B7D6912956075500F8674C /* PostTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTests.swift; sourceTree = "<group>"; };
 		37B7D69729561C4100F8674C /* XMPTApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMPTApi.swift; sourceTree = "<group>"; };
@@ -236,6 +243,9 @@
 		37CC0D0129279DC30036C6E9 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		37CDEB0D28D03146009B2B7E /* PublicationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationModel.swift; sourceTree = "<group>"; };
 		37CDEB0F28D0322F009B2B7E /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		37D63A4529B1E5F30011F8B0 /* RealmPublication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmPublication.swift; sourceTree = "<group>"; };
+		37D63A4729B1E6320011F8B0 /* RealmProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmProfile.swift; sourceTree = "<group>"; };
+		37D63A4929B1F1DE0011F8B0 /* CacheDependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheDependency.swift; sourceTree = "<group>"; };
 		37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+BackGesture.swift"; sourceTree = "<group>"; };
 		37D680902924AB3200F31669 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		37DB471C2924D7DA00DE9EB3 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
@@ -253,15 +263,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				370C54B1296EE06B0016E4A7 /* SDWebImageSwiftUI in Frameworks */,
-				37E5C4ED29481B6A005B3979 /* Cache in Frameworks */,
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
+				37D63A4D29B2092C0011F8B0 /* Asynchrone in Frameworks */,
 				370ABF01292A847F005B8E11 /* Alamofire in Frameworks */,
 				37B7D69529561A6E00F8674C /* (null) in Frameworks */,
 				376C5D2C2964CCCC000BD962 /* libwebp in Frameworks */,
 				37D1236F28F70EE90037A4A7 /* Apollo in Frameworks */,
 				376C5D292964CCBA000BD962 /* GiphyUISDK in Frameworks */,
 				373DAF1F29305C3700648C8E /* SwiftUINavigation in Frameworks */,
+				37D63A4229B129EE0011F8B0 /* RealmSwift in Frameworks */,
 				37D1237128F70EE90037A4A7 /* ApolloWebSocket in Frameworks */,
+				37D63A4029B129EE0011F8B0 /* Realm in Frameworks */,
 				37A7B663297F1C7000A8D1B7 /* WalletConnectSwift in Frameworks */,
 				37D1236A28F70EC90037A4A7 /* ComposableArchitecture in Frameworks */,
 				370C54B4296EE0EF0016E4A7 /* XMTP in Frameworks */,
@@ -474,8 +486,8 @@
 				375FB532298BE101008A4BD3 /* Keychain */,
 				37BBB12D28F2737600A6D202 /* LensApi */,
 				37C54C63292C7EBD006E8DBA /* LensMetadata */,
-				376C5ED428D4245500BA908A /* Models */,
 				370ED773297DA99A006D15C5 /* Notifications */,
+				37D63A4329B1E5D40011F8B0 /* Persistence */,
 				372248C428DABA3E0066BCE5 /* Post */,
 				37F71B4628DDB3FE00F6D9B1 /* Profile */,
 				37F37F5E2926044A00469E21 /* Root */,
@@ -536,7 +548,7 @@
 		37A7A6F7293C53E500964768 /* Cache */ = {
 			isa = PBXGroup;
 			children = (
-				37A7A6F8293C53F100964768 /* Cache.swift */,
+				37A7A6F8293C53F100964768 /* CacheOld.swift */,
 			);
 			path = Cache;
 			sourceTree = "<group>";
@@ -639,6 +651,26 @@
 			path = LensMetadata;
 			sourceTree = "<group>";
 		};
+		37D63A4329B1E5D40011F8B0 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				373AAD3829ABBAB8008A2E4F /* Cache.swift */,
+				37D63A4929B1F1DE0011F8B0 /* CacheDependency.swift */,
+				376C5ED428D4245500BA908A /* Models */,
+				37D63A4429B1E5E60011F8B0 /* RealmModels */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		37D63A4429B1E5E60011F8B0 /* RealmModels */ = {
+			isa = PBXGroup;
+			children = (
+				37D63A4529B1E5F30011F8B0 /* RealmPublication.swift */,
+				37D63A4729B1E6320011F8B0 /* RealmProfile.swift */,
+			);
+			path = RealmModels;
+			sourceTree = "<group>";
+		};
 		37F37F5E2926044A00469E21 /* Root */ = {
 			isa = PBXGroup;
 			children = (
@@ -694,13 +726,15 @@
 				37557A22292744FB005524C5 /* Sentry */,
 				370ABF00292A847F005B8E11 /* Alamofire */,
 				373DAF1E29305C3700648C8E /* SwiftUINavigation */,
-				37E5C4EC29481B6A005B3979 /* Cache */,
 				376C5D282964CCBA000BD962 /* GiphyUISDK */,
 				376C5D2B2964CCCC000BD962 /* libwebp */,
 				377487942966D95F00B19322 /* SDWebImageSwiftUI */,
 				370C54B3296EE0EF0016E4A7 /* XMTP */,
 				37A7B662297F1C7000A8D1B7 /* WalletConnectSwift */,
 				375FB536298BE2E8008A4BD3 /* KeychainAccess */,
+				37D63A3F29B129EE0011F8B0 /* Realm */,
+				37D63A4129B129EE0011F8B0 /* RealmSwift */,
+				37D63A4C29B2092C0011F8B0 /* Asynchrone */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -763,13 +797,14 @@
 				37557A21292744FB005524C5 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				370ABEFF292A847F005B8E11 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				373DAF1D29305C3700648C8E /* XCRemoteSwiftPackageReference "swiftui-navigation" */,
-				37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */,
 				376C5D272964CCBA000BD962 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */,
 				376C5D2A2964CCCC000BD962 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */,
 				377487932966D95E00B19322 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				370C54B2296EE0EE0016E4A7 /* XCRemoteSwiftPackageReference "xmtp-ios" */,
 				37A7B661297F1C7000A8D1B7 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */,
 				375FB535298BE2E8008A4BD3 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				37D63A3E29B129EE0011F8B0 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				37D63A4B29B2092C0011F8B0 /* XCRemoteSwiftPackageReference "Asynchrone" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -856,6 +891,8 @@
 				370ED770297D8FAE006D15C5 /* NotificationModel.swift in Sources */,
 				376C5ED828D4266100BA908A /* PostView.swift in Sources */,
 				37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */,
+				37D63A4629B1E5F30011F8B0 /* RealmPublication.swift in Sources */,
+				37D63A4A29B1F1DE0011F8B0 /* CacheDependency.swift in Sources */,
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
 				37C54C5C292B1ECC006E8DBA /* CreatePublicationView.swift in Sources */,
 				3758528D293281FD0017A415 /* NavigationApi.swift in Sources */,
@@ -885,6 +922,7 @@
 				3777834328CCD39500E7E32A /* API.swift in Sources */,
 				370ED775297DA9AB006D15C5 /* Notifications.swift in Sources */,
 				37F71B5628DF4D6400F6D9B1 /* Publication.swift in Sources */,
+				37D63A4829B1E6320011F8B0 /* RealmProfile.swift in Sources */,
 				37CC0CFE292793930036C6E9 /* MediaModel.swift in Sources */,
 				37C54C65292C7EE6006E8DBA /* Metadata.swift in Sources */,
 				37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */,
@@ -895,6 +933,7 @@
 				37B7D69B2957058900F8674C /* ConversationsView.swift in Sources */,
 				3777830628CCA05D00E7E32A /* LentilApp.swift in Sources */,
 				37CC0D00292796780036C6E9 /* LensApiClient+MediaModel.swift in Sources */,
+				373AAD3929ABBAB8008A2E4F /* Cache.swift in Sources */,
 				37C54C5E292B20B4006E8DBA /* CreatePublication.swift in Sources */,
 				3763EBD62977318900DEA42A /* ConversationRowView.swift in Sources */,
 				37A7A6F6293C4DAB00964768 /* MediaDataModel.swift in Sources */,
@@ -906,7 +945,7 @@
 				37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */,
 				37BE767428FAB6CB00282ED0 /* SignInWithLens.swift in Sources */,
 				377487A229686DA300B19322 /* Conversations.swift in Sources */,
-				37A7A6F9293C53F100964768 /* Cache.swift in Sources */,
+				37A7A6F9293C53F100964768 /* CacheOld.swift in Sources */,
 				37C54C67292C8932006E8DBA /* File+Image.swift in Sources */,
 				37946CAA296EB783008F849E /* DefaultsStorage.swift in Sources */,
 				372248DF28DBFF080066BCE5 /* Theme.swift in Sources */,
@@ -1297,12 +1336,20 @@
 				revision = 42646f765d22dac0f22bfff48590102195c76da4;
 			};
 		};
-		37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */ = {
+		37D63A3E29B129EE0011F8B0 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/hyperoslo/Cache.git";
+			repositoryURL = "https://github.com/realm/realm-swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
+				minimumVersion = 10.36.0;
+			};
+		};
+		37D63A4B29B2092C0011F8B0 /* XCRemoteSwiftPackageReference "Asynchrone" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/reddavis/Asynchrone.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.21.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1388,10 +1435,20 @@
 			package = 37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */;
 			productName = ApolloWebSocket;
 		};
-		37E5C4EC29481B6A005B3979 /* Cache */ = {
+		37D63A3F29B129EE0011F8B0 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 37E5C4EB29481B6A005B3979 /* XCRemoteSwiftPackageReference "Cache" */;
-			productName = Cache;
+			package = 37D63A3E29B129EE0011F8B0 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		37D63A4129B129EE0011F8B0 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37D63A3E29B129EE0011F8B0 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		37D63A4C29B2092C0011F8B0 /* Asynchrone */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 37D63A4B29B2092C0011F8B0 /* XCRemoteSwiftPackageReference "Asynchrone" */;
+			productName = Asynchrone;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

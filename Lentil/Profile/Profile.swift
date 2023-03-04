@@ -56,7 +56,7 @@ struct Profile: ReducerProtocol {
     case post(id: Post.State.ID, action: Post.Action)
   }
   
-  @Dependency(\.cache) var cache
+  @Dependency(\.cacheOld) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid

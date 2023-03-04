@@ -33,6 +33,52 @@ struct Model {
     var media: [Model.Media] = []
   }
 }
+
+
+extension Model.Publication {
+  func realmPublication(showsInFeed: Bool) -> RealmPublication {
+    let typename: RealmPublication.Typename
+    let relatedPublication: RealmPublication?
+    let relatedProfile: RealmProfile?
+    switch self.typename {
+      case .post:
+        typename = .post
+        relatedPublication = nil
+        relatedProfile = nil
+        
+      case .comment(of: let of):
+        typename = .comment
+        relatedPublication = of?.realmPublication(showsInFeed: showsInFeed)
+        relatedProfile = nil
+        
+      case .mirror(by: let by):
+        typename = .mirror
+        relatedPublication = nil
+        relatedProfile = by.realmProfile()
+    }
+    
+    
+    return RealmPublication(
+      id: self.id,
+      typename: typename,
+      relatedPublication: relatedPublication,
+      relatedProfile: relatedProfile,
+      createdAt: self.createdAt,
+      content: self.content,
+      userProfile: self.profile.realmProfile(),
+      upvotes: self.upvotes,
+      collects: self.collects,
+      comments: self.comments,
+      mirrors: self.mirrors,
+      upvotedByUser: self.upvotedByUser,
+      collectdByUser: self.collectdByUser,
+      commentdByUser: self.commentdByUser,
+      mirrordByUser: self.mirrordByUser,
+      showsInFeed: showsInFeed
+    )
+  }
+}
+
   
 #if DEBUG
 struct MockData {

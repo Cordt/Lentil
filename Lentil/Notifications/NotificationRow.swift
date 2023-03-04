@@ -25,7 +25,7 @@ struct NotificationRow: ReducerProtocol {
     case handleFailure(LoadingFailure, _ error: String?)
   }
   
-  @Dependency(\.cache) var cache
+  @Dependency(\.cacheOld) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid

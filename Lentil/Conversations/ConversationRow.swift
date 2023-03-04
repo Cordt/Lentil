@@ -52,7 +52,7 @@ struct ConversationRow: ReducerProtocol {
     case didTapProfile
   }
   
-  @Dependency(\.cache) var cache
+  @Dependency(\.cacheOld) var cache
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigationApi) var navigationApi

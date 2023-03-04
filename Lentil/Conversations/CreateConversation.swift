@@ -27,7 +27,7 @@ struct CreateConversation: ReducerProtocol {
     case updateToast(Toast?)
   }
   
-  @Dependency(\.cache) var cache
+  @Dependency(\.cacheOld) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.xmtpConnector) var xmtpConnector

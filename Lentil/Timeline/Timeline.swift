@@ -14,8 +14,6 @@ struct Timeline: ReducerProtocol {
     var userProfile: UserProfile? = nil
     var posts: IdentifiedArrayOf<Post.State> = []
     var scrollPosition: ScrollPosition?
-    var cursorFeed: Cursor = .init()
-    var cursorExplore: Cursor = .init()
     var isIndexing: Toast? = nil
     var loadingInFlight: Bool = false
     var unreadNotifications = 0
@@ -25,20 +23,15 @@ struct Timeline: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    struct PublicationsResponse: Equatable {
-      let publications: [Model.Publication]
-      let cursorExplore: Cursor
-      let cursorFeed: Cursor
-    }
-    
     case timelineAppeared
     case refreshFeed
     case fetchDefaultProfile
     case defaultProfileResponse(TaskResult<Model.Profile>)
     case fetchPublications
     case publicationResponse(Model.Publication?)
-    case publicationsResponse(PublicationsResponse)
-    case fetchingFailed
+    
+    case observeTimelineUpdates
+    case publicationsResponse([Model.Publication])
     
     case loadNotifications
     case notificationsResponse(TaskResult<PaginatedResult<[Model.Notification]>>)
@@ -59,6 +52,7 @@ struct Timeline: ReducerProtocol {
     case post(id: Post.State.ID, action: Post.Action)
   }
   
+  @Dependency(\.cacheOld) var cacheOld
   @Dependency(\.cache) var cache
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
@@ -66,11 +60,11 @@ struct Timeline: ReducerProtocol {
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.uuid) var uuid
   
-  func fetchPublications(from response: Action.PublicationsResponse, updating posts: IdentifiedArrayOf<Post.State>) -> IdentifiedArrayOf<Post.State> {
+  func fetchPublications(from publications: [Model.Publication], updating posts: IdentifiedArrayOf<Post.State>) -> IdentifiedArrayOf<Post.State> {
     var updatedPosts = posts
     
     // First, handle posts and mirrors
-    let postsAndMirrors = response.publications
+    let postsAndMirrors = publications
       .filter {
         if case .post = $0.typename { return true }
         if case .mirror = $0.typename { return true }
@@ -94,7 +88,7 @@ struct Timeline: ReducerProtocol {
       .forEach { updatedPosts.updateOrAppend($0) }
     
     // Second, handle comments
-    let comments = response.publications
+    let comments = publications
       .filter {
         if case .comment = $0.typename { return true }
         else { return false }
@@ -138,22 +132,21 @@ struct Timeline: ReducerProtocol {
     
     // Write publications to cache
     postsAndMirrors
-      .forEach { self.cache.updateOrAppendPublication($0) }
+      .forEach { self.cacheOld.updateOrAppendPublication($0) }
     comments
-      .forEach { self.cache.updateOrAppendPublication($0) }
+      .forEach { self.cacheOld.updateOrAppendPublication($0) }
     parentPublications
-      .forEach { self.cache.updateOrAppendPublication($0) }
+      .forEach { self.cacheOld.updateOrAppendPublication($0) }
     
     // Write profiles to cache
-    response.publications
-      .forEach { self.cache.updateOrAppendProfile($0.profile) }
+    publications
+      .forEach { self.cacheOld.updateOrAppendProfile($0.profile) }
     parentPublications
-      .forEach { self.cache.updateOrAppendProfile($0.profile) }
+      .forEach { self.cacheOld.updateOrAppendProfile($0.profile) }
     
     updatedPosts.sort { $0.post.publication.createdAt > $1.post.publication.createdAt }
     return updatedPosts
   }
-  enum CancelFetchPublicationsID {}
   
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
@@ -162,18 +155,14 @@ struct Timeline: ReducerProtocol {
           var effects: [EffectTask<Action>] = []
           state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
           if state.userProfile != nil && state.showProfile == nil { effects.append(.send(.fetchDefaultProfile)) }
+          effects.append(.send(.observeTimelineUpdates))
           effects.append(.send(.refreshFeed))
           if state.userProfile != nil { effects.append(.send(.loadNotifications)) }
           return .merge(effects)
           
         case .refreshFeed:
           state.loadingInFlight = false
-          state.cursorFeed = .init(prev: nil, next: nil)
-          state.cursorExplore = .init(prev: nil, next: nil)
-          return .concatenate(
-            .cancel(id: CancelFetchPublicationsID.self),
-            .init(value: .fetchPublications)
-          )
+          return .send(.fetchPublications)
           
         case .fetchDefaultProfile:
           guard let userProfile = state.userProfile
@@ -189,7 +178,7 @@ struct Timeline: ReducerProtocol {
           
         case .defaultProfileResponse(let .success(defaultProfile)):
           state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
-          self.cache.updateOrAppendProfile(defaultProfile)
+          self.cacheOld.updateOrAppendProfile(defaultProfile)
           return .none
           
         case .defaultProfileResponse(let .failure(error)):
@@ -197,41 +186,16 @@ struct Timeline: ReducerProtocol {
           return .none
           
         case .fetchPublications:
-          guard !state.loadingInFlight, !state.cursorExplore.exhausted, !state.cursorFeed.exhausted
+          guard !state.loadingInFlight
           else { return .none }
           
           state.loadingInFlight = true
-          return .run { [cursorFeed = state.cursorFeed, cursorExplore = state.cursorExplore, id = state.userProfile?.id] send in
-            if let id {
-              let feed = try await lensApi.feed(40, cursorFeed.next, id, id)
-              let exploration = try await lensApi.explorePublications(10, cursorExplore.next, .topCommented, [.post, .comment, .mirror], id)
-              await send(
-                .publicationsResponse(
-                  Action.PublicationsResponse(
-                    publications: feed.data + exploration.data,
-                    cursorExplore: exploration.cursor,
-                    cursorFeed: feed.cursor
-                  )
-                )
-              )
-            }
-            else {
-              let exploration = try await lensApi.explorePublications(50, cursorExplore.next, .topCommented, [.post, .comment, .mirror], nil)
-              await send(
-                .publicationsResponse(
-                  Action.PublicationsResponse(
-                    publications: exploration.data,
-                    cursorExplore: exploration.cursor,
-                    cursorFeed: .init()
-                  )
-                )
-              )
-            }
-          } catch: { error, send in
-            log("Failed to load timeline", level: .error, error: error)
-            await send(.fetchingFailed)
+          if let id = state.userProfile?.id {
+            return .fireAndForget { try await self.cache.loadAdditionalPublicationsForFeedAuthenticated(id) }
           }
-          .cancellable(id: CancelFetchPublicationsID.self)
+          else {
+            return .fireAndForget { try await self.cache.loadAdditionalPublicationsForFeed() }
+          }
           
         case .publicationResponse(let publication):
           state.isIndexing = nil
@@ -269,20 +233,27 @@ struct Timeline: ReducerProtocol {
               state.posts.insert(publicationState, at: 0)
             }
           }
-          self.cache.updateOrAppendPublication(publication)
+          self.cacheOld.updateOrAppendPublication(publication)
           return .none
           
-        case .publicationsResponse(let response):
-          let updatedPosts = self.fetchPublications(from: response, updating: state.posts)
+        case .observeTimelineUpdates:
+          return .run { send in
+            for try await event in self.cache.sharedEventStream {
+              switch event {
+                case .initial(let publications):
+                  await send(.publicationsResponse(publications))
+                case .update(let publications, deletions: _, insertions: _, modifications: _):
+                  await send(.publicationsResponse(publications))
+              }
+            }
+          }
+          
+        case .publicationsResponse(let publications):
+          let updatedPosts = self.fetchPublications(from: publications, updating: state.posts)
           if updatedPosts != state.posts { state.posts = updatedPosts }
-          state.cursorExplore = response.cursorExplore
-          state.cursorFeed = response.cursorFeed
           state.loadingInFlight = false
           return .none
           
-        case .fetchingFailed:
-          state.loadingInFlight = false
-          return .none
           
         case .loadNotifications:
           guard let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
@@ -373,7 +344,7 @@ struct Timeline: ReducerProtocol {
             case .defaultProfileResponse(let defaultProfile):
               state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
               state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
-              self.cache.updateOrAppendProfile(defaultProfile)
+              self.cacheOld.updateOrAppendProfile(defaultProfile)
               return .none
               
             default:

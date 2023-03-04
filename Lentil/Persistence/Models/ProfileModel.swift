@@ -34,6 +34,28 @@ extension Model {
   }
 }
 
+extension Model.Profile {
+  func realmProfile() -> RealmProfile {
+    return RealmProfile(
+      id: self.id,
+      name: self.name,
+      handle: self.handle,
+      ownedBy: self.ownedBy,
+      profilePictureUrl: self.profilePictureUrl?.absoluteString,
+      coverPictureUrl: self.coverPictureUrl?.absoluteString,
+      bio: self.bio,
+      isFollowedByMe: self.isFollowedByMe,
+      following: self.following,
+      followers: self.followers,
+      joinedDate: self.joinedDate,
+      locationUrl: self.attributes.first(where: { $0.key == .location })?.value,
+      twitterUrl: self.attributes.first(where: { $0.key == .twitter })?.value,
+      websiteUrl: self.attributes.first(where: { $0.key == .website })?.value,
+      isDefault: self.isDefault
+    )
+  }
+}
+
 #if DEBUG
 extension MockData {
   static let mockProfiles: [Model.Profile] = [

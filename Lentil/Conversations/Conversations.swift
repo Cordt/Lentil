@@ -35,7 +35,7 @@ struct Conversations: ReducerProtocol {
     case conversation(id: ConversationRow.State.ID, ConversationRow.Action)
   }
   
-  @Dependency(\.cache) var cache
+  @Dependency(\.cacheOld) var cache
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.xmtpConnector) var xmtpConnector
