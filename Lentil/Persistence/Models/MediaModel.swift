@@ -25,3 +25,21 @@ extension Model {
     let url: URL
   }
 }
+
+
+extension Model.Media {
+  func realmMedia() -> RealmMedia {
+    let mediaType: RealmMedia.MediaType
+    let mimeType: RealmMedia.ImageMimeType
+    switch self.mediaType {
+      case .image(let imageMimeType):
+        mediaType = .image
+        mimeType = RealmMedia.ImageMimeType(rawValue: imageMimeType.rawValue)!
+    }
+    return RealmMedia(
+      id: self.id,
+      mediaType: mediaType,
+      imageMimeType: mimeType
+    )
+  }
+}

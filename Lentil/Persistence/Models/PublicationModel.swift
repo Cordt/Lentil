@@ -57,7 +57,6 @@ extension Model.Publication {
         relatedProfile = by.realmProfile()
     }
     
-    
     return RealmPublication(
       id: self.id,
       typename: typename,
@@ -74,6 +73,7 @@ extension Model.Publication {
       collectdByUser: self.collectdByUser,
       commentdByUser: self.commentdByUser,
       mirrordByUser: self.mirrordByUser,
+      media: self.media.map { $0.realmMedia() },
       showsInFeed: showsInFeed
     )
   }

@@ -254,7 +254,6 @@ struct Timeline: ReducerProtocol {
           state.loadingInFlight = false
           return .none
           
-          
         case .loadNotifications:
           guard let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
           else { return .none }

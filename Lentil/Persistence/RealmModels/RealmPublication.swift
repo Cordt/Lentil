@@ -32,9 +32,11 @@ class RealmPublication: Object {
   @Persisted var commentdByUser: Bool
   @Persisted var mirrordByUser: Bool
   
+  @Persisted var media: List<RealmMedia>
+  
   @Persisted var showsInFeed: Bool
   
-  convenience init(id: String, typename: Typename, relatedPublication: RealmPublication? = nil, relatedProfile: RealmProfile? = nil, createdAt: Date, content: String, userProfile: RealmProfile, upvotes: Int, collects: Int, comments: Int, mirrors: Int, upvotedByUser: Bool, collectdByUser: Bool, commentdByUser: Bool, mirrordByUser: Bool, showsInFeed: Bool) {
+  convenience init(id: String, typename: Typename, relatedPublication: RealmPublication? = nil, relatedProfile: RealmProfile? = nil, createdAt: Date, content: String, userProfile: RealmProfile, upvotes: Int, collects: Int, comments: Int, mirrors: Int, upvotedByUser: Bool, collectdByUser: Bool, commentdByUser: Bool, mirrordByUser: Bool, media: [RealmMedia], showsInFeed: Bool) {
     self.init()
     
     self.id = id
@@ -52,6 +54,7 @@ class RealmPublication: Object {
     self.collectdByUser = collectdByUser
     self.commentdByUser = commentdByUser
     self.mirrordByUser = mirrordByUser
+    media.forEach { self.media.append($0) }
     self.showsInFeed = showsInFeed
   }
 }
@@ -100,7 +103,8 @@ extension RealmPublication {
       upvotedByUser: self.upvotedByUser,
       collectdByUser: self.collectdByUser,
       commentdByUser: self.commentdByUser,
-      mirrordByUser: self.mirrordByUser
+      mirrordByUser: self.mirrordByUser,
+      media: self.media.compactMap { $0.media() }
     )
   }
 }
