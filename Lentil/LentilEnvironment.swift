@@ -11,6 +11,8 @@ class LentilEnvironment {
   let baseUrl: String
   let origin: String
   
+  let memoryRealmIdentifier: String
+  
   let xmtpEnvironment: XMTPEnvironment
   
   let infuraUrl: String
@@ -41,6 +43,8 @@ class LentilEnvironment {
     self.logLevel = LogLevel(rawValue: value(for: "LOG_LEVEL").lowercased())!
     self.baseUrl = value(for: "BASE_URL", addingHttps: true)
     self.origin = value(for: "ORIGIN", addingHttps: true)
+    
+    self.memoryRealmIdentifier = "lentilMemoryRealm"
     
     self.xmtpEnvironment = {
       let env = value(for: "XMTP_ENVIRONMENT")

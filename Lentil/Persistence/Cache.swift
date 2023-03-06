@@ -8,44 +8,33 @@ import RealmSwift
 
 
 class Cache {
-  static var shared = Cache()
+  static let shared = Cache()
+  static let realmConfig = Realm.Configuration(inMemoryIdentifier: LentilEnvironment.shared.memoryRealmIdentifier)
   
-  private static let realmIdentifier: String = "LentilMemoryRealm"
-  
-  private var eventStream: CacheEvents
-  private(set) var sharedEventStream: SharedAsyncSequence<CacheEvents>
-  private var feedNotificationToken: NotificationToken?
-  
+  private var realmReference: Realm
   private var exploreCursor: Cursor
   private var feedCursor: Cursor
   
   @Dependency(\.lensApi) var lensApi
   
   private init() {
-    self.eventStream = CacheEvents()
-    self.sharedEventStream = self.eventStream.shared()
-    self.feedNotificationToken = nil
+    self.realmReference = try! Realm(configuration: Self.realmConfig)
     self.exploreCursor = .init()
     self.feedCursor = .init()
-    
-    self.registerObservers()
   }
   
   
   // MARK: Read
   
-  func publication(for id: String) -> Model.Publication? {
-    self.realm()
-      .object(ofType: RealmPublication.self, forPrimaryKey: id)?
-      .publication()
+  func getObserver<Element: ViewModel>(observable: Observer<Element>.ObservableEvents) -> Observer<Element> {
+    Observer(observable: observable)
   }
   
-  func publicationsForFeed() throws -> [Model.Publication] {
-    self.realm()
-      .objects(RealmPublication.self)
-      .where { $0.showsInFeed == true }
-      .sorted { $0.createdAt > $1.createdAt }
-      .compactMap { $0.publication() }
+  func publication(for id: String) -> Model.Publication? {
+    let realm = try! Realm(configuration: Self.realmConfig)
+    return realm
+      .object(ofType: RealmPublication.self, forPrimaryKey: id)?
+      .publication()
   }
   
   
@@ -72,14 +61,7 @@ class Cache {
   
   // MARK: Helper
   
-  private func realm() -> Realm {
-    try! Realm(
-      configuration: Realm.Configuration(
-        inMemoryIdentifier: Self.realmIdentifier
-      )
-    )
-  }
-  
+  @MainActor
   private func loadPublicationsForFeed(userId: String? = nil, feedCursor: Cursor? = nil, exploreCursor: Cursor? = nil) async throws {
     let publications: [Model.Publication]
     if let userId {
@@ -98,56 +80,108 @@ class Cache {
     
     // Update feed
     let realmPublications = publications.compactMap { $0.realmPublication(showsInFeed: true) }
-    
-    try self.realm().write {
+    let realm = try! await Realm(configuration: Self.realmConfig)
+    try realm.write {
       realmPublications.forEach {
-        self.realm().add($0, update: .modified)
-      }
-    }
-  }
-  
-  private func registerObservers() {
-    Task { @MainActor in
-    let feed = self.realm()
-      .objects(RealmPublication.self)
-      .where { $0.showsInFeed == true }
-    
-      self.feedNotificationToken = feed.observe { [weak self] (changes: RealmCollectionChange) in
-        switch changes {
-          case .initial(let publications):
-            self?.eventStream.append(
-              event: .initial(
-                publications.elements.compactMap { $0.publication() }
-              )
-            )
-          case .update(let publications, deletions: let deletions, insertions: let insertions, modifications: let modifications):
-            self?.eventStream.append(
-              event: .update(
-                publications.elements.compactMap { $0.publication() },
-                deletions: deletions,
-                insertions: insertions,
-                modifications: modifications
-              )
-            )
-          case .error(let error):
-            log("Failed to retrieve notification for updated feed", level: .error, error: error)
-        }
+        realm.add($0, update: .modified)
       }
     }
   }
 }
 
 
-class CacheEvents: AsyncSequence, AsyncIteratorProtocol {
-  enum Event {
-    case initial([Model.Publication])
-    case update([Model.Publication], deletions: [Int], insertions: [Int], modifications: [Int])
+class Observer<Element: ViewModel>: Equatable {
+  
+  enum ObservableEvents {
+    case feed, notifications
   }
   
-  typealias Element = Event
-  private var eventsToEmit: [Event] = []
+  static func == (lhs: Observer<Element>, rhs: Observer<Element>) -> Bool {
+    lhs === rhs
+  }
   
-  func append(event: Event) {
+  let events: CacheEvents<Element>
+  let observableEvents: ObservableEvents
+  private var notificationToken: NotificationToken? = nil
+  
+  init(observable: ObservableEvents) {
+    self.events = CacheEvents<Element>()
+    self.observableEvents = observable
+    
+    Task { @MainActor in
+      let realm = try! Realm(
+        configuration: Realm.Configuration(
+          inMemoryIdentifier: LentilEnvironment.shared.memoryRealmIdentifier
+        )
+      )
+      
+      switch self.observableEvents {
+        case .feed:
+          let results = realm
+            .objects(RealmPublication.self)
+            .where { $0.showsInFeed == true }
+          
+          self.notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
+            switch changes {
+              case .initial(let publications):
+                self?.events.append(
+                  event: .initial(
+                    publications.elements.compactMap { $0.publication() as? Element }
+                  )
+                )
+              case .update(let publications, deletions: let deletions, insertions: let insertions, modifications: let modifications):
+                self?.events.append(
+                  event: .update(
+                    publications.elements.compactMap { $0.publication() as? Element },
+                    deletions: deletions,
+                    insertions: insertions,
+                    modifications: modifications
+                  )
+                )
+              case .error(let error):
+                log("Failed to retrieve notification for updated feed", level: .error, error: error)
+            }
+          }
+        case .notifications:
+          let results = realm
+            .objects(RealmNotification.self)
+          
+          self.notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
+            switch changes {
+              case .initial(let publications):
+                self?.events.append(
+                  event: .initial(
+                    publications.elements.compactMap { $0.notification() as? Element }
+                  )
+                )
+              case .update(let publications, deletions: let deletions, insertions: let insertions, modifications: let modifications):
+                self?.events.append(
+                  event: .update(
+                    publications.elements.compactMap { $0.notification() as? Element },
+                    deletions: deletions,
+                    insertions: insertions,
+                    modifications: modifications
+                  )
+                )
+              case .error(let error):
+                log("Failed to retrieve notification for updated notifications", level: .error, error: error)
+            }
+          }
+      }
+    }
+  }
+}
+
+class CacheEvents<Model: ViewModel>: AsyncSequence, AsyncIteratorProtocol {
+  enum Event<Model> {
+    case initial([Model])
+    case update([Model], deletions: [Int], insertions: [Int], modifications: [Int])
+  }
+  
+  typealias Element = Event<Model>
+  private var eventsToEmit: [Element] = []
+  
+  func append(event: Element) {
     self.eventsToEmit.append(event)
   }
   

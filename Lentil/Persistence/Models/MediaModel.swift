@@ -3,8 +3,10 @@
 
 import Foundation
 
+protocol ViewModel: Equatable, Identifiable {}
+
 extension Model {
-  struct Media: Equatable, Identifiable {
+  struct Media: ViewModel {
     enum MediaType: Equatable {
       case image(ImageMimeType)
     }

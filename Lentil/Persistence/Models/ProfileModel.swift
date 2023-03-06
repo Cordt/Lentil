@@ -5,7 +5,7 @@ import Foundation
 import SwiftUI
 
 extension Model {
-  struct Profile: Identifiable, Equatable {
+  struct Profile: ViewModel {
     struct Attribute: Equatable {
       enum Key: String {
         case location, twitter, website

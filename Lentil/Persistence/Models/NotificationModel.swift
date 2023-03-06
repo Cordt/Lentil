@@ -4,21 +4,7 @@ import Foundation
 
 
 extension Model {
-  struct Notification: Equatable, Identifiable {
-    enum NotificationType: String, Equatable {
-      case mirroredPost = "MIRRORED_POST"
-      case mirroredComment = "MIRRORED_COMMENT"
-      case mentionPost = "MENTION_POST"
-      case mentionComment = "MENTION_COMMENT"
-      case commentedComment = "COMMENTED_COMMENT"
-      case commentedPost = "COMMENTED_POST"
-      case collectedPost = "COLLECTED_POST"
-      case collectedComment = "COLLECTED_COMMENT"
-      case followed = "FOLLOWED"
-      case reactionPost = "REACTION_POST"
-      case reactionComment = "REACTION_COMMENT"
-    }
-    
+  struct Notification: ViewModel {
     enum Event: Equatable {
       enum Item: Equatable {
         case post(_ id: String)

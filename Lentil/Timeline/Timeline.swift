@@ -20,6 +20,8 @@ struct Timeline: ReducerProtocol {
     
     var connectWallet: WalletConnection.State? = nil
     var showProfile: Profile.State? = nil
+    
+    var feedObserver: Observer<Model.Publication>? = nil
   }
   
   enum Action: Equatable {
@@ -237,8 +239,10 @@ struct Timeline: ReducerProtocol {
           return .none
           
         case .observeTimelineUpdates:
-          return .run { send in
-            for try await event in self.cache.sharedEventStream {
+          state.feedObserver = self.cache.feedObserver()
+          return .run { [events = state.feedObserver?.events] send in
+            guard let events else { return }
+            for try await event in events {
               switch event {
                 case .initial(let publications):
                   await send(.publicationsResponse(publications))
