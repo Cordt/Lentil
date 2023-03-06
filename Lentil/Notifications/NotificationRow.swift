@@ -25,8 +25,7 @@ struct NotificationRow: ReducerProtocol {
     case handleFailure(LoadingFailure, _ error: String?)
   }
   
-  @Dependency(\.cacheOld) var cache
-  @Dependency(\.lensApi) var lensApi
+  @Dependency(\.cache) var cache
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
@@ -55,20 +54,14 @@ struct NotificationRow: ReducerProtocol {
           }
           
         case .loadPost(let elementId):
-          if let post = self.cache.publication(elementId) {
-            return .send(.postResponse(.success(post)))
-          }
-          else {
-            return .task {
-              await .postResponse(TaskResult { try await self.lensApi.publicationById(elementId) })
-            }
+          return .task {
+            await .postResponse(TaskResult { try await self.cache.publication(elementId) })
           }
           
         case .postResponse(.success(let post)):
           guard let post
           else { return EffectTask.send(.handleFailure(.post, nil)) }
           
-          self.cache.updateOrAppendPublication(post)
           self.navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,
@@ -79,25 +72,18 @@ struct NotificationRow: ReducerProtocol {
           
         case .loadComment(let elementId):
           return .task {
-            var comment = self.cache.publication(elementId)
-            if comment == nil { comment = try await self.lensApi.publicationById(elementId) }
+            let comment = try await self.cache.publication(elementId)
             
             guard case .comment(let parent) = comment?.typename, let parent
             else { return .handleFailure(.comment, "Failed to get parent publication from comment")}
             
-            if let parent = self.cache.publication(parent.id) {
-              return .commentResponse(TaskResult.success(parent))
-            }
-            else {
-              return await .commentResponse(TaskResult { try await self.lensApi.publicationById(parent.id) })
-            }
+            return .commentResponse(TaskResult.success(parent))
           }
           
         case .commentResponse(.success(let parent)):
           guard let parent
           else { return EffectTask.send(.handleFailure(.comment, nil)) }
           
-          self.cache.updateOrAppendPublication(parent)
           self.navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,
@@ -107,20 +93,14 @@ struct NotificationRow: ReducerProtocol {
           return .none
           
         case .loadProfile(let elementId):
-          if let profile = self.cache.profileById(elementId) {
-            return .send(.profileResponse(.success(profile)))
-          }
-          else {
-            return .task {
-              await .profileResponse(TaskResult { try await self.lensApi.profile(elementId) })
-            }
+          return .task {
+            await .profileResponse(TaskResult { try await self.cache.profile(elementId) })
           }
           
         case .profileResponse(.success(let profile)):
           guard let profile
           else { return EffectTask.send(.handleFailure(.profile, nil)) }
           
-          self.cache.updateOrAppendProfile(profile)
           self.navigationApi.append(
             DestinationPath(
               navigationId: self.uuid.callAsFunction().uuidString,

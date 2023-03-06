@@ -41,6 +41,51 @@ extension Model {
   }
 }
 
+extension Model.Notification {
+  func realmNotification() -> RealmNotification {
+    var notificationType: RealmNotification.NotificationType = .reactionPost
+    var relatedProfileId: String? = nil
+    var relatedPublicationId: String? = nil
+    var secondRelatedPublicationId: String? = nil
+    
+    switch self.event {
+      case .followed(let profileId):
+        notificationType = .followed
+        relatedProfileId = profileId
+      case .collected(let item):
+        if case .post = item { notificationType = .collectedPost }
+        if case .comment = item { notificationType = .collectedComment }
+        relatedPublicationId = item.elementId
+      case .commented(let firstItem, let secondItem):
+        if case .post = firstItem { notificationType = .commentedPost }
+        if case .comment = firstItem { notificationType = .commentedComment }
+        relatedPublicationId = firstItem.elementId
+        secondRelatedPublicationId = secondItem.elementId
+      case .mirrored(let item):
+        if case .post = item { notificationType = .mirroredPost }
+        if case .comment = item { notificationType = .mirroredComment }
+        relatedPublicationId = item.elementId
+      case .mentioned(let item):
+        if case .post = item { notificationType = .mentionPost }
+        if case .comment = item { notificationType = .mentionComment }
+        relatedPublicationId = item.elementId
+      case .reacted(let item):
+        if case .post = item { notificationType = .reactionPost }
+        if case .comment = item { notificationType = .reactionComment }
+        relatedPublicationId = item.elementId
+    }
+    return RealmNotification(
+      id: self.id,
+      notificationType: notificationType,
+      relatedPublicationId: relatedPublicationId,
+      secondRelatedPublicationId: secondRelatedPublicationId,
+      relatedProfileId: relatedProfileId,
+      createdAt: self.createdAt,
+      profile: self.profile.realmProfile()
+    )
+  }
+}
+
 #if DEBUG
 extension MockData {
   static let mockNotifications: [Model.Notification] = [

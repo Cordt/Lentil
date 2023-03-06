@@ -16,24 +16,27 @@ struct NotificationsLatestRead: Codable, DefaultsStorable {
 struct Notifications: ReducerProtocol {
   struct State: Equatable {
     var navigationId: String
-    var notificationsCursor: Cursor = .init()
     var isLoading: Bool = false
     
     var notificationRows: IdentifiedArrayOf<NotificationRow.State> = []
+    
+    var notificationsObserver: Observer<Model.Notification>? = nil
   }
   
   enum Action: Equatable {
     case didAppear
     case didDismiss
     case didRefresh
+    
+    case observeNotificationUpdates
     case loadNotifications
-    case notificationsResponse(TaskResult<PaginatedResult<[Model.Notification]>>)
+    case notificationsResponse([Model.Notification])
     
     case notificationRowAction(NotificationRow.State.ID, NotificationRow.Action)
   }
   
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  @Dependency(\.lensApi) var lensApi
+  @Dependency(\.cache) var cache
   @Dependency(\.navigationApi) var navigationApi
   
   enum CancelLoadNotificationsID {}
@@ -42,7 +45,10 @@ struct Notifications: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          return .send(.loadNotifications)
+          return .merge(
+            .send(.observeNotificationUpdates),
+            .send(.loadNotifications)
+          )
           
         case .didDismiss:
           self.navigationApi.remove(
@@ -54,8 +60,21 @@ struct Notifications: ReducerProtocol {
           return .cancel(id: CancelLoadNotificationsID.self)
           
         case .didRefresh:
-          state.notificationsCursor = .init()
           return .send(.loadNotifications)
+          
+        case .observeNotificationUpdates:
+          state.notificationsObserver = self.cache.notificationsObserver()
+          return .run { [events = state.notificationsObserver?.events] send in
+            guard let events else { return }
+            for try await event in events {
+              switch event {
+                case .initial(let notifications):
+                  await send(.notificationsResponse(notifications))
+                case .update(let notifications, deletions: _, insertions: _, modifications: _):
+                  await send(.notificationsResponse(notifications))
+              }
+            }
+          }
           
         case .loadNotifications:
           guard let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
@@ -63,19 +82,13 @@ struct Notifications: ReducerProtocol {
           
           state.isLoading = true
           
-          return .task { [cursor = state.notificationsCursor] in
-            await .notificationsResponse(
-              TaskResult {
-                try await self.lensApi.notifications(userProfile.id, 50, cursor.next)
-              }
-            )
+          return .fireAndForget {
+            try await self.cache.refreshNotifications(userProfile.id)
           }
-          .cancellable(id: CancelLoadNotificationsID.self)
           
-        case .notificationsResponse(.success(let result)):
-          state.notificationsCursor = result.cursor
+        case .notificationsResponse(let notifications):
           var notificationRows = state.notificationRows
-          result.data.forEach { notificationRows.updateOrAppend(NotificationRow.State(notification: $0)) }
+          notifications.forEach { notificationRows.updateOrAppend(NotificationRow.State(notification: $0)) }
           notificationRows.sort { $0.notification.createdAt > $1.notification.createdAt }
           state.notificationRows = notificationRows
           state.isLoading = false
@@ -87,11 +100,6 @@ struct Notifications: ReducerProtocol {
             )
             try? self.defaultsStorageApi.store(latestReadNotification)
           }
-          return .none
-          
-        case .notificationsResponse(.failure(let error)):
-          state.isLoading = false
-          log("Failed to load notifications", level: .error, error: error)
           return .none
           
           

@@ -218,7 +218,7 @@ struct Timeline: ReducerProtocol {
                 postState.comments.updateOrAppend(publicationState)
                 state.posts[id: postState.id] = postState
               }
-              else if let parentId = parent?.id, let post = self.cache.publication(parentId) {
+              else if let parentId = parent?.id, let post = self.cacheOld.publication(parentId) {
                 let parentState = Post.State(
                   navigationId: uuid.callAsFunction().uuidString,
                   post: .init(publication: post),
