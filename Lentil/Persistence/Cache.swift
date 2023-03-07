@@ -50,11 +50,11 @@ class Cache {
   // MARK: Read and load collections of Elements
   
   func comments(of publication: Model.Publication, for userId: String? = nil) async throws -> [Model.Publication] {
-    try await self.fetchElements(
+    return try await self.fetchElements(
       where: { $0.parentPublication.id == publication.id },
       transformToViewModel: { $0.publication() },
       transformToCacheModel: { $0.realmPublication(showsInFeed: false) },
-      fetch: { try await self.lensApi.commentsOfPublication(publication, userId) }
+      fetch: { try await self.lensApi.commentsOfPublication(publication, userId).data }
     )
   }
   

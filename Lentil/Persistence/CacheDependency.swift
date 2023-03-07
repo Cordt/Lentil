@@ -8,6 +8,7 @@ import XCTestDynamicOverlay
 struct CacheApi {
   var feedObserver: () -> CollectionObserver<Model.Publication>
   var notificationsObserver: () -> CollectionObserver<Model.Notification>
+  var commentsObserver: (_ parentId: String) -> CollectionObserver<Model.Publication>
   var publicationObserver: (_ publicationId: String) -> ElementObserver<Model.Publication>
   var profileObserver: (_ profileId: String) -> ElementObserver<Model.Profile>
   var profile: (_ id: String) async throws -> Model.Profile?
@@ -25,6 +26,7 @@ extension CacheApi: DependencyKey {
   static let liveValue = CacheApi(
     feedObserver: { CollectionObserver(observable: .feed) },
     notificationsObserver: { CollectionObserver(observable: .notifications) },
+    commentsObserver: { CollectionObserver(observable: .comments($0)) },
     publicationObserver: { ElementObserver(observable: .publication($0)) },
     profileObserver: { ElementObserver(observable: .profile($0)) },
     profile: Cache.shared.profile,
@@ -51,6 +53,7 @@ extension CacheApi {
   static let testValue = CacheApi(
     feedObserver: unimplemented("feedObserver"),
     notificationsObserver: unimplemented("notificationsObserver"),
+    commentsObserver: unimplemented("commentsObserver"),
     publicationObserver: unimplemented("publicationObserver"),
     profileObserver: unimplemented("profileObserver"),
     profile: unimplemented("profile"),

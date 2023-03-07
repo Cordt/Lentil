@@ -36,12 +36,14 @@ struct Post: ReducerProtocol {
       return mirroringProfile.name ?? mirroringProfile.handle
     }
     
+    var commentsObserver: CollectionObserver<Model.Publication>? = nil
   }
   
   indirect enum Action: Equatable {
     case didAppear
     case dismissView
     case fetchComments
+    case observeCommentsUpdates
     case commentsResponse(TaskResult<[Model.Publication]>)
     
     case post(action: Publication.Action)
@@ -54,6 +56,8 @@ struct Post: ReducerProtocol {
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
+  
+  enum CancelObserveCommentsID {}
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.post, action: /Action.post) {
@@ -72,7 +76,7 @@ struct Post: ReducerProtocol {
               destination: .publication(state.post.id)
             )
           )
-          return .none
+          return .cancel(id: CancelObserveCommentsID.self)
           
         case .fetchComments:
           return .task { [publication = state.post.publication] in
@@ -84,14 +88,29 @@ struct Post: ReducerProtocol {
             )
           }
           
+        case .observeCommentsUpdates:
+          state.commentsObserver = self.cache.commentsObserver(state.post.id)
+          return .run { [events = state.commentsObserver?.events] send in
+            guard let events else { return }
+            for try await event in events {
+              switch event {
+                case .initial(let publications):
+                  await send(.commentsResponse(.success(publications)))
+                case .update(let publications, deletions: _, insertions: _, modifications: _):
+                  await send(.commentsResponse(.success(publications)))
+              }
+            }
+          }
+          .cancellable(id: CancelObserveCommentsID.self, cancelInFlight: true)
+          
         case .commentsResponse(let response):
           switch response {
             case .success(let result):
-              state.comments.append(
-                contentsOf: result.map {
+              result.forEach {
+                state.comments.updateOrAppend(
                   Post.State(navigationId: self.uuid.callAsFunction().uuidString, post: Publication.State(publication: $0), typename: .comment)
-                }
-              )
+                )
+              }
               return .none
               
             case .failure(let error):
