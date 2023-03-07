@@ -42,7 +42,7 @@ struct Post: ReducerProtocol {
     case didAppear
     case dismissView
     case fetchComments
-    case commentsResponse(TaskResult<PaginatedResult<[Model.Publication]>>)
+    case commentsResponse(TaskResult<[Model.Publication]>)
     
     case post(action: Publication.Action)
     case comment(id: String, action: Post.Action)
@@ -50,8 +50,7 @@ struct Post: ReducerProtocol {
     case postTapped
   }
   
-  @Dependency(\.cacheOld) var cache
-  @Dependency(\.lensApi) var lensApi
+  @Dependency(\.cache) var cache
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
@@ -80,7 +79,7 @@ struct Post: ReducerProtocol {
             await .commentsResponse(
               TaskResult {
                 let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
-                return try await lensApi.commentsOfPublication(publication, userProfile?.id)
+                return try await self.cache.comments(publication, userProfile?.id)
               }
             )
           }
@@ -89,18 +88,14 @@ struct Post: ReducerProtocol {
           switch response {
             case .success(let result):
               state.comments.append(
-                contentsOf: result.data.map {
+                contentsOf: result.map {
                   Post.State(navigationId: self.uuid.callAsFunction().uuidString, post: Publication.State(publication: $0), typename: .comment)
                 }
               )
-              
-              result.data
-                .forEach { self.cache.updateOrAppendPublication($0) }
-              
               return .none
               
             case .failure(let error):
-              log("Could not fetch publications from API", level: .warn, error: error)
+              log("Could not fetch publications from Cache", level: .warn, error: error)
               return .none
           }
           

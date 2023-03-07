@@ -5,7 +5,7 @@ import Foundation
 
 
 extension Model {
-  struct Media: ViewModel {
+  struct Media: Presentable {
     enum MediaType: Equatable {
       case image(ImageMimeType)
     }

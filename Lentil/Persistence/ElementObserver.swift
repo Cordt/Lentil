@@ -4,9 +4,10 @@ import Foundation
 import RealmSwift
 
 
-class ElementObserver<Element: ViewModel>: Equatable {
+class ElementObserver<Element: Presentable>: Equatable {
   enum ObservableEvents {
     case publication(_ id: String)
+    case profile(_ id: String)
   }
   
   static func == (lhs: ElementObserver<Element>, rhs: ElementObserver<Element>) -> Bool {
@@ -35,7 +36,14 @@ class ElementObserver<Element: ViewModel>: Equatable {
             .objects(RealmPublication.self)
             .where { $0.id == id }
           
-          self.notificationToken = self.buildElementObserver(results, { $0.publication() as? Element })
+          self.notificationToken = self.buildElementObserver(results) { $0.publication() as? Element }
+          
+        case .profile(let id):
+          let results = realm
+            .objects(RealmProfile.self)
+            .where { $0.id == id }
+          
+          self.notificationToken = self.buildElementObserver(results) { $0.profile() as? Element }
       }
     }
   }
@@ -60,7 +68,7 @@ class ElementObserver<Element: ViewModel>: Equatable {
 }
 
 
-class ObservableElementEventIterator<Model: ViewModel>: AsyncSequence, AsyncIteratorProtocol {
+class ObservableElementEventIterator<Model: Presentable>: AsyncSequence, AsyncIteratorProtocol {
   enum Event<Model> {
     case update(Model)
   }

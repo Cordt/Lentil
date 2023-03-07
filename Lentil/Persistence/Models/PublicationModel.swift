@@ -5,7 +5,7 @@ import Foundation
 import SwiftUI
 
 extension Model {
-  struct Publication: ViewModel {
+  struct Publication: Presentable {
     indirect enum Typename: Equatable {
       case post
       case comment(of: Publication?)

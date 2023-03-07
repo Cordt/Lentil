@@ -4,9 +4,9 @@ import Foundation
 import RealmSwift
 
 
-class CollectionObserver<Element: ViewModel>: Equatable {
+class CollectionObserver<Element: Presentable>: Equatable {
   enum ObservableEvents {
-    case feed, notifications
+    case feed, comments(_ parentPublicationId: String), notifications
   }
   
   static func == (lhs: CollectionObserver<Element>, rhs: CollectionObserver<Element>) -> Bool {
@@ -34,6 +34,13 @@ class CollectionObserver<Element: ViewModel>: Equatable {
           let results = realm
             .objects(RealmPublication.self)
             .where { $0.showsInFeed == true }
+          
+          self.notificationToken = self.buildCollectionObserver(results) { $0.publication() as? Element }
+          
+        case .comments(let parentPublicationId):
+          let results = realm
+            .objects(RealmPublication.self)
+            .where { $0.parentPublication.id == parentPublicationId }
           
           self.notificationToken = self.buildCollectionObserver(results) { $0.publication() as? Element }
           
@@ -76,7 +83,7 @@ class CollectionObserver<Element: ViewModel>: Equatable {
 }
 
 
-class ObservableCollectionEventIterator<Model: ViewModel>: AsyncSequence, AsyncIteratorProtocol {
+class ObservableCollectionEventIterator<Model: Presentable>: AsyncSequence, AsyncIteratorProtocol {
   enum Event<Model> {
     case initial([Model])
     case update([Model], deletions: [Int], insertions: [Int], modifications: [Int])

@@ -4,4 +4,4 @@ import Foundation
 
 
 struct Model {}
-protocol ViewModel: Equatable, Identifiable {}
+protocol Presentable: Equatable, Identifiable {}

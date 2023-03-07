@@ -26,49 +26,36 @@ class Cache {
   }
   
   
-  // MARK: Read
+  // MARK: Read and load single Elements
   
   func profile(for id: String) async throws -> Model.Profile? {
-    let realm = try! await Realm(configuration: Self.realmConfig)
-    var result = realm
-      .object(ofType: RealmProfile.self, forPrimaryKey: id)?
-      .profile()
-    
-    if result == nil {
-      let apiProfile = try await self.lensApi.profile(id)
-      if let realmProfile = apiProfile?.realmProfile() {
-        try realm.write { realm.add(realmProfile) }
-      }
-      result = apiProfile
-    }
-    
-    return result
+    try await self.fetchElement(
+      primaryKey: id,
+      transformToViewModel: { $0.profile() },
+      transformToCacheModel: { $0.realmProfile() },
+      fetch: { try await self.lensApi.profile(id) }
+    )
   }
   
   func publication(for id: String) async throws -> Model.Publication? {
-    let realm = try! await Realm(configuration: Self.realmConfig)
-    var result = realm
-      .object(ofType: RealmPublication.self, forPrimaryKey: id)?
-      .publication()
-    
-    if result == nil {
-      let apiPublication = try await self.lensApi.publicationById(id)
-      if let realmPublication = apiPublication?.realmPublication(showsInFeed: false) {
-        try realm.write { realm.add(realmPublication) }
-      }
-      result = apiPublication
-    }
-    
-    return result
+    try await self.fetchElement(
+      primaryKey: id,
+      transformToViewModel: { $0.publication() },
+      transformToCacheModel: { $0.realmPublication(showsInFeed: false) },
+      fetch: { try await self.lensApi.publicationById(id) }
+    )
   }
   
-  func comments(of publication: Model.Publication, for userId: String? = nil) async throws {
-    let realm = try! await Realm(configuration: Self.realmConfig)
-    var result = realm
-      .objects(RealmPublication.self)
-      .where { $0.parentPublication.id == publication.id }
-    
-    
+  
+  // MARK: Read and load collections of Elements
+  
+  func comments(of publication: Model.Publication, for userId: String? = nil) async throws -> [Model.Publication] {
+    try await self.fetchElements(
+      where: { $0.parentPublication.id == publication.id },
+      transformToViewModel: { $0.publication() },
+      transformToCacheModel: { $0.realmPublication(showsInFeed: false) },
+      fetch: { try await self.lensApi.commentsOfPublication(publication, userId) }
+    )
   }
   
   
@@ -144,6 +131,76 @@ class Cache {
       realmNotifications.forEach {
         realm.add($0, update: .modified)
       }
+    }
+  }
+  
+  private func fetchElement<CacheModel: Object, ViewModel: Presentable>(
+    primaryKey: String,
+    transformToViewModel: (CacheModel) -> ViewModel?,
+    transformToCacheModel: @escaping (ViewModel) -> CacheModel?,
+    fetch: @escaping () async throws -> ViewModel?
+  ) async throws -> ViewModel? {
+    
+    let realm = try await Realm(configuration: Self.realmConfig)
+    let realmResult = realm.object(ofType: CacheModel.self, forPrimaryKey: primaryKey)
+    if realmResult == nil {
+      // Element not available in cache, wait until fetched from API
+      if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(apiResult) {
+        try realm.write { realm.add(cacheModel) }
+        return apiResult
+      }
+      else {
+        return nil
+      }
+    }
+    else {
+      // Element available in cache, proceed and fetch async
+      Task {
+        let realm = try await Realm(configuration: Self.realmConfig)
+        if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(apiResult) {
+          try realm.write { realm.add(cacheModel) }
+        }
+      }
+      if let realmResult {
+        return transformToViewModel(realmResult)
+      }
+      else {
+        return nil
+      }
+    }
+  }
+  
+  private func fetchElements<CacheModel: Object, ViewModel: Presentable>(
+    where: (Query<CacheModel>) -> Query<Bool>,
+    transformToViewModel: (CacheModel) -> ViewModel?,
+    transformToCacheModel: @escaping (ViewModel) -> CacheModel?,
+    fetch: @escaping () async throws -> [ViewModel]
+  ) async throws -> [ViewModel] {
+    
+    let realm = try await Realm(configuration: Self.realmConfig)
+    let realmResult = realm
+      .objects(CacheModel.self)
+      .where(`where`)
+    
+    if realmResult.elements.count == 0 {
+      // Elements not available in cache, wait until fetched from API
+      let viewModels = try await fetch()
+      let cacheModels = viewModels.compactMap(transformToCacheModel)
+      try cacheModels.forEach { cacheModel in
+        try realm.write { realm.add(cacheModel) }
+      }
+      return viewModels
+    }
+    else {
+      // Elements available in cache, proceed and fetch async
+      Task {
+        let viewModels = try await fetch()
+        let cacheModels = viewModels.compactMap(transformToCacheModel)
+        try cacheModels.forEach { cacheModel in
+          try realm.write { realm.add(cacheModel) }
+        }
+      }
+      return realmResult.compactMap(transformToViewModel)
     }
   }
 }

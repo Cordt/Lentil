@@ -4,7 +4,7 @@ import Foundation
 
 
 extension Model {
-  struct Notification: ViewModel {
+  struct Notification: Presentable {
     enum Event: Equatable {
       enum Item: Equatable {
         case post(_ id: String)
