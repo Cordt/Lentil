@@ -70,7 +70,6 @@ struct Root: ReducerProtocol {
   }
   
   @Dependency(\.keychainApi) var keychainApi
-  @Dependency(\.cacheOld) var cacheOld
   @Dependency(\.cache) var cache
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
@@ -242,7 +241,6 @@ struct Root: ReducerProtocol {
               try self.keychainApi.delete(AccessToken.access)
               try self.keychainApi.delete(AccessToken.refresh)
               self.defaultsStorageApi.remove(UserProfile.self)
-              self.cacheOld.clearCache()
               
               // No valid tokens or profile available, open app
               return .run { send in
@@ -276,7 +274,6 @@ struct Root: ReducerProtocol {
               try? self.keychainApi.delete(AccessToken.access)
               try? self.keychainApi.delete(AccessToken.refresh)
               self.defaultsStorageApi.remove(UserProfile.self)
-              self.cacheOld.clearCache()
               log("Failed to refresh token, logging user out", level: .debug, error: error)
               try? await self.clock.sleep(for: .seconds(1))
               await send(.hideLoadingScreen)

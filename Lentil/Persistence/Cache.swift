@@ -8,6 +8,11 @@ import RealmSwift
 
 
 class Cache {
+  enum UpdateType {
+    case addReaction(userProfileId: String)
+    case removeReaction(userProfileId: String)
+  }
+  
   static let shared = Cache()
   static let realmConfig = Realm.Configuration(inMemoryIdentifier: LentilEnvironment.shared.memoryRealmIdentifier)
   
@@ -97,6 +102,22 @@ class Cache {
     guard !self.notificationsCursor.exhausted
     else { return }
     try await self.loadNotifications(userId: userId, cursor: self.notificationsCursor)
+  }
+  
+  
+  // MARK: Update
+  
+  func updatePublication(_ publication: Model.Publication, _ updateType: UpdateType) throws {
+    let realm = try Realm(configuration: Self.realmConfig)
+    try realm.write { realm.add(publication.realmPublication(), update: .modified) }
+    Task {
+      switch updateType {
+        case .addReaction(userProfileId: let userProfileId):
+          try await self.lensApi.addReaction(userProfileId, .upvote, publication.id)
+        case .removeReaction(userProfileId: let userProfileId):
+          try await self.lensApi.removeReaction(userProfileId, .upvote, publication.id)
+      }
+    }
   }
   
   

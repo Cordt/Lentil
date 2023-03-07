@@ -11,15 +11,19 @@ struct CacheApi {
   var commentsObserver: (_ parentId: String) -> CollectionObserver<Model.Publication>
   var publicationObserver: (_ publicationId: String) -> ElementObserver<Model.Publication>
   var profileObserver: (_ profileId: String) -> ElementObserver<Model.Profile>
+  
   var profileById: (_ id: String) async throws -> Model.Profile?
   var profileByAddress: (_ id: String) async throws -> Model.Profile?
   var publication: (_ id: String) async throws -> Model.Publication?
   var comments: (_ publication: Model.Publication, _ userId: String?) async throws -> [Model.Publication]
+  
   var refreshFeed: (_ userId: String?) async throws -> Void
   var loadAdditionalPublicationsForFeedAuthenticated: (_ userId: String) async throws -> Void
   var loadAdditionalPublicationsForFeed: () async throws -> Void
   var refreshNotifications: (_ userId: String) async throws -> Void
   var loadAdditionalNotifications: (_ userId: String) async throws -> Void
+  
+  var updatePublication: (_ publication: Model.Publication, _ updateType: Cache.UpdateType) throws -> Void
 }
 
 
@@ -38,7 +42,8 @@ extension CacheApi: DependencyKey {
     loadAdditionalPublicationsForFeedAuthenticated: Cache.shared.loadAdditionalPublicationsForFeed(userId:),
     loadAdditionalPublicationsForFeed: Cache.shared.loadAdditionalPublicationsForFeed,
     refreshNotifications: Cache.shared.refreshNotifications,
-    loadAdditionalNotifications: Cache.shared.loadAdditionalNotifications
+    loadAdditionalNotifications: Cache.shared.loadAdditionalNotifications,
+    updatePublication: Cache.shared.updatePublication
   )
 }
 
@@ -66,7 +71,8 @@ extension CacheApi {
     loadAdditionalPublicationsForFeedAuthenticated: unimplemented("loadAdditionalPublicationsForFeedAuthenticated"),
     loadAdditionalPublicationsForFeed: unimplemented("loadAdditionalPublicationsForFeed"),
     refreshNotifications: unimplemented("refreshNotifications"),
-    loadAdditionalNotifications: unimplemented("loadAdditionalNotifications")
+    loadAdditionalNotifications: unimplemented("loadAdditionalNotifications"),
+    updatePublication: unimplemented("updatePublication")
   )
 }
 #endif

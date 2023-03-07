@@ -73,7 +73,7 @@ struct Publication: ReducerProtocol {
     case remotePublicationImages(MultiImage.Action)
   }
   
-  @Dependency(\.cacheOld) var cache
+  @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi
@@ -101,19 +101,14 @@ struct Publication: ReducerProtocol {
           if state.publication.upvotedByUser {
             state.publication.upvotes -= 1
             state.publication.upvotedByUser = false
-            self.cache.updateOrAppendPublication(state.publication)
-            return .fireAndForget { [publicationId = state.publication.id] in
-              try await self.lensApi.removeReaction(userProfile.id, .upvote, publicationId)
-            }
+            try? self.cache.updatePublication(state.publication, .addReaction(userProfileId: userProfile.id))
           }
           else {
             state.publication.upvotes += 1
             state.publication.upvotedByUser = true
-            self.cache.updateOrAppendPublication(state.publication)
-            return .fireAndForget { [publicationId = state.publication.id] in
-              try await self.lensApi.addReaction(userProfile.id, .upvote, publicationId)
-            }
+            try? self.cache.updatePublication(state.publication, .removeReaction(userProfileId: userProfile.id))
           }
+          return .none
           
         case .commentTapped:
           guard self.defaultsStorageApi.load(UserProfile.self) != nil
