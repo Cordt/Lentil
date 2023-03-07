@@ -3,7 +3,6 @@
 
 import Foundation
 
-protocol ViewModel: Equatable, Identifiable {}
 
 extension Model {
   struct Media: ViewModel {

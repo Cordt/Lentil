@@ -26,11 +26,14 @@ class Cache {
   }
   
   
-  // MARK: Read
+  // MARK: Observe
   
   func getObserver<Element: ViewModel>(observable: Observer<Element>.ObservableEvents) -> Observer<Element> {
     Observer(observable: observable)
   }
+  
+  
+  // MARK: Read
   
   func profile(for id: String) async throws -> Model.Profile? {
     let realm = try! await Realm(configuration: Self.realmConfig)
@@ -140,115 +143,5 @@ class Cache {
         realm.add($0, update: .modified)
       }
     }
-  }
-}
-
-
-class Observer<Element: ViewModel>: Equatable {
-  
-  enum ObservableEvents {
-    case feed, notifications
-  }
-  
-  static func == (lhs: Observer<Element>, rhs: Observer<Element>) -> Bool {
-    lhs === rhs
-  }
-  
-  let events: CacheEvents<Element>
-  let observableEvents: ObservableEvents
-  private var notificationToken: NotificationToken? = nil
-  
-  init(observable: ObservableEvents) {
-    self.events = CacheEvents<Element>()
-    self.observableEvents = observable
-    
-    Task { @MainActor in
-      let realm = try! Realm(
-        configuration: Realm.Configuration(
-          inMemoryIdentifier: LentilEnvironment.shared.memoryRealmIdentifier
-        )
-      )
-      
-      switch self.observableEvents {
-        case .feed:
-          let results = realm
-            .objects(RealmPublication.self)
-            .where { $0.showsInFeed == true }
-          
-          self.notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
-            switch changes {
-              case .initial(let publications):
-                self?.events.append(
-                  event: .initial(
-                    publications.elements.compactMap { $0.publication() as? Element }
-                  )
-                )
-              case .update(let publications, deletions: let deletions, insertions: let insertions, modifications: let modifications):
-                self?.events.append(
-                  event: .update(
-                    publications.elements.compactMap { $0.publication() as? Element },
-                    deletions: deletions,
-                    insertions: insertions,
-                    modifications: modifications
-                  )
-                )
-              case .error(let error):
-                log("Failed to retrieve notification for updated feed", level: .error, error: error)
-            }
-          }
-        case .notifications:
-          let results = realm
-            .objects(RealmNotification.self)
-          
-          self.notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
-            switch changes {
-              case .initial(let publications):
-                self?.events.append(
-                  event: .initial(
-                    publications.elements.compactMap { $0.notification() as? Element }
-                  )
-                )
-              case .update(let publications, deletions: let deletions, insertions: let insertions, modifications: let modifications):
-                self?.events.append(
-                  event: .update(
-                    publications.elements.compactMap { $0.notification() as? Element },
-                    deletions: deletions,
-                    insertions: insertions,
-                    modifications: modifications
-                  )
-                )
-              case .error(let error):
-                log("Failed to retrieve notification for updated notifications", level: .error, error: error)
-            }
-          }
-      }
-    }
-  }
-}
-
-class CacheEvents<Model: ViewModel>: AsyncSequence, AsyncIteratorProtocol {
-  enum Event<Model> {
-    case initial([Model])
-    case update([Model], deletions: [Int], insertions: [Int], modifications: [Int])
-  }
-  
-  typealias Element = Event<Model>
-  private var eventsToEmit: [Element] = []
-  
-  func append(event: Element) {
-    self.eventsToEmit.append(event)
-  }
-  
-  func next() async throws -> Element? {
-    while true {
-      try await Task.sleep(nanoseconds: NSEC_PER_SEC / 4)
-      if !self.eventsToEmit.isEmpty {
-        return self.eventsToEmit.removeFirst()
-      }
-    }
-  }
-  
-  func makeAsyncIterator() -> CacheEvents {
-    self
   }
 }
