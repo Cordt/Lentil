@@ -6,8 +6,8 @@ import XCTestDynamicOverlay
 
 
 struct CacheApi {
-  var feedObserver: () -> Observer<Model.Publication>
-  var notificationsObserver: () -> Observer<Model.Notification>
+  var feedObserver: () -> CollectionObserver<Model.Publication>
+  var notificationsObserver: () -> CollectionObserver<Model.Notification>
   var profile: (_ id: String) async throws -> Model.Profile?
   var publication: (_ id: String) async throws -> Model.Publication?
   var refreshFeed: (_ userId: String?) async throws -> Void
@@ -20,8 +20,8 @@ struct CacheApi {
 
 extension CacheApi: DependencyKey {
   static let liveValue = CacheApi(
-    feedObserver: { Cache.shared.getObserver(observable: .feed) },
-    notificationsObserver: { Cache.shared.getObserver(observable: .notifications) },
+    feedObserver: { CollectionObserver(observable: .feed) },
+    notificationsObserver: { CollectionObserver(observable: .notifications) },
     profile: Cache.shared.profile,
     publication: Cache.shared.publication,
     refreshFeed: Cache.shared.refreshFeed,

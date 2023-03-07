@@ -26,13 +26,6 @@ class Cache {
   }
   
   
-  // MARK: Observe
-  
-  func getObserver<Element: ViewModel>(observable: Observer<Element>.ObservableEvents) -> Observer<Element> {
-    Observer(observable: observable)
-  }
-  
-  
   // MARK: Read
   
   func profile(for id: String) async throws -> Model.Profile? {
@@ -67,6 +60,15 @@ class Cache {
     }
     
     return result
+  }
+  
+  func comments(of publication: Model.Publication, for userId: String? = nil) async throws {
+    let realm = try! await Realm(configuration: Self.realmConfig)
+    var result = realm
+      .objects(RealmPublication.self)
+      .where { $0.parentPublication.id == publication.id }
+    
+    
   }
   
   

@@ -60,8 +60,8 @@ extension Model.Publication {
     return RealmPublication(
       id: self.id,
       typename: typename,
-      relatedPublication: relatedPublication,
-      relatedProfile: relatedProfile,
+      parentPublication: relatedPublication,
+      mirroringProfile: relatedProfile,
       createdAt: self.createdAt,
       content: self.content,
       userProfile: self.profile.realmProfile(),

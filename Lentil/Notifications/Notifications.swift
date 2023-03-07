@@ -20,7 +20,7 @@ struct Notifications: ReducerProtocol {
     
     var notificationRows: IdentifiedArrayOf<NotificationRow.State> = []
     
-    var notificationsObserver: Observer<Model.Notification>? = nil
+    var notificationsObserver: CollectionObserver<Model.Notification>? = nil
   }
   
   enum Action: Equatable {

@@ -14,8 +14,8 @@ class RealmPublication: Object {
   @Persisted(primaryKey: true) var id: String
   
   @Persisted var typename: Typename
-  @Persisted var relatedPublication: RealmPublication?
-  @Persisted var relatedProfile: RealmProfile?
+  @Persisted var parentPublication: RealmPublication?
+  @Persisted var mirroringProfile: RealmProfile?
   
   @Persisted var createdAt: Date
   @Persisted var content: String
@@ -36,13 +36,13 @@ class RealmPublication: Object {
   
   @Persisted var showsInFeed: Bool
   
-  convenience init(id: String, typename: Typename, relatedPublication: RealmPublication? = nil, relatedProfile: RealmProfile? = nil, createdAt: Date, content: String, userProfile: RealmProfile, upvotes: Int, collects: Int, comments: Int, mirrors: Int, upvotedByUser: Bool, collectdByUser: Bool, commentdByUser: Bool, mirrordByUser: Bool, media: [RealmMedia], showsInFeed: Bool) {
+  convenience init(id: String, typename: Typename, parentPublication: RealmPublication? = nil, mirroringProfile: RealmProfile? = nil, createdAt: Date, content: String, userProfile: RealmProfile, upvotes: Int, collects: Int, comments: Int, mirrors: Int, upvotedByUser: Bool, collectdByUser: Bool, commentdByUser: Bool, mirrordByUser: Bool, media: [RealmMedia], showsInFeed: Bool) {
     self.init()
     
     self.id = id
     self.typename = typename
-    self.relatedPublication = relatedPublication
-    self.relatedProfile = relatedProfile
+    self.parentPublication = parentPublication
+    self.mirroringProfile = mirroringProfile
     self.createdAt = createdAt
     self.content = content
     self.userProfile = userProfile
@@ -68,20 +68,20 @@ extension RealmPublication {
         typename = .post
         
       case .comment:
-        guard let relatedPublication
+        guard let parentPublication
         else {
           log("Publication with id \(self.id) is of type comment, but does not have a related publication", level: .error)
           return nil
         }
-        typename = .comment(of: relatedPublication.publication())
+        typename = .comment(of: parentPublication.publication())
         
       case .mirror:
-        guard let relatedProfile
+        guard let mirroringProfile
         else {
           log("Publication with id \(self.id) is of type mirror, but does not have a related profile", level: .error)
           return nil
         }
-        typename = .mirror(by: relatedProfile.profile())
+        typename = .mirror(by: mirroringProfile.profile())
     }
     
     guard let profile = self.userProfile?.profile()

@@ -21,7 +21,7 @@ struct Timeline: ReducerProtocol {
     var connectWallet: WalletConnection.State? = nil
     var showProfile: Profile.State? = nil
     
-    var feedObserver: Observer<Model.Publication>? = nil
+    var feedObserver: CollectionObserver<Model.Publication>? = nil
   }
   
   enum Action: Equatable {

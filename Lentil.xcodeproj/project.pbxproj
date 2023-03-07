@@ -120,10 +120,11 @@
 		37D63A4829B1E6320011F8B0 /* RealmProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4729B1E6320011F8B0 /* RealmProfile.swift */; };
 		37D63A4A29B1F1DE0011F8B0 /* CacheDependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4929B1F1DE0011F8B0 /* CacheDependency.swift */; };
 		37D63A4D29B2092C0011F8B0 /* Asynchrone in Frameworks */ = {isa = PBXBuildFile; productRef = 37D63A4C29B2092C0011F8B0 /* Asynchrone */; };
-		37D63A4F29B3D6A30011F8B0 /* RealmMediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4E29B3D6A30011F8B0 /* RealmMediaModel.swift */; };
+		37D63A4F29B3D6A30011F8B0 /* RealmMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4E29B3D6A30011F8B0 /* RealmMedia.swift */; };
 		37D63A5129B4DACC0011F8B0 /* RealmNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A5029B4DACC0011F8B0 /* RealmNotification.swift */; };
 		37D63A5329B727490011F8B0 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A5229B727490011F8B0 /* Model.swift */; };
-		37D63A5529B727DE0011F8B0 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A5429B727DE0011F8B0 /* Observer.swift */; };
+		37D63A5529B727DE0011F8B0 /* CollectionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A5429B727DE0011F8B0 /* CollectionObserver.swift */; };
+		37D63A5729B734530011F8B0 /* ElementObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A5629B734530011F8B0 /* ElementObserver.swift */; };
 		37D6808F292386B100F31669 /* UINavigationController+BackGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */; };
 		37D680912924AB3200F31669 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D680902924AB3200F31669 /* Profile.swift */; };
 		37DB471D2924D7DA00DE9EB3 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DB471C2924D7DA00DE9EB3 /* UserProfile.swift */; };
@@ -248,10 +249,11 @@
 		37D63A4529B1E5F30011F8B0 /* RealmPublication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmPublication.swift; sourceTree = "<group>"; };
 		37D63A4729B1E6320011F8B0 /* RealmProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmProfile.swift; sourceTree = "<group>"; };
 		37D63A4929B1F1DE0011F8B0 /* CacheDependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheDependency.swift; sourceTree = "<group>"; };
-		37D63A4E29B3D6A30011F8B0 /* RealmMediaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmMediaModel.swift; sourceTree = "<group>"; };
+		37D63A4E29B3D6A30011F8B0 /* RealmMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmMedia.swift; sourceTree = "<group>"; };
 		37D63A5029B4DACC0011F8B0 /* RealmNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmNotification.swift; sourceTree = "<group>"; };
 		37D63A5229B727490011F8B0 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		37D63A5429B727DE0011F8B0 /* Observer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
+		37D63A5429B727DE0011F8B0 /* CollectionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionObserver.swift; sourceTree = "<group>"; };
+		37D63A5629B734530011F8B0 /* ElementObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementObserver.swift; sourceTree = "<group>"; };
 		37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+BackGesture.swift"; sourceTree = "<group>"; };
 		37D680902924AB3200F31669 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		37DB471C2924D7DA00DE9EB3 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
@@ -661,8 +663,9 @@
 			isa = PBXGroup;
 			children = (
 				373AAD3829ABBAB8008A2E4F /* Cache.swift */,
+				37D63A5429B727DE0011F8B0 /* CollectionObserver.swift */,
+				37D63A5629B734530011F8B0 /* ElementObserver.swift */,
 				37D63A4929B1F1DE0011F8B0 /* CacheDependency.swift */,
-				37D63A5429B727DE0011F8B0 /* Observer.swift */,
 				376C5ED428D4245500BA908A /* Models */,
 				37D63A4429B1E5E60011F8B0 /* RealmModels */,
 			);
@@ -672,7 +675,7 @@
 		37D63A4429B1E5E60011F8B0 /* RealmModels */ = {
 			isa = PBXGroup;
 			children = (
-				37D63A4E29B3D6A30011F8B0 /* RealmMediaModel.swift */,
+				37D63A4E29B3D6A30011F8B0 /* RealmMedia.swift */,
 				37D63A4729B1E6320011F8B0 /* RealmProfile.swift */,
 				37D63A4529B1E5F30011F8B0 /* RealmPublication.swift */,
 				37D63A5029B4DACC0011F8B0 /* RealmNotification.swift */,
@@ -899,13 +902,14 @@
 				37CDEB0E28D03146009B2B7E /* PublicationModel.swift in Sources */,
 				37DB471D2924D7DA00DE9EB3 /* UserProfile.swift in Sources */,
 				370ED770297D8FAE006D15C5 /* NotificationModel.swift in Sources */,
-				37D63A5529B727DE0011F8B0 /* Observer.swift in Sources */,
+				37D63A5529B727DE0011F8B0 /* CollectionObserver.swift in Sources */,
 				376C5ED828D4266100BA908A /* PostView.swift in Sources */,
 				37BBB12A28F271F100A6D202 /* LensApiClient+Run.swift in Sources */,
-				37D63A4F29B3D6A30011F8B0 /* RealmMediaModel.swift in Sources */,
+				37D63A4F29B3D6A30011F8B0 /* RealmMedia.swift in Sources */,
 				37D63A4629B1E5F30011F8B0 /* RealmPublication.swift in Sources */,
 				37D63A4A29B1F1DE0011F8B0 /* CacheDependency.swift in Sources */,
 				37BBB12F28F2A9E300A6D202 /* LensApiClient+Interceptors.swift in Sources */,
+				37D63A5729B734530011F8B0 /* ElementObserver.swift in Sources */,
 				37C54C5C292B1ECC006E8DBA /* CreatePublicationView.swift in Sources */,
 				3758528D293281FD0017A415 /* NavigationApi.swift in Sources */,
 				3774879A2967105E00B19322 /* SelectGifView.swift in Sources */,
