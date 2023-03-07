@@ -67,7 +67,10 @@ struct Post: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          return .none
+          return .merge(
+            .send(.observeCommentsUpdates),
+            .send(.fetchComments)
+          )
           
         case .dismissView:
           self.navigationApi.remove(

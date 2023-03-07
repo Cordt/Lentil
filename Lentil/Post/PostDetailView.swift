@@ -69,10 +69,7 @@ struct PostDetailView: View {
       .toolbarBackground(.hidden, for: .navigationBar)
       .navigationBarBackButtonHidden(true)
       .tint(Theme.Color.white)
-      .task {
-        await viewStore.send(.fetchComments)
-          .finish()
-      }
+      .onAppear { viewStore.send(.didAppear) }
     }
   }
 }

@@ -134,6 +134,7 @@ class Cache {
     }
   }
   
+  @MainActor
   private func fetchElement<CacheModel: Object, ViewModel: Presentable>(
     primaryKey: String,
     transformToViewModel: (CacheModel) -> ViewModel?,
@@ -170,6 +171,7 @@ class Cache {
     }
   }
   
+  @MainActor
   private func fetchElements<CacheModel: Object, ViewModel: Presentable>(
     where: (Query<CacheModel>) -> Query<Bool>,
     transformToViewModel: (CacheModel) -> ViewModel?,
@@ -187,7 +189,7 @@ class Cache {
       let viewModels = try await fetch()
       let cacheModels = viewModels.compactMap(transformToCacheModel)
       try cacheModels.forEach { cacheModel in
-        try realm.write { realm.add(cacheModel) }
+        try realm.write { realm.add(cacheModel, update: .modified) }
       }
       return viewModels
     }
@@ -197,7 +199,7 @@ class Cache {
         let viewModels = try await fetch()
         let cacheModels = viewModels.compactMap(transformToCacheModel)
         try cacheModels.forEach { cacheModel in
-          try realm.write { realm.add(cacheModel) }
+          try realm.write { realm.add(cacheModel, update: .modified) }
         }
       }
       return realmResult.compactMap(transformToViewModel)
