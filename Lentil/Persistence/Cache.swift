@@ -37,11 +37,20 @@ class Cache {
     )
   }
   
+  func profile(by address: String) async throws -> Model.Profile? {
+    try await self.fetchElement(
+      where: { $0.ownedBy == address },
+      transformToViewModel: { $0.profile() },
+      transformToCacheModel: { $0.realmProfile() },
+      fetch: { nil }
+    )
+  }
+  
   func publication(for id: String) async throws -> Model.Publication? {
     try await self.fetchElement(
       primaryKey: id,
       transformToViewModel: { $0.publication() },
-      transformToCacheModel: { $0.realmPublication(showsInFeed: false) },
+      transformToCacheModel: { $0.realmPublication() },
       fetch: { try await self.lensApi.publicationById(id) }
     )
   }
@@ -50,10 +59,10 @@ class Cache {
   // MARK: Read and load collections of Elements
   
   func comments(of publication: Model.Publication, for userId: String? = nil) async throws -> [Model.Publication] {
-    return try await self.fetchElements(
+    try await self.fetchElements(
       where: { $0.parentPublication.id == publication.id },
       transformToViewModel: { $0.publication() },
-      transformToCacheModel: { $0.realmPublication(showsInFeed: false) },
+      transformToCacheModel: { $0.realmPublication() },
       fetch: { try await self.lensApi.commentsOfPublication(publication, userId).data }
     )
   }
@@ -111,7 +120,7 @@ class Cache {
     }
     
     // Update feed
-    let realmPublications = publications.compactMap { $0.realmPublication(showsInFeed: true) }
+    let realmPublications = publications.compactMap { $0.realmPublication() }
     let realm = try! await Realm(configuration: Self.realmConfig)
     try realm.write {
       realmPublications.forEach {
@@ -143,8 +152,41 @@ class Cache {
   ) async throws -> ViewModel? {
     
     let realm = try await Realm(configuration: Self.realmConfig)
-    let realmResult = realm.object(ofType: CacheModel.self, forPrimaryKey: primaryKey)
-    if realmResult == nil {
+    if let realmResult = realm.object(ofType: CacheModel.self, forPrimaryKey: primaryKey) {
+      // Element available in cache, proceed and fetch async
+      Task {
+        let realm = try await Realm(configuration: Self.realmConfig)
+        if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(apiResult) {
+          try realm.write { realm.add(cacheModel, update: .modified) }
+        }
+      }
+      return transformToViewModel(realmResult)
+    }
+    else {
+      // Element not available in cache, wait until fetched from API
+      if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(apiResult) {
+        try realm.write { realm.add(cacheModel) }
+        return apiResult
+      }
+      else {
+        return nil
+      }
+    }
+  }
+  
+  @MainActor
+  private func fetchElement<CacheModel: Object, ViewModel: Presentable>(
+    where: (Query<CacheModel>) -> Query<Bool>,
+    transformToViewModel: (CacheModel) -> ViewModel?,
+    transformToCacheModel: @escaping (ViewModel) -> CacheModel?,
+    fetch: @escaping () async throws -> ViewModel?
+  ) async throws -> ViewModel? {
+    
+    let realm = try await Realm(configuration: Self.realmConfig)
+    let realmResult = realm.objects(CacheModel.self)
+      .where(`where`)
+    
+    if realmResult.elements.count == 0 {
       // Element not available in cache, wait until fetched from API
       if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(apiResult) {
         try realm.write { realm.add(cacheModel) }
@@ -159,11 +201,11 @@ class Cache {
       Task {
         let realm = try await Realm(configuration: Self.realmConfig)
         if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(apiResult) {
-          try realm.write { realm.add(cacheModel) }
+          try realm.write { realm.add(cacheModel, update: .modified) }
         }
       }
-      if let realmResult {
-        return transformToViewModel(realmResult)
+      if let cacheModel = realmResult.elements.first {
+        return transformToViewModel(cacheModel)
       }
       else {
         return nil

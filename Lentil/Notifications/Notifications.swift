@@ -68,9 +68,7 @@ struct Notifications: ReducerProtocol {
             guard let events else { return }
             for try await event in events {
               switch event {
-                case .initial(let notifications):
-                  await send(.notificationsResponse(notifications))
-                case .update(let notifications, deletions: _, insertions: _, modifications: _):
+                case .initial(let notifications), .update(let notifications):
                   await send(.notificationsResponse(notifications))
               }
             }

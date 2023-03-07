@@ -31,12 +31,13 @@ extension Model {
     var mirrordByUser: Bool
     
     var media: [Model.Media] = []
+    var showsInFeed: Bool = false
   }
 }
 
 
 extension Model.Publication {
-  func realmPublication(showsInFeed: Bool) -> RealmPublication {
+  func realmPublication() -> RealmPublication {
     let typename: RealmPublication.Typename
     let relatedPublication: RealmPublication?
     let relatedProfile: RealmProfile?
@@ -48,7 +49,7 @@ extension Model.Publication {
         
       case .comment(of: let of):
         typename = .comment
-        relatedPublication = of?.realmPublication(showsInFeed: showsInFeed)
+        relatedPublication = of?.realmPublication()
         relatedProfile = nil
         
       case .mirror(by: let by):
@@ -74,7 +75,7 @@ extension Model.Publication {
       commentdByUser: self.commentdByUser,
       mirrordByUser: self.mirrordByUser,
       media: self.media.map { $0.realmMedia() },
-      showsInFeed: showsInFeed
+      showsInFeed: self.showsInFeed
     )
   }
 }

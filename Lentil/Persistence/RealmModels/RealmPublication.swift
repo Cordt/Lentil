@@ -104,7 +104,8 @@ extension RealmPublication {
       collectdByUser: self.collectdByUser,
       commentdByUser: self.commentdByUser,
       mirrordByUser: self.mirrordByUser,
-      media: self.media.compactMap { $0.media() }
+      media: self.media.compactMap { $0.media() },
+      showsInFeed: self.showsInFeed
     )
   }
 }

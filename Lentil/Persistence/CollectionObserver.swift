@@ -66,14 +66,12 @@ class CollectionObserver<Element: Presentable>: Equatable {
               collection.elements.compactMap(transform)
             )
           )
-        case .update(let collection, deletions: let deletions, insertions: let insertions, modifications: let modifications):
+        case .update(let collection, deletions: _, insertions: let insertions, modifications: let modifications):
+          var elementsToUpdate: [Observable] = []
+          insertions.forEach { elementsToUpdate.append(collection.elements[$0]) }
+          modifications.forEach { elementsToUpdate.append(collection.elements[$0]) }
           self?.events.append(
-            event: .update(
-              collection.elements.compactMap(transform),
-              deletions: deletions,
-              insertions: insertions,
-              modifications: modifications
-            )
+            event: .update(elementsToUpdate.compactMap(transform))
           )
         case .error(let error):
           log("Failed to build observer for collection of type \(Element.self)", level: .error, error: error)
@@ -86,7 +84,7 @@ class CollectionObserver<Element: Presentable>: Equatable {
 class ObservableCollectionEventIterator<Model: Presentable>: AsyncSequence, AsyncIteratorProtocol {
   enum Event<Model> {
     case initial([Model])
-    case update([Model], deletions: [Int], insertions: [Int], modifications: [Int])
+    case update([Model])
   }
   
   typealias Element = Event<Model>

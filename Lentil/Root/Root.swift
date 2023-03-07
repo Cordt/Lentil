@@ -63,10 +63,15 @@ struct Root: ReducerProtocol {
     case showNotifications(Notifications.Action)
     case createPublication(CreatePublication.Action)
     case conversation(Conversation.Action)
+    
+    case handlePublicationPath(publication: Model.Publication, navigationId: String)
+    case handleProfilePath(profile: Model.Profile, navigationId: String)
+    case handleConversationPath(profile: Model.Profile, navigationId: String, userAddress: String, conversation: XMTPConversation)
   }
   
   @Dependency(\.keychainApi) var keychainApi
-  @Dependency(\.cacheOld) var cache
+  @Dependency(\.cacheOld) var cacheOld
+  @Dependency(\.cache) var cache
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
@@ -102,53 +107,52 @@ struct Root: ReducerProtocol {
     }
   }
   
-  func handleAddPath(state: inout State, _ destinationPath: DestinationPath) -> EffectTask<Action> {
+  func handlePaths(state: inout State, _ destinationPath: DestinationPath) -> EffectTask<Action> {
     switch destinationPath.destination {
       case .publication(let elementId):
-        guard let publication = self.cache.publication(elementId)
-        else { return .none }
-        
-        switch publication.typename {
-          case .post:
-            state.posts.updateOrAppend(
-              Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .post)
-            )
-          case .comment:
-            state.comments.updateOrAppend(
-              Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .comment)
-            )
-          case .mirror:
-            state.posts.updateOrAppend(
-              Post.State(navigationId: destinationPath.navigationId, post: .init(publication: publication), typename: .mirror)
-            )
-            return .none
+        return .run { send in
+          guard let publication = try await self.cache.publication(elementId)
+          else { return }
+          
+          await send(.handlePublicationPath(publication: publication, navigationId: destinationPath.navigationId))
         }
         
       case .profile(let elementId):
-        guard let profile = self.cache.profileById(elementId)
-        else { return .none }
-        state.profiles.updateOrAppend(
-          Profile.State(navigationId: destinationPath.navigationId, profile: profile)
-        )
+        return .run { send in
+          guard let profile = try await self.cache.profileById(elementId)
+          else { return }
+          
+          await send(.handleProfilePath(profile: profile, navigationId: destinationPath.navigationId))
+        }
+        
         
       case .showNotifications:
         state.showNotifications = Notifications.State(navigationId: destinationPath.navigationId)
+        return .none
         
       case .createPublication(let reason):
         state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)
+        return .none
         
       case .conversation(let conversation, let userAddress):
-        state.conversation = Conversation.State(
-          navigationId: destinationPath.navigationId,
-          userAddress: userAddress,
-          conversation: conversation,
-          profile: self.cache.profileByAddress(conversation.peerAddress)
-        )
-      
+        return .run { send in
+          guard let profile = try await self.cache.profileByAddress(conversation.peerAddress)
+          else { return }
+          
+          await send(
+            .handleConversationPath(
+              profile: profile,
+              navigationId: destinationPath.navigationId,
+              userAddress: userAddress,
+              conversation: conversation
+            )
+          )
+        }
+        
       case .imageDetail(let url):
         state.imageDetail = url
+        return .none
     }
-    return .none
   }
   
   func handleRemovePath(state: inout State, _ destinationPath: DestinationPath) -> EffectTask<Action> {
@@ -238,7 +242,7 @@ struct Root: ReducerProtocol {
               try self.keychainApi.delete(AccessToken.access)
               try self.keychainApi.delete(AccessToken.refresh)
               self.defaultsStorageApi.remove(UserProfile.self)
-              self.cache.clearCache()
+              self.cacheOld.clearCache()
               
               // No valid tokens or profile available, open app
               return .run { send in
@@ -272,7 +276,7 @@ struct Root: ReducerProtocol {
               try? self.keychainApi.delete(AccessToken.access)
               try? self.keychainApi.delete(AccessToken.refresh)
               self.defaultsStorageApi.remove(UserProfile.self)
-              self.cache.clearCache()
+              self.cacheOld.clearCache()
               log("Failed to refresh token, logging user out", level: .debug, error: error)
               try? await self.clock.sleep(for: .seconds(1))
               await send(.hideLoadingScreen)
@@ -316,7 +320,7 @@ struct Root: ReducerProtocol {
           return .none
           
         case .addPath(let destinationPath):
-          return self.handleAddPath(state: &state, destinationPath)
+          return self.handlePaths(state: &state, destinationPath)
           
         case .removePath(let destinationPath):
           return self.handleRemovePath(state: &state, destinationPath)
@@ -331,6 +335,38 @@ struct Root: ReducerProtocol {
           else {
             return .none
           }
+          
+        case .handlePublicationPath(let publication, let navigationId):
+          switch publication.typename {
+            case .post:
+              state.posts.updateOrAppend(
+                Post.State(navigationId: navigationId, post: .init(publication: publication), typename: .post)
+              )
+            case .comment:
+              state.comments.updateOrAppend(
+                Post.State(navigationId: navigationId, post: .init(publication: publication), typename: .comment)
+              )
+            case .mirror:
+              state.posts.updateOrAppend(
+                Post.State(navigationId: navigationId, post: .init(publication: publication), typename: .mirror)
+              )
+          }
+          return .none
+          
+        case .handleProfilePath(let profile, let navigationId):
+          state.profiles.updateOrAppend(
+            Profile.State(navigationId: navigationId, profile: profile)
+          )
+          return .none
+          
+        case .handleConversationPath(let profile, let navigationId, let userAddress, let conversation):
+          state.conversation = Conversation.State(
+            navigationId: navigationId,
+            userAddress: userAddress,
+            conversation: conversation,
+            profile: profile
+          )
+          return .none
       }
     }
     .forEach(\.posts, action: /Action.post) {

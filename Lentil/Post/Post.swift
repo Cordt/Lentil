@@ -67,10 +67,7 @@ struct Post: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          return .merge(
-            .send(.observeCommentsUpdates),
-            .send(.fetchComments)
-          )
+          return .send(.observeCommentsUpdates)
           
         case .dismissView:
           self.navigationApi.remove(
@@ -97,9 +94,7 @@ struct Post: ReducerProtocol {
             guard let events else { return }
             for try await event in events {
               switch event {
-                case .initial(let publications):
-                  await send(.commentsResponse(.success(publications)))
-                case .update(let publications, deletions: _, insertions: _, modifications: _):
+                case .initial(let publications), .update(let publications):
                   await send(.commentsResponse(.success(publications)))
               }
             }

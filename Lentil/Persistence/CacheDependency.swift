@@ -11,7 +11,8 @@ struct CacheApi {
   var commentsObserver: (_ parentId: String) -> CollectionObserver<Model.Publication>
   var publicationObserver: (_ publicationId: String) -> ElementObserver<Model.Publication>
   var profileObserver: (_ profileId: String) -> ElementObserver<Model.Profile>
-  var profile: (_ id: String) async throws -> Model.Profile?
+  var profileById: (_ id: String) async throws -> Model.Profile?
+  var profileByAddress: (_ id: String) async throws -> Model.Profile?
   var publication: (_ id: String) async throws -> Model.Publication?
   var comments: (_ publication: Model.Publication, _ userId: String?) async throws -> [Model.Publication]
   var refreshFeed: (_ userId: String?) async throws -> Void
@@ -29,7 +30,8 @@ extension CacheApi: DependencyKey {
     commentsObserver: { CollectionObserver(observable: .comments($0)) },
     publicationObserver: { ElementObserver(observable: .publication($0)) },
     profileObserver: { ElementObserver(observable: .profile($0)) },
-    profile: Cache.shared.profile,
+    profileById: Cache.shared.profile(for:),
+    profileByAddress: Cache.shared.profile(by:),
     publication: Cache.shared.publication,
     comments: Cache.shared.comments,
     refreshFeed: Cache.shared.refreshFeed,
@@ -56,7 +58,8 @@ extension CacheApi {
     commentsObserver: unimplemented("commentsObserver"),
     publicationObserver: unimplemented("publicationObserver"),
     profileObserver: unimplemented("profileObserver"),
-    profile: unimplemented("profile"),
+    profileById: unimplemented("profileById"),
+    profileByAddress: unimplemented("profileByAddress"),
     publication: unimplemented("publication"),
     comments: unimplemented("comments"),
     refreshFeed: unimplemented("refreshFeed"),

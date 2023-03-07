@@ -12,7 +12,8 @@ extension Model.Publication {
     upvotedByUser: Bool,
     collectdByUser: Bool,
     commentdByUser: Bool,
-    mirrordByUser: Bool
+    mirrordByUser: Bool,
+    showsInFeed: Bool
   ) -> Self? {
     return Model.Publication(
       id: postFields.id,
@@ -28,7 +29,8 @@ extension Model.Publication {
       collectdByUser: collectdByUser,
       commentdByUser: commentdByUser,
       mirrordByUser: mirrordByUser,
-      media: Model.Media.media(from: postFields.metadata.fragments.metadataOutputFields.media)
+      media: Model.Media.media(from: postFields.metadata.fragments.metadataOutputFields.media),
+      showsInFeed: showsInFeed
     )
   }
   
@@ -41,7 +43,8 @@ extension Model.Publication {
     upvotedByUser: Bool,
     collectdByUser: Bool,
     commentdByUser: Bool,
-    mirrordByUser: Bool
+    mirrordByUser: Bool,
+    showsInFeed: Bool
   ) -> Self? {
     return Model.Publication(
       id: commentFields.id,
@@ -57,7 +60,8 @@ extension Model.Publication {
       collectdByUser: collectdByUser,
       commentdByUser: commentdByUser,
       mirrordByUser: mirrordByUser,
-      media: Model.Media.media(from: commentFields.metadata.fragments.metadataOutputFields.media)
+      media: Model.Media.media(from: commentFields.metadata.fragments.metadataOutputFields.media),
+      showsInFeed: showsInFeed
     )
   }
   
@@ -73,7 +77,8 @@ extension Model.Publication {
     collectdByUser: Bool,
     commentdByUser: Bool,
     mirrordByUser: Bool,
-    media: [MetadataOutputFields.Medium]
+    media: [MetadataOutputFields.Medium],
+    showsInFeed: Bool
   ) -> Self? {
     
     return Model.Publication(
@@ -90,11 +95,12 @@ extension Model.Publication {
       collectdByUser: collectdByUser,
       commentdByUser: commentdByUser,
       mirrordByUser: mirrordByUser,
-      media: Model.Media.media(from: media)
+      media: Model.Media.media(from: media),
+      showsInFeed: showsInFeed
     )
   }
   
-  private static func publication(from post: PostFields, reaction: ReactionTypes?) -> Self? {
+  private static func publication(from post: PostFields, reaction: ReactionTypes?, showsInFeed: Bool = false) -> Self? {
     guard
       let content = post.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: post.createdAt),
@@ -110,11 +116,12 @@ extension Model.Publication {
       upvotedByUser: reaction == .upvote,
       collectdByUser: post.hasCollectedByMe,
       commentdByUser: false,
-      mirrordByUser: false
+      mirrordByUser: false,
+      showsInFeed: showsInFeed
     )
   }
   
-  private static func publication(from comment: CommentFields, reaction: ReactionTypes?, child of: Model.Publication? = nil) -> Self? {
+  private static func publication(from comment: CommentFields, reaction: ReactionTypes?, child of: Model.Publication? = nil, showsInFeed: Bool = false) -> Self? {
     guard
       let content = comment.fragments.commentBaseFields.metadata.fragments.metadataOutputFields.content,
       let createdDate = date(from: comment.fragments.commentBaseFields.createdAt),
@@ -137,11 +144,12 @@ extension Model.Publication {
       upvotedByUser: reaction == .upvote,
       collectdByUser: comment.fragments.commentBaseFields.hasCollectedByMe,
       commentdByUser: false,
-      mirrordByUser: false
+      mirrordByUser: false,
+      showsInFeed: showsInFeed
     )
   }
   
-  private static func publication(from mirror: MirrorFields, reaction: ReactionTypes?) -> Self? {
+  private static func publication(from mirror: MirrorFields, reaction: ReactionTypes?, showsInFeed: Bool = false) -> Self? {
     let mirrorId: String
     let profileFields: ProfileFields
     let publicationStatsFields: PublicationStatsFields
@@ -179,19 +187,20 @@ extension Model.Publication {
       collectdByUser: mirror.fragments.mirrorBaseFields.hasCollectedByMe,
       commentdByUser: false,
       mirrordByUser: false,
-      media: mirror.fragments.mirrorBaseFields.metadata.fragments.metadataOutputFields.media
+      media: mirror.fragments.mirrorBaseFields.metadata.fragments.metadataOutputFields.media,
+      showsInFeed: showsInFeed
     )
   }
   
   static func publication(from item: FeedQuery.Data.Feed.Item, child of: Model.Publication? = nil) -> Self? {
     var pub: Model.Publication
     if let postFields = item.root.asPost?.fragments.postFields {
-      guard let post = publication(from: postFields, reaction: item.root.asPost?.postReaction)
+      guard let post = publication(from: postFields, reaction: item.root.asPost?.postReaction, showsInFeed: true)
       else { return nil }
       pub = post
     }
     else if let commentFields = item.root.asComment?.fragments.commentFields {
-      guard let comment = publication(from: commentFields, reaction: item.root.asComment?.commentReaction, child: of)
+      guard let comment = publication(from: commentFields, reaction: item.root.asComment?.commentReaction, child: of, showsInFeed: true)
       else { return nil }
       pub = comment
     }
@@ -239,13 +248,13 @@ extension Model.Publication {
   
   static func publication(from item: ExplorePublicationsQuery.Data.ExplorePublication.Item, child of: Model.Publication? = nil) -> Self? {
     if let postFields = item.asPost?.fragments.postFields {
-      return publication(from: postFields, reaction: item.asPost?.postReaction)
+      return publication(from: postFields, reaction: item.asPost?.postReaction, showsInFeed: true)
     }
     else if let commentFields = item.asComment?.fragments.commentFields {
-      return publication(from: commentFields, reaction: item.asComment?.commentReaction, child: of)
+      return publication(from: commentFields, reaction: item.asComment?.commentReaction, child: of, showsInFeed: true)
     }
     else if let mirrorFields = item.asMirror?.fragments.mirrorFields {
-      return publication(from: mirrorFields, reaction: item.asMirror?.mirrorReaction)
+      return publication(from: mirrorFields, reaction: item.asMirror?.mirrorReaction, showsInFeed: true)
     }
     else {
       return nil

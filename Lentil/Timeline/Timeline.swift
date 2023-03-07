@@ -244,9 +244,7 @@ struct Timeline: ReducerProtocol {
             guard let events else { return }
             for try await event in events {
               switch event {
-                case .initial(let publications):
-                  await send(.publicationsResponse(publications))
-                case .update(let publications, deletions: _, insertions: _, modifications: _):
+                case .initial(let publications), .update(let publications):
                   await send(.publicationsResponse(publications))
               }
             }
