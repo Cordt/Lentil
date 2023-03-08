@@ -31,7 +31,9 @@ extension Model {
     var mirrordByUser: Bool
     
     var media: [Model.Media] = []
+    
     var showsInFeed: Bool = false
+    var isIndexing: Bool = false
   }
 }
 
@@ -75,7 +77,8 @@ extension Model.Publication {
       commentdByUser: self.commentdByUser,
       mirrordByUser: self.mirrordByUser,
       media: self.media.map { $0.realmMedia() },
-      showsInFeed: self.showsInFeed
+      showsInFeed: self.showsInFeed,
+      isIndexing: self.isIndexing
     )
   }
 }

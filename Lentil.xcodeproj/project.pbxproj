@@ -1341,7 +1341,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.51.0;
+				minimumVersion = 0.52.0;
 			};
 		};
 		37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {

@@ -32,7 +32,7 @@ struct XMTPConversation: Hashable, Equatable, Identifiable {
     .init(
       peerAddress: conversation.peerAddress,
       conversationID: conversation.conversationID,
-      send: { try await conversation.send(text: $0) },
+      send: { _ = try await conversation.send(text: $0) },
       topic: conversation.topic,
       streamMessages: conversation.streamMessages,
       messages: { try await conversation.messages() },

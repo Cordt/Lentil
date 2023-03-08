@@ -35,8 +35,9 @@ class RealmPublication: Object {
   @Persisted var media: List<RealmMedia>
   
   @Persisted var showsInFeed: Bool
+  @Persisted var isIndexing: Bool
   
-  convenience init(id: String, typename: Typename, parentPublication: RealmPublication? = nil, mirroringProfile: RealmProfile? = nil, createdAt: Date, content: String, userProfile: RealmProfile, upvotes: Int, collects: Int, comments: Int, mirrors: Int, upvotedByUser: Bool, collectdByUser: Bool, commentdByUser: Bool, mirrordByUser: Bool, media: [RealmMedia], showsInFeed: Bool) {
+  convenience init(id: String, typename: Typename, parentPublication: RealmPublication? = nil, mirroringProfile: RealmProfile? = nil, createdAt: Date, content: String, userProfile: RealmProfile, upvotes: Int, collects: Int, comments: Int, mirrors: Int, upvotedByUser: Bool, collectdByUser: Bool, commentdByUser: Bool, mirrordByUser: Bool, media: [RealmMedia], showsInFeed: Bool, isIndexing: Bool) {
     self.init()
     
     self.id = id
@@ -56,6 +57,7 @@ class RealmPublication: Object {
     self.mirrordByUser = mirrordByUser
     media.forEach { self.media.append($0) }
     self.showsInFeed = showsInFeed
+    self.isIndexing = isIndexing
   }
 }
 
@@ -105,7 +107,8 @@ extension RealmPublication {
       commentdByUser: self.commentdByUser,
       mirrordByUser: self.mirrordByUser,
       media: self.media.compactMap { $0.media() },
-      showsInFeed: self.showsInFeed
+      showsInFeed: self.showsInFeed,
+      isIndexing: self.isIndexing
     )
   }
 }
