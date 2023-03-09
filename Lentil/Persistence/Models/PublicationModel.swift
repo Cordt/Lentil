@@ -20,15 +20,15 @@ extension Model {
     
     var profile: Model.Profile
     
-    var upvotes: Int
-    var collects: Int
-    var comments: Int
-    var mirrors: Int
+    var upvotes: Int = 0
+    var collects: Int = 0
+    var comments: Int = 0
+    var mirrors: Int = 0
     
-    var upvotedByUser: Bool
-    var collectdByUser: Bool
-    var commentdByUser: Bool
-    var mirrordByUser: Bool
+    var upvotedByUser: Bool = false
+    var collectdByUser: Bool = false
+    var commentdByUser: Bool = false
+    var mirrordByUser: Bool = false
     
     var media: [Model.Media] = []
     
@@ -136,7 +136,8 @@ struct MockData {
       upvotedByUser: false,
       collectdByUser: true,
       commentdByUser: false,
-      mirrordByUser: true
+      mirrordByUser: true,
+      isIndexing: true
     )
   ]
   static let mockComments: [Model.Publication] = [

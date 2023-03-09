@@ -9,15 +9,10 @@ import SwiftUI
 
 struct CreatePublication: ReducerProtocol {
   struct State: Equatable {
-    enum Reason: Equatable, Hashable {
+    enum Reason: Equatable {
       case creatingPost
-      case replyingToPost(_ postId: String, _ of: String)
-      case replyingToComment(_ commentId: String, _ of: String)
-    }
-    
-    struct Gif: Equatable {
-      var previewURL: URL
-      var displayURL: URL
+      case replyingToPost(_ publication: Model.Publication, _ of: String)
+      case replyingToComment(_ publication: Model.Publication, _ of: String)
     }
     
     var navigationId: String
@@ -29,7 +24,7 @@ struct CreatePublication: ReducerProtocol {
     var photoPickerItem: PhotosPickerItem?
     var selectedPhoto: UIImage?
     var selectGif: GifController.State?
-    var selectedGif: Gif?
+    var selectedGif: Cache.PublicationUploadRequest.Gif?
     
     var placeholder: String {
       switch self.reason {
@@ -41,13 +36,14 @@ struct CreatePublication: ReducerProtocol {
   }
   
   enum Action: Equatable {
-    case dismissView(_ txHash: String?)
+    case dismissView
     case publicationTextChanged(String)
     case didTapCancel
     case discardAndDismiss
     case cancelAlertDismissed
     case createPublication
-    case createPublicationResponse(TaskResult<Result<RelayerResult, RelayErrorReasons>>)
+    case createPublicationSuccess
+    case createPublicationFailure
     
     case photoSelectionTapped(PhotosPickerItem?)
     case photoSelected(TaskResult<UIImage>)
@@ -58,8 +54,7 @@ struct CreatePublication: ReducerProtocol {
     case deleteGifTapped
   }
   
-  @Dependency(\.infuraApi) var infuraApi
-  @Dependency(\.lensApi) var lensApi
+  @Dependency(\.cache) var cache
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.uuid) var uuid
@@ -96,7 +91,7 @@ struct CreatePublication: ReducerProtocol {
           
         case .discardAndDismiss:
           state.publicationText = ""
-          return .send(.dismissView(nil))
+          return .send(.dismissView)
           
         case .cancelAlertDismissed:
           state.cancelAlert = nil
@@ -105,84 +100,40 @@ struct CreatePublication: ReducerProtocol {
         case .createPublication:
           guard state.publicationText.trimmingCharacters(in: .whitespacesAndNewlines) != "",
               let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
-          else { return .none}
+          else { return .none }
           
           state.isPosting = true
-          
-          return .task { [reason = state.reason, publicationText = state.publicationText, selectedPhoto = state.selectedPhoto, selectedGif = state.selectedGif] in
-            let name = "lentil-" + uuid.callAsFunction().uuidString
-            let publicationUrl = URL(string: "https://lentilapp.xyz/publication/\(name)")
-            var description: String
-            if case .creatingPost = reason { description = "Post by \(userProfile.handle) via lentil" }
-            else { description = "Comment by \(userProfile.handle) via lentil" }
+          return .run { [reason = state.reason, publicationText = state.publicationText, selectedPhoto = state.selectedPhoto, selectedGif = state.selectedGif] send in
             
-            var media: [Metadata.Medium] = []
-            if let imageData = selectedPhoto?.imageData(for: .feed, and: .storage) {
-              let imageFile = ImageFile(imageData: imageData, mimeType: .jpeg)
-              let infuraImageResult = try await self.infuraApi.uploadImage(imageFile)
-              let contentUri = "ipfs://\(infuraImageResult.Hash)"
-              media.append(Metadata.Medium(item: contentUri, type: .jpeg))
+            let publicationType: Cache.PublicationUploadRequest.PublicationType
+            switch reason {
+              case .creatingPost:
+                publicationType = .post
+              case .replyingToPost(let publication, _), .replyingToComment(let publication, _):
+                publicationType = .comment(parentPublication: publication)
             }
+            var uploadMedia: [Cache.PublicationUploadRequest.UploadMedia] = []
+            if let selectedPhoto { uploadMedia.append(.photo(selectedPhoto)) }
+            if let selectedGif { uploadMedia.append(.gif(selectedGif)) }
             
-            if let gifURL = selectedGif?.displayURL {
-              media.append(Metadata.Medium(item: gifURL.absoluteString, type: .gif))
+            do {
+              try await self.cache.createPublication(publicationType, publicationText, userProfile.id, userProfile.address, uploadMedia)
+              await send(.createPublicationSuccess)
             }
-            
-            let publicationFile = try PublicationFile(
-              metadata: Metadata(
-                version: .two,
-                metadata_id: name,
-                description: description,
-                content: publicationText,
-                locale: .english,
-                tags: [],
-                contentWarning: nil,
-                mainContentFocus: media.count > 0 ? .image : .text_only,
-                external_url: publicationUrl,
-                name: name,
-                attributes: [],
-                image: LentilEnvironment.shared.lentilIconIPFSUrl,
-                imageMimeType: .jpeg,
-                media: media,
-                appId: LentilEnvironment.shared.lentilAppId
-              ),
-              name: name
-            )
-            
-            let infuraPublicationResult = try await self.infuraApi.uploadPublication(publicationFile)
-            
-            return await .createPublicationResponse(
-              TaskResult {
-                let contentUri = "ipfs://\(infuraPublicationResult.Hash)"
-                switch reason {
-                  case .creatingPost:
-                    return try await self.lensApi.createPost(userProfile.id, contentUri)
-                  case .replyingToPost(let postId, _):
-                    return try await self.lensApi.createComment(userProfile.id, postId, contentUri)
-                  case .replyingToComment(let commentId, _):
-                    return try await self.lensApi.createComment(userProfile.id, commentId, contentUri)
-                }
-              }
-            )
-          }
-          
-        case .createPublicationResponse(.success(let result)):
-          switch result {
-            case .success(let relayerResult):
-              state.publicationText = ""
-              state.isPosting = false
-              log("Successfully created publication: Hash: \(relayerResult.txnHash), Id: \(relayerResult.txnId)", level: .info)
-              return .send(.dismissView(relayerResult.txnHash))
-              
-            case .failure(let error):
-              state.isPosting = false
+            catch let error {
               log("Failed to create publication", level: .error, error: error)
-              return .none
+              await send(.createPublicationFailure)
+            }
+            
           }
           
-        case .createPublicationResponse(.failure(let error)):
+        case .createPublicationSuccess:
+          state.publicationText = ""
           state.isPosting = false
-          log("Failed to create publication", level: .error, error: error)
+          return .send(.dismissView)
+          
+        case .createPublicationFailure:
+          state.isPosting = false
           return .none
           
         case .photoSelectionTapped(let item):
@@ -225,7 +176,7 @@ struct CreatePublication: ReducerProtocol {
                let previewURL = URL(string: previewURLString),
                let displayURL = URL(string: displayURLString)
             {
-              state.selectedGif = CreatePublication.State.Gif(previewURL: previewURL, displayURL: displayURL)
+              state.selectedGif = Cache.PublicationUploadRequest.Gif(previewURL: previewURL, displayURL: displayURL)
             }
             state.selectGif = nil
           }

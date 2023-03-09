@@ -16,6 +16,7 @@ class CollectionObserver<Element: Presentable>: Equatable {
   let events: ObservableCollectionEventIterator<Element>
   let observableEvents: ObservableEvents
   private var notificationToken: NotificationToken? = nil
+  private var primaryKeys: [Element.ID] = []
   
 
   init(observable: ObservableEvents) {
@@ -61,18 +62,24 @@ class CollectionObserver<Element: Presentable>: Equatable {
     return observableResults.observe { [weak self] (changes: RealmCollectionChange) in
       switch changes {
         case .initial(let collection):
-          self?.events.append(
-            event: .initial(
-              collection.elements.compactMap(transform)
-            )
-          )
-        case .update(let collection, deletions: _, insertions: let insertions, modifications: let modifications):
-          var elementsToUpdate: [Observable] = []
-          insertions.forEach { elementsToUpdate.append(collection.elements[$0]) }
-          modifications.forEach { elementsToUpdate.append(collection.elements[$0]) }
-          self?.events.append(
-            event: .update(elementsToUpdate.compactMap(transform))
-          )
+          let elements: [Element] = collection.elements.compactMap(transform)
+          self?.primaryKeys.append(contentsOf: elements.map(\.id))
+          self?.events.append(event: .initial(elements))
+          
+        case .update(let collection, deletions: let deletions, insertions: let insertions, modifications: let modifications):
+          let elements: [Element] = collection.elements.compactMap(transform)
+          let elementsToDelete: [Element.ID] = deletions.compactMap { self?.primaryKeys[$0] }
+          
+          self?.primaryKeys.remove(atOffsets: IndexSet(deletions))
+          insertions.forEach { self?.primaryKeys.insert(elements[$0].id, at: $0) }
+          
+          let elementsToUpsert: [Element] = (insertions + modifications)
+            .map { collection.elements[$0] }
+            .compactMap(transform)
+          
+          self?.events.append(event: .delete(elementsToDelete))
+          self?.events.append(event: .update(elementsToUpsert))
+          
         case .error(let error):
           log("Failed to build observer for collection of type \(Element.self)", level: .error, error: error)
       }
@@ -82,9 +89,10 @@ class CollectionObserver<Element: Presentable>: Equatable {
 
 
 class ObservableCollectionEventIterator<Model: Presentable>: AsyncSequence, AsyncIteratorProtocol {
-  enum Event<Model> {
-    case initial([Model])
-    case update([Model])
+  enum Event<Model: Presentable> {
+    case initial(_ elements: [Model])
+    case update(_ elements: [Model])
+    case delete(_ primaryKeys: [Model.ID])
   }
   
   typealias Element = Event<Model>

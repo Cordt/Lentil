@@ -322,17 +322,9 @@ struct Root: ReducerProtocol {
         case .removePath(let destinationPath):
           return self.handleRemovePath(state: &state, destinationPath)
           
-        case .post, .comment, .profile, .showNotifications, .conversation:
+        case .post, .comment, .profile, .showNotifications, .conversation, .createPublication:
           return .none
-          
-        case .createPublication(let createPublicationAction):
-          if case .dismissView(let txHash) = createPublicationAction {
-            return fetchIndexedTransaction(txHash: txHash, state: &state)
-          }
-          else {
-            return .none
-          }
-          
+         
         case .handlePublicationPath(let publication, let navigationId):
           switch publication.typename {
             case .post:

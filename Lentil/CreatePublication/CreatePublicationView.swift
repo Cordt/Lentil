@@ -183,7 +183,7 @@ struct CreatePubicationView_Previews: PreviewProvider {
     NavigationStack {
       CreatePublicationView(
         store: .init(
-          initialState: CreatePublication.State(navigationId: "123", reason: .replyingToPost("abc", "Satoshi")),
+          initialState: CreatePublication.State(navigationId: "123", reason: .replyingToPost(MockData.mockPublications[0], "Satoshi")),
           reducer: CreatePublication()
         )
       )

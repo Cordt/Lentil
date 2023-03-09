@@ -24,13 +24,18 @@ struct Notifications: ReducerProtocol {
   }
   
   enum Action: Equatable {
+    enum NotificationsResponse: Equatable {
+      case upsert(_ notifications: [Model.Notification])
+      case delete(_ notificationIds: [Model.Notification.ID])
+    }
+    
     case didAppear
     case didDismiss
     case didRefresh
     
     case observeNotificationUpdates
     case loadNotifications
-    case notificationsResponse([Model.Notification])
+    case notificationsResponse(NotificationsResponse)
     
     case notificationRowAction(NotificationRow.State.ID, NotificationRow.Action)
   }
@@ -69,7 +74,10 @@ struct Notifications: ReducerProtocol {
             for try await event in events {
               switch event {
                 case .initial(let notifications), .update(let notifications):
-                  await send(.notificationsResponse(notifications))
+                  await send(.notificationsResponse(.upsert(notifications)))
+                  
+                case .delete(let deletionKeys):
+                  await send(.notificationsResponse(.delete(deletionKeys)))
               }
             }
           }
@@ -82,13 +90,20 @@ struct Notifications: ReducerProtocol {
           state.isLoading = true
           return .fireAndForget { try await self.cache.refreshNotifications(userProfile.id) }
           
-        case .notificationsResponse(let notifications):
+        case .notificationsResponse(let notificationsResponse):
           var notificationRows = state.notificationRows
-          notifications.forEach { notificationRows.updateOrAppend(NotificationRow.State(notification: $0)) }
+          switch notificationsResponse {
+            case .upsert(let notifications):
+              notifications.forEach { notificationRows.updateOrAppend(NotificationRow.State(notification: $0)) }
+              
+            case .delete(let notificationIds):
+              notificationIds.forEach { notificationRows.remove(id: $0) }
+              
+          }
           notificationRows.sort { $0.notification.createdAt > $1.notification.createdAt }
           state.notificationRows = notificationRows
           state.isLoading = false
-          
+
           if let latestNotification = notificationRows.first {
             let latestReadNotification = NotificationsLatestRead(
               id: latestNotification.id,

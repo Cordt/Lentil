@@ -25,6 +25,11 @@ struct Timeline: ReducerProtocol {
   }
   
   enum Action: Equatable {
+    enum PublicationsResponse: Equatable {
+      case upsert(_ publications: [Model.Publication])
+      case delete(_ publicationIds: [Model.Publication.ID])
+    }
+    
     case timelineAppeared
     case refreshFeed
     case fetchDefaultProfile
@@ -33,7 +38,7 @@ struct Timeline: ReducerProtocol {
     case publicationResponse(Model.Publication?)
     
     case observeTimelineUpdates
-    case publicationsResponse([Model.Publication])
+    case publicationsResponse(PublicationsResponse)
     
     case loadNotifications
     case notificationsResponse(TaskResult<PaginatedResult<[Model.Notification]>>)
@@ -245,14 +250,36 @@ struct Timeline: ReducerProtocol {
             for try await event in events {
               switch event {
                 case .initial(let publications), .update(let publications):
-                  await send(.publicationsResponse(publications))
+                  await send(.publicationsResponse(.upsert(publications)))
+                  
+                case .delete(let deletionKeys):
+                  await send(.publicationsResponse(.delete(deletionKeys)))
               }
             }
           }
           
-        case .publicationsResponse(let publications):
-          let updatedPosts = self.fetchPublications(from: publications, updating: state.posts)
-          if updatedPosts != state.posts { state.posts = updatedPosts }
+        case .publicationsResponse(let result):
+          switch result {
+            case .upsert(let publications):
+              let updatedPosts = self.fetchPublications(from: publications, updating: state.posts)
+              if updatedPosts != state.posts { state.posts = updatedPosts }
+              
+            case .delete(let publicationIds):
+              publicationIds.forEach { id in
+                if state.posts[id: id] != nil {
+                  state.posts.remove(id: id)
+                }
+                else {
+                  state.posts.forEach {
+                    if $0.comments[id: id] != nil {
+                      state.posts[id: $0.id]?.comments.remove(id: id)
+                      return
+                    }
+                  }
+                }
+              }
+              
+          }
           state.loadingInFlight = false
           return .none
           

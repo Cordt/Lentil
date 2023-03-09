@@ -40,11 +40,16 @@ struct Post: ReducerProtocol {
   }
   
   indirect enum Action: Equatable {
+    enum CommentsResponse: Equatable {
+      case upsert(_ publications: [Model.Publication])
+      case delete(_ publicationIds: [Model.Publication.ID])
+    }
+    
     case didAppear
     case dismissView
     case fetchComments
     case observeCommentsUpdates
-    case commentsResponse(TaskResult<[Model.Publication]>)
+    case commentsResponse(TaskResult<CommentsResponse>)
     
     case post(action: Publication.Action)
     case comment(id: String, action: Post.Action)
@@ -83,7 +88,8 @@ struct Post: ReducerProtocol {
             await .commentsResponse(
               TaskResult {
                 let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
-                return try await self.cache.comments(publication, userProfile?.id)
+                let comments = try await self.cache.comments(publication, userProfile?.id)
+                return .upsert(comments)
               }
             )
           }
@@ -95,7 +101,10 @@ struct Post: ReducerProtocol {
             for try await event in events {
               switch event {
                 case .initial(let publications), .update(let publications):
-                  await send(.commentsResponse(.success(publications)))
+                  await send(.commentsResponse(.success(.upsert(publications))))
+                  
+                case .delete(let deletionKeys):
+                  await send(.commentsResponse(.success(.delete(deletionKeys))))
               }
             }
           }
@@ -104,10 +113,17 @@ struct Post: ReducerProtocol {
         case .commentsResponse(let response):
           switch response {
             case .success(let result):
-              result.forEach {
-                state.comments.updateOrAppend(
-                  Post.State(navigationId: self.uuid.callAsFunction().uuidString, post: Publication.State(publication: $0), typename: .comment)
-                )
+              switch result {
+                case .upsert(let publications):
+                  publications.forEach {
+                    state.comments.updateOrAppend(
+                      Post.State(navigationId: self.uuid.callAsFunction().uuidString, post: Publication.State(publication: $0), typename: .comment)
+                    )
+                  }
+                case .delete(let publicationIds):
+                  publicationIds.forEach {
+                    state.comments.remove(id: $0)
+                  }
               }
               return .none
               

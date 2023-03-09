@@ -223,6 +223,28 @@ query Notifications($request: NotificationRequest!) {
   }
 }
 
+query HasTxHashBeenIndexed($request: HasTxHashBeenIndexedRequest!) {
+  result: hasTxHashBeenIndexed(request: $request) {
+    __typename
+    ... on TransactionIndexedResult {
+      indexed
+      txReceipt {
+        ...TxReceiptFields
+      }
+      metadataStatus {
+        status
+        reason
+      }
+    }
+    ... on TransactionError {
+      reason
+      txReceipt {
+        ...TxReceiptFields
+      }
+    }
+  }
+}
+
 
 # MARK: Mutations
 
@@ -939,5 +961,35 @@ fragment CompactProfile on Profile {
     ... on RevertFollowModuleSettings {
      type
     }
+  }
+}
+
+fragment TxReceiptFields on TransactionReceipt {
+  to
+  from
+  contractAddress
+  transactionIndex
+  root
+  gasUsed
+  logsBloom
+  blockHash
+  transactionHash
+  blockNumber
+  confirmations
+  cumulativeGasUsed
+  effectiveGasPrice
+  byzantium
+  type
+  status
+  logs {
+    blockNumber
+    blockHash
+    transactionIndex
+    removed
+    address
+    data
+    topics
+    transactionHash
+    logIndex
   }
 }

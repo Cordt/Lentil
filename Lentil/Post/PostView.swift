@@ -49,7 +49,9 @@ struct PostView: View {
               .font(style: .body)
               .multilineTextAlignment(.leading)
           }
-          .onTapGesture { viewStore.send(.postTapped) }
+          .onTapGesture {
+            if !viewStore.post.publication.isIndexing { viewStore.send(.postTapped) }
+          }
           
           PostStatsView(
             store: self.store.scope(

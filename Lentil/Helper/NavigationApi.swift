@@ -25,6 +25,10 @@ struct DestinationPath: Identifiable, Equatable, Hashable {
     case imageDetail(_ imageUrl: URL)
     
     case conversation(_ conversation: XMTPConversation, _ userAddress: String)
+    
+    func hash(into hasher: inout Hasher) {
+      hasher.combine(self)
+    }
   }
   var id: String { self.navigationId }
   var navigationId: String

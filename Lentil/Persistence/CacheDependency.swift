@@ -23,6 +23,12 @@ struct CacheApi {
   var refreshNotifications: (_ userId: String) async throws -> Void
   var loadAdditionalNotifications: (_ userId: String) async throws -> Void
   
+  var createPublication: (_ publicationType: Cache.PublicationUploadRequest.PublicationType,
+                          _ publicationText: String,
+                          _ userProfileId: String,
+                          _ userProfileAddress: String,
+                          _ uploadMedia: [Cache.PublicationUploadRequest.UploadMedia]) async throws -> Void
+  
   var updatePublication: (_ publication: Model.Publication, _ updateType: Cache.UpdateType) throws -> Void
 }
 
@@ -43,6 +49,7 @@ extension CacheApi: DependencyKey {
     loadAdditionalPublicationsForFeed: Cache.shared.loadAdditionalPublicationsForFeed,
     refreshNotifications: Cache.shared.refreshNotifications,
     loadAdditionalNotifications: Cache.shared.loadAdditionalNotifications,
+    createPublication: Cache.shared.createPublication,
     updatePublication: Cache.shared.updatePublication
   )
 }
@@ -72,6 +79,7 @@ extension CacheApi {
     loadAdditionalPublicationsForFeed: unimplemented("loadAdditionalPublicationsForFeed"),
     refreshNotifications: unimplemented("refreshNotifications"),
     loadAdditionalNotifications: unimplemented("loadAdditionalNotifications"),
+    createPublication: unimplemented("createPublication"),
     updatePublication: unimplemented("updatePublication")
   )
 }

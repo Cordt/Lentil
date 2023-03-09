@@ -21,7 +21,10 @@ class Cache {
   private var feedCursor: Cursor
   private var notificationsCursor: Cursor
   
+  @Dependency(\.continuousClock) var clock
+  @Dependency(\.infuraApi) var infuraApi
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.uuid) var uuid
   
   private init() {
     self.realmReference = try! Realm(configuration: Self.realmConfig)

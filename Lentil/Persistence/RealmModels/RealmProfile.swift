@@ -5,7 +5,7 @@ import RealmSwift
 
 
 class RealmProfile: Object {
-  @Persisted var id: String = ""
+  @Persisted(primaryKey: true) var id: String = ""
   @Persisted var name: String? = nil
   @Persisted var handle: String = ""
   @Persisted var ownedBy: String = ""

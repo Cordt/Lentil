@@ -21,6 +21,7 @@ struct PostStatsView: View {
     for element: StatsElement,
     with count: Int,
     userInteracted: Bool,
+    isIndexing: Bool,
     interaction: @escaping () -> ()
   ) -> some View {
     func icon() -> Icon {
@@ -40,9 +41,12 @@ struct PostStatsView: View {
           .view(self.statsSize == .default ? .default : .large)
           .foregroundColor(userInteracted ? Theme.Color.tertiary : Theme.Color.text)
       }
+      .disabled(isIndexing)
+      
       Text("\(count)")
         .font(style: self.statsSize == .default ? .annotationSmall : .body, color: Theme.Color.text)
     }
+    .opacity(isIndexing ? 0.35 : 1.0)
   }
   
   var body: some View {
@@ -52,6 +56,7 @@ struct PostStatsView: View {
           for: .like,
           with: viewStore.state.upvotes,
           userInteracted: viewStore.state.upvotedByUser,
+          isIndexing: viewStore.isIndexing,
           interaction: { viewStore.send(.toggleReaction) }
         )
         
@@ -59,6 +64,7 @@ struct PostStatsView: View {
           for: .comment,
           with: viewStore.state.comments,
           userInteracted: viewStore.state.commentdByUser,
+          isIndexing: viewStore.isIndexing,
           interaction: { viewStore.send(.commentTapped) }
         )
         
@@ -66,6 +72,7 @@ struct PostStatsView: View {
           for: .mirror,
           with: viewStore.state.mirrors,
           userInteracted: viewStore.state.mirrordByUser,
+          isIndexing: viewStore.isIndexing,
           interaction: { viewStore.send(.mirrorTapped) }
         )
         
@@ -73,10 +80,13 @@ struct PostStatsView: View {
           for: .collect,
           with: viewStore.state.collects,
           userInteracted: viewStore.state.collectdByUser,
+          isIndexing: viewStore.isIndexing,
           interaction: { /* TODO: Collect publication */ }
         )
         
         Spacer()
+        
+        if viewStore.isIndexing { PulsingDot() }
         
         /* Icon.share.view() */
       }
