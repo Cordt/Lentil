@@ -36,7 +36,7 @@ class Cache {
   
   // MARK: Read and load single Elements
   
-  func profile(for id: String) async throws -> Model.Profile? {
+  func profile(by id: String) async throws -> Model.Profile? {
     try await self.fetchElement(
       primaryKey: id,
       transformToViewModel: { $0.profile() },
@@ -45,7 +45,7 @@ class Cache {
     )
   }
   
-  func profile(by address: String) async throws -> Model.Profile? {
+  func profileBy(address: String) async throws -> Model.Profile? {
     try await self.fetchElement(
       where: { $0.ownedBy == address },
       transformToViewModel: { $0.profile() },

@@ -126,7 +126,7 @@ struct LensApi {
   ) async throws -> Model.Profile
   
   var profile: @Sendable (
-    _ forHandle: String
+    _ forId: String
   ) async throws -> Model.Profile?
   
   var profiles: @Sendable (

@@ -160,9 +160,9 @@ extension LensApi: DependencyKey {
       )
     },
     
-    profile: { forHandle in
+    profile: { forId in
       try await run(
-        query: ProfileQuery(request: SingleProfileQueryRequest(handle: forHandle)),
+        query: ProfileQuery(request: SingleProfileQueryRequest(profileId: forId)),
         mapResult: { data in
           guard let profileFields = data.profile?.fragments.profileFields else { return nil }
           return Model.Profile.from(profileFields)

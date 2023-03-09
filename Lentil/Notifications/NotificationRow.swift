@@ -94,7 +94,7 @@ struct NotificationRow: ReducerProtocol {
           
         case .loadProfile(let elementId):
           return .task {
-            await .profileResponse(TaskResult { try await self.cache.profileById(elementId) })
+            await .profileResponse(TaskResult { try await self.cache.profile(elementId) })
           }
           
         case .profileResponse(.success(let profile)):

@@ -111,15 +111,21 @@ struct Root: ReducerProtocol {
       case .publication(let elementId):
         return .run { send in
           guard let publication = try await self.cache.publication(elementId)
-          else { return }
+          else {
+            self.navigationApi.remove(destinationPath)
+            return
+          }
           
           await send(.handlePublicationPath(publication: publication, navigationId: destinationPath.navigationId))
         }
         
       case .profile(let elementId):
         return .run { send in
-          guard let profile = try await self.cache.profileById(elementId)
-          else { return }
+          guard let profile = try await self.cache.profile(elementId)
+          else {
+            self.navigationApi.remove(destinationPath)
+            return
+          }
           
           await send(.handleProfilePath(profile: profile, navigationId: destinationPath.navigationId))
         }
@@ -136,7 +142,10 @@ struct Root: ReducerProtocol {
       case .conversation(let conversation, let userAddress):
         return .run { send in
           guard let profile = try await self.cache.profileByAddress(conversation.peerAddress)
-          else { return }
+          else {
+            self.navigationApi.remove(destinationPath)
+            return
+          }
           
           await send(
             .handleConversationPath(
