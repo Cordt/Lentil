@@ -66,7 +66,7 @@ struct Root: ReducerProtocol {
     
     case handlePublicationPath(publication: Model.Publication, navigationId: String)
     case handleProfilePath(profile: Model.Profile, navigationId: String)
-    case handleConversationPath(profile: Model.Profile, navigationId: String, userAddress: String, conversation: XMTPConversation)
+    case handleConversationPath(profile: Model.Profile?, navigationId: String, userAddress: String, conversation: XMTPConversation)
   }
   
   @Dependency(\.keychainApi) var keychainApi
@@ -141,11 +141,7 @@ struct Root: ReducerProtocol {
         
       case .conversation(let conversation, let userAddress):
         return .run { send in
-          guard let profile = try await self.cache.profileByAddress(conversation.peerAddress)
-          else {
-            self.navigationApi.remove(destinationPath)
-            return
-          }
+          let profile = try await self.cache.profileByAddress(conversation.peerAddress)
           
           await send(
             .handleConversationPath(

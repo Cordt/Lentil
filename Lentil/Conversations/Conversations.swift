@@ -38,7 +38,6 @@ struct Conversations: ReducerProtocol {
     case conversation(id: ConversationRow.State.ID, ConversationRow.Action)
   }
   
-  @Dependency(\.cacheOld) var cacheOld
   @Dependency(\.cache) var cache
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.walletConnect) var walletConnect
@@ -112,16 +111,18 @@ struct Conversations: ReducerProtocol {
               guard let address = try? self.xmtpConnector.address()
               else { return .none }
               
-              let conversations = try? self.xmtpConnector.loadStoredConversations().map {
-                ConversationRow.State(
-                  conversation: $0,
-                  userAddress: address
-                )
+              if state.conversations.count == 0 {
+                let conversations = try? self.xmtpConnector.loadStoredConversations().map {
+                  ConversationRow.State(
+                    conversation: $0,
+                    userAddress: address
+                  )
+                }
+                if let conversations, conversations.count > 0 {
+                  state.conversations = IdentifiedArrayOf(uniqueElements: conversations)
+                }
               }
               
-              if let conversations, conversations.count > 0 {
-                state.conversations = IdentifiedArrayOf(uniqueElements: conversations)
-              }
               return .send(.loadConversationsFromRemote)
           }
           
