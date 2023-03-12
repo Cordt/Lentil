@@ -23,49 +23,49 @@ class KeychainStorage {
     self.keychain = Keychain(service: Self.serviceIdentifier)
   }
   
-  func store(string: String, for storable: KeychainStorable) throws {
-    try self.keychain.set(string, key: storable.key)
+  func store(string: String, for key: String) throws {
+    try self.keychain.set(string, key: key)
   }
   
-  func storeData(data: Data, for storable: KeychainStorable) throws {
-    try self.keychain.set(data, key: storable.key)
+  func storeData(data: Data, for key: String) throws {
+    try self.keychain.set(data, key: key)
   }
   
-  func get(storable: KeychainStorable) throws -> String {
-    guard let item = try self.keychain.getString(storable.key)
+  func get(for key: String) throws -> String {
+    guard let item = try self.keychain.getString(key)
     else { throw KeychainStorageError.couldNotFindItem }
     
     return item
   }
   
-  func getData(storable: KeychainStorable) throws -> Data {
-    guard let item = try self.keychain.getData(storable.key)
+  func get(for key: String) throws -> Data {
+    guard let item = try self.keychain.getData(key)
     else { throw KeychainStorageError.couldNotFindItem }
     
     return item
   }
   
-  func checkFor(storable: KeychainStorable) -> Bool {
-    self.keychain[storable.key] != nil
+  func hasStored(for key: String) -> Bool {
+    self.keychain[key] != nil
   }
   
-  func checkForData(storable: KeychainStorable) -> Bool {
-    self.keychain[data: storable.key] != nil
+  func hasDataStored(for key: String) -> Bool {
+    self.keychain[data: key] != nil
   }
   
-  func delete(storable: KeychainStorable) throws {
-    try self.keychain.remove(storable.key)
+  func delete(for key: String) throws {
+    try self.keychain.remove(key)
   }
 }
 
 struct KeychainApi {
-  var store: (_ string: String, _ storable: KeychainStorable) throws -> Void
-  var storeData: (_ data: Data, _ storable: KeychainStorable) throws -> Void
-  var get: (_ storable: KeychainStorable) throws -> String
-  var getData: (_ storable: KeychainStorable) throws -> Data
-  var checkFor: (_ storable: KeychainStorable) -> Bool
-  var checkForData: (_ storable: KeychainStorable) -> Bool
-  var delete: (_ storable: KeychainStorable) throws -> Void
+  var store: (_ string: String, _ key: String) throws -> Void
+  var storeData: (_ data: Data, _ key: String) throws -> Void
+  var get: (_ key: String) throws -> String
+  var getData: (_ key: String) throws -> Data
+  var hasStored: (_ key: String) -> Bool
+  var hasDataStored: (_ key: String) -> Bool
+  var delete: (_ key: String) throws -> Void
 }
 
 extension DependencyValues {
@@ -80,9 +80,9 @@ extension KeychainApi: DependencyKey {
     store: KeychainStorage.shared.store,
     storeData: KeychainStorage.shared.storeData,
     get: KeychainStorage.shared.get,
-    getData: KeychainStorage.shared.getData,
-    checkFor: KeychainStorage.shared.checkFor,
-    checkForData: KeychainStorage.shared.checkForData,
+    getData: KeychainStorage.shared.get,
+    hasStored: KeychainStorage.shared.hasStored,
+    hasDataStored: KeychainStorage.shared.hasDataStored,
     delete: KeychainStorage.shared.delete
   )
 }
@@ -96,8 +96,8 @@ extension KeychainApi {
     storeData: { _, _ in () },
     get: { _ in "abc-def" },
     getData: { _ in Data() },
-    checkFor: { _ in true },
-    checkForData: { _ in true },
+    hasStored: { _ in true },
+    hasDataStored: { _ in true },
     delete: { _ in () }
   )
   
@@ -106,8 +106,8 @@ extension KeychainApi {
     storeData: unimplemented("storeData"),
     get: unimplemented("get"),
     getData: unimplemented("getData"),
-    checkFor: unimplemented("checkFor"),
-    checkForData: unimplemented("checkForData"),
+    hasStored: unimplemented("hasStored"),
+    hasDataStored: unimplemented("hasDataStored"),
     delete: unimplemented("delete")
   )
 }

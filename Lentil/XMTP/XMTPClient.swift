@@ -37,6 +37,8 @@ class XMTPClient {
   
   var address: () -> String
   var conversations: () -> XMTP.Conversations
+  var conversation: (_ from: Data) throws -> XMTP.Conversation?
+  var decodeConversation: (_ from: XMTP.ConversationContainer) -> XMTPConversation
   var newConversation: (_ peerAddress: String, _ conversationID: ConversationID) async throws -> XMTPConversation
   var contacts: () -> XMTP.Contacts
   var environment: () -> XMTPEnvironment
@@ -47,11 +49,16 @@ class XMTPClient {
     
     // Store Key Bundle in Keychain
     let serializedBundle = try client.privateKeyBundle.serializedData()
-    try KeychainStorage.shared.storeData(data: serializedBundle, for: XMTPSession.current)
+    try KeychainStorage.shared.storeData(data: serializedBundle, for: XMTPSession.current.key)
     
     self.client = client
     self.address = { client.address }
     self.conversations = { client.conversations }
+    self.conversation = { try client.importConversation(from: $0) }
+    self.decodeConversation = {
+      let conversation = $0.decode(with: client)
+      return XMTPConversation.from(conversation)
+    }
     self.newConversation = { peerAddress, conversationID in
       let conversation = try await client.conversations.newConversation(with: peerAddress, context: conversationID.build())
       log("Created conversation with Conversation ID and topic: \(conversationID.build()?.conversationID ?? "none"), \(conversation.topic)", level: .info)
@@ -69,6 +76,11 @@ class XMTPClient {
     self.client = client
     self.address = { client.address }
     self.conversations = { client.conversations }
+    self.conversation = { try client.importConversation(from: $0) }
+    self.decodeConversation = {
+      let conversation = $0.decode(with: client)
+      return XMTPConversation.from(conversation)
+    }
     self.newConversation = { peerAddress, conversationID in
       let conversation = try await client.conversations.newConversation(with: peerAddress, context: conversationID.build())
       log("Created conversation with Conversation ID and topic: \(conversationID.build()?.conversationID ?? "none"), \(conversation.topic)", level: .info)

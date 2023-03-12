@@ -13,9 +13,14 @@ class XMTPConnector {
   }
   
   fileprivate var client: XMTPClient?
+  fileprivate var conversations: XMTPConversations
   static let shared: XMTPConnector = .init()
   
-  private init() {}
+  @Dependency(\.keychainApi) var keychainApi
+  
+  private init() {
+    self.conversations = XMTPConversations()
+  }
   
   func address() throws -> String {
     guard let client = self.client
@@ -26,8 +31,8 @@ class XMTPConnector {
   
   func tryLoadClient() -> Bool {
     do {
-      if KeychainStorage.shared.checkForData(storable: XMTPSession.current) {
-        let bundle = try KeychainStorage.shared.getData(storable: XMTPSession.current)
+      if self.keychainApi.hasDataStored(XMTPSession.current.key) {
+        let bundle = try self.keychainApi.getData(XMTPSession.current.key)
         self.client = try XMTPClient(serializedKeyBundle: bundle)
         return true
       }
@@ -51,9 +56,10 @@ class XMTPConnector {
     }
   }
   
-  func disconnect() {
+  func disconnect(removing: [XMTPConversation]) {
     do {
-      try KeychainStorage.shared.delete(storable: XMTPSession.current)
+      try self.delete(conversations: removing)
+      try self.keychainApi.delete(XMTPSession.current.key)
       self.client = nil
     }
     catch let error {
@@ -65,7 +71,26 @@ class XMTPConnector {
     guard let client = self.client
     else { throw XMTPConnectorError.clientNotConnected }
     
-    return try await client.newConversation(peerAddress, conversationID)
+    let conversation = try await client.newConversation(peerAddress, conversationID)
+    try self.store(conversation: conversation)
+    return conversation
+  }
+  
+  func loadStoredConversations() throws -> [XMTPConversation] {
+    guard let client = self.client
+    else { throw XMTPConnectorError.clientNotConnected }
+    
+    do {
+      let storedConversationData = try self.loadStored()
+      return try storedConversationData.map {
+        let container = try JSONDecoder().decode(XMTP.ConversationContainer.self, from: $0)
+        return client.decodeConversation(container)
+      }
+    }
+    catch let error {
+      print(error)
+      return []
+    }
   }
   
   func loadConversations() async throws -> [XMTPConversation] {
@@ -73,9 +98,12 @@ class XMTPConnector {
     else { throw XMTPConnectorError.clientNotConnected }
     
     do {
-      return try await client.conversations()
+      let conversations = try await client.conversations()
         .list()
         .map(XMTPConversation.from(_:))
+      
+      try conversations.forEach { try self.store(conversation: $0) }
+      return conversations
       
     } catch let error {
       log("Failed to load conversations for \(client.address())", level: .error, error: error)
@@ -96,6 +124,45 @@ class XMTPConnector {
   static func streamMessages(for conversation: XMTPConversation) -> AsyncThrowingStream<XMTP.DecodedMessage, Error> {
     return conversation.streamMessages()
   }
+  
+  
+  private func loadStored() throws -> [Data] {
+    let decoder = JSONDecoder()
+    
+    guard self.keychainApi.hasDataStored(self.conversations.key)
+    else { return [] }
+    
+    let conversations = try decoder.decode(
+      XMTPConversations.self,
+      from: try self.keychainApi.getData(self.conversations.key)
+    )
+    
+    var conversationData: [Data] = []
+    for id in conversations.ids {
+      if self.keychainApi.hasDataStored(id) {
+        conversationData.append(try self.keychainApi.getData(id))
+      }
+    }
+    
+    self.conversations = conversations
+    return conversationData
+  }
+  
+  private func store(conversation: XMTPConversation) throws {
+    let encoder = JSONEncoder()
+    
+    let encodedContainer = try encoder.encode(conversation.container())
+    try self.keychainApi.storeData(encodedContainer, conversation.key)
+    
+    self.conversations.ids.insert(conversation.key)
+    let encodedIds = try encoder.encode(self.conversations)
+    try self.keychainApi.storeData(encodedIds, self.conversations.key)
+  }
+  
+  private func delete(conversations: [XMTPConversation]) throws {
+    for conversation in conversations { try self.keychainApi.delete(conversation.key) }
+    try self.keychainApi.delete(self.conversations.key)
+  }
 }
 
 extension XMTP.DecodedMessage: Equatable {
@@ -115,8 +182,9 @@ struct XMTPConnectorApi {
   var address: () throws -> String
   var tryLoadCLient: () -> Bool
   var createClient: () async -> Void
-  var disconnect: () throws -> Void
+  var disconnect: (_ removing: [XMTPConversation]) throws -> Void
   var createConversation: (_ peerAddress: String, _ conversationID: XMTPClient.ConversationID) async throws -> XMTPConversation
+  var loadStoredConversations: () throws -> [XMTPConversation]
   var loadConversations: () async throws -> [XMTPConversation]
   var loadMessages: (_ conversation: XMTPConversation) async -> [XMTP.DecodedMessage]
   var streamMessages: (_ conversation: XMTPConversation) async -> AsyncThrowingStream<XMTP.DecodedMessage, Error>
@@ -130,6 +198,7 @@ extension XMTPConnectorApi: DependencyKey {
       createClient: XMTPConnector.shared.createClient,
       disconnect: XMTPConnector.shared.disconnect,
       createConversation: XMTPConnector.shared.createConversation,
+      loadStoredConversations: XMTPConnector.shared.loadStoredConversations,
       loadConversations: XMTPConnector.shared.loadConversations,
       loadMessages: XMTPConnector.loadMessages,
       streamMessages: XMTPConnector.streamMessages
@@ -146,8 +215,9 @@ extension XMTPConnectorApi {
       address: { "0xabcdef" },
       tryLoadCLient: { true },
       createClient: { },
-      disconnect: {  },
+      disconnect: { _ in },
       createConversation: { _, _ in MockData.conversations[0] },
+      loadStoredConversations: { MockData.conversations },
       loadConversations: { MockData.conversations },
       loadMessages: { _ in MockData.messages },
       streamMessages: { _ in AsyncThrowingStream(unfolding: { nil }) }
@@ -161,6 +231,7 @@ extension XMTPConnectorApi {
       createClient: unimplemented("createClient"),
       disconnect: unimplemented("disconnect"),
       createConversation: unimplemented("createConversation"),
+      loadStoredConversations: unimplemented("loadStoredConversations"),
       loadConversations: unimplemented("loadConversations"),
       loadMessages: unimplemented("loadMessagess"),
       streamMessages: unimplemented("streamMessages")

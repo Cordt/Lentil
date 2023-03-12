@@ -236,8 +236,8 @@ struct Root: ReducerProtocol {
         case .checkAuthenticationStatus:
           do {
             // Verify that both access token and user are available
-            if self.keychainApi.checkFor(AccessToken.access),
-               self.keychainApi.checkFor(AccessToken.refresh),
+            if self.keychainApi.hasStored(AccessToken.access.key),
+               self.keychainApi.hasStored(AccessToken.refresh.key),
                self.defaultsStorageApi.load(UserProfile.self) != nil {
               
               // Verify that the access token is still valid
@@ -247,8 +247,8 @@ struct Root: ReducerProtocol {
               }
             }
             else {
-              try self.keychainApi.delete(AccessToken.access)
-              try self.keychainApi.delete(AccessToken.refresh)
+              try self.keychainApi.delete(AccessToken.access.key)
+              try self.keychainApi.delete(AccessToken.refresh.key)
               self.defaultsStorageApi.remove(UserProfile.self)
               
               // No valid tokens or profile available, open app
@@ -280,8 +280,8 @@ struct Root: ReducerProtocol {
               await send(.hideLoadingScreen)
               
             } catch: { error, send in
-              try? self.keychainApi.delete(AccessToken.access)
-              try? self.keychainApi.delete(AccessToken.refresh)
+              try? self.keychainApi.delete(AccessToken.access.key)
+              try? self.keychainApi.delete(AccessToken.refresh.key)
               self.defaultsStorageApi.remove(UserProfile.self)
               log("Failed to refresh token, logging user out", level: .debug, error: error)
               try? await self.clock.sleep(for: .seconds(1))

@@ -110,8 +110,8 @@ extension LensApi {
         return try await work()
       }
       catch let error {
-        try KeychainStorage.shared.delete(storable: AccessToken.access)
-        try KeychainStorage.shared.delete(storable: AccessToken.refresh)
+        try KeychainStorage.shared.delete(for: AccessToken.access.key)
+        try KeychainStorage.shared.delete(for: AccessToken.refresh.key)
         DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
@@ -131,8 +131,8 @@ extension LensApi {
         return try await work()
       }
       catch let error {
-        try KeychainStorage.shared.delete(storable: AccessToken.access)
-        try KeychainStorage.shared.delete(storable: AccessToken.refresh)
+        try KeychainStorage.shared.delete(for: AccessToken.access.key)
+        try KeychainStorage.shared.delete(for: AccessToken.refresh.key)
         DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
@@ -152,8 +152,8 @@ extension LensApi {
         try await work()
       }
       catch let error {
-        try KeychainStorage.shared.delete(storable: AccessToken.access)
-        try KeychainStorage.shared.delete(storable: AccessToken.refresh)
+        try KeychainStorage.shared.delete(for: AccessToken.access.key)
+        try KeychainStorage.shared.delete(for: AccessToken.refresh.key)
         DefaultsStorage.remove(for: UserProfile.profileKey)
         log("Failed to refresh access token, removing tokens", level: .debug, error: error)
         throw ApiError.unauthenticated
@@ -165,15 +165,15 @@ extension LensApi {
     networkClient: NetworkClient
   ) async throws {
     log("Trying to refresh access token", level: .info)
-    let refreshToken = try KeychainStorage.shared.get(storable: AccessToken.refresh)
+    let refreshToken: String = try KeychainStorage.shared.get(for: AccessToken.refresh.key)
     try await withCheckedThrowingContinuation { continuation in
       networkClient.client.perform(
         mutation: RefreshMutation(request: RefreshRequest(refreshToken: refreshToken)),
         queue: self.queue
       ) { result in
         transform(continuation: continuation, result: result) { data in
-          try KeychainStorage.shared.store(string: data.refresh.accessToken, for: AccessToken.access)
-          try KeychainStorage.shared.store(string: data.refresh.refreshToken, for: AccessToken.refresh)
+          try KeychainStorage.shared.store(string: data.refresh.accessToken, for: AccessToken.access.key)
+          try KeychainStorage.shared.store(string: data.refresh.refreshToken, for: AccessToken.refresh.key)
         }
       }
     }

@@ -24,8 +24,11 @@ struct Conversations: ReducerProtocol {
     case listenOnWallet
     case updateConnectionStatus(State.ConnectionStatus)
     case signInTapped
+    
     case loadConversations
+    case loadConversationsFromRemote
     case conversationsResult(TaskResult<[ConversationRow.State]>)
+    
     case connectTapped
     case createConversationTapped
     case logout
@@ -35,7 +38,8 @@ struct Conversations: ReducerProtocol {
     case conversation(id: ConversationRow.State.ID, ConversationRow.Action)
   }
   
-  @Dependency(\.cacheOld) var cache
+  @Dependency(\.cacheOld) var cacheOld
+  @Dependency(\.cache) var cache
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.xmtpConnector) var xmtpConnector
@@ -108,52 +112,69 @@ struct Conversations: ReducerProtocol {
               guard let address = try? self.xmtpConnector.address()
               else { return .none }
               
-              return .task {
-                let conversations = try await self.xmtpConnector.loadConversations()
-                var conversationRows: [(ConversationRow.State, Date)] = []
-                for conversation in conversations {
-                  let profile = self.cache.profileByAddress(conversation.peerAddress)
-                  var messages = try await conversation.messages()
-                  messages.sort { $0.sent < $1.sent }
-
-                  let lastMessage: ConversationRow.State.Stub?
-                  let messageDate: Date
-                  if let message = messages.last {
-                    lastMessage = ConversationRow.State.Stub(
-                      message: message,
-                      from: message.senderAddress == address ? .user : .peer
-                    )
-                    messageDate = message.sent
-                  }
-                  else {
-                    lastMessage = nil
-                    messageDate = Date(timeIntervalSince1970: 0)
-                  }
-
-                  conversationRows.append(
-                    (
-                      ConversationRow.State(
-                        conversation: conversation,
-                        userAddress: address,
-                        lastMessage: lastMessage,
-                        profile: profile
-                      ),
-                      messageDate
-                    )
-                    
-                  )
-                }
-                
-                let sortedConversationRows = conversationRows
-                  .sorted { $0.1 > $1.1 }
-                  .map { $0.0 }
-                
-                return .conversationsResult(
-                  await TaskResult { [conversationRows = sortedConversationRows] in
-                    conversationRows
-                  }
+              let conversations = try? self.xmtpConnector.loadStoredConversations().map {
+                ConversationRow.State(
+                  conversation: $0,
+                  userAddress: address
                 )
               }
+              
+              if let conversations, conversations.count > 0 {
+                state.conversations = IdentifiedArrayOf(uniqueElements: conversations)
+              }
+              return .send(.loadConversationsFromRemote)
+          }
+          
+        case .loadConversationsFromRemote:
+          guard case .signedIn = state.connectionStatus,
+                let address = try? self.xmtpConnector.address()
+          else { return .none }
+          
+          return .task {
+            let conversations = try await self.xmtpConnector.loadConversations()
+            var conversationRows: [(ConversationRow.State, Date)] = []
+            for conversation in conversations {
+              let profile = try await self.cache.profileByAddress(conversation.peerAddress)
+              var messages = try await conversation.messages()
+              messages.sort { $0.sent < $1.sent }
+              
+              let lastMessage: ConversationRow.State.Stub?
+              let messageDate: Date
+              if let message = messages.first {
+                lastMessage = ConversationRow.State.Stub(
+                  message: message,
+                  from: message.senderAddress == address ? .user : .peer
+                )
+                messageDate = message.sent
+              }
+              else {
+                lastMessage = nil
+                messageDate = Date(timeIntervalSince1970: 0)
+              }
+              
+              conversationRows.append(
+                (
+                  ConversationRow.State(
+                    conversation: conversation,
+                    userAddress: address,
+                    lastMessage: lastMessage,
+                    profile: profile
+                  ),
+                  messageDate
+                )
+                
+              )
+            }
+            
+            let sortedConversationRows = conversationRows
+              .sorted { $0.1 > $1.1 }
+              .map { $0.0 }
+            
+            return .conversationsResult(
+              await TaskResult { [conversationRows = sortedConversationRows] in
+                conversationRows
+              }
+            )
           }
           
         case .conversationsResult(.success(let conversationRows)):
@@ -176,7 +197,8 @@ struct Conversations: ReducerProtocol {
           
         case .logout:
           state.connectionStatus = .notConnected
-          try? self.xmtpConnector.disconnect()
+          let conversations = state.conversations.map { $0.conversation }
+          try? self.xmtpConnector.disconnect(conversations)
           return .none
           
         case .setCreateConversation(let createConversationState):

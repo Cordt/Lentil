@@ -70,7 +70,7 @@ class TokenAddingInterceptor: ApolloInterceptor {
     response: HTTPResponse<Operation>?,
     completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) where Operation : GraphQLOperation {
       do {
-        let accessToken = try KeychainStorage.shared.get(storable: AccessToken.access)
+        let accessToken: String = try KeychainStorage.shared.get(for: AccessToken.access.key)
         request.addHeader(
           name: "x-access-token",
           value: accessToken

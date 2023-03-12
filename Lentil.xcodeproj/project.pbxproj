@@ -79,6 +79,7 @@
 		378EC03E298EC32600FE68F5 /* ConversationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EC03D298EC32600FE68F5 /* ConversationsTests.swift */; };
 		37946CAA296EB783008F849E /* DefaultsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37946CA9296EB783008F849E /* DefaultsStorage.swift */; };
 		379FA25029B91898009FD6FB /* PulsingDot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379FA24F29B91898009FD6FB /* PulsingDot.swift */; };
+		379FADDA29BE2B09004A2E3D /* XMTPConversation+KeychainStorable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379FADD929BE2B09004A2E3D /* XMTPConversation+KeychainStorable.swift */; };
 		37A56518295C3142001A676A /* XMTPConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A56517295C3142001A676A /* XMTPConversation.swift */; };
 		37A5651E295C9E75001A676A /* WalletConnector+SigningKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */; };
 		37A7A6F9293C53F100964768 /* CacheOld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A7A6F8293C53F100964768 /* CacheOld.swift */; };
@@ -215,6 +216,7 @@
 		378EC03D298EC32600FE68F5 /* ConversationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsTests.swift; sourceTree = "<group>"; };
 		37946CA9296EB783008F849E /* DefaultsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsStorage.swift; sourceTree = "<group>"; };
 		379FA24F29B91898009FD6FB /* PulsingDot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsingDot.swift; sourceTree = "<group>"; };
+		379FADD929BE2B09004A2E3D /* XMTPConversation+KeychainStorable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XMTPConversation+KeychainStorable.swift"; sourceTree = "<group>"; };
 		37A56517295C3142001A676A /* XMTPConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPConversation.swift; sourceTree = "<group>"; };
 		37A5651D295C9E75001A676A /* WalletConnector+SigningKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletConnector+SigningKey.swift"; sourceTree = "<group>"; };
 		37A7A6F8293C53F100964768 /* CacheOld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheOld.swift; sourceTree = "<group>"; };
@@ -422,6 +424,7 @@
 			children = (
 				37BBBAFD2901292900E74462 /* KeychainApi.swift */,
 				375FB538298D2CD0008A4BD3 /* AccessToken+KeychainStorable.swift */,
+				379FADD929BE2B09004A2E3D /* XMTPConversation+KeychainStorable.swift */,
 				375FB53A298D2CF6008A4BD3 /* XMTPSession+KeychainStorable.swift */,
 			);
 			path = Keychain;
@@ -949,6 +952,7 @@
 				37CC0CFE292793930036C6E9 /* MediaModel.swift in Sources */,
 				37D63A5329B727490011F8B0 /* Model.swift in Sources */,
 				37C54C65292C7EE6006E8DBA /* Metadata.swift in Sources */,
+				379FADDA29BE2B09004A2E3D /* XMTPConversation+KeychainStorable.swift in Sources */,
 				37849D6529069DFE003FC409 /* LensApiClient+TypedData.swift in Sources */,
 				37A56518295C3142001A676A /* XMTPConversation.swift in Sources */,
 				37D680912924AB3200F31669 /* Profile.swift in Sources */,
