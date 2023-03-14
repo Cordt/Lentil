@@ -44,20 +44,25 @@ struct ConversationsView: View {
             .onDisappear { viewStore.send(.walletConnectDidDisappear) }
             
           case .signedIn:
-            ScrollView(axes: .vertical, showsIndicators: false) {
-              LazyVStack(alignment: .leading) {
-                ForEachStore(
-                  self.store.scope(
-                    state: \.conversations,
-                    action: Conversations.Action.conversation
-                  )
-                ) { store in
-                  ConversationRowView(store: store)
+            if viewStore.isLoading {
+              ProgressView()
+            }
+            else {
+              ScrollView(axes: .vertical, showsIndicators: false) {
+                LazyVStack(alignment: .leading) {
+                  ForEachStore(
+                    self.store.scope(
+                      state: \.conversations,
+                      action: Conversations.Action.conversation
+                    )
+                  ) { store in
+                    ConversationRowView(store: store)
+                  }
                 }
               }
+              .padding(.horizontal)
+              .refreshable { await viewStore.send(.didRefresh).finish() }
             }
-            .padding(.horizontal)
-            .refreshable { await viewStore.send(.didRefresh).finish() }
         }
       }
       .sheet(

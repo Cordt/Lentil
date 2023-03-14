@@ -14,6 +14,8 @@ struct Conversations: ReducerProtocol {
     var connectionStatus: ConnectionStatus = .notConnected
     var createConversation: CreateConversation.State?
     var conversations: IdentifiedArrayOf<ConversationRow.State> = []
+    
+    var isLoading: Bool = false
   }
   
   enum Action: Equatable {
@@ -49,6 +51,7 @@ struct Conversations: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
+          state.isLoading = true
           return .send(.loadConversations)
           
         case .didRefresh:
@@ -109,7 +112,10 @@ struct Conversations: ReducerProtocol {
               
             case .signedIn:
               guard let address = try? self.xmtpConnector.address()
-              else { return .none }
+              else {
+                state.isLoading = false
+                return .none
+              }
               
               if state.conversations.count == 0 {
                 let conversations = try? self.xmtpConnector.loadStoredConversations().map {
@@ -119,6 +125,7 @@ struct Conversations: ReducerProtocol {
                   )
                 }
                 if let conversations, conversations.count > 0 {
+                  state.isLoading = false
                   state.conversations = IdentifiedArrayOf(uniqueElements: conversations)
                 }
               }
@@ -129,7 +136,10 @@ struct Conversations: ReducerProtocol {
         case .loadConversationsFromRemote:
           guard case .signedIn = state.connectionStatus,
                 let address = try? self.xmtpConnector.address()
-          else { return .none }
+          else {
+            state.isLoading = false
+            return .none
+          }
           
           return .task {
             let conversations = try await self.xmtpConnector.loadConversations()
@@ -179,10 +189,12 @@ struct Conversations: ReducerProtocol {
           }
           
         case .conversationsResult(.success(let conversationRows)):
+          state.isLoading = false
           state.conversations = IdentifiedArrayOf(uniqueElements: conversationRows)
           return .none
           
         case .conversationsResult(.failure(let error)):
+          state.isLoading = false
           log("Failed to load conversations", level: .error, error: error)
           return .none
           
