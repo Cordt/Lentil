@@ -98,7 +98,7 @@ struct NotificationRowView_Previews: PreviewProvider {
         NotificationRowView(
           store: .init(
             initialState: .init(notification: $0),
-            reducer: NotificationRow()
+            reducer: { NotificationRow() }
           )
         )
         .padding(5)

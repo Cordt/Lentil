@@ -24,7 +24,7 @@ struct TimelineView: View {
   }
   
   var body: some View {
-    WithViewStore(self.store) { viewStore in
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
       ScrollViewReader { proxy in
         ScrollView(axes: .vertical, showsIndicators: false) {
           LazyVStack(alignment: .leading) {
@@ -157,7 +157,7 @@ struct TimelineView_Previews: PreviewProvider {
           initialState: .init(
             showProfile: Profile.State(navigationId: "abc", profile: MockData.mockProfiles[2])
           ),
-          reducer: Timeline()
+          reducer: { Timeline() }
         )
       )
       .toolbarBackground(Theme.Color.primary, for: .navigationBar)

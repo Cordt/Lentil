@@ -66,16 +66,16 @@ struct NotificationsView_Previews: PreviewProvider {
         store: .init(
           initialState: .init(
             navigationId: "abc-def",
-            notificationRows: [
+            notificationRows: IdentifiedArray(uniqueElements: [
               NotificationRow.State(notification: MockData.mockNotifications[0]),
               NotificationRow.State(notification: MockData.mockNotifications[1]),
               NotificationRow.State(notification: MockData.mockNotifications[2]),
               NotificationRow.State(notification: MockData.mockNotifications[3]),
               NotificationRow.State(notification: MockData.mockNotifications[4]),
               NotificationRow.State(notification: MockData.mockNotifications[5]),
-            ]
+            ])
           ),
-          reducer: Notifications()
+          reducer: { Notifications() }
         )
       )
     }

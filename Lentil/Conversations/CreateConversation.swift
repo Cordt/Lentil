@@ -7,7 +7,7 @@ import IdentifiedCollections
 import SwiftUI
 
 
-struct CreateConversation: ReducerProtocol {
+struct CreateConversation: Reducer {
   struct State: Equatable {
     var searchText: String = ""
     var searchInFlight: Bool = false
@@ -31,9 +31,9 @@ struct CreateConversation: ReducerProtocol {
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.xmtpConnector) var xmtpConnector
-  enum CancelSearchProfilesID {}
+  enum CancelID { case searchProfiles }
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .dismiss:
@@ -44,7 +44,7 @@ struct CreateConversation: ReducerProtocol {
           if searchText.count >= 3 {
             state.searchInFlight = true
             return .merge(
-              .cancel(id: CancelSearchProfilesID.self),
+              .cancel(id: CancelID.searchProfiles),
               .send(.startSearch)
             )
           }
@@ -55,14 +55,14 @@ struct CreateConversation: ReducerProtocol {
           }
           
         case .startSearch:
-          return .task { [searchText = state.searchText] in
-            return await .searchedProfilesResult(
+          return .run { [searchText = state.searchText] send in
+            return await send(.searchedProfilesResult(
               TaskResult {
                 try await self.lensApi.searchProfiles(10, searchText)
               }
-            )
+            ))
           }
-          .cancellable(id: CancelSearchProfilesID.self, cancelInFlight: true)
+          .cancellable(id: CancelID.searchProfiles, cancelInFlight: true)
           
         case .searchedProfilesResult(.success(let result)):
           state.searchInFlight = false
@@ -243,7 +243,7 @@ struct CreateConversationView_Previews: PreviewProvider {
           CreateConversationView(
             store: .init(
               initialState: .init(),
-              reducer: CreateConversation()
+              reducer: { CreateConversation() }
             )
           )
           

@@ -126,7 +126,7 @@ struct CreatePublicationView: View {
       .toolbar(.hidden, for: .tabBar)
       .navigationBarBackButtonHidden(true)
       .alert(
-        self.store.scope(state: \.cancelAlert),
+        self.store.scope(state: \.cancelAlert, action: { _ in CreatePublication.Action.cancelAlertDismissed }),
         dismiss: .cancelAlertDismissed
       )
       .fullScreenCover(
@@ -184,7 +184,7 @@ struct CreatePubicationView_Previews: PreviewProvider {
       CreatePublicationView(
         store: .init(
           initialState: CreatePublication.State(navigationId: "123", reason: .replyingToPost(MockData.mockPublications[0], "Satoshi")),
-          reducer: CreatePublication()
+          reducer: { CreatePublication() }
         )
       )
     }

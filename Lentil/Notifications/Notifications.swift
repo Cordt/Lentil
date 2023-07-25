@@ -13,7 +13,7 @@ struct NotificationsLatestRead: Codable, DefaultsStorable {
   var createdAt: Date
 }
 
-struct Notifications: ReducerProtocol {
+struct Notifications: Reducer {
   struct State: Equatable {
     var navigationId: String
     var isLoading: Bool = false
@@ -44,9 +44,9 @@ struct Notifications: ReducerProtocol {
   @Dependency(\.cache) var cache
   @Dependency(\.navigationApi) var navigationApi
   
-  enum CancelObserveNotificationsID {}
+  enum CancelID { case observeNotifications }
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .didAppear:
@@ -62,7 +62,7 @@ struct Notifications: ReducerProtocol {
               destination: .showNotifications
             )
           )
-          return .cancel(id: CancelObserveNotificationsID.self)
+          return .cancel(id: CancelID.observeNotifications)
           
         case .didRefresh:
           return .send(.loadNotifications)
@@ -81,14 +81,14 @@ struct Notifications: ReducerProtocol {
               }
             }
           }
-          .cancellable(id: CancelObserveNotificationsID.self)
+          .cancellable(id: CancelID.observeNotifications)
           
         case .loadNotifications:
           guard let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
           else { return .none }
           
           state.isLoading = true
-          return .fireAndForget { try await self.cache.refreshNotifications(userProfile.id) }
+          return .run { _ in try await self.cache.refreshNotifications(userProfile.id) }
           
         case .notificationsResponse(let notificationsResponse):
           var notificationRows = state.notificationRows

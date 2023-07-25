@@ -119,28 +119,28 @@ struct PostHeaderView_Previews: PreviewProvider {
       PostHeaderView(
         store: .init(
           initialState: .init(publication: MockData.mockPublications[0]),
-          reducer: Publication()
+          reducer: { Publication() }
         )
       )
       
       PostHeaderView(
         store: .init(
           initialState: .init(publication: MockData.mockPublications[2]),
-          reducer: Publication()
+          reducer: { Publication() }
         )
       )
       
       PostDetailHeaderView(
         store: .init(
           initialState: .init(publication: MockData.mockPublications[0]),
-          reducer: Publication()
+          reducer: { Publication() }
         )
       )
       
       PostDetailHeaderView(
         store: .init(
           initialState: .init(publication: MockData.mockPublications[2]),
-          reducer: Publication()
+          reducer: { Publication() }
         )
       )
     }

@@ -8,7 +8,7 @@ import SDWebImageSwiftUI
 import SwiftUI
 
 
-struct GifController: ReducerProtocol {
+struct GifController: Reducer {
   struct State: Equatable {
     var searchText: String = ""
     var searchResult: GPHContent = .trendingGifs
@@ -21,7 +21,7 @@ struct GifController: ReducerProtocol {
     case didUpdateViewController(_ controller: GiphyGridController)
   }
   
-  var body: some ReducerProtocolOf<GifController> {
+  var body: some ReducerOf<GifController> {
     Reduce { state, action in
       switch action {
         case .dismiss:
@@ -111,7 +111,7 @@ struct GifControllerView: UIViewControllerRepresentable {
   let viewStore: ViewStoreOf<GifController>
   
   init(store: StoreOf<GifController>) {
-    self.viewStore = ViewStore(store)
+    self.viewStore = ViewStore(store, observe: { $0 })
   }
   
   func makeUIViewController(context: Context) -> some UIViewController {
@@ -162,7 +162,7 @@ struct SelectGifView_Previews: PreviewProvider {
     SelectGifView(
       store: .init(
         initialState: .init(),
-        reducer: GifController()
+        reducer: { GifController() }
       )
     )
   }

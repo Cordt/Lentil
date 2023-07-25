@@ -6,7 +6,7 @@ import SDWebImageSwiftUI
 import SwiftUI
 
 
-struct MultiImage: ReducerProtocol {
+struct MultiImage: Reducer {
   struct LentilImage: Equatable, Identifiable {
     var id: Int
     var url: URL
@@ -23,7 +23,7 @@ struct MultiImage: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .imageTapped(let id):
@@ -154,13 +154,17 @@ struct MultiImageView_Previews: PreviewProvider {
         MultiImageView(
           store: .init(
             initialState: .init(
-              images: [
-                MultiImage.LentilImage(id: 0, url: URL(string: "https://feed-picture")!),
-                MultiImage.LentilImage(id: 1, url: URL(string: "https://cover-picture")!),
-                MultiImage.LentilImage(id: 2, url: URL(string: "https://crete")!)
-              ]
+              images: IdentifiedArray(
+                uniqueElements: [
+                  MultiImage.LentilImage(id: 0, url: URL(string: "https://feed-picture")!),
+                  MultiImage.LentilImage(id: 1, url: URL(string: "https://cover-picture")!),
+                  MultiImage.LentilImage(id: 2, url: URL(string: "https://crete")!)
+                ]
+              )
             ),
-            reducer: MultiImage()
+            reducer: {
+              MultiImage()
+            }
           )
         )
       }

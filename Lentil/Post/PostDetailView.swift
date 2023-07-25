@@ -81,7 +81,7 @@ struct PostDetail_Previews: PreviewProvider {
       PostDetailView(
         store: .init(
           initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]), typename: .post),
-          reducer: Post()
+          reducer: { Post() }
         )
       )
       .navigationBarTitleDisplayMode(.inline)

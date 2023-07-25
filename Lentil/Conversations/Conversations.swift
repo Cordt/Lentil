@@ -5,7 +5,7 @@ import IdentifiedCollections
 import SwiftUI
 
 
-struct Conversations: ReducerProtocol {
+struct Conversations: Reducer {
   struct State: Equatable {
     enum ConnectionStatus: Equatable {
       case notConnected, connected, signedIn
@@ -45,9 +45,9 @@ struct Conversations: ReducerProtocol {
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.xmtpConnector) var xmtpConnector
   @Dependency(\.uuid) var uuid
-  enum WalletEventsCancellationID {}
+  enum CancelID { case walletConnectDelegate }
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .didAppear:
@@ -61,7 +61,7 @@ struct Conversations: ReducerProtocol {
           
         case .walletConnectDidDisappear:
           self.walletConnect.disconnect()
-          return .cancel(id: WalletEventsCancellationID.self)
+          return .cancel(id: CancelID.walletConnectDelegate)
           
         case .didDisappear:
           return .none
@@ -85,7 +85,7 @@ struct Conversations: ReducerProtocol {
               log("Failed to receive wallet events", level: .warn, error: error)
             }
           }
-          .cancellable(id: WalletEventsCancellationID.self)
+          .cancellable(id: CancelID.walletConnectDelegate)
           
         case .updateConnectionStatus(let connectionStatus):
           state.connectionStatus = connectionStatus
@@ -196,7 +196,7 @@ struct Conversations: ReducerProtocol {
         case .connectTapped:
           return .merge(
             .send(.listenOnWallet),
-            .fireAndForget { self.walletConnect.connect() }
+            .run { _ in self.walletConnect.connect() }
           )
           
         case .createConversationTapped:
@@ -219,7 +219,7 @@ struct Conversations: ReducerProtocol {
           }
           else if case .dismissAndOpenConversation(let conversation, let userAddress) = createConversationAction {
             return .merge(
-              .fireAndForget { [conversation = conversation, userAddress = userAddress] in
+              .run { [conversation = conversation, userAddress = userAddress] _ in
                 try await Task.sleep(for: .seconds(1))
                 self.navigationApi.append(
                   DestinationPath(

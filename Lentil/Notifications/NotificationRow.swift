@@ -4,7 +4,7 @@ import ComposableArchitecture
 import SwiftUI
 
 
-struct NotificationRow: ReducerProtocol {
+struct NotificationRow: Reducer {
   struct State: Equatable, Identifiable {
     var id: Model.Notification.ID { self.notification.id }
     var notification: Model.Notification
@@ -29,7 +29,7 @@ struct NotificationRow: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .didTapRow:
@@ -54,13 +54,13 @@ struct NotificationRow: ReducerProtocol {
           }
           
         case .loadPost(let elementId):
-          return .task {
-            await .postResponse(TaskResult { try await self.cache.publication(elementId) })
+          return .run { send in
+            await send(.postResponse(TaskResult { try await self.cache.publication(elementId) }))
           }
           
         case .postResponse(.success(let post)):
           guard let post
-          else { return EffectTask.send(.handleFailure(.post, nil)) }
+          else { return Effect.send(.handleFailure(.post, nil)) }
           
           self.navigationApi.append(
             DestinationPath(
@@ -71,18 +71,21 @@ struct NotificationRow: ReducerProtocol {
           return .none
           
         case .loadComment(let elementId):
-          return .task {
+          return .run { send in
             let comment = try await self.cache.publication(elementId)
             
             guard case .comment(let parent) = comment?.typename, let parent
-            else { return .handleFailure(.comment, "Failed to get parent publication from comment")}
+            else {
+              await send(.handleFailure(.comment, "Failed to get parent publication from comment"))
+              return
+            }
             
-            return .commentResponse(TaskResult.success(parent))
+            await send(.commentResponse(TaskResult.success(parent)))
           }
           
         case .commentResponse(.success(let parent)):
           guard let parent
-          else { return EffectTask.send(.handleFailure(.comment, nil)) }
+          else { return Effect.send(.handleFailure(.comment, nil)) }
           
           self.navigationApi.append(
             DestinationPath(
@@ -93,13 +96,13 @@ struct NotificationRow: ReducerProtocol {
           return .none
           
         case .loadProfile(let elementId):
-          return .task {
-            await .profileResponse(TaskResult { try await self.cache.profile(elementId) })
+          return .run { send in
+            await send(.profileResponse(TaskResult { try await self.cache.profile(elementId) }))
           }
           
         case .profileResponse(.success(let profile)):
           guard let profile
-          else { return EffectTask.send(.handleFailure(.profile, nil)) }
+          else { return Effect.send(.handleFailure(.profile, nil)) }
           
           self.navigationApi.append(
             DestinationPath(

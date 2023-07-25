@@ -6,7 +6,7 @@ import IdentifiedCollections
 import SwiftUI
 
 
-struct Root: ReducerProtocol {
+struct Root: Reducer {
   static let loadingTexts = [
     "plowing beds",
     "planting seeds",
@@ -76,28 +76,33 @@ struct Root: ReducerProtocol {
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.withRandomNumberGenerator) var randomNumberGenerator
-  private enum TimerID {}
-  private enum NavigationEventsID {}
+  private enum CancelID {
+    case timer
+    case navigationEvents
+  }
   
-  func fetchIndexedTransaction(txHash: String?, state: inout State) -> EffectTask<Action> {
+  func fetchIndexedTransaction(txHash: String?, state: inout State) -> Effect<Action> {
     if let txHash {
       state.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
-      return .task {
+      return .run { send in
         do {
           var attempts = 5
           while attempts > 0 {
             if let publication = try await self.lensApi.publicationByHash(txHash) {
-              return .timelineAction(.publicationResponse(publication))
+              await send(.timelineAction(.publicationResponse(publication)))
+              return
             }
             try await self.clock.sleep(for: .seconds(5))
             attempts -= 1
           }
           log("Failed to load recently created publication for TX Hash after 5 retries \(txHash)", level: .warn)
-          return .timelineAction(.publicationResponse(nil))
+          await send(.timelineAction(.publicationResponse(nil)))
+          return
           
         } catch let error {
           log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
-          return .timelineAction(.publicationResponse(nil))
+          await send(.timelineAction(.publicationResponse(nil)))
+          return
         }
       }
     }
@@ -106,7 +111,7 @@ struct Root: ReducerProtocol {
     }
   }
   
-  func handlePaths(state: inout State, _ destinationPath: DestinationPath) -> EffectTask<Action> {
+  func handlePaths(state: inout State, _ destinationPath: DestinationPath) -> Effect<Action> {
     switch destinationPath.destination {
       case .publication(let elementId):
         return .run { send in
@@ -159,7 +164,7 @@ struct Root: ReducerProtocol {
     }
   }
   
-  func handleRemovePath(state: inout State, _ destinationPath: DestinationPath) -> EffectTask<Action> {
+  func handleRemovePath(state: inout State, _ destinationPath: DestinationPath) -> Effect<Action> {
     switch destinationPath.destination {
       case .publication:
         state.posts.remove(id: destinationPath.id)
@@ -183,7 +188,7 @@ struct Root: ReducerProtocol {
     return .none
   }
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Scope(state: \State.timelineState, action: /Action.timelineAction) {
       Timeline()
     }
@@ -208,7 +213,7 @@ struct Root: ReducerProtocol {
           return .none
           
         case .loadingScreenDisappeared:
-          return .cancel(id: TimerID.self)
+          return .cancel(id: CancelID.timer)
           
         case .startTimer:
           return .run { [isLoading = state.isLoading] send in
@@ -217,7 +222,7 @@ struct Root: ReducerProtocol {
               await send(.switchProgressLabel, animation: .default)
             }
           }
-          .cancellable(id: TimerID.self, cancelInFlight: true)
+          .cancellable(id: CancelID.timer, cancelInFlight: true)
           
         case .switchProgressLabel:
           let itemNumber = (state.currentText + 1) % Root.loadingTexts.count
@@ -300,10 +305,10 @@ struct Root: ReducerProtocol {
               log("Failed to receive navigation events", level: .error, error: error)
             }
           }
-          .cancellable(id: NavigationEventsID.self, cancelInFlight: true)
+          .cancellable(id: CancelID.navigationEvents, cancelInFlight: true)
           
         case .rootDisappeared:
-          return .cancel(id: NavigationEventsID.self)
+          return .cancel(id: CancelID.navigationEvents)
           
         case .timelineAction(let timelineAction):
           if case .post(_, let postAction) = timelineAction {

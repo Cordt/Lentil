@@ -8,7 +8,7 @@ import SwiftUI
 import XMTP
 
 
-struct Conversation: ReducerProtocol {
+struct Conversation: Reducer {
   struct State: Equatable {
     enum From: Equatable {
       case user, peer
@@ -63,9 +63,9 @@ struct Conversation: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   @Dependency(\.xmtpConnector) var xmtpConnector
-  enum CancelMessageStreamID {}
+  enum CancelID { case messageStream }
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     BindingReducer()
     
     Reduce { state, action in
@@ -91,12 +91,12 @@ struct Conversation: ReducerProtocol {
           return .none
           
         case .loadMessages:
-          return .task { [conversation = state.conversation] in
-            await .messagesResponse(
+          return .run { [conversation = state.conversation] send in
+            await send(.messagesResponse(
               TaskResult {
                 await self.xmtpConnector.loadMessages(conversation)
               }
-            )
+            ))
           }
           
         case .messagesResponse(.success(let messages)):
@@ -132,7 +132,7 @@ struct Conversation: ReducerProtocol {
               await send(.messageResponse(message))
             }
           }
-          .cancellable(id: CancelMessageStreamID.self)
+          .cancellable(id: CancelID.messageStream)
           
         case .messageResponse(let message):
           guard state.messages.first(where: {
@@ -161,7 +161,7 @@ struct Conversation: ReducerProtocol {
               destination: .conversation(state.conversation, state.userAddress)
             )
           )
-          return .cancel(id: CancelMessageStreamID.self)
+          return .cancel(id: CancelID.messageStream)
           
         case .updateMessageText(let message):
           state.messageText = message
@@ -216,100 +216,106 @@ struct ConversationView: View {
   @FocusState private var messageFieldIsFocused: Bool
   let store: Store<Conversation.State, Conversation.Action>
   
+  var messagesScrollView: some View {
+    GeometryReader { geometry in
+      ScrollView(axes: .vertical, showsIndicators: false) {
+        LazyVStack {
+          ForEachStore(
+            self.store.scope(
+              state: \.messages,
+              action: Conversation.Action.message
+            ), content: { messageStore in
+              WithViewStore(messageStore, observe: { $0.from }) { messageViewStore in
+                VStack {
+                  HStack {
+                    if messageViewStore.state == .user { Spacer() }
+                    HStack {
+                      if messageViewStore.state == .user { Spacer() }
+                      MessageView(store: messageStore)
+                      if messageViewStore.state == .peer { Spacer() }
+                    }
+                    .frame(width: geometry.size.width * 0.80)
+                    if messageViewStore.state == .peer { Spacer() }
+                  }
+                  .padding(.horizontal)
+                  .padding(.vertical, 5)
+                  .mirrored()
+                  
+                  MessageDateView(store: messageStore)
+                    .mirrored()
+                }
+              }
+            }
+          )
+        }
+      }
+      .mirrored()
+      .onTapGesture {
+        self.store.send(.didTapMessages)
+      }
+    }
+  }
+  
   var body: some View {
     WithViewStore(self.store, observe: { $0 }) { viewStore in
       ZStack(alignment: .bottomLeading) {
         Theme.lentilGradient()
           .ignoresSafeArea()
         
-        GeometryReader { geometry in
-          VStack {
-            Spacer()
-            
-            ScrollView(axes: .vertical, showsIndicators: false) {
-              LazyVStack {
-                ForEachStore(
-                  self.store.scope(
-                    state: \.messages,
-                    action: Conversation.Action.message
-                  ), content: { messageStore in
-                    WithViewStore(messageStore, observe: { $0.from }) { messageViewStore in
-                      VStack {
-                        HStack {
-                          if messageViewStore.state == .user { Spacer() }
-                          HStack {
-                            if messageViewStore.state == .user { Spacer() }
-                            MessageView(store: messageStore)
-                            if messageViewStore.state == .peer { Spacer() }
-                          }
-                          .frame(width: geometry.size.width * 0.80)
-                          if messageViewStore.state == .peer { Spacer() }
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 5)
-                        .mirrored()
-                        
-                        MessageDateView(store: messageStore)
-                          .mirrored()
-                      }
-                    }
-                  }
-                )
+        VStack {
+          Spacer()
+          
+          self.messagesScrollView
+          
+          VStack(spacing: 0) {
+            HStack(alignment: .top) {
+              TextField(
+                "Message",
+                text: viewStore.binding(
+                  get: \.messageText,
+                  send: Conversation.Action.updateMessageText
+                ),
+                axis: .vertical
+              )
+              .submitLabel(.return)
+              .lineLimit(1...5)
+              .focused(self.$messageFieldIsFocused)
+              .padding(10)
+              .background {
+                RoundedRectangle(cornerRadius: Theme.wideRadius)
+                  .fill(Theme.Color.white)
               }
-            }
-            .mirrored()
-            .onTapGesture {
-              viewStore.send(.didTapMessages)
-            }
-            
-            VStack(spacing: 0) {
-              HStack(alignment: .top) {
-                TextField(
-                  "Message",
-                  text: viewStore.binding(
-                    get: \.messageText,
-                    send: Conversation.Action.updateMessageText
-                  ),
-                  axis: .vertical
-                )
-                .submitLabel(.return)
-                .lineLimit(1...5)
-                .focused(self.$messageFieldIsFocused)
-                .padding(10)
-                .background {
-                  RoundedRectangle(cornerRadius: Theme.wideRadius)
-                    .fill(Theme.Color.white)
-                }
               
-                SendButton(
-                  isSending: viewStore.binding(
-                    get: \.isSending,
-                    send: Conversation.Action.updateSendingStatus
-                  )
-                ) { viewStore.send(.sendMessageTapped) }
-                  .padding(.top, 5)
+              SendButton(
+                isSending: viewStore.binding(
+                  get: \.isSending,
+                  send: Conversation.Action.updateSendingStatus
+                )
+              ) { viewStore.send(.sendMessageTapped) }
+                .padding(.top, 5)
                 .padding(.trailing, 10)
                 .disabled(viewStore.messageText == "" || viewStore.isSending)
                 .opacity(viewStore.messageText == "" ? 0.75 : 1.0)
-              }
-              .padding([.leading, .top, .bottom], 10)
             }
-            .background {
-              Rectangle()
-                .fill(Theme.Color.greyShade1)
-            }
-            
+            .padding([.leading, .top, .bottom], 10)
+          }
+          .background {
             Rectangle()
               .fill(Theme.Color.greyShade1)
-              .padding(.top, -10)
-              .ignoresSafeArea()
-              .frame(height: 0)
           }
-          .task {
-            await viewStore.send(.didAppear)
-              .finish()
-          }
+          
+          Rectangle()
+            .fill(Theme.Color.greyShade1)
+            .padding(.top, -10)
+            .ignoresSafeArea()
+            .frame(height: 0)
         }
+        .task {
+          await viewStore
+            .send(.didAppear)
+            .finish()
+        }
+        
       }
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
@@ -349,7 +355,7 @@ struct ConversationView: View {
       .navigationBarTitleDisplayMode(.inline)
       .navigationBarBackButtonHidden(true)
       .tint(Theme.Color.primary)
-      .synchronize(viewStore.binding(\.$messageFieldIsFocused), self.$messageFieldIsFocused)
+//      .synchronize(viewStore.binding(\.$messageFieldIsFocused), self.$messageFieldIsFocused)
     }
   }
 }
@@ -365,15 +371,15 @@ struct ConversationView_Previews: PreviewProvider {
             userAddress: "0xabc123def",
             conversation: MockData.conversations[0],
             messages: [
-              .init(id: "abc-123-def", message: MockData.messages[0], from: .user),
-              .init(id: "abc-456-def", message: MockData.messages[1], from: .peer),
-              .init(id: "abc-789-def", message: MockData.messages[2], from: .user),
-              .init(id: "abc-123-ghi", message: MockData.messages[3], from: .user),
-              .init(id: "abc-456-ghi", message: MockData.messages[4], from: .peer),
-              .init(id: "abc-789-ghi", message: MockData.messages[5], from: .user)
+              Message.State(id: "abc-123-def", message: MockData.messages[0], from: .user),
+              Message.State(id: "abc-456-def", message: MockData.messages[1], from: .peer),
+              Message.State(id: "abc-789-def", message: MockData.messages[2], from: .user),
+              Message.State(id: "abc-123-ghi", message: MockData.messages[3], from: .user),
+              Message.State(id: "abc-456-ghi", message: MockData.messages[4], from: .peer),
+              Message.State(id: "abc-789-ghi", message: MockData.messages[5], from: .user)
             ]
           ),
-          reducer: Conversation()
+          reducer: { Conversation() }
         )
       )
     }

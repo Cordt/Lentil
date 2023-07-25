@@ -32,7 +32,7 @@ struct LentilApp: App {
         RootView(
           store: Store(
             initialState: Root.State(),
-            reducer: Root()
+            reducer: { Root() }
           )
         )
       }

@@ -5,7 +5,7 @@ import ComposableArchitecture
 import SwiftUI
 
 
-struct Post: ReducerProtocol {
+struct Post: Reducer {
   struct State: Equatable, Identifiable {
     enum Typename: Equatable {
       case post
@@ -62,9 +62,9 @@ struct Post: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
-  enum CancelObserveCommentsID {}
+  enum CancelID { case observeComments }
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Scope(state: \.post, action: /Action.post) {
       Publication()
     }
@@ -81,16 +81,17 @@ struct Post: ReducerProtocol {
               destination: .publication(state.post.id)
             )
           )
-          return .cancel(id: CancelObserveCommentsID.self)
+          return .cancel(id: CancelID.observeComments)
           
         case .fetchComments:
-          return .task { [publication = state.post.publication] in
-            await .commentsResponse(
+          return .run { [publication = state.post.publication] send in
+            await send(.commentsResponse(
               TaskResult {
                 let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
                 let comments = try await self.cache.comments(publication, userProfile?.id)
                 return .upsert(comments)
               }
+            )
             )
           }
           
@@ -108,7 +109,7 @@ struct Post: ReducerProtocol {
               }
             }
           }
-          .cancellable(id: CancelObserveCommentsID.self, cancelInFlight: true)
+          .cancellable(id: CancelID.observeComments, cancelInFlight: true)
           
         case .commentsResponse(let response):
           switch response {

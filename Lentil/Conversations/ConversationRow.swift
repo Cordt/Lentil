@@ -6,7 +6,7 @@ import SwiftUI
 import XMTP
 
 
-struct ConversationRow: ReducerProtocol {
+struct ConversationRow: Reducer {
   struct State: Equatable, Identifiable {
     struct Stub: Equatable {
       enum From { case user, peer }
@@ -58,17 +58,17 @@ struct ConversationRow: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          var effects: [EffectTask<Action>] = []
+          var effects: [Effect<Action>] = []
           if state.profile == nil {
             effects.append(
-              .task { [peerAddress = state.conversation.peerAddress] in
-                await .profilesResponse(
+              .run { [peerAddress = state.conversation.peerAddress] send in
+                await send(.profilesResponse(
                   TaskResult { try await self.lensApi.profiles(peerAddress) }
-                )
+                ))
               }
             )
           }

@@ -189,7 +189,8 @@ struct ProfileView: View {
         .navigationBarBackButtonHidden(true)
         .tint(Theme.Color.white)
         .task {
-          await viewStore.send(.didAppear)
+          await viewStore
+            .send(.didAppear)
             .finish()
         }
       }
@@ -203,7 +204,7 @@ struct ProfileView_Previews: PreviewProvider {
     ProfileView(
       store: .init(
         initialState: .init(navigationId: "abc", profile: MockData.mockProfiles[2]),
-        reducer: Profile()
+        reducer: { Profile() }
       )
     )
   }

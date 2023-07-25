@@ -6,7 +6,7 @@ import IdentifiedCollections
 import SwiftUI
 
 
-struct Publication: ReducerProtocol {
+struct Publication: Reducer {
   struct State: Equatable, Identifiable {
     struct MirrorConfirmationDialogue: Equatable {
       var profileHandle: String
@@ -79,7 +79,7 @@ struct Publication: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .userProfileTapped:
@@ -140,10 +140,10 @@ struct Publication: ReducerProtocol {
           guard let user = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
           else { return .none }
           
-          return .task { [publicationId = state.publication.id] in
-            await .mirrorResult(
+          return .run { [publicationId = state.publication.id] send in
+            await send(.mirrorResult(
               TaskResult { try await self.lensApi.createMirror(user.id, publicationId) }
-            )
+            ))
           }
           
         case .mirrorResult(.success(let result)):

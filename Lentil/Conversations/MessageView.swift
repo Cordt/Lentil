@@ -6,7 +6,7 @@ import SwiftUI
 import XMTP
 
 
-struct Message: ReducerProtocol {
+struct Message: Reducer {
   struct State: Equatable, Identifiable {
     var id: String
     var message: XMTP.DecodedMessage
@@ -15,7 +15,7 @@ struct Message: ReducerProtocol {
   }
   
   enum Action: Equatable {}
-  func reduce(into state: inout State, action: Action) -> EffectTask<Action> {}
+  func reduce(into state: inout State, action: Action) -> Effect<Action> {}
 }
 
 struct MessageDateView: View {
@@ -108,7 +108,7 @@ struct MessageView_Previews: PreviewProvider {
                 from: .user,
                 displayDate: true
               ),
-              reducer: Message()
+              reducer: { Message() }
             )
           )
           MessageView(
@@ -119,7 +119,7 @@ struct MessageView_Previews: PreviewProvider {
                 from: .user,
                 displayDate: true
               ),
-              reducer: Message()
+              reducer: { Message() }
             )
           )
           MessageView(
@@ -129,7 +129,7 @@ struct MessageView_Previews: PreviewProvider {
                 message: MockData.messages[1],
                 from: .peer
               ),
-              reducer: Message()
+              reducer: { Message() }
             )
           )
           MessageView(
@@ -139,7 +139,7 @@ struct MessageView_Previews: PreviewProvider {
                 message: MockData.messages[2],
                 from: .user
               ),
-              reducer: Message()
+              reducer: { Message() }
             )
           )
           MessageView(
@@ -150,7 +150,7 @@ struct MessageView_Previews: PreviewProvider {
                 from: .user,
                 displayDate: true
               ),
-              reducer: Message()
+              reducer: { Message() }
             )
           )
           MessageView(
@@ -160,7 +160,7 @@ struct MessageView_Previews: PreviewProvider {
                 message: MockData.messages[4],
                 from: .peer
               ),
-              reducer: Message()
+              reducer: { Message() }
             )
           )
           MessageView(
@@ -170,7 +170,7 @@ struct MessageView_Previews: PreviewProvider {
                 message: MockData.messages[5],
                 from: .user
               ),
-              reducer: Message()
+              reducer: { Message() }
             )
           )
         }

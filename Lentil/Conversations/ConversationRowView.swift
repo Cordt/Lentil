@@ -106,7 +106,7 @@ struct ConversationRowView_Previews: PreviewProvider {
             lastMessage: .init(message: MockData.messages[0], from: .user),
             profile: MockData.mockProfiles[0]
           ),
-          reducer: ConversationRow()
+          reducer: { ConversationRow() }
         )
       )
       ConversationRowView(
@@ -116,7 +116,7 @@ struct ConversationRowView_Previews: PreviewProvider {
             userAddress: "0xabc123",
             profile: MockData.mockProfiles[1]
           ),
-          reducer: ConversationRow()
+          reducer: { ConversationRow() }
         )
       )
       ConversationRowView(
@@ -126,7 +126,7 @@ struct ConversationRowView_Previews: PreviewProvider {
             userAddress: "0xabc123",
             lastMessage: .init(message: MockData.messages[2], from: .peer)
           ),
-          reducer: ConversationRow()
+          reducer: { ConversationRow() }
         )
       )
     }

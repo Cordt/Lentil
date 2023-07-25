@@ -107,11 +107,12 @@ struct PostStats_Previews: PreviewProvider {
         PostStatsView(
           store: .init(
             initialState: .init(publication: MockData.mockPublications[0]),
-            reducer: Publication()
+            reducer: { Publication() }
           )
         )
       }
       .padding(.bottom, 32)
+      
       
       VStack {
         Rectangle()
@@ -126,7 +127,7 @@ struct PostStats_Previews: PreviewProvider {
           PostStatsView(
             store: .init(
               initialState: .init(publication: MockData.mockPublications[1]),
-              reducer: Publication()
+              reducer: { Publication() }
             ),
             statsSize: .large
           )
@@ -148,12 +149,13 @@ struct PostStats_Previews: PreviewProvider {
           PostStatsView(
             store: .init(
               initialState: .init(publication: MockData.mockPublications[2]),
-              reducer: Publication()
+              reducer: { Publication() }
             )
           )
         }
         .padding(.leading, 32)
       }
+      
     }
     .padding()
   }

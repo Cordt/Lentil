@@ -5,7 +5,7 @@ import ComposableArchitecture
 import Foundation
 
 
-struct WalletConnection: ReducerProtocol {
+struct WalletConnection: Reducer {
   enum ConnectionState: Equatable {
     case notConnected, connected(_ address: String), authenticated
   }
@@ -34,9 +34,9 @@ struct WalletConnection: ReducerProtocol {
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  enum WalletEventsCancellationID {}
+  enum CancelID { case walletEvents }
   
-  func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
+  func reduce(into state: inout State, action: Action) -> Effect<Action> {
     switch action {
       case .walletOpened:
         return .run { send in
@@ -62,11 +62,11 @@ struct WalletConnection: ReducerProtocol {
             log("Failed to receive wallet events", level: .warn, error: error)
           }
         }
-        .cancellable(id: WalletEventsCancellationID.self)
+        .cancellable(id: CancelID.walletEvents)
         
       case .walletClosed:
         self.walletConnect.disconnect()
-        return .cancel(id: WalletEventsCancellationID.self)
+        return .cancel(id: CancelID.walletEvents)
         
       case .updateConnectionState(let connectionState):
         if case let .connected(address) = connectionState {
@@ -81,12 +81,12 @@ struct WalletConnection: ReducerProtocol {
         
       case .signInTapped:
         guard let address = state.address else { return .none }
-        return .task {
-          await .challengeResponse(
+        return .run { send in
+          await send(.challengeResponse(
             TaskResult {
               try await lensApi.authenticationChallenge(address)
             }
-          )
+          ))
         }
         
       case let .challengeResponse(.success(challenge)):

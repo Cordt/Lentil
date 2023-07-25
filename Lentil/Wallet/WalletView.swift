@@ -120,7 +120,7 @@ struct WalletConnectView_Previews: PreviewProvider {
       WalletView(
         store: .init(
           initialState: WalletConnection.State(connectionStatus: .notConnected),
-          reducer: WalletConnection()
+          reducer: { WalletConnection() }
         )
       )
     }

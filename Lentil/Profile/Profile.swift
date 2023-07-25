@@ -6,7 +6,7 @@ import ComposableArchitecture
 import SwiftUI
 
 
-struct Profile: ReducerProtocol {
+struct Profile: Reducer {
   struct State: Equatable, Identifiable {
     var id: String { self.profile.id }
     var navigationId: String
@@ -61,7 +61,7 @@ struct Profile: ReducerProtocol {
   @Dependency(\.navigationApi) var navigationApi
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .dismissView:
@@ -77,12 +77,12 @@ struct Profile: ReducerProtocol {
           return .send(.fetchPublications)
           
         case .fetchPublications:
-          return .task { [id = state.profile.id] in
-            await .publicationsResponse(
+          return .run { [id = state.profile.id] send in
+            await send(.publicationsResponse(
               TaskResult {
                 try await lensApi.publications(40, nil, id, [.post], id).data
               }
-            )
+            ))
           }
           
         case .publicationsResponse(.success(let publications)):

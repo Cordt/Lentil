@@ -115,14 +115,15 @@ struct ConversationsView: View {
 
 #if DEBUG
 struct ConversationsView_Previews: PreviewProvider {
+  static var convos: [ConversationRow.State] = []
   static var previews: some View {
     NavigationStack {
       ConversationsView(
         store: .init(
           initialState: .init(
-            conversations: []
+            conversations: IdentifiedArray(uniqueElements: convos)
           ),
-          reducer: Conversations()
+          reducer: { Conversations() }
         )
       )
       .toolbarBackground(Theme.Color.primary, for: .navigationBar)

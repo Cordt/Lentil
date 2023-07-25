@@ -9,7 +9,7 @@ struct PostView: View {
   let store: Store<Post.State, Post.Action>
   
   var body: some View {
-    WithViewStore(self.store) { viewStore in
+    WithViewStore(self.store, observe: { $0 }) { viewStore in
       VStack(alignment: .leading) {
         if viewStore.comments.count > 0, let commenter = viewStore.commenter {
           PostInfoView(infoType: .commented, name: commenter)
@@ -182,31 +182,31 @@ struct PostView_Previews: PreviewProvider {
               initialState: .init(
                 navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]),
                 typename: .post,
-                comments: [Post.State(
+                comments: IdentifiedArray(uniqueElements: [Post.State(
                   navigationId: "cba",
                   post: .init(publication: mockComment()),
                   typename: .comment
-                )]
+                )])
               ),
-              reducer: Post()
+              reducer: { Post() }
             )
           )
           PostView(
             store: .init(
               initialState: .init(navigationId: "def", post: Publication.State(publication: MockData.mockPublications[1]), typename: .post),
-              reducer: Post()
+              reducer: { Post() }
             )
           )
           PostView(
             store: .init(
               initialState: .init(navigationId: "ghi", post: Publication.State(publication: MockData.mockPublications[2]), typename: .post),
-              reducer: Post()
+              reducer: { Post() }
             )
           )
           PostView(
             store: .init(
               initialState: .init(navigationId: "jkl", post: Publication.State(publication: MockData.mockPublications[3]), typename: .post),
-              reducer: Post()
+              reducer: { Post() }
             )
           )
         }

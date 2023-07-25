@@ -151,7 +151,7 @@ struct ContentView_Previews: PreviewProvider {
           isLoading: true,
           timelineState: .init()
         ),
-        reducer: Root()
+        reducer: { Root() }
       )
     )
   }

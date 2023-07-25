@@ -6,7 +6,7 @@ import ComposableArchitecture
 import Foundation
 
 
-struct Timeline: ReducerProtocol {
+struct Timeline: Reducer {
   struct State: Equatable {
     enum ScrollPosition: Equatable {
       case top(_ navigationID: String)
@@ -155,11 +155,11 @@ struct Timeline: ReducerProtocol {
     return updatedPosts
   }
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .timelineAppeared:
-          var effects: [EffectTask<Action>] = []
+          var effects: [Effect<Action>] = []
           state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
           if state.userProfile != nil && state.showProfile == nil { effects.append(.send(.fetchDefaultProfile)) }
           effects.append(.send(.observeTimelineUpdates))
@@ -175,12 +175,12 @@ struct Timeline: ReducerProtocol {
           guard let userProfile = state.userProfile
           else { return .none }
           
-          return .task {
-            await .defaultProfileResponse(
+          return .run { send in
+            await send(.defaultProfileResponse(
               TaskResult {
                 try await lensApi.defaultProfile(userProfile.address)
               }
-            )
+            ))
           }
           
         case .defaultProfileResponse(let .success(defaultProfile)):
@@ -198,10 +198,10 @@ struct Timeline: ReducerProtocol {
           
           state.loadingInFlight = true
           if let id = state.userProfile?.id {
-            return .fireAndForget { try await self.cache.loadAdditionalPublicationsForFeedAuthenticated(id) }
+            return .run { _ in try await self.cache.loadAdditionalPublicationsForFeedAuthenticated(id) }
           }
           else {
-            return .fireAndForget { try await self.cache.loadAdditionalPublicationsForFeed() }
+            return .run { _ in try await self.cache.loadAdditionalPublicationsForFeed() }
           }
           
         case .publicationResponse(let publication):
@@ -287,10 +287,10 @@ struct Timeline: ReducerProtocol {
           guard let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
           else { return .none }
           
-          return .task {
-            await .notificationsResponse(
+          return .run { send in
+            await send(.notificationsResponse(
               TaskResult { try await self.lensApi.notifications(userProfile.id, 10, nil) }
-            )
+            ))
           }
           
         case .notificationsResponse(.success(let result)):

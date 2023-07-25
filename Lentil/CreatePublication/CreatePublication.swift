@@ -7,7 +7,7 @@ import PhotosUI
 import SwiftUI
 
 
-struct CreatePublication: ReducerProtocol {
+struct CreatePublication: Reducer {
   struct State: Equatable {
     enum Reason: Equatable {
       case creatingPost
@@ -59,7 +59,7 @@ struct CreatePublication: ReducerProtocol {
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerProtocolOf<CreatePublication> {
+  var body: some ReducerOf<CreatePublication> {
     Reduce { state, action in
       switch action {
         case .dismissView:
@@ -139,11 +139,14 @@ struct CreatePublication: ReducerProtocol {
         case .photoSelectionTapped(let item):
           state.photoPickerItem = item
           if let item {
-            return .task {
+            return .run { send in
               guard let data = try await item.loadTransferable(type: Data.self),
                     let uiImage = UIImage(data: data)
-              else { return .photoSelected(.failure(PHPhotosError(.invalidResource))) }
-              return await .photoSelected(TaskResult { uiImage })
+              else {
+                await send(.photoSelected(.failure(PHPhotosError(.invalidResource))))
+                return
+              }
+              await send(.photoSelected(TaskResult { uiImage }))
             }
           }
           else {
