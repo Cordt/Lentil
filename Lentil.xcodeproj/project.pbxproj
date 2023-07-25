@@ -122,7 +122,6 @@
 		37D63A4629B1E5F30011F8B0 /* RealmPublication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4529B1E5F30011F8B0 /* RealmPublication.swift */; };
 		37D63A4829B1E6320011F8B0 /* RealmProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4729B1E6320011F8B0 /* RealmProfile.swift */; };
 		37D63A4A29B1F1DE0011F8B0 /* CacheDependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4929B1F1DE0011F8B0 /* CacheDependency.swift */; };
-		37D63A4D29B2092C0011F8B0 /* Asynchrone in Frameworks */ = {isa = PBXBuildFile; productRef = 37D63A4C29B2092C0011F8B0 /* Asynchrone */; };
 		37D63A4F29B3D6A30011F8B0 /* RealmMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A4E29B3D6A30011F8B0 /* RealmMedia.swift */; };
 		37D63A5129B4DACC0011F8B0 /* RealmNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A5029B4DACC0011F8B0 /* RealmNotification.swift */; };
 		37D63A5329B727490011F8B0 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D63A5229B727490011F8B0 /* Model.swift */; };
@@ -131,6 +130,7 @@
 		37D6808F292386B100F31669 /* UINavigationController+BackGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */; };
 		37D680912924AB3200F31669 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D680902924AB3200F31669 /* Profile.swift */; };
 		37DB471D2924D7DA00DE9EB3 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DB471C2924D7DA00DE9EB3 /* UserProfile.swift */; };
+		37E272DF29C0E55E00F20901 /* XMTPDependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E272DE29C0E55E00F20901 /* XMTPDependency.swift */; };
 		37F5C5E6291FBC34003C9E40 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E5291FBC34003C9E40 /* WalletView.swift */; };
 		37F5C5E8291FBC4E003C9E40 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F5C5E7291FBC4E003C9E40 /* Wallet.swift */; };
 		37F71B4C28DE8A2D00F6D9B1 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */; };
@@ -263,6 +263,7 @@
 		37D6808E292386B100F31669 /* UINavigationController+BackGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+BackGesture.swift"; sourceTree = "<group>"; };
 		37D680902924AB3200F31669 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		37DB471C2924D7DA00DE9EB3 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		37E272DE29C0E55E00F20901 /* XMTPDependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMTPDependency.swift; sourceTree = "<group>"; };
 		37F5C5E5291FBC34003C9E40 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		37F5C5E7291FBC4E003C9E40 /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		37F71B4B28DE8A2D00F6D9B1 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
@@ -278,7 +279,6 @@
 			files = (
 				370C54B1296EE06B0016E4A7 /* SDWebImageSwiftUI in Frameworks */,
 				37D1236C28F70EC90037A4A7 /* Dependencies in Frameworks */,
-				37D63A4D29B2092C0011F8B0 /* Asynchrone in Frameworks */,
 				370ABF01292A847F005B8E11 /* Alamofire in Frameworks */,
 				37B7D69529561A6E00F8674C /* (null) in Frameworks */,
 				376C5D2C2964CCCC000BD962 /* libwebp in Frameworks */,
@@ -583,6 +583,7 @@
 				37B7D69729561C4100F8674C /* XMPTApi.swift */,
 				3779FC05295F4D4E00D4139C /* XMTPClient.swift */,
 				37A56517295C3142001A676A /* XMTPConversation.swift */,
+				37E272DE29C0E55E00F20901 /* XMTPDependency.swift */,
 			);
 			path = XMTP;
 			sourceTree = "<group>";
@@ -755,7 +756,6 @@
 				375FB536298BE2E8008A4BD3 /* KeychainAccess */,
 				37D63A3F29B129EE0011F8B0 /* Realm */,
 				37D63A4129B129EE0011F8B0 /* RealmSwift */,
-				37D63A4C29B2092C0011F8B0 /* Asynchrone */,
 			);
 			productName = Lentil;
 			productReference = 3777830228CCA05D00E7E32A /* Lentil.app */;
@@ -825,7 +825,6 @@
 				37A7B661297F1C7000A8D1B7 /* XCRemoteSwiftPackageReference "WalletConnectSwift" */,
 				375FB535298BE2E8008A4BD3 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				37D63A3E29B129EE0011F8B0 /* XCRemoteSwiftPackageReference "realm-swift" */,
-				37D63A4B29B2092C0011F8B0 /* XCRemoteSwiftPackageReference "Asynchrone" */,
 			);
 			productRefGroup = 3777830328CCA05D00E7E32A /* Products */;
 			projectDirPath = "";
@@ -937,6 +936,7 @@
 				37C54C59292B12A0006E8DBA /* InfuraApiClient+Environment.swift in Sources */,
 				37BBB12C28F2731E00A6D202 /* LensApiClient+Environment.swift in Sources */,
 				3779FC08295F73B900D4139C /* CreateConversation.swift in Sources */,
+				37E272DF29C0E55E00F20901 /* XMTPDependency.swift in Sources */,
 				37C54C6B292C897C006E8DBA /* File+Publication.swift in Sources */,
 				37BE767128FAA73800282ED0 /* LentilButton.swift in Sources */,
 				375FB53B298D2CF6008A4BD3 /* XMTPSession+KeychainStorable.swift in Sources */,
@@ -1353,7 +1353,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.52.0;
+				minimumVersion = 0.56.0;
 			};
 		};
 		37D1236D28F70EE90037A4A7 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
@@ -1370,14 +1370,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 10.36.0;
-			};
-		};
-		37D63A4B29B2092C0011F8B0 /* XCRemoteSwiftPackageReference "Asynchrone" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/reddavis/Asynchrone.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.21.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1472,11 +1464,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 37D63A3E29B129EE0011F8B0 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		37D63A4C29B2092C0011F8B0 /* Asynchrone */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 37D63A4B29B2092C0011F8B0 /* XCRemoteSwiftPackageReference "Asynchrone" */;
-			productName = Asynchrone;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

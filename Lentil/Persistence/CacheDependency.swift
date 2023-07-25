@@ -1,6 +1,5 @@
 // Lentil
 
-import Asynchrone
 import Dependencies
 import XCTestDynamicOverlay
 

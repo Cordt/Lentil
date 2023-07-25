@@ -51,7 +51,9 @@ struct Conversations: ReducerProtocol {
     Reduce { state, action in
       switch action {
         case .didAppear:
-          state.isLoading = true
+          if state.conversations.count == 0 {
+            state.isLoading = true
+          }
           return .send(.loadConversations)
           
         case .didRefresh:
@@ -116,21 +118,31 @@ struct Conversations: ReducerProtocol {
                 state.isLoading = false
                 return .none
               }
-              
-              if state.conversations.count == 0 {
-                let conversations = try? self.xmtpConnector.loadStoredConversations().map {
+            
+              if state.conversations.count == 0, let conversations = try? self.xmtpConnector.loadStoredConversations() {
+                let conversationRows = conversations.map {
                   ConversationRow.State(
                     conversation: $0,
                     userAddress: address
                   )
                 }
-                if let conversations, conversations.count > 0 {
-                  state.isLoading = false
-                  state.conversations = IdentifiedArrayOf(uniqueElements: conversations)
+                return .run { send in
+                  await send(.conversationsResult(.success(conversationRows)))
+                  
+                  var rowsToUpdate = conversationRows
+                  
+                  try await fetchProfiles(updating: &rowsToUpdate)
+                  await send(.conversationsResult(.success(rowsToUpdate)))
+                  
+                  try await fetchLastMessage(updating: &rowsToUpdate, userAddress: address)
+                  await send(.conversationsResult(.success(rowsToUpdate)))
+                  
+                  await send(.loadConversationsFromRemote)
                 }
               }
-              
-              return .send(.loadConversationsFromRemote)
+              else {
+                return .send(.loadConversationsFromRemote)
+              }
           }
           
         case .loadConversationsFromRemote:
@@ -141,56 +153,39 @@ struct Conversations: ReducerProtocol {
             return .none
           }
           
-          return .task {
+          return .run { [conversationRows = state.conversations] send in
             let conversations = try await self.xmtpConnector.loadConversations()
-            var conversationRows: [(ConversationRow.State, Date)] = []
+            var identifiedRowsToUpdate = conversationRows
+            
             for conversation in conversations {
-              let profile = try await self.cache.profileByAddress(conversation.peerAddress)
-              var messages = try await conversation.messages()
-              messages.sort { $0.sent < $1.sent }
-              
-              let lastMessage: ConversationRow.State.Stub?
-              let messageDate: Date
-              if let message = messages.first {
-                lastMessage = ConversationRow.State.Stub(
-                  message: message,
-                  from: message.senderAddress == address ? .user : .peer
-                )
-                messageDate = message.sent
+              if identifiedRowsToUpdate[id: conversation.topic] != nil {
+                identifiedRowsToUpdate[id: conversation.topic]?.conversation = conversation
               }
               else {
-                lastMessage = nil
-                messageDate = Date(timeIntervalSince1970: 0)
-              }
-              
-              conversationRows.append(
-                (
-                  ConversationRow.State(
+                identifiedRowsToUpdate.append(
+                  .init(
                     conversation: conversation,
-                    userAddress: address,
-                    lastMessage: lastMessage,
-                    profile: profile
-                  ),
-                  messageDate
+                    userAddress: address
+                  )
                 )
-                
-              )
+              }
             }
             
-            let sortedConversationRows = conversationRows
-              .sorted { $0.1 > $1.1 }
-              .map { $0.0 }
+            var rowsToUpdate = identifiedRowsToUpdate.elements
+            await send(.conversationsResult(.success(rowsToUpdate)))
             
-            return .conversationsResult(
-              await TaskResult { [conversationRows = sortedConversationRows] in
-                conversationRows
-              }
-            )
+            try await fetchProfiles(updating: &rowsToUpdate)
+            await send(.conversationsResult(.success(rowsToUpdate)))
+            
+            try await fetchLastMessage(updating: &rowsToUpdate, userAddress: address)
+            await send(.conversationsResult(.success(rowsToUpdate)))
           }
           
         case .conversationsResult(.success(let conversationRows)):
           state.isLoading = false
-          state.conversations = IdentifiedArrayOf(uniqueElements: conversationRows)
+          for row in conversationRows {
+            state.conversations.updateOrAppend(row)
+          }
           return .none
           
         case .conversationsResult(.failure(let error)):
@@ -249,6 +244,32 @@ struct Conversations: ReducerProtocol {
     }
     .forEach(\.conversations, action: /Action.conversation) {
       ConversationRow()
+    }
+  }
+  
+  func fetchLastMessage(updating rows: inout [ConversationRow.State], userAddress: String) async throws {
+    for (index, row) in rows.enumerated() {
+      let lastMessage = try await row.conversation.lastMessage()
+      let messageStub: ConversationRow.State.Stub?
+      if let lastMessage {
+        messageStub = ConversationRow.State.Stub(
+          message: lastMessage,
+          from: lastMessage.senderAddress == userAddress ? .user : .peer
+        )
+      }
+      else { messageStub = nil }
+      rows[index].lastMessage = messageStub
+    }
+    
+    rows.sort {
+      $0.lastMessage?.sent ?? Date(timeIntervalSince1970: 0) > $1.lastMessage?.sent ?? Date(timeIntervalSince1970: 0)
+    }
+  }
+  
+  func fetchProfiles(updating rows: inout [ConversationRow.State]) async throws {
+    for (index, _) in rows.enumerated() {
+      let profile = try await self.cache.profileByAddress(rows[index].conversation.peerAddress)
+      rows[index].profile = profile
     }
   }
 }

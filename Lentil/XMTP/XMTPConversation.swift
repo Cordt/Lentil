@@ -20,6 +20,7 @@ struct XMTPConversation: Hashable, Equatable, Identifiable {
   var topic: String
   var streamMessages: () -> AsyncThrowingStream<DecodedMessage, Error>
   var messages: () async throws -> [DecodedMessage]
+  var lastMessage: () async throws -> DecodedMessage?
   var hash: (_ hasher: inout Hasher) -> Void
   var container: () -> XMTP.ConversationContainer
   
@@ -37,6 +38,7 @@ struct XMTPConversation: Hashable, Equatable, Identifiable {
       topic: conversation.topic,
       streamMessages: conversation.streamMessages,
       messages: { try await conversation.messages() },
+      lastMessage: { try await conversation.messages(limit: 1).first },
       hash: conversation.hash(into:),
       container: { conversation.encodedContainer }
     )
@@ -53,6 +55,7 @@ extension MockData {
         topic: "TOPIC_abc",
         streamMessages: { AsyncThrowingStream(unfolding: { nil })},
         messages: { MockData.messages },
+        lastMessage: { MockData.messages.first },
         hash: { _ in },
         container: { fatalError("Cannot access Container in Mock") }
       ),
@@ -62,6 +65,7 @@ extension MockData {
         topic: "TOPIC_def",
         streamMessages: { AsyncThrowingStream(unfolding: { nil })},
         messages: { MockData.messages },
+        lastMessage: { MockData.messages.first },
         hash: { _ in },
         container: { fatalError("Cannot access Container in Mock") }
       ),
@@ -71,6 +75,7 @@ extension MockData {
         topic: "TOPIC_ghi",
         streamMessages: { AsyncThrowingStream(unfolding: { nil })},
         messages: { MockData.messages },
+        lastMessage: { MockData.messages.first },
         hash: { _ in },
         container: { fatalError("Cannot access Container in Mock") }
       )
