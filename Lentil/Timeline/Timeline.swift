@@ -265,6 +265,7 @@ struct Timeline: Reducer {
               if updatedPosts != state.posts { state.posts = updatedPosts }
               
             case .delete(let publicationIds):
+              print("deleting: \(publicationIds)")
               publicationIds.forEach { id in
                 if state.posts[id: id] != nil {
                   state.posts.remove(id: id)

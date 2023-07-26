@@ -82,16 +82,16 @@ struct Post: Reducer {
             await self.dismiss()
           }
           
-          
         case .fetchComments:
           return .run { [publication = state.post.publication] send in
-            await send(.commentsResponse(
-              TaskResult {
-                let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
-                let comments = try await self.cache.comments(publication, userProfile?.id)
-                return .upsert(comments)
-              }
-            )
+            await send(
+              .commentsResponse(
+                TaskResult {
+                  let userProfile = self.defaultsStorageApi.load(UserProfile.self) as? UserProfile
+                  let comments = try await self.cache.comments(publication, userProfile?.id)
+                  return .upsert(comments)
+                }
+              )
             )
           }
           

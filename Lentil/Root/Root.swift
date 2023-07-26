@@ -288,7 +288,7 @@ struct Root: Reducer {
     }
     .forEach(\.xmtpPath, action: /Action.xmtpPath) {
       XMTPPath()
-    }
+    }._printChanges(.actionLabels)
   }
   
   func fetchIndexedTransaction(txHash: String?, state: inout State) -> Effect<Action> {

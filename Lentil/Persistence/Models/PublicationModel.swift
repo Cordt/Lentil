@@ -39,7 +39,7 @@ extension Model {
 
 
 extension Model.Publication {
-  func realmPublication() -> RealmPublication {
+  func realmPublication(updating: RealmPublication? = nil) -> RealmPublication {
     let typename: RealmPublication.Typename
     let relatedPublication: RealmPublication?
     let relatedProfile: RealmProfile?
@@ -77,7 +77,7 @@ extension Model.Publication {
       commentdByUser: self.commentdByUser,
       mirrordByUser: self.mirrordByUser,
       media: self.media.map { $0.realmMedia() },
-      showsInFeed: self.showsInFeed,
+      showsInFeed: updating != nil ? updating!.showsInFeed : self.showsInFeed,
       isIndexing: self.isIndexing
     )
   }

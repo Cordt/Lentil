@@ -39,7 +39,7 @@ class Cache {
     try await self.fetchElement(
       primaryKey: id,
       transformToViewModel: { $0.profile() },
-      transformToCacheModel: { $0.realmProfile() },
+      transformToCacheModel: { _, apiProfile in apiProfile.realmProfile() },
       fetch: { try await self.lensApi.profile(id) }
     )
   }
@@ -57,7 +57,7 @@ class Cache {
     try await self.fetchElement(
       primaryKey: id,
       transformToViewModel: { $0.publication() },
-      transformToCacheModel: { $0.realmPublication() },
+      transformToCacheModel: { cachedPublication, apiPublication in apiPublication.realmPublication(updating: cachedPublication) },
       fetch: { try await self.lensApi.publicationById(id) }
     )
   }
@@ -170,7 +170,7 @@ class Cache {
   private func fetchElement<CacheModel: Object, ViewModel: Presentable>(
     primaryKey: String,
     transformToViewModel: (CacheModel) -> ViewModel?,
-    transformToCacheModel: @escaping (ViewModel) -> CacheModel?,
+    transformToCacheModel: @escaping (CacheModel?, ViewModel) -> CacheModel?,
     fetch: @escaping () async throws -> ViewModel?
   ) async throws -> ViewModel? {
     
@@ -179,7 +179,7 @@ class Cache {
       // Element available in cache, proceed and fetch async
       Task {
         let realm = try await Realm(configuration: Self.realmConfig)
-        if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(apiResult) {
+        if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(realmResult, apiResult) {
           try realm.write { realm.add(cacheModel, update: .modified) }
         }
       }
@@ -187,7 +187,7 @@ class Cache {
     }
     else {
       // Element not available in cache, wait until fetched from API
-      if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(apiResult) {
+      if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(nil, apiResult) {
         try realm.write { realm.add(cacheModel) }
         return apiResult
       }
