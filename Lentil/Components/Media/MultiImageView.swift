@@ -20,7 +20,7 @@ struct MultiImage: Reducer {
     case imageTapped(LentilImage.ID)
   }
   
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.navigate) var navigate
   @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
@@ -30,12 +30,7 @@ struct MultiImage: Reducer {
           guard let image = state.images[id: id]
           else { return .none}
           
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .imageDetail(image.url)
-            )
-          )
+          self.navigate.navigate(.imageDetail(image.url))
           return .none
       }
     }

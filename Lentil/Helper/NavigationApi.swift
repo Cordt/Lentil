@@ -7,38 +7,16 @@ import Foundation
 import SwiftUI
 import XCTestDynamicOverlay
 
-
-struct NavigationApi {
+// TODO: Create a generic protocol for Root.Action.Destination
+struct Navigate {
   var eventStream: () -> NavigationEvents
-  var pathBinding: () -> Binding<IdentifiedArrayOf<DestinationPath>>
-  var append: (DestinationPath) -> ()
-  var remove: (DestinationPath) -> ()
+  var navigate: (_ to: Root.Action.Destination) -> ()
 }
 
-struct DestinationPath: Identifiable, Equatable, Hashable {
-  // Creates strong coupling between this Dependency and all features that use it - needs improvement
-  enum  Destination: Equatable, Hashable {
-    case publication(_ elementId: String)
-    case profile(_ elementId: String)
-    case showNotifications
-    case createPublication(_ reason: CreatePublication.State.Reason)
-    case imageDetail(_ imageUrl: URL)
-    
-    case conversation(_ conversation: XMTPConversation, _ userAddress: String)
-    
-    func hash(into hasher: inout Hasher) {
-      hasher.combine(self)
-    }
-  }
-  var id: String { self.navigationId }
-  var navigationId: String
-  var destination: Destination
-}
 
 class Navigation {
   static let shared = Navigation()
   var eventStream: NavigationEvents
-  var path: IdentifiedArrayOf<DestinationPath> = []
   
   private init() {
     self.eventStream = NavigationEvents()
@@ -48,28 +26,14 @@ class Navigation {
     self.eventStream
   }
   
-  func pathBinding() -> Binding<IdentifiedArrayOf<DestinationPath>> {
-    Binding(
-      get: { self.path },
-      set: { self.path = $0 }
-    )
-  }
-  
-  func append(item: DestinationPath) {
-    self.eventStream.eventsToEmit.append(.append(item))
-    self.path.append(item)
-  }
-  
-  func remove(item: DestinationPath) {
-    self.path.remove(id: item.navigationId)
-    self.eventStream.eventsToEmit.append(.remove(item))
+  func navigate(to: Root.Action.Destination) {
+    self.eventStream.eventsToEmit.append(.navigate(to))
   }
 }
 
 class NavigationEvents: AsyncSequence, AsyncIteratorProtocol {
   enum Event {
-    case append(DestinationPath)
-    case remove(DestinationPath)
+    case navigate(_ to: Root.Action.Destination)
   }
   
   typealias Element = Event
@@ -91,30 +55,26 @@ class NavigationEvents: AsyncSequence, AsyncIteratorProtocol {
 
 
 extension DependencyValues {
-  var navigationApi: NavigationApi {
-    get { self[NavigationApi.self] }
-    set { self[NavigationApi.self] = newValue }
+  var navigate: Navigate {
+    get { self[Navigate.self] }
+    set { self[Navigate.self] = newValue }
   }
 }
 
-extension NavigationApi: DependencyKey {
-  static var liveValue: NavigationApi {
-    NavigationApi(
+extension Navigate: DependencyKey {
+  static var liveValue: Navigate {
+    Navigate(
       eventStream: Navigation.shared.events,
-      pathBinding: Navigation.shared.pathBinding,
-      append: Navigation.shared.append,
-      remove: Navigation.shared.remove
+      navigate: Navigation.shared.navigate(to:)
     )
   }
 }
 
 #if DEBUG
-extension NavigationApi {
-  static var testValue = NavigationApi(
+extension Navigate {
+  static var testValue = Navigate(
     eventStream: unimplemented("eventStream"),
-    pathBinding: unimplemented("pathBinding"),
-    append: unimplemented("append"),
-    remove: unimplemented("remove")
+    navigate: unimplemented("navigate")
   )
 }
 #endif

@@ -42,7 +42,7 @@ struct Notifications: Reducer {
   
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.cache) var cache
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.navigate) var navigate
   
   enum CancelID { case observeNotifications }
   
@@ -56,12 +56,6 @@ struct Notifications: Reducer {
           )
           
         case .dismissView:
-          self.navigationApi.remove(
-            DestinationPath(
-              navigationId: state.navigationId,
-              destination: .showNotifications
-            )
-          )
           return .cancel(id: CancelID.observeNotifications)
           
         case .didRefresh:

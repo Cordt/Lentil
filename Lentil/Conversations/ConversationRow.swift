@@ -55,7 +55,7 @@ struct ConversationRow: Reducer {
   @Dependency(\.cacheOld) var cache
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.navigate) var navigate
   @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
@@ -113,24 +113,14 @@ struct ConversationRow: Reducer {
           return .none
           
         case .rowTapped:
-          navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .conversation(state.conversation, state.userAddress)
-            )
-          )
+          self.navigate.navigate(.conversation(state.conversation, state.userAddress))
           return .none
           
         case .didTapProfile:
           guard let profile = state.profile
           else { return .none }
           
-          navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .profile(profile.id)
-            )
-          )
+          self.navigate.navigate(.profile(profile.id))
           return .none
       }
     }

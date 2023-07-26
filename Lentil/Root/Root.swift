@@ -87,6 +87,7 @@ struct Root: Reducer {
       case profile(_ elementId: String)
       case showNotifications
       case createPublication(_ reason: CreatePublication.State.Reason)
+      case imageDetail(_ imageUrl: URL)
       
       case conversation(_ conversation: XMTPConversation, _ userAddress: String)
     }
@@ -96,6 +97,9 @@ struct Root: Reducer {
     case navigate(to: Destination)
     case appendToLensStack(destination: LensPath.State)
     case appendToXMTPStack(destination: XMTPPath.State)
+    
+    case rootAppeared
+    case rootDisappeared
     
     case loadingScreenAppeared
     case hideLoadingScreen
@@ -115,6 +119,7 @@ struct Root: Reducer {
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.keychainApi) var keychainApi
   @Dependency(\.lensApi) var lensApi
+  @Dependency(\.navigate) var navigate
   @Dependency(\.withRandomNumberGenerator) var randomNumberGenerator
   
   private enum CancelID {
@@ -135,29 +140,8 @@ struct Root: Reducer {
       switch action {
         case .lensPath(let stackAction):
           switch stackAction {
-            case .element(id: _, action: let action):
-              switch action {
-                case .publication(let postAction):
-                  if case .dismissView = postAction {
-                    _ = state.lensPath.popLast()
-                  }
-                  return .none
-                case .profile(let profileAction):
-                  if case .dismissView = profileAction {
-                    _ = state.lensPath.popLast()
-                  }
-                  return .none
-                case .showNotifications(let notificationsAction):
-                  if case .dismissView = notificationsAction {
-                    _ = state.lensPath.popLast()
-                  }
-                  return .none
-                case .createPublication(let createPublicationAction):
-                  if case .dismissView = createPublicationAction {
-                    _ = state.lensPath.popLast()
-                  }
-                  return .none
-              }
+            case .element(id: _, action: _):
+              return .none
             case .popFrom(id: _):
               return .none
               
@@ -167,14 +151,8 @@ struct Root: Reducer {
           
         case .xmtpPath(let stackAction):
           switch stackAction {
-            case .element(id: _, action: let action):
-              switch action {
-                case .conversation(let conversationAction):
-                  if case .dismissView = conversationAction {
-                    _ = state.lensPath.popLast()
-                  }
-                  return .none
-              }
+            case .element(id: _, action: _):
+              return .none
             case .popFrom(id: _):
               return .none
               
@@ -192,6 +170,24 @@ struct Root: Reducer {
         case .appendToXMTPStack(destination: let path):
           state.xmtpPath.append(path)
           return .none
+        
+        case .rootAppeared:
+          return .run { send in
+            do {
+              for try await event in self.navigate.eventStream() {
+                switch event {
+                  case .navigate(let destination):
+                    await send(.navigate(to: destination))
+                }
+              }
+            } catch let error {
+              log("Failed to receive navigation events", level: .error, error: error)
+            }
+          }
+          .cancellable(id: CancelID.navigationEvents, cancelInFlight: true)
+          
+        case .rootDisappeared:
+          return .cancel(id: CancelID.navigationEvents)
           
         case .loadingScreenAppeared:
           state.currentText = Int(self.randomNumberGenerator.callAsFunction {
@@ -280,46 +276,8 @@ struct Root: Reducer {
             }
           }
           
-        case .timelineAction(let timelineAction):
-          if case .post(let id, let postAction) = timelineAction {
-            switch postAction {
-              case .post(action: let postAction):
-                if case .userProfileTapped = postAction {
-                  return .send(.navigate(to: .profile(id)))
-                }
-                else if case .mirrorSuccess(let txHash) = postAction {
-                  return fetchIndexedTransaction(txHash: txHash, state: &state)
-                }
-                else {
-                  return .none
-                }
-                
-              case .postTapped:
-                return .send(.navigate(to: .publication(id)))
-                
-              case .comment(let id, let commentAction):
-                if case .post(let postAction) = commentAction {
-                  if case .userProfileTapped = postAction {
-                    return .send(.navigate(to: .profile(id)))
-                  }
-                  else {
-                    return .none
-                  }
-                }
-                else if case .postTapped = commentAction {
-                  return .send(.navigate(to: .publication(id)))
-                }
-                else {
-                  return .none
-                }
-                
-              default:
-                return .none
-            }
-          }
-          else {
-            return .none
-          }
+        case .timelineAction:
+          return .none
           
         case .conversationsAction:
           return .none
@@ -435,6 +393,11 @@ struct Root: Reducer {
               )
             )
           )
+        }
+        
+      case .imageDetail(let url):
+        return .run { send in
+          // TODO: Add Image Detail
         }
     }
   }

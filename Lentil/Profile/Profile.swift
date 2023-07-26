@@ -58,20 +58,15 @@ struct Profile: Reducer {
   
   @Dependency(\.cacheOld) var cache
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.dismiss) var dismiss
+  @Dependency(\.navigate) var navigate
   @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .dismissView:
-          self.navigationApi.remove(
-            DestinationPath(
-              navigationId: state.navigationId,
-              destination: .profile(state.profile.id)
-            )
-          )
-          return .none
+          return .run { _ in await self.dismiss() }
           
         case .didAppear:
           return .send(.fetchPublications)

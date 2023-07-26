@@ -95,6 +95,8 @@ struct RootView: View {
           
         }
         .tint(Theme.Color.primary)
+        .onAppear { viewStore.send(.rootAppeared) }
+        .onDisappear { viewStore.send(.rootDisappeared) }
       }
     }
   }

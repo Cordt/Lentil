@@ -55,7 +55,8 @@ struct CreatePublication: Reducer {
   }
   
   @Dependency(\.cache) var cache
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.dismiss) var dismiss
+  @Dependency(\.navigate) var navigate
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.uuid) var uuid
   
@@ -63,13 +64,7 @@ struct CreatePublication: Reducer {
     Reduce { state, action in
       switch action {
         case .dismissView:
-          self.navigationApi.remove(
-            DestinationPath(
-              navigationId: state.navigationId,
-              destination: .createPublication(state.reason)
-            )
-          )
-          return .none
+          return .run { _ in await self.dismiss() }
           
         case .publicationTextChanged(let text):
           state.publicationText = text

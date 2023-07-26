@@ -41,7 +41,7 @@ struct Conversations: Reducer {
   }
   
   @Dependency(\.cache) var cache
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.navigate) var navigate
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.xmtpConnector) var xmtpConnector
   @Dependency(\.uuid) var uuid
@@ -221,12 +221,7 @@ struct Conversations: Reducer {
             return .merge(
               .run { [conversation = conversation, userAddress = userAddress] _ in
                 try await Task.sleep(for: .seconds(1))
-                self.navigationApi.append(
-                  DestinationPath(
-                    navigationId: self.uuid.callAsFunction().uuidString,
-                    destination: .conversation(conversation, userAddress)
-                  )
-                )
+                self.navigate.navigate(.conversation(conversation, userAddress))
               },
               .send(.setCreateConversation(nil))
             )

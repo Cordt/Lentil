@@ -26,7 +26,7 @@ struct NotificationRow: Reducer {
   }
   
   @Dependency(\.cache) var cache
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.navigate) var navigate
   @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
@@ -34,24 +34,25 @@ struct NotificationRow: Reducer {
       switch action {
         case .didTapRow:
           switch state.notification.event {
-            case .followed(_):
-              // FIXME: Needs Profile
-              return .none
+            case .followed(let id):
+              self.navigate.navigate(.profile(id))
+              
             case .collected(let item):
-              return .send(.loadPost(item.elementId))
+              self.navigate.navigate(.publication(item.elementId))
               
             case .commented(let item, _):
-              return .send(.loadComment(item.elementId))
+              self.navigate.navigate(.publication(item.elementId))
               
             case .mirrored(let item):
-              return .send(.loadPost(item.elementId))
+              self.navigate.navigate(.publication(item.elementId))
               
             case .mentioned(let item):
-              return .send(.loadPost(item.elementId))
+              self.navigate.navigate(.publication(item.elementId))
               
             case .reacted(let item):
-              return .send(.loadPost(item.elementId))
+              self.navigate.navigate(.publication(item.elementId))
           }
+          return .none
           
         case .loadPost(let elementId):
           return .run { send in
@@ -61,13 +62,6 @@ struct NotificationRow: Reducer {
         case .postResponse(.success(let post)):
           guard let post
           else { return Effect.send(.handleFailure(.post, nil)) }
-          
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .publication(post.id)
-            )
-          )
           return .none
           
         case .loadComment(let elementId):
@@ -86,13 +80,6 @@ struct NotificationRow: Reducer {
         case .commentResponse(.success(let parent)):
           guard let parent
           else { return Effect.send(.handleFailure(.comment, nil)) }
-          
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .publication(parent.id)
-            )
-          )
           return .none
           
         case .loadProfile(let elementId):
@@ -103,13 +90,6 @@ struct NotificationRow: Reducer {
         case .profileResponse(.success(let profile)):
           guard let profile
           else { return Effect.send(.handleFailure(.profile, nil)) }
-          
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .profile(profile.id)
-            )
-          )
           return .none
           
         case .postResponse(.failure(let error)):

@@ -63,7 +63,7 @@ struct Timeline: Reducer {
   @Dependency(\.cache) var cache
   @Dependency(\.continuousClock) var clock
   @Dependency(\.lensApi) var lensApi
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.navigate) var navigate
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.uuid) var uuid
   
@@ -325,12 +325,7 @@ struct Timeline: Reducer {
           guard let userProfile = state.userProfile
           else { return .none }
           
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .profile(userProfile.id)
-            )
-          )
+          self.navigate.navigate(.profile(userProfile.id))
           return .none
           
         case .lentilButtonTapped:
@@ -340,21 +335,11 @@ struct Timeline: Reducer {
           return .none
           
         case .showNotificationsTapped:
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .showNotifications
-            )
-          )
+          self.navigate.navigate(.showNotifications)
           return .none
           
         case .createPublicationTapped:
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .createPublication(.creatingPost)
-            )
-          )
+          self.navigate.navigate(.createPublication(.creatingPost))
           return .none
           
         case .scrollAnimationFinished:

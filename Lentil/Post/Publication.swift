@@ -76,19 +76,14 @@ struct Publication: Reducer {
   @Dependency(\.cache) var cache
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.navigate) var navigate
   @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
         case .userProfileTapped:
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .profile(state.publication.profile.id)
-            )
-          )
+          self.navigate.navigate(.profile(state.publication.profile.id))
           return .none
           
         case .remotePublicationImages:
@@ -114,12 +109,7 @@ struct Publication: Reducer {
           guard self.defaultsStorageApi.load(UserProfile.self) != nil
           else { return .none }
           
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .createPublication(.replyingToPost(state.publication, state.publication.profile.handle))
-            )
-          )
+          self.navigate.navigate(.createPublication(.replyingToPost(state.publication, state.publication.profile.handle)))
           return .none
           
         case .mirrorTapped:

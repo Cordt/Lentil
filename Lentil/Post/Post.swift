@@ -49,6 +49,7 @@ struct Post: Reducer {
     case dismissView
     case fetchComments
     case observeCommentsUpdates
+    case cancelObserveCommentsUpdates
     case commentsResponse(TaskResult<CommentsResponse>)
     
     case post(action: Publication.Action)
@@ -59,7 +60,8 @@ struct Post: Reducer {
   
   @Dependency(\.cache) var cache
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.dismiss) var dismiss
+  @Dependency(\.navigate) var navigate
   @Dependency(\.uuid) var uuid
   
   enum CancelID { case observeComments }
@@ -75,13 +77,11 @@ struct Post: Reducer {
           return .send(.observeCommentsUpdates)
           
         case .dismissView:
-          self.navigationApi.remove(
-            DestinationPath(
-              navigationId: state.navigationId,
-              destination: .publication(state.post.id)
-            )
-          )
-          return .cancel(id: CancelID.observeComments)
+          return .run { send in
+            await send(.cancelObserveCommentsUpdates)
+            await self.dismiss()
+          }
+          
           
         case .fetchComments:
           return .run { [publication = state.post.publication] send in
@@ -111,6 +111,9 @@ struct Post: Reducer {
           }
           .cancellable(id: CancelID.observeComments, cancelInFlight: true)
           
+        case .cancelObserveCommentsUpdates:
+          return .cancel(id: CancelID.observeComments)
+          
         case .commentsResponse(let response):
           switch response {
             case .success(let result):
@@ -137,12 +140,7 @@ struct Post: Reducer {
           return .none
          
         case .postTapped:
-          self.navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .publication(state.post.id)
-            )
-          )
+          self.navigate.navigate(.publication(state.post.id))
           return .none
       }
     }

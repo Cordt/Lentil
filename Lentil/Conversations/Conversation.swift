@@ -47,6 +47,7 @@ struct Conversation: Reducer {
     case loadMessages
     case messagesResponse(TaskResult<[XMTP.DecodedMessage]>)
     case streamMessages
+    case cancelStreamMessages
     case messageResponse(XMTP.DecodedMessage)
     case dismissView
     case updateMessageText(String)
@@ -60,7 +61,8 @@ struct Conversation: Reducer {
   }
   
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.dismiss) var dismiss
+  @Dependency(\.navigate) var navigate
   @Dependency(\.uuid) var uuid
   @Dependency(\.xmtpConnector) var xmtpConnector
   enum CancelID { case messageStream }
@@ -78,12 +80,7 @@ struct Conversation: Reducer {
           guard let profile = state.profile
           else { return .none }
           
-          navigationApi.append(
-            DestinationPath(
-              navigationId: self.uuid.callAsFunction().uuidString,
-              destination: .profile(profile.id)
-            )
-          )
+          self.navigate.navigate(.profile(profile.id))
           return .none
           
         case .didTapMessages:
@@ -134,6 +131,9 @@ struct Conversation: Reducer {
           }
           .cancellable(id: CancelID.messageStream)
           
+        case .cancelStreamMessages:
+          return .cancel(id: CancelID.messageStream)
+          
         case .messageResponse(let message):
           guard state.messages.first(where: {
             $0.message.bodyText == message.bodyText
@@ -155,13 +155,10 @@ struct Conversation: Reducer {
           return .none
           
         case .dismissView:
-          self.navigationApi.remove(
-            DestinationPath(
-              navigationId: state.navigationId,
-              destination: .conversation(state.conversation, state.userAddress)
-            )
-          )
-          return .cancel(id: CancelID.messageStream)
+          return .run { send in
+            await send(.cancelStreamMessages)
+            await self.dismiss()
+          }
           
         case .updateMessageText(let message):
           state.messageText = message
@@ -355,6 +352,7 @@ struct ConversationView: View {
       .navigationBarTitleDisplayMode(.inline)
       .navigationBarBackButtonHidden(true)
       .tint(Theme.Color.primary)
+      // FIXME: Doesn't work since TCC 1.0.0
 //      .synchronize(viewStore.binding(\.$messageFieldIsFocused), self.$messageFieldIsFocused)
     }
   }
