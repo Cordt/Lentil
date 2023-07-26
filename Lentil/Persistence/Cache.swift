@@ -188,7 +188,7 @@ class Cache {
     else {
       // Element not available in cache, wait until fetched from API
       if let apiResult = try await fetch(), let cacheModel = transformToCacheModel(nil, apiResult) {
-        try realm.write { realm.add(cacheModel) }
+        try realm.write { realm.add(cacheModel, update: .modified) }
         return apiResult
       }
       else {
