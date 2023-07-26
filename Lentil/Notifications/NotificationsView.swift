@@ -37,7 +37,7 @@ struct NotificationsView: View {
         .toolbar {
           ToolbarItem(placement: .navigationBarLeading) {
             HStack {
-              BackButton { viewStore.send(.didDismiss) }
+              BackButton { viewStore.send(.dismissView) }
             }
           }
           

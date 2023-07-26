@@ -17,10 +17,61 @@ struct Root: Reducer {
     "loving thy garden 🌱"
   ]
   
+  struct LensPath: Reducer {
+    enum State: Equatable {
+      case publication(Post.State)
+      case profile(Profile.State)
+      case showNotifications(Notifications.State)
+      case createPublication(CreatePublication.State)
+    }
+    
+    enum Action: Equatable {
+      case publication(Post.Action)
+      case profile(Profile.Action)
+      case showNotifications(Notifications.Action)
+      case createPublication(CreatePublication.Action)
+    }
+    
+    var body: some Reducer<State, Action> {
+      Scope(state: /State.publication, action: /Action.publication) {
+        Post()
+      }
+      Scope(state: /State.profile, action: /Action.profile) {
+        Profile()
+      }
+      Scope(state: /State.showNotifications, action: /Action.showNotifications) {
+        Notifications()
+      }
+      Scope(state: /State.createPublication, action: /Action.createPublication) {
+        CreatePublication()
+      }
+    }
+  }
+  
+  struct XMTPPath: Reducer {
+    enum State: Equatable {
+      case conversation(Conversation.State)
+    }
+    
+    enum Action: Equatable {
+      case conversation(Conversation.Action)
+    }
+    
+    var body: some Reducer<State, Action> {
+      Scope(state: /State.conversation, action: /Action.conversation) {
+        Conversation()
+      }
+    }
+  }
+  
   struct State: Equatable {
     enum TabDestination: Equatable {
       case feed, messages
     }
+    
+    var lensPath = StackState<LensPath.State>()
+    var xmtpPath = StackState<XMTPPath.State>()
+    
     var isLoading: Bool = true
     var loadingText = loadingTexts[0]
     var currentText: Int = 0
@@ -28,164 +79,47 @@ struct Root: Reducer {
     var tabDestination: TabDestination = .feed
     var timelineState: Timeline.State = .init()
     var conversationsState: Conversations.State = .init()
-    
-    var posts: IdentifiedArray = IdentifiedArrayOf(id: \Post.State.navigationId)
-    var comments: IdentifiedArray = IdentifiedArrayOf(id: \Post.State.navigationId)
-    var profiles: IdentifiedArray = IdentifiedArrayOf(id: \Profile.State.navigationId)
-    var showNotifications: Notifications.State?
-    var createPublication: CreatePublication.State?
-    var imageDetail: URL?
-    var conversation: Conversation.State?
   }
   
   enum Action: Equatable {
+    enum Destination: Equatable {
+      case publication(_ elementId: String)
+      case profile(_ elementId: String)
+      case showNotifications
+      case createPublication(_ reason: CreatePublication.State.Reason)
+      
+      case conversation(_ conversation: XMTPConversation, _ userAddress: String)
+    }
+    
+    case lensPath(StackAction<LensPath.State, LensPath.Action>)
+    case xmtpPath(StackAction<XMTPPath.State, XMTPPath.Action>)
+    case navigate(to: Destination)
+    case appendToLensStack(destination: LensPath.State)
+    case appendToXMTPStack(destination: XMTPPath.State)
+    
     case loadingScreenAppeared
     case hideLoadingScreen
     case loadingScreenDisappeared
     case startTimer
     case switchProgressLabel
-    case dismissImageDetail(DestinationPath)
     
     case checkAuthenticationStatus
     case refreshTokenResponse(Bool)
     
-    case rootAppeared
-    case rootDisappeared
-    
     case timelineAction(Timeline.Action)
     case conversationsAction(Conversations.Action)
-    
-    case addPath(DestinationPath)
-    case removePath(DestinationPath)
-    case post(id: Post.State.ID, action: Post.Action)
-    case comment(id: Post.State.ID, action: Post.Action)
-    case profile(id: Profile.State.ID, action: Profile.Action)
-    case showNotifications(Notifications.Action)
-    case createPublication(CreatePublication.Action)
-    case conversation(Conversation.Action)
-    
-    case handlePublicationPath(publication: Model.Publication, navigationId: String)
-    case handleProfilePath(profile: Model.Profile, navigationId: String)
-    case handleConversationPath(profile: Model.Profile?, navigationId: String, userAddress: String, conversation: XMTPConversation)
   }
   
-  @Dependency(\.keychainApi) var keychainApi
   @Dependency(\.cache) var cache
   @Dependency(\.continuousClock) var clock
-  @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  @Dependency(\.navigationApi) var navigationApi
+  @Dependency(\.keychainApi) var keychainApi
+  @Dependency(\.lensApi) var lensApi
   @Dependency(\.withRandomNumberGenerator) var randomNumberGenerator
+  
   private enum CancelID {
     case timer
     case navigationEvents
-  }
-  
-  func fetchIndexedTransaction(txHash: String?, state: inout State) -> Effect<Action> {
-    if let txHash {
-      state.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
-      return .run { send in
-        do {
-          var attempts = 5
-          while attempts > 0 {
-            if let publication = try await self.lensApi.publicationByHash(txHash) {
-              await send(.timelineAction(.publicationResponse(publication)))
-              return
-            }
-            try await self.clock.sleep(for: .seconds(5))
-            attempts -= 1
-          }
-          log("Failed to load recently created publication for TX Hash after 5 retries \(txHash)", level: .warn)
-          await send(.timelineAction(.publicationResponse(nil)))
-          return
-          
-        } catch let error {
-          log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
-          await send(.timelineAction(.publicationResponse(nil)))
-          return
-        }
-      }
-    }
-    else {
-      return .none
-    }
-  }
-  
-  func handlePaths(state: inout State, _ destinationPath: DestinationPath) -> Effect<Action> {
-    switch destinationPath.destination {
-      case .publication(let elementId):
-        return .run { send in
-          guard let publication = try await self.cache.publication(elementId)
-          else {
-            self.navigationApi.remove(destinationPath)
-            return
-          }
-          
-          await send(.handlePublicationPath(publication: publication, navigationId: destinationPath.navigationId))
-        }
-        
-      case .profile(let elementId):
-        return .run { send in
-          guard let profile = try await self.cache.profile(elementId)
-          else {
-            self.navigationApi.remove(destinationPath)
-            return
-          }
-          
-          await send(.handleProfilePath(profile: profile, navigationId: destinationPath.navigationId))
-        }
-        
-        
-      case .showNotifications:
-        state.showNotifications = Notifications.State(navigationId: destinationPath.navigationId)
-        return .none
-        
-      case .createPublication(let reason):
-        state.createPublication = CreatePublication.State(navigationId: destinationPath.navigationId, reason: reason)
-        return .none
-        
-      case .conversation(let conversation, let userAddress):
-        return .run { send in
-          let profile = try await self.cache.profileByAddress(conversation.peerAddress)
-          
-          await send(
-            .handleConversationPath(
-              profile: profile,
-              navigationId: destinationPath.navigationId,
-              userAddress: userAddress,
-              conversation: conversation
-            )
-          )
-        }
-        
-      case .imageDetail(let url):
-        state.imageDetail = url
-        return .none
-    }
-  }
-  
-  func handleRemovePath(state: inout State, _ destinationPath: DestinationPath) -> Effect<Action> {
-    switch destinationPath.destination {
-      case .publication:
-        state.posts.remove(id: destinationPath.id)
-        state.comments.remove(id: destinationPath.id)
-        
-      case .profile:
-        state.profiles.remove(id: destinationPath.id)
-        
-      case .showNotifications:
-        state.showNotifications = nil
-        
-      case .createPublication:
-        state.createPublication = nil
-        
-      case .imageDetail:
-        state.imageDetail = nil
-        
-      case .conversation:
-        state.conversation = nil
-    }
-    return .none
   }
   
   var body: some Reducer<State, Action> {
@@ -199,6 +133,66 @@ struct Root: Reducer {
     
     Reduce { state, action in
       switch action {
+        case .lensPath(let stackAction):
+          switch stackAction {
+            case .element(id: _, action: let action):
+              switch action {
+                case .publication(let postAction):
+                  if case .dismissView = postAction {
+                    _ = state.lensPath.popLast()
+                  }
+                  return .none
+                case .profile(let profileAction):
+                  if case .dismissView = profileAction {
+                    _ = state.lensPath.popLast()
+                  }
+                  return .none
+                case .showNotifications(let notificationsAction):
+                  if case .dismissView = notificationsAction {
+                    _ = state.lensPath.popLast()
+                  }
+                  return .none
+                case .createPublication(let createPublicationAction):
+                  if case .dismissView = createPublicationAction {
+                    _ = state.lensPath.popLast()
+                  }
+                  return .none
+              }
+            case .popFrom(id: _):
+              return .none
+              
+            case .push(id: _, state: _):
+              return .none
+          }
+          
+        case .xmtpPath(let stackAction):
+          switch stackAction {
+            case .element(id: _, action: let action):
+              switch action {
+                case .conversation(let conversationAction):
+                  if case .dismissView = conversationAction {
+                    _ = state.lensPath.popLast()
+                  }
+                  return .none
+              }
+            case .popFrom(id: _):
+              return .none
+              
+            case .push(id: _, state: _):
+              return .none
+          }
+          
+        case .navigate(let destination):
+          return self.fetch(destination)
+          
+        case .appendToLensStack(destination: let path):
+          state.lensPath.append(path)
+          return .none
+          
+        case .appendToXMTPStack(destination: let path):
+          state.xmtpPath.append(path)
+          return .none
+          
         case .loadingScreenAppeared:
           state.currentText = Int(self.randomNumberGenerator.callAsFunction {
             $0.next(upperBound: UInt8(state.loadingText.count) - 1)
@@ -228,10 +222,6 @@ struct Root: Reducer {
           let itemNumber = (state.currentText + 1) % Root.loadingTexts.count
           state.currentText += 1
           state.loadingText = Root.loadingTexts[itemNumber]
-          return .none
-          
-        case .dismissImageDetail(let destinationPath):
-          self.navigationApi.remove(destinationPath)
           return .none
           
         case .checkAuthenticationStatus:
@@ -290,33 +280,41 @@ struct Root: Reducer {
             }
           }
           
-        case .rootAppeared:
-          return .run { send in
-            do {
-              for try await event in self.navigationApi.eventStream() {
-                switch event {
-                  case .append(let destinationPath):
-                    await send(.addPath(destinationPath))
-                  case .remove(let destinationPath):
-                    await send(.removePath(destinationPath))
-                }
-              }
-            } catch let error {
-              log("Failed to receive navigation events", level: .error, error: error)
-            }
-          }
-          .cancellable(id: CancelID.navigationEvents, cancelInFlight: true)
-          
-        case .rootDisappeared:
-          return .cancel(id: CancelID.navigationEvents)
-          
         case .timelineAction(let timelineAction):
-          if case .post(_, let postAction) = timelineAction {
-            if case .post(.mirrorSuccess(let txHash)) = postAction {
-              return fetchIndexedTransaction(txHash: txHash, state: &state)
-            }
-            else {
-              return .none
+          if case .post(let id, let postAction) = timelineAction {
+            switch postAction {
+              case .post(action: let postAction):
+                if case .userProfileTapped = postAction {
+                  return .send(.navigate(to: .profile(id)))
+                }
+                else if case .mirrorSuccess(let txHash) = postAction {
+                  return fetchIndexedTransaction(txHash: txHash, state: &state)
+                }
+                else {
+                  return .none
+                }
+                
+              case .postTapped:
+                return .send(.navigate(to: .publication(id)))
+                
+              case .comment(let id, let commentAction):
+                if case .post(let postAction) = commentAction {
+                  if case .userProfileTapped = postAction {
+                    return .send(.navigate(to: .profile(id)))
+                  }
+                  else {
+                    return .none
+                  }
+                }
+                else if case .postTapped = commentAction {
+                  return .send(.navigate(to: .publication(id)))
+                }
+                else {
+                  return .none
+                }
+                
+              default:
+                return .none
             }
           }
           else {
@@ -325,66 +323,119 @@ struct Root: Reducer {
           
         case .conversationsAction:
           return .none
-          
-        case .addPath(let destinationPath):
-          return self.handlePaths(state: &state, destinationPath)
-          
-        case .removePath(let destinationPath):
-          return self.handleRemovePath(state: &state, destinationPath)
-          
-        case .post, .comment, .profile, .showNotifications, .conversation, .createPublication:
-          return .none
-         
-        case .handlePublicationPath(let publication, let navigationId):
-          switch publication.typename {
-            case .post:
-              state.posts.updateOrAppend(
-                Post.State(navigationId: navigationId, post: .init(publication: publication), typename: .post)
-              )
-            case .comment:
-              state.comments.updateOrAppend(
-                Post.State(navigationId: navigationId, post: .init(publication: publication), typename: .comment)
-              )
-            case .mirror:
-              state.posts.updateOrAppend(
-                Post.State(navigationId: navigationId, post: .init(publication: publication), typename: .mirror)
-              )
-          }
-          return .none
-          
-        case .handleProfilePath(let profile, let navigationId):
-          state.profiles.updateOrAppend(
-            Profile.State(navigationId: navigationId, profile: profile)
-          )
-          return .none
-          
-        case .handleConversationPath(let profile, let navigationId, let userAddress, let conversation):
-          state.conversation = Conversation.State(
-            navigationId: navigationId,
-            userAddress: userAddress,
-            conversation: conversation,
-            profile: profile
-          )
-          return .none
       }
     }
-    .forEach(\.posts, action: /Action.post) {
-      Post()
+    .forEach(\.lensPath, action: /Action.lensPath) {
+      LensPath()
     }
-    .forEach(\.comments, action: /Action.comment) {
-      Post()
+    .forEach(\.xmtpPath, action: /Action.xmtpPath) {
+      XMTPPath()
     }
-    .forEach(\.profiles, action: /Action.profile) {
-      Profile()
+  }
+  
+  func fetchIndexedTransaction(txHash: String?, state: inout State) -> Effect<Action> {
+    if let txHash {
+      state.timelineState.isIndexing = Toast(message: "Indexing publication", duration: .long)
+      return .run { send in
+        do {
+          var attempts = 5
+          while attempts > 0 {
+            if let publication = try await self.lensApi.publicationByHash(txHash) {
+              await send(.timelineAction(.publicationResponse(publication)))
+              return
+            }
+            try await self.clock.sleep(for: .seconds(5))
+            attempts -= 1
+          }
+          log("Failed to load recently created publication for TX Hash after 5 retries \(txHash)", level: .warn)
+          await send(.timelineAction(.publicationResponse(nil)))
+          return
+          
+        } catch let error {
+          log("Failed to load recently created publication for TX Hash \(txHash)", level: .error, error: error)
+          await send(.timelineAction(.publicationResponse(nil)))
+          return
+        }
+      }
     }
-    .ifLet(\.createPublication, action: /Action.createPublication) {
-      CreatePublication()
+    else {
+      return .none
     }
-    .ifLet(\.showNotifications, action: /Action.showNotifications) {
-      Notifications()
-    }
-    .ifLet(\.conversation, action: /Action.conversation) {
-      Conversation()
+  }
+  
+  func fetch(_ destination: Root.Action.Destination) -> Effect<Action> {
+    switch destination {
+      case .publication(let elementId):
+        return .run { send in
+          guard let publication = try await self.cache.publication(elementId)
+          else { return }
+          
+          await send(
+            .appendToLensStack(
+              destination: .publication(
+                Post.State(
+                  navigationId: UUID().uuidString,
+                  post: Publication.State(publication: publication),
+                  typename: Post.State.Typename.from(typename: publication.typename)
+                )
+              )
+            )
+          )
+        }
+        
+      case .profile(let elementId):
+        return .run { send in
+          guard let profile = try await self.cache.profile(elementId)
+          else { return }
+          
+          await send(
+            .appendToLensStack(
+              destination: .profile(
+                Profile.State(
+                  navigationId: UUID().uuidString,
+                  profile: profile
+                )
+              )
+            )
+          )
+        }
+        
+      case .showNotifications:
+        return .run { send in
+          await send(
+            .appendToLensStack(
+              destination: .showNotifications(
+                Notifications.State(navigationId: UUID().uuidString)
+              )
+            )
+          )
+        }
+        
+      case .createPublication(let reason):
+        return .run { send in
+          await send(
+            .appendToLensStack(
+              destination: .createPublication(
+                CreatePublication.State(navigationId: UUID().uuidString, reason: reason)
+              )
+            )
+          )
+        }
+        
+      case .conversation(let conversation, let userAddress):
+        return .run { send in
+          await send(
+            .appendToXMTPStack(
+              destination: .conversation(
+                Conversation.State(
+                  navigationId: UUID().uuidString,
+                  userAddress: userAddress,
+                  conversation: conversation
+                )
+              )
+            )
+          )
+        }
     }
   }
 }

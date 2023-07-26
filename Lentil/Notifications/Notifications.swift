@@ -30,7 +30,7 @@ struct Notifications: Reducer {
     }
     
     case didAppear
-    case didDismiss
+    case dismissView
     case didRefresh
     
     case observeNotificationUpdates
@@ -55,7 +55,7 @@ struct Notifications: Reducer {
             .send(.loadNotifications)
           )
           
-        case .didDismiss:
+        case .dismissView:
           self.navigationApi.remove(
             DestinationPath(
               navigationId: state.navigationId,
