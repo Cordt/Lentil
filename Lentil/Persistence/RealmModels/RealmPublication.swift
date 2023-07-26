@@ -70,12 +70,9 @@ extension RealmPublication {
         typename = .post
         
       case .comment:
-        guard let parentPublication
-        else {
-          log("Publication with id \(self.id) is of type comment, but does not have a related publication", level: .error)
-          return nil
-        }
-        typename = .comment(of: parentPublication.publication())
+        let parent = parentPublication?.publication()
+        typename = .comment(of: parent)
+        if parent == nil { log("Publication with id \(self.id) is of type comment, but does not have a related publication", level: .debug) }
         
       case .mirror:
         guard let mirroringProfile

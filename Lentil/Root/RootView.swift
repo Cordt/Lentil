@@ -44,7 +44,7 @@ struct RootView: View {
                 CaseLet(
                   /Root.LensPath.State.publication,
                    action: Root.LensPath.Action.publication,
-                   then: PostView.init(store:))
+                   then: PostDetailView.init(store:))
                 
               case .profile:
                 CaseLet(
