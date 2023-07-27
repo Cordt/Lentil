@@ -65,7 +65,6 @@ struct Timeline: Reducer {
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigate) var navigate
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  @Dependency(\.uuid) var uuid
   
   func fetchPublications(from publications: [Model.Publication], updating posts: IdentifiedArrayOf<Post.State>) -> IdentifiedArrayOf<Post.State> {
     var updatedPosts = posts

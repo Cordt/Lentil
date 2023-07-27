@@ -44,7 +44,6 @@ struct Conversations: Reducer {
   @Dependency(\.navigate) var navigate
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.xmtpConnector) var xmtpConnector
-  @Dependency(\.uuid) var uuid
   enum CancelID { case walletConnectDelegate }
   
   var body: some Reducer<State, Action> {

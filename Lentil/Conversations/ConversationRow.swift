@@ -56,7 +56,6 @@ struct ConversationRow: Reducer {
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.navigate) var navigate
-  @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
     Reduce { state, action in

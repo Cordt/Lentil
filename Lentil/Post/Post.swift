@@ -61,7 +61,6 @@ struct Post: Reducer {
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.navigate) var navigate
-  @Dependency(\.uuid) var uuid
   
   enum CancelID { case observeComments }
   

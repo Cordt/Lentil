@@ -77,7 +77,6 @@ struct Publication: Reducer {
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
   @Dependency(\.navigate) var navigate
-  @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
     Reduce { state, action in

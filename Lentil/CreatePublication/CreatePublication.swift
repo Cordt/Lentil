@@ -57,7 +57,6 @@ struct CreatePublication: Reducer {
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.navigate) var navigate
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  @Dependency(\.uuid) var uuid
   
   var body: some ReducerOf<CreatePublication> {
     Reduce { state, action in

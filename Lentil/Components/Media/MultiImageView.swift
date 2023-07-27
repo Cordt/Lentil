@@ -21,7 +21,6 @@ struct MultiImage: Reducer {
   }
   
   @Dependency(\.navigate) var navigate
-  @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
     Reduce { state, action in
