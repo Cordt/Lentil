@@ -332,7 +332,6 @@ struct Root: Reducer {
             .appendToLensStack(
               destination: .publication(
                 Post.State(
-                  navigationId: UUID().uuidString,
                   post: Publication.State(publication: publication),
                   typename: Post.State.Typename.from(typename: publication.typename)
                 )
@@ -350,7 +349,6 @@ struct Root: Reducer {
             .appendToLensStack(
               destination: .profile(
                 Profile.State(
-                  navigationId: UUID().uuidString,
                   profile: profile
                 )
               )
@@ -363,7 +361,7 @@ struct Root: Reducer {
           await send(
             .appendToLensStack(
               destination: .showNotifications(
-                Notifications.State(navigationId: UUID().uuidString)
+                Notifications.State()
               )
             )
           )
@@ -374,7 +372,7 @@ struct Root: Reducer {
           await send(
             .appendToLensStack(
               destination: .createPublication(
-                CreatePublication.State(navigationId: UUID().uuidString, reason: reason)
+                CreatePublication.State(reason: reason)
               )
             )
           )
@@ -386,7 +384,6 @@ struct Root: Reducer {
             .appendToXMTPStack(
               destination: .conversation(
                 Conversation.State(
-                  navigationId: UUID().uuidString,
                   userAddress: userAddress,
                   conversation: conversation
                 )

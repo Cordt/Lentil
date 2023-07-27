@@ -15,7 +15,6 @@ struct NotificationsLatestRead: Codable, DefaultsStorable {
 
 struct Notifications: Reducer {
   struct State: Equatable {
-    var navigationId: String
     var isLoading: Bool = false
     
     var notificationRows: IdentifiedArrayOf<NotificationRow.State> = []
@@ -107,14 +106,7 @@ struct Notifications: Reducer {
           }
           return .none
           
-          
-        // MARK: Child Reducer Actions
-          
-        case .notificationRowAction(_, let notificationAction):
-          if case .handleFailure(let failure, let error) = notificationAction {
-            // TODO: Add Toast
-            log("Failed to load \(failure.rawValue) from notification.", level: .warn, error: error)
-          }
+        case .notificationRowAction:
           return .none
       }
     }

@@ -86,7 +86,6 @@ struct Timeline: Reducer {
         }
         else {
           return Post.State(
-            navigationId: uuid.callAsFunction().uuidString,
             post: .init(publication: publication),
             typename: Post.State.Typename.from(typename: publication.typename)
           )
@@ -110,7 +109,6 @@ struct Timeline: Reducer {
         }
         else {
           return Post.State(
-            navigationId: uuid.callAsFunction().uuidString,
             post: .init(publication: publication),
             typename: Post.State.Typename.from(typename: publication.typename)
           )
@@ -127,7 +125,6 @@ struct Timeline: Reducer {
           else {
             updatedPosts.append(
               Post.State(
-                navigationId: uuid.callAsFunction().uuidString,
                 post: Publication.State(publication: parent),
                 typename: Post.State.Typename.from(typename: parent.typename),
                 comments: [commentState]
@@ -184,7 +181,7 @@ struct Timeline: Reducer {
           }
           
         case .defaultProfileResponse(let .success(defaultProfile)):
-          state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
+          state.showProfile = Profile.State(profile: defaultProfile)
           self.cacheOld.updateOrAppendProfile(defaultProfile)
           return .none
           
@@ -213,7 +210,6 @@ struct Timeline: Reducer {
           }
           else {
             let publicationState = Post.State(
-              navigationId: uuid.callAsFunction().uuidString,
               post: .init(publication: publication),
               typename: Post.State.Typename.from(typename: publication.typename)
             )
@@ -225,7 +221,6 @@ struct Timeline: Reducer {
               }
               else if let parentId = parent?.id, let post = self.cacheOld.publication(parentId) {
                 let parentState = Post.State(
-                  navigationId: uuid.callAsFunction().uuidString,
                   post: .init(publication: post),
                   typename: Post.State.Typename.from(typename: post.typename),
                   comments: [publicationState]
@@ -357,7 +352,7 @@ struct Timeline: Reducer {
           switch walletConnectAction {
             case .defaultProfileResponse(let defaultProfile):
               state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
-              state.showProfile = Profile.State(navigationId: self.uuid.callAsFunction().uuidString, profile: defaultProfile)
+              state.showProfile = Profile.State(profile: defaultProfile)
               self.cacheOld.updateOrAppendProfile(defaultProfile)
               return .none
               

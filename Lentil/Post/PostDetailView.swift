@@ -80,7 +80,7 @@ struct PostDetail_Previews: PreviewProvider {
     NavigationStack {
       PostDetailView(
         store: .init(
-          initialState: .init(navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]), typename: .post),
+          initialState: .init(post: Publication.State(publication: MockData.mockPublications[0]), typename: .post),
           reducer: { Post() }
         )
       )

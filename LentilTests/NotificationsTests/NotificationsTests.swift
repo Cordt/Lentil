@@ -13,7 +13,7 @@ final class NotificationsTests: XCTestCase {
   
   func defaultTestStore() -> TestStore<Notifications.State, Notifications.Action, Notifications.State, Notifications.Action, ()> {
     TestStore(
-      initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init()),
+      initialState: Notifications.State(notificationsCursor: .init()),
       reducer: Notifications()) {
         $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
         $0.defaultsStorageApi.store = { _ in }
@@ -40,7 +40,7 @@ final class NotificationsTests: XCTestCase {
   func testNotificationsAreRefreshed() async throws {
     let notificationsResult = PaginatedResult(data: MockData.mockNotifications, cursor: .init(prev: "prev", next: "next"))
     let store = TestStore(
-      initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init(prev: "prev", next: "next")),
+      initialState: Notifications.State(notificationsCursor: .init(prev: "prev", next: "next")),
       reducer: Notifications()
     ) {
       $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
@@ -66,7 +66,7 @@ final class NotificationsTests: XCTestCase {
   
   func testNotificationsAreSortedCorrectly() async throws {
     let store = TestStore(
-      initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init(prev: "prev", next: "next")),
+      initialState: Notifications.State(notificationsCursor: .init(prev: "prev", next: "next")),
       reducer: Notifications()) {
         $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
         $0.defaultsStorageApi.store = { _ in }
@@ -113,7 +113,7 @@ final class NotificationsTests: XCTestCase {
       cursor: .init()
     )
     let store = TestStore(
-      initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init()),
+      initialState: Notifications.State(notificationsCursor: .init()),
       reducer: Notifications()) {
         $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
         $0.defaultsStorageApi.store = { _ in }
@@ -137,7 +137,7 @@ final class NotificationsTests: XCTestCase {
     
     let notificationsResponse = PaginatedResult(data: MockData.mockNotifications, cursor: .init())
     let store = TestStore(
-      initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init()),
+      initialState: Notifications.State(notificationsCursor: .init()),
       reducer: Notifications()) {
         $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
         $0.defaultsStorageApi.store = { latestRead in
@@ -179,7 +179,7 @@ final class NotificationsTests: XCTestCase {
   func testIsLoadingButFailsToFetchNotifications() async throws {
     enum ResponseError: Error { case failed }
     let store = TestStore(
-      initialState: Notifications.State(navigationId: "abc-def", notificationsCursor: .init()),
+      initialState: Notifications.State(notificationsCursor: .init()),
       reducer: Notifications()) {
         $0.defaultsStorageApi.load = { _ in MockData.mockUserProfile }
         $0.defaultsStorageApi.store = { _ in }

@@ -22,7 +22,6 @@ struct Post: Reducer {
     }
     
     var id: String { self.post.id }
-    var navigationId: String
     var post: Publication.State
     var typename: Typename
     var comments: IdentifiedArrayOf<Post.State> = []
@@ -121,7 +120,7 @@ struct Post: Reducer {
                 case .upsert(let publications):
                   publications.forEach {
                     state.comments.updateOrAppend(
-                      Post.State(navigationId: self.uuid.callAsFunction().uuidString, post: Publication.State(publication: $0), typename: .comment)
+                      Post.State(post: Publication.State(publication: $0), typename: .comment)
                     )
                   }
                 case .delete(let publicationIds):

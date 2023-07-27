@@ -155,7 +155,7 @@ struct TimelineView_Previews: PreviewProvider {
       TimelineView(
         store: .init(
           initialState: .init(
-            showProfile: Profile.State(navigationId: "abc", profile: MockData.mockProfiles[2])
+            showProfile: Profile.State(profile: MockData.mockProfiles[2])
           ),
           reducer: { Timeline() }
         )

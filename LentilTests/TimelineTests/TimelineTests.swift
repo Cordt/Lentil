@@ -29,7 +29,6 @@ final class TimelineTests: XCTestCase {
     }
     await store.receive(.publicationsResponse(.init(publications: explorePublications, cursorExplore: .init(next: "cursor"), cursorFeed: .init()))) {
       $0.posts.append(Post.State(
-        navigationId: "00000000-0000-0000-0000-000000000000",
         post: .init(publication: explorePublications.first!),
         typename: .post
       ))
@@ -77,7 +76,6 @@ final class TimelineTests: XCTestCase {
     await store.receive(.notificationsResponse(.success(PaginatedResult(data: MockData.mockNotifications, cursor: .init()))))
     await store.receive(.defaultProfileResponse(.success(MockData.mockProfiles[0]))) {
       $0.showProfile = Profile.State(
-        navigationId: "00000000-0000-0000-0000-000000000000",
         profile: MockData.mockProfiles[0]
       )
     }
@@ -92,12 +90,10 @@ final class TimelineTests: XCTestCase {
       )
     ) {
       $0.posts.append(Post.State(
-        navigationId: "00000000-0000-0000-0000-000000000001",
         post: .init(publication: feedPublications),
         typename: .post
       ))
       $0.posts.append(Post.State(
-        navigationId: "00000000-0000-0000-0000-000000000002",
         post: .init(publication: explorePublications),
         typename: .post
       ))
@@ -125,7 +121,7 @@ final class TimelineTests: XCTestCase {
     
     await store.send(.connectWallet(.defaultProfileResponse(MockData.mockProfiles[0]))) {
       $0.userProfile = MockData.mockUserProfile
-      $0.showProfile = Profile.State(navigationId: "00000000-0000-0000-0000-000000000000", profile: MockData.mockProfiles[0])
+      $0.showProfile = Profile.State(profile: MockData.mockProfiles[0])
     }
   }
   
@@ -141,12 +137,10 @@ final class TimelineTests: XCTestCase {
     
     await store.send(.publicationResponse(comment)) {
       let postState = Post.State(
-        navigationId: "00000000-0000-0000-0000-000000000001",
         post: .init(publication: parent),
         typename: .post,
         comments: [
           Post.State(
-            navigationId: "00000000-0000-0000-0000-000000000000",
             post: .init(publication: comment),
             typename: .comment
           )

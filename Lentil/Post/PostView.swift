@@ -180,10 +180,9 @@ struct PostView_Previews: PreviewProvider {
           PostView(
             store: .init(
               initialState: .init(
-                navigationId: "abc", post: Publication.State(publication: MockData.mockPublications[0]),
+                post: Publication.State(publication: MockData.mockPublications[0]),
                 typename: .post,
                 comments: IdentifiedArray(uniqueElements: [Post.State(
-                  navigationId: "cba",
                   post: .init(publication: mockComment()),
                   typename: .comment
                 )])
@@ -193,19 +192,19 @@ struct PostView_Previews: PreviewProvider {
           )
           PostView(
             store: .init(
-              initialState: .init(navigationId: "def", post: Publication.State(publication: MockData.mockPublications[1]), typename: .post),
+              initialState: .init(post: Publication.State(publication: MockData.mockPublications[1]), typename: .post),
               reducer: { Post() }
             )
           )
           PostView(
             store: .init(
-              initialState: .init(navigationId: "ghi", post: Publication.State(publication: MockData.mockPublications[2]), typename: .post),
+              initialState: .init(post: Publication.State(publication: MockData.mockPublications[2]), typename: .post),
               reducer: { Post() }
             )
           )
           PostView(
             store: .init(
-              initialState: .init(navigationId: "jkl", post: Publication.State(publication: MockData.mockPublications[3]), typename: .post),
+              initialState: .init(post: Publication.State(publication: MockData.mockPublications[3]), typename: .post),
               reducer: { Post() }
             )
           )

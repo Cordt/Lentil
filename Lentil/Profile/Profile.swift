@@ -9,7 +9,6 @@ import SwiftUI
 struct Profile: Reducer {
   struct State: Equatable, Identifiable {
     var id: String { self.profile.id }
-    var navigationId: String
     
     var profile: Model.Profile
     var posts: IdentifiedArrayOf<Post.State>
@@ -38,8 +37,7 @@ struct Profile: Reducer {
       self.coverOffset <= -100
     }
     
-    init(navigationId: String, profile: Model.Profile) {
-      self.navigationId = navigationId
+    init(profile: Model.Profile) {
       self.profile = profile
       self.posts = []
       self.cursorPublications = nil
@@ -60,7 +58,6 @@ struct Profile: Reducer {
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.navigate) var navigate
-  @Dependency(\.uuid) var uuid
   
   var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -90,7 +87,6 @@ struct Profile: Reducer {
               }
               else {
                 return Post.State(
-                  navigationId: uuid.callAsFunction().uuidString,
                   post: .init(publication: publication),
                   typename: Post.State.Typename.from(typename: publication.typename)
                 )

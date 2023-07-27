@@ -15,7 +15,6 @@ struct CreatePublication: Reducer {
       case replyingToComment(_ publication: Model.Publication, _ of: String)
     }
     
-    var navigationId: String
     var reason: Reason
     var publicationText: String = ""
     var isPosting: Bool = false

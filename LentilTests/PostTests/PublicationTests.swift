@@ -16,7 +16,6 @@ final class PublicationTests: XCTestCase {
     let mirrorResult: Result<RelayerResult, RelayErrorReasons> = .success(.init(txnHash: "abc", txnId: "123"))
     let store = TestStore(
       initialState: Post.State(
-        navigationId: "abc-def",
         post: .init(publication: publication),
         typename: .post
       ),
@@ -42,7 +41,6 @@ final class PublicationTests: XCTestCase {
     let publication = MockData.mockPublications[0]
     let store = TestStore(
       initialState: Post.State(
-        navigationId: "abc-def",
         post: .init(publication: publication),
         typename: .post
       ),

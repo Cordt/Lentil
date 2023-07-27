@@ -14,7 +14,6 @@ struct Conversation: Reducer {
       case user, peer
     }
     
-    var navigationId: String
     var userAddress: String
     var conversation: XMTPConversation
     var profile: Model.Profile?
@@ -25,13 +24,11 @@ struct Conversation: Reducer {
     @BindingState var messageFieldIsFocused: Bool = false
     
     init(
-      navigationId: String,
       userAddress: String,
       conversation: XMTPConversation,
       profile: Model.Profile? = nil,
       messages: [Message.State] = []
     ) {
-      self.navigationId = navigationId
       self.userAddress = userAddress
       self.conversation = conversation
       self.profile = profile
@@ -365,7 +362,6 @@ struct ConversationView_Previews: PreviewProvider {
       ConversationView(
         store: .init(
           initialState: .init(
-            navigationId: "abc",
             userAddress: "0xabc123def",
             conversation: MockData.conversations[0],
             messages: [

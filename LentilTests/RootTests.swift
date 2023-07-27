@@ -139,7 +139,7 @@ final class RootTests: XCTestCase {
   
   func testToastIsShownWhileIndexing() async throws {
     let store = TestStore(
-      initialState: Root.State(timelineState: .init(), createPublication: CreatePublication.State(navigationId: "abc-def", reason: .creatingPost)),
+      initialState: Root.State(timelineState: .init(), createPublication: CreatePublication.State(reason: .creatingPost)),
       reducer: Root()
     )
     let publication = MockData.mockPublications[0]
@@ -156,7 +156,6 @@ final class RootTests: XCTestCase {
     await store.receive(.timelineAction(.publicationResponse(publication))) {
       $0.timelineState.posts.append(
         .init(
-          navigationId: "00000000-0000-0000-0000-000000000000",
           post: .init(publication: publication),
           typename: .post
         )
@@ -167,7 +166,7 @@ final class RootTests: XCTestCase {
   
   func testToastIsHiddenWhenIndexingFails() async throws {
     let store = TestStore(
-      initialState: Root.State(timelineState: .init(), createPublication: CreatePublication.State(navigationId: "abc-def", reason: .creatingPost)),
+      initialState: Root.State(timelineState: .init(), createPublication: CreatePublication.State(reason: .creatingPost)),
       reducer: Root()
     )
     let clock = TestClock()

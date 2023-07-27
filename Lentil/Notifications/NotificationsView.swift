@@ -65,7 +65,6 @@ struct NotificationsView_Previews: PreviewProvider {
       NotificationsView(
         store: .init(
           initialState: .init(
-            navigationId: "abc-def",
             notificationRows: IdentifiedArray(uniqueElements: [
               NotificationRow.State(notification: MockData.mockNotifications[0]),
               NotificationRow.State(notification: MockData.mockNotifications[1]),
