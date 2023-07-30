@@ -12,6 +12,6 @@ XMTP_ENVIRONMENT = dev
 
 INFURA_URL = ipfs.infura.io:5001/api/v0/add
 
-LOG_LEVEL = DEBUG
+LOG_LEVEL = INFO
 
 LENTIL_CID = QmdxZT2Tc4TfxB3wdCcUKJ68WFezXmKqjupEegF6kuf7kP

@@ -88,7 +88,7 @@ class XMTPConnector {
       }
     }
     catch let error {
-      print(error)
+      log("Failed to load conversations for \(client.address())", level: .error, error: error)
       return []
     }
   }

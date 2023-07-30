@@ -15,6 +15,8 @@ class LentilEnvironment {
   
   let xmtpEnvironment: XMTPEnvironment
   
+  let wcProjectId: String
+  
   let infuraUrl: String
   let infuraProjectId: String
   let infuraApiSecretKey: String
@@ -51,6 +53,8 @@ class LentilEnvironment {
       if env == "production" { return .production }
       else { return .dev }
     }()
+    
+    self.wcProjectId = value(for: "WALLETCONNECT_PROJECT_ID")
     
     self.infuraUrl = value(for: "INFURA_URL", addingHttps: true)
     self.infuraProjectId = value(for: "INFURA_PROJECT_ID")

@@ -69,16 +69,16 @@ struct Conversations: Reducer {
           return .run { send in
             do {
               for try await event in self.walletConnect.eventStream {
-                switch event {
-                  case .didFailToConnect, .didDisconnect:
-                    await send(.updateConnectionStatus(.notConnected))
-                    
-                  case .didConnect(_), .didUpdate(_):
-                    break
-                    
-                  case .didEstablishSession:
-                    await send(.updateConnectionStatus(.connected))
-                }
+//                switch event {
+//                  case .didFailToConnect, .didDisconnect:
+//                    await send(.updateConnectionStatus(.notConnected))
+//                    
+//                  case .didConnect, .didUpdate:
+//                    break
+//                    
+//                  case .didEstablishSession:
+//                    await send(.updateConnectionStatus(.connected))
+//                }
               }
             } catch let error {
               log("Failed to receive wallet events", level: .warn, error: error)
@@ -193,6 +193,7 @@ struct Conversations: Reducer {
           return .none
           
         case .connectTapped:
+          // FIXME: Integrate v2
           return .merge(
             .send(.listenOnWallet),
             .run { _ in self.walletConnect.connect() }

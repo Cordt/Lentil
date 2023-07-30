@@ -7,7 +7,11 @@ import Foundation
 
 struct WalletConnection: Reducer {
   enum ConnectionState: Equatable {
-    case notConnected, connected(_ address: String), authenticated
+    case notConnected
+    case waitingForConnection
+    case connected(_ address: String)
+    case waitingForSignature
+    case authenticated
   }
   
   struct State: Equatable {
@@ -24,6 +28,7 @@ struct WalletConnection: Reducer {
     case connectTapped
     case signInTapped
     case challengeResponse(TaskResult<Challenge>)
+    case signatureResponse(String)
     case authenticationResponse
     case failedToLoadAuthTokens
     case defaultProfileResponse(Model.Profile)
@@ -43,19 +48,16 @@ struct WalletConnection: Reducer {
           do {
             for try await event in self.walletConnect.eventStream {
               switch event {
-                case .didFailToConnect, .didDisconnect:
-                  await send(.updateConnectionState(.notConnected))
-                  
-                case .didConnect(_), .didUpdate(_):
-                  break
-                  
                 case .didEstablishSession(let session):
-                  guard let address = session.walletInfo?.accounts.first
-                  else {
-                    log("Could not get wallet address from session", level: .error)
-                    break
-                  }
+                  guard let address = session.accounts.first?.address
+                  else { log("Could not get wallet address from session", level: .error); break }
                   await send(.updateConnectionState(.connected(address)))
+                  
+                case .receivedResponse(let response):
+                  await send(.signatureResponse(response))
+                  
+                case .didDisconnect:
+                  await send(.updateConnectionState(.notConnected))
               }
             }
           } catch let error {
@@ -77,28 +79,41 @@ struct WalletConnection: Reducer {
         
       case .connectTapped:
         self.walletConnect.connect()
-        return .none
+        return .send(.updateConnectionState(.waitingForConnection))
         
       case .signInTapped:
         guard let address = state.address else { return .none }
-        return .run { send in
-          await send(.challengeResponse(
-            TaskResult {
-              try await lensApi.authenticationChallenge(address)
-            }
-          ))
-        }
-        
+        return .merge(
+          .send(.updateConnectionState(.waitingForSignature)),
+          .run { send in
+            await send(
+              .challengeResponse(
+                TaskResult {
+                  try await lensApi.authenticationChallenge(address)
+                }
+              )
+            )
+          }
+        )
+          
       case let .challengeResponse(.success(challenge)):
         log("Trying to sign challenge", level: .info)
+        return .run { [walletConnect = self.walletConnect] send in
+          try await walletConnect.signMessage(challenge.message)
+
+        } catch: { error, send in
+          await send(.failedToLoadAuthTokens)
+          log("Failed to authenticate user", level: .info, error: error)
+        }
+        
+      case .signatureResponse(let signature):
         guard let address = state.address else { return .none }
         
-        return .run { [walletConnect = self.walletConnect] send in
-          let signature = try await walletConnect.sign(challenge.message)
+        return .run { send in
           try await lensApi.authenticate(address, signature)
           log("Successfully authenticated user with challenge", level: .info)
           await send(.authenticationResponse)
-
+          
         } catch: { error, send in
           await send(.failedToLoadAuthTokens)
           log("Failed to authenticate user", level: .info, error: error)

@@ -11,26 +11,33 @@ struct WalletView: View {
   
   func step(state: WalletConnection.ConnectionState) -> String {
     switch state {
-      case .notConnected: return "1/3"
-      case .connected:    return "2/3"
-      case .authenticated:       return "3/3"
+      case .notConnected, .waitingForConnection:  return "1/3"
+      case .connected, .waitingForSignature:      return "2/3"
+      case .authenticated:                        return "3/3"
     }
   }
   
   func title(state: WalletConnection.ConnectionState) -> String {
     switch state {
-      case .notConnected: return "Connect your Wallet"
-      case .connected:    return "Sign in"
-      case .authenticated:       return "Success!"
+      case .notConnected, .waitingForConnection:  return "Connect your Wallet"
+      case .connected, .waitingForSignature:      return "Sign in"
+      case .authenticated:                        return "Success!"
     }
   }
   
   func body(state: WalletConnection.ConnectionState) -> String {
     switch state {
-      case .notConnected: return "You need to connect your wallet and Lens handle to Lentil in order to interact with content on Lentil.\n\nDon't have access to Lens yet? Reach out to them to get yourself a Lens handle!"
-      case .connected:    return "Sign in with Lens to interact with content on Lentil.\n\nDon’t have access to Lens yet? Reach out to them to get yourself a Lens handle!"
-      case .authenticated:       return "You are now logged in and can start interacting.\n\nHave fun!"
+      case .notConnected, .waitingForConnection:
+        return "You need to connect your wallet and Lens handle to Lentil in order to interact with content on Lentil.\n\nDon't have access to Lens yet? Reach out to them to get yourself a Lens handle!"
+      case .connected, .waitingForSignature:
+        return "Sign in with Lens to interact with content on Lentil.\n\nDon’t have access to Lens yet? Reach out to them to get yourself a Lens handle!"
+      case .authenticated:
+        return "You are now logged in and can start interacting.\n\nHave fun!"
     }
+  }
+  
+  func button(title: String, action: @escaping () -> Void, disabled: Bool) -> some View {
+    LentilButton(title: title, disabled: disabled, action: action)
   }
   
   var body: some View {
@@ -61,17 +68,15 @@ struct WalletView: View {
           
           switch viewStore.connectionStatus {
             case .notConnected:
-              LentilButton(title: "Connect now") {
-                viewStore.send(.connectTapped)
-              }
+              self.button(title: "Connect now", action: { viewStore.send(.connectTapped) }, disabled: false)
+            case .waitingForConnection:
+              self.button(title: "Connect now", action: { viewStore.send(.connectTapped) }, disabled: true)
             case .connected:
-              LentilButton(title: "Sign in with Lens", kind: .primary) {
-                viewStore.send(.signInTapped)
-              }
+              self.button(title: "Sign in with Lens", action: { viewStore.send(.signInTapped) }, disabled: false)
+            case .waitingForSignature:
+              self.button(title: "Sign in with Lens", action: { viewStore.send(.signInTapped) }, disabled: true)
             case .authenticated:
-              LentilButton(title: "Let's go!", kind: .primary) {
-                self.dismiss()
-              }
+              self.button(title: "Let's go!", action: { self.dismiss() }, disabled: false)
           }
         }
         .offset(y: -50)
