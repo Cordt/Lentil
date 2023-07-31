@@ -22,53 +22,25 @@ struct WalletConnection: Reducer {
   }
   
   enum Action: Equatable {
-    case walletOpened
     case walletClosed
     case updateConnectionState(ConnectionState)
+    case errorMessageUpdated(Toast?)
     case connectTapped
     case signInTapped
-    case challengeResponse(TaskResult<Challenge>)
-    case signatureResponse(String)
     case authenticationResponse
-    case failedToLoadAuthTokens
-    case defaultProfileResponse(Model.Profile)
-    case failedToLoadDefaultProfile
-    case errorMessageUpdated(Toast?)
+    case defaultProfileLoaded(Model.Profile)
   }
   
   @Dependency(\.walletConnect) var walletConnect
   @Dependency(\.lensApi) var lensApi
   @Dependency(\.defaultsStorageApi) var defaultsStorageApi
-  enum CancelID { case walletEvents }
   
   func reduce(into state: inout State, action: Action) -> Effect<Action> {
     switch action {
-      case .walletOpened:
-        return .run { send in
-          do {
-            for try await event in self.walletConnect.eventStream {
-              switch event {
-                case .didEstablishSession(let session):
-                  guard let address = session.accounts.first?.address
-                  else { log("Could not get wallet address from session", level: .error); break }
-                  await send(.updateConnectionState(.connected(address)))
-                  
-                case .receivedResponse(let response):
-                  await send(.signatureResponse(response))
-                  
-                case .didDisconnect:
-                  await send(.updateConnectionState(.notConnected))
-              }
-            }
-          } catch let error {
-            log("Failed to receive wallet events", level: .warn, error: error)
-          }
-        }
-        .cancellable(id: CancelID.walletEvents)
-        
       case .walletClosed:
-        self.walletConnect.disconnect()
-        return .cancel(id: CancelID.walletEvents)
+        return .run { _ in
+          try await self.walletConnect.disconnect()
+        }
         
       case .updateConnectionState(let connectionState):
         if case let .connected(address) = connectionState {
@@ -77,56 +49,66 @@ struct WalletConnection: Reducer {
         state.connectionStatus = connectionState
         return .none
         
+      case .errorMessageUpdated(let toast):
+        state.errorMessage = toast
+        return .none
+        
       case .connectTapped:
-        self.walletConnect.connect()
-        return .send(.updateConnectionState(.waitingForConnection))
+        return .merge(
+          .send(.updateConnectionState(.waitingForConnection)),
+          .run { send in
+            let address = try await self.walletConnect.connect()
+            await send(.updateConnectionState(.connected(address)))
+          }
+          catch: { error, send in
+            if case WalletConnector.CommunicationError.invalidWalletAddress = error {
+              log("Failed to get address for WC session", level: .error)
+              await send(.errorMessageUpdated(Toast(message: "We couldn't get your wallet's address :( Please try again")))
+              await send(.updateConnectionState(.notConnected))
+            }
+            else if case WalletConnector.CommunicationError.invalidWalletResponse = error {
+              log("Failed to handle response from signature", level: .warn, error: error)
+              await send(.errorMessageUpdated(Toast(message: "We couldn't establish a connection with your wallet :( Please try again")))
+              await send(.updateConnectionState(.notConnected))
+            }
+          }
+        )
         
       case .signInTapped:
-        guard let address = state.address else { return .none }
+        guard let address = state.address else {
+          log("Failed to get address for WC session", level: .error)
+          return .merge(
+            .send(.errorMessageUpdated(Toast(message: "We couldn't get your wallet's address :( Please try again"))),
+            .send(.updateConnectionState(.notConnected))
+          )
+        }
         return .merge(
           .send(.updateConnectionState(.waitingForSignature)),
           .run { send in
-            await send(
-              .challengeResponse(
-                TaskResult {
-                  try await lensApi.authenticationChallenge(address)
-                }
-              )
-            )
+            let challenge = try await self.lensApi.authenticationChallenge(address)
+            let signature = try await self.walletConnect.personalSign(challenge.message)
+            try await self.lensApi.authenticate(address, signature)
+            log("Successfully authenticated user with challenge", level: .info)
+            await send(.authenticationResponse)
+          }
+          catch: { error, send in
+            if case WalletConnector.CommunicationError.invalidSession = error {
+              log("Failed to connect to WC session", level: .warn, error: error)
+              await send(.errorMessageUpdated(Toast(message: "We couldn't connect you to your wallet :( Please try again")))
+              await send(.updateConnectionState(.notConnected))
+            }
+            else if case WalletConnector.CommunicationError.invalidWalletResponse = error {
+              log("Failed to handle response from signature", level: .warn, error: error)
+              await send(.errorMessageUpdated(Toast(message: "We couldn't retrieve the signature from your wallet :( Please try again")))
+              await send(.updateConnectionState(.connected(address)))
+            }
+            else {
+              log("Failed to create challenge or authenticate user on lens", level: .warn, error: error)
+              await send(.errorMessageUpdated(Toast(message: "We couldn't authenticate you on lens :( Please try again")))
+              await send(.updateConnectionState(.connected(address)))
+            }
           }
         )
-          
-      case let .challengeResponse(.success(challenge)):
-        log("Trying to sign challenge", level: .info)
-        return .run { [walletConnect = self.walletConnect] send in
-          try await walletConnect.signMessage(challenge.message)
-
-        } catch: { error, send in
-          await send(.failedToLoadAuthTokens)
-          log("Failed to authenticate user", level: .info, error: error)
-        }
-        
-      case .signatureResponse(let signature):
-        guard let address = state.address else { return .none }
-        
-        return .run { send in
-          try await lensApi.authenticate(address, signature)
-          log("Successfully authenticated user with challenge", level: .info)
-          await send(.authenticationResponse)
-          
-        } catch: { error, send in
-          await send(.failedToLoadAuthTokens)
-          log("Failed to authenticate user", level: .info, error: error)
-        }
-        
-      case .failedToLoadAuthTokens:
-        log("Could not retrieve tokens for signature", level: .error)
-        state.errorMessage = Toast(message: "We couldn't authenticate you :( Please try again")
-        return .none
-        
-      case let .challengeResponse(.failure(error)):
-        log("Could not retrieve challenge to sign", level: .error, error: error)
-        return .none
         
       case .authenticationResponse:
         log("Trying to fetch default profile", level: .info)
@@ -134,33 +116,19 @@ struct WalletConnection: Reducer {
         
         return .run { send in
           let defaultProfile = try await lensApi.defaultProfile(address)
-          await send(.defaultProfileResponse(defaultProfile))
-          
-        } catch: { error, send in
-          await send(.failedToLoadDefaultProfile)
-          log("Failed to load default profile for user", level: .info, error: error)
-        }
-      
-      case .defaultProfileResponse(let defaultProfile):
-        do {
-          guard let address = state.address else { return .none }
           let userProfile = UserProfile(id: defaultProfile.id, handle: defaultProfile.handle, name: defaultProfile.name, address: address)
           try self.defaultsStorageApi.store(userProfile)
           
-          state.connectionStatus = .authenticated
-          
-        } catch let error {
-          log("Failed to store user profile to defaults", level: .error, error: error)
-          state.errorMessage = Toast(message: "Default Profile could not be loaded. Did you claim your Lens Handle with this wallet?")
+          await send(.defaultProfileLoaded(defaultProfile))
+          await send(.updateConnectionState(.authenticated))
         }
-        return .none
+        catch: { error, send in
+          log("Failed to load or store default profile for user", level: .error, error: error)
+          await send(.errorMessageUpdated(Toast(message: "Your default profile could not be loaded. Did you claim your Lens Handle with this wallet?")))
+          await send(.updateConnectionState(.authenticated))
+        }
         
-      case .failedToLoadDefaultProfile:
-        state.errorMessage = Toast(message: "Default Profile could not be loaded. Did you claim your Lens Handle with this wallet?")
-        return .none
-        
-      case .errorMessageUpdated(let toast):
-        state.errorMessage = toast
+      case .defaultProfileLoaded:
         return .none
     }
   }

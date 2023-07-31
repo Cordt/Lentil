@@ -6,6 +6,10 @@ import XMTP
 
 
 extension WalletConnector: SigningKey {
+  var address: String {
+    return ""
+  }
+  
   func sign(_ data: Data) async throws -> XMTP.Signature {
     // First need to get signed data from publisher
 //    let signatureData = try await self.signData(data)

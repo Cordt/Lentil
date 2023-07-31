@@ -348,7 +348,7 @@ struct Timeline: Reducer {
           
         case .connectWallet(let walletConnectAction):
           switch walletConnectAction {
-            case .defaultProfileResponse(let defaultProfile):
+            case .defaultProfileLoaded(let defaultProfile):
               state.userProfile = defaultsStorageApi.load(UserProfile.self) as? UserProfile
               state.showProfile = Profile.State(profile: defaultProfile)
               self.cacheOld.updateOrAppendProfile(defaultProfile)

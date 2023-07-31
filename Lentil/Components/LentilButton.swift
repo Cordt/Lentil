@@ -53,6 +53,7 @@ struct LentilButton: View {
       )
       .cornerRadius(Theme.narrowRadius)
     }
+    .disabled(self.disabled)
   }
 }
 

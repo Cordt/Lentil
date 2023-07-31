@@ -59,7 +59,7 @@ struct Conversations: Reducer {
           return .send(.loadConversations)
           
         case .walletConnectDidDisappear:
-          self.walletConnect.disconnect()
+//          self.walletConnect.disconnect()
           return .cancel(id: CancelID.walletConnectDelegate)
           
         case .didDisappear:
@@ -68,7 +68,7 @@ struct Conversations: Reducer {
         case .listenOnWallet:
           return .run { send in
             do {
-              for try await event in self.walletConnect.eventStream {
+//              for try await event in self.walletConnect.eventStream {
 //                switch event {
 //                  case .didFailToConnect, .didDisconnect:
 //                    await send(.updateConnectionStatus(.notConnected))
@@ -79,7 +79,7 @@ struct Conversations: Reducer {
 //                  case .didEstablishSession:
 //                    await send(.updateConnectionStatus(.connected))
 //                }
-              }
+//              }
             } catch let error {
               log("Failed to receive wallet events", level: .warn, error: error)
             }
@@ -195,8 +195,8 @@ struct Conversations: Reducer {
         case .connectTapped:
           // FIXME: Integrate v2
           return .merge(
-            .send(.listenOnWallet),
-            .run { _ in self.walletConnect.connect() }
+            .send(.listenOnWallet)
+//            .run { _ in self.walletConnect.connect() }
           )
           
         case .createConversationTapped:
