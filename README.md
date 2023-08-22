@@ -13,7 +13,7 @@ Lentil is a native iOS Client for Lens Protocol. It does not aim to be a clone o
 The app is built using 
 * [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture) as the core architecture of the app,
 * [SwiftUI](https://developer.apple.com/xcode/swiftui/) to power the interface, and
-* [WalletConnect v2]([https://github.com/argentlabs/web3.swift](https://github.com/WalletConnect/WalletConnectSwiftV2) to integrate with common wallets.
+* [WalletConnect v2](https://github.com/WalletConnect/WalletConnectSwiftV2) to integrate with common wallets.
 
 The app runs on top of 
 * [Lens Protocol](https://docs.lens.xyz/docs) as the backend that powers the social network, and
